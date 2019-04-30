@@ -450,36 +450,6 @@ if (__name__ == '__main__'):
     args = parser.parse_args()
     arg_array = args.array
 
-    '''
-    # heatmap parameters
-    monthly_mu_axis_start = 0
-    monthly_mu_axis_stop = 16
-    monthly_mu_axis_step = 1
-
-    monthly_sigma_axis_start = 0
-    monthly_sigma_axis_stop = 16
-    monthly_sigma_axis_step = 1
-
-    monthly_mu_tick_spacing = 2
-    monthly_sigma_tick_spacing = 2
-
-    num_patients_per_bin = 1000
-    num_months_per_patient = 24
-    confidence_level_interval = 95
-    rounding_decimal_place = 2
-
-    # model 1 and model 2 parameters
-    shape_1 = 24.143
-    scale_1 = 297.366
-    alpha_1 = 284.024
-    beta_1 = 369.628
-    shape_2 = 111.313
-    scale_2 = 296.728
-    alpha_2 = 296.339
-    beta_2 = 243.719
-    num_patients_per_model = 1000
-    '''
-
     # heatmap parameters
     monthly_mu_axis_start = float(arg_array[0])
     monthly_mu_axis_stop = float(arg_array[1])
