@@ -440,6 +440,7 @@ def generate_prob_gauss_plot(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2
 
     plt.show()
 
+
 if (__name__ == '__main__'):
 
     start_time_in_seconds = time.time()
