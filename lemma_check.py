@@ -179,7 +179,7 @@ def generate_prob_gauss_map(monthly_mu_axis_start,    monthly_mu_axis_stop,     
     # calculate the p-value threshold based on the specified confidence level
     p_value_threshold = 1 - ( confidence_level_interval/100 )
 
-    # create the monthely mean and monthly standard devation axes
+    # create the monthly mean and monthly standard deviation axes
     monthly_mu_array = np.arange(monthly_mu_axis_start, monthly_mu_axis_stop + monthly_mu_axis_step, monthly_mu_axis_step)
     monthly_sigma_array = np.flip( np.arange(monthly_sigma_axis_start, monthly_sigma_axis_stop + monthly_sigma_axis_step, monthly_sigma_axis_step), 0 )
 
