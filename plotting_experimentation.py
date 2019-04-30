@@ -6,14 +6,14 @@ import matplotlib.pyplot as plt
 # heatmap parameters
 x_axis_start = 0
 x_axis_stop = 16
-x_axis_step = 0.1
+x_axis_step = 1
 
 y_axis_start = 0
 y_axis_stop = 16
-y_axis_step = 0.1
+y_axis_step = 1
 
-x_tick_spacing = 2
-y_tick_spacing = 2
+x_tick_spacing = 1
+y_tick_spacing = 1
 
 # scatter plot parameters
 num_points = 100
@@ -35,7 +35,7 @@ num_y = len(y_array)
 
 data_matrix = np.zeros((num_y, num_x))
 
-index_matrix = np.zeros((num_y, num_x))
+index_matrix = np.zeros((num_y, num_x), dtype=tuple)
 
 for y_index in range(num_y):
 
@@ -61,8 +61,8 @@ y_tick_labels = np.arange(y_axis_start, y_axis_stop + y_tick_spacing, y_tick_spa
 num_x_tick_labels = len(x_tick_labels)
 num_y_tick_labels = len(y_tick_labels)
 
-x_ticks = np.append( np.array([0]), x_tick_labels[1:]/x_axis_step + np.ones(num_x_tick_labels - 1) )
-y_ticks = np.flip( np.append( np.array([0]), y_tick_labels[1:]/y_axis_step + np.ones(num_y_tick_labels - 1) ), 0)
+x_ticks = x_tick_labels/x_axis_step + 0.5*np.ones(num_x_tick_labels)
+y_ticks = np.flip( y_tick_labels/y_axis_step + 0.5*np.ones(num_y_tick_labels), 0)
 
 plt.figure()
 ax = sns.heatmap(data_matrix)
@@ -78,5 +78,7 @@ for power_law_slope_index in range(len(power_law_slopes)):
         power_law_y_array = np.power(x_array, power_law_slope)
         plt.plot(x_array*x_scale_ratio, (y_axis_stop - power_law_y_array)*y_scale_ratio )
 plt.legend( [ str(np.round(power_law_slopes[power_law_slope_index], legend_decimal_round)) for power_law_slope_index in range(len(power_law_slopes)) ] ) 
+
+print(pd.DataFrame(data_matrix).to_string())
 
 plt.show()

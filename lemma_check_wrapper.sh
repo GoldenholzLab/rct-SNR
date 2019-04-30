@@ -16,20 +16,19 @@ module load python/3.6.0
 source activate main_env
 
 inputs[0]=0
-inputs[1]=15
-inputs[2]=0.1
+inputs[1]=16
+inputs[2]=1
 inputs[3]=0
-inputs[4]=15
-inputs[5]=0.1
-inputs[6]=1000
-inputs[7]=24
-inputs[8]=28
-inputs[9]=95
-inputs[10]=1000
+inputs[4]=16
+inputs[5]=1
+inputs[6]=2
+inputs[7]=2
+inputs[8]=1000
+inputs[9]=24
+inputs[10]=95
 inputs[11]=2
-inputs[12]=10
-inputs[13]="lemma_check_map_with_models"
-inputs[14]="lemma_check_map"
-inputs[15]="prob_successes"
+inputs[12]=1000
+inputs[13]="Gaussianity_map"
+inputs[14]="Gaussianity_map_with_models"
 
-srun -c 1 python lemma_check.py ${inputs[@]}
+python lemma_check_v2.py ${inputs[@]}
