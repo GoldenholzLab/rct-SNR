@@ -5,7 +5,7 @@
 *.png
 
 # folder
-'O2 cluster data/'
+O2 cluster data/
 
 # text files and word documents
 *.txt
