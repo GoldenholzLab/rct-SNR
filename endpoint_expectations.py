@@ -237,10 +237,10 @@ def generate_expected_endpoint_maps(monthly_mu_axis_start, monthly_mu_axis_stop,
             [expected_RR50, expected_MPC] = estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_trial, num_trials_per_bin,
                                                                         num_months_per_patient_baseline, num_months_per_patient_testing)
             
-            print('\n\nmonthly mean: '             + str(monthly_mu)    + 
-                    '\nmonthly standard deviation: ' + str(monthly_sigma) + 
-                    '\nexpected RR50: '            + str(expected_RR50) + 
-                    '\nexpected MPC: '             + str(expected_MPC)    )
+            print('\n\nmonthly mean: '               + str(np.round(monthly_mu))    + 
+                    '\nmonthly standard deviation: ' + str(np.round(monthly_sigma)) + 
+                    '\nexpected RR50: '              + str(np.round(expected_RR50)) + 
+                    '\nexpected MPC: '               + str(np.round(expected_MPC))    )
             
             # store the expected RR50 and expected MPC into their respective 2D arrays
             expected_RR50_map[monthly_sigma_index, monthly_mu_index] = expected_RR50
