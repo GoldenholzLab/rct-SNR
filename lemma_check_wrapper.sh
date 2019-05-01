@@ -17,10 +17,10 @@ source activate main_env
 
 inputs[0]=0
 inputs[1]=16
-inputs[2]=1
+inputs[2]=0.1
 inputs[3]=0
 inputs[4]=16
-inputs[5]=1
+inputs[5]=0.1
 inputs[6]=2
 inputs[7]=2
 inputs[8]=1000
