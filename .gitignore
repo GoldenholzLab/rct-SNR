@@ -4,6 +4,9 @@
 # pictures
 *.png
 
+# folder
+'O2 cluster data/'
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
