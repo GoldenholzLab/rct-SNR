@@ -40,5 +40,6 @@ inputs[21]='expected_RR50_with_power_law_curves'
 inputs[22]='expected_MPC_with_power_law_curves'
 inputs[23]='Model_1_2D_histogram'
 inputs[24]='Model_2_2D_histogram'
+inputs[25]='Model_1_and_Model_2_expected_endpoints'
 
 srun -c 1 python endpoint_expectations.py ${inputs[@]}

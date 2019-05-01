@@ -519,7 +519,8 @@ def plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, sh
                                             max_power_law_slope, min_power_law_slope, power_law_slope_spacing, legend_decimal_round,
                                             expected_RR50_filename, expected_MPC_filename, 
                                             expected_RR50_with_curves_filename, expected_MPC_with_curves_filename, 
-                                            model_1_2D_hist_filename, model_2_2D_hist_filename):
+                                            model_1_2D_hist_filename, model_2_2D_hist_filename,
+                                            model_expected_endpoints_filename):
     '''
 
     Inputs:
@@ -647,6 +648,10 @@ def plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, sh
         31) model_2_2D_hist_filename:
 
             (string) - 
+        
+        32) model_expected_endpoints_filename:
+
+            (string) - 
 
     Outputs:
 
@@ -764,6 +769,14 @@ def plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, sh
     plt.title('Model 2 patient population')
     plt.savefig(os.getcwd() + '/' + model_2_2D_hist_filename + '.png')
 
+    with open(os.getcwd() + '/' + model_expected_endpoints_filename + '.txt', 'w+') as text_file:
+
+        data =  '\n\nModel 1 expected RR50: ' + str(Model_1_expected_RR50) + \
+                '\n\nModel 1 expected MPC: '  + str(Model_1_expected_MPC)  + \
+                '\n\nModel 2 expected RR50: ' + str(Model_2_expected_RR50) + \
+                '\n\nModel 2 expected MPC: '  + str(Model_2_expected_MPC)
+
+        text_file.write(data)
 
 if (__name__ == '__main__'):
 
@@ -869,6 +882,7 @@ if (__name__ == '__main__'):
     expected_MPC_with_curves_filename = arg_array[22]
     model_1_2D_hist_filename = arg_array[23]
     model_2_2D_hist_filename = arg_array[24]
+    model_expected_endpoints_filename = arg_array[25]
 
     plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha_2, beta_2, 
                                             num_patients_per_model, num_months_per_patient, num_days_per_month,
@@ -880,7 +894,8 @@ if (__name__ == '__main__'):
                                             max_power_law_slope, min_power_law_slope, power_law_slope_spacing, legend_decimal_round,
                                             expected_RR50_filename, expected_MPC_filename, 
                                             expected_RR50_with_curves_filename, expected_MPC_with_curves_filename, 
-                                            model_1_2D_hist_filename, model_2_2D_hist_filename)
+                                            model_1_2D_hist_filename, model_2_2D_hist_filename,
+                                            model_expected_endpoints_filename)
     
     stop_time_in_seconds = time.time()
 
