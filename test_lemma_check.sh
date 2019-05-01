@@ -1,3 +1,4 @@
+
 inputs[0]=0
 inputs[1]=16
 inputs[2]=1
@@ -14,4 +15,4 @@ inputs[12]=1000
 inputs[13]="Gaussianity_map"
 inputs[14]="Gaussianity_map_with_models"
 
-srun -c 1 python lemma_check.py ${inputs[@]}
+python lemma_check.py ${inputs[@]}
