@@ -1,14 +1,11 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import argparse
-import time
-import psutil
 
 
-def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_trial, num_trials_per_bin, num_days_per_month, 
+def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_trial, num_trials_per_bin,
                                 num_months_per_patient_baseline, num_months_per_patient_testing):
     '''
 
@@ -30,15 +27,11 @@ def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_tria
 
             (int) - 
         
-        5) num_days_per_month:
+        5) num_months_per_patient_baseline:
 
             (int) - 
         
-        6) num_months_per_patient_baseline:
-
-            (int) - 
-        
-        7) num_months_per_patient_testing:
+        6) num_months_per_patient_testing:
 
             (int) - 
 
@@ -54,27 +47,25 @@ def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_tria
 
     '''
 
-    # calculate the daily mean and daily standard deviation of the counts, as well as the total number of months
-    daily_mu = monthly_mu/num_days_per_month
-    daily_sigma = monthly_sigma/np.sqrt(num_days_per_month)
+    # calculate the total number of months
     num_months_per_patient_total = num_months_per_patient_baseline + num_months_per_patient_testing
 
     # check to see if the mean is not zero
-    daily_mu_not_zero = daily_mu != 0
+    monthly_mu_not_zero = monthly_mu != 0
 
     # if the mean is not zero...
-    if( daily_mu_not_zero ):
+    if( monthly_mu_not_zero ):
 
         # check to see if the daily standard deviation is greater than the square root of the daily mean
-        daily_sigma_greater_than_square_root_of_daily_mu = daily_sigma > np.sqrt(daily_mu)
+        monthly_sigma_greater_than_square_root_of_monthly_mu = monthly_sigma > np.sqrt(monthly_mu)
 
         # if the daily standard deviation is greater than the square root of the daily mean...
-        if( daily_sigma_greater_than_square_root_of_daily_mu ):
+        if( monthly_sigma_greater_than_square_root_of_monthly_mu ):
 
             # calculate the overdispersion parameter
-            daily_mu_squared = np.power(daily_mu, 2)
-            daily_var = np.power(daily_sigma, 2)
-            daily_alpha = (daily_var - daily_mu)/daily_mu_squared
+            monthly_mu_squared = np.power(monthly_mu, 2)
+            monthly_var = np.power(monthly_sigma, 2)
+            monthly_alpha = (monthly_var - monthly_mu)/monthly_mu_squared
 
             # initialize the arrays that will store the RR50 and MPC from each trial
             RR50_array = np.zeros(num_trials_per_bin)
@@ -93,7 +84,7 @@ def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_tria
                     for month_index in range(num_months_per_patient_total):
 
                         # generate a monthly count according to gamma-poisson mixture
-                        monthly_rate = np.random.gamma(num_days_per_month/daily_alpha, daily_alpha*daily_mu)
+                        monthly_rate = np.random.gamma(1/monthly_alpha, monthly_alpha*monthly_mu)
                         monthly_count = np.random.poisson(monthly_rate)
 
                         # store the monthly count
@@ -145,105 +136,116 @@ def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_tria
         return [np.NaN, np.NaN]
 
 
-def generate_expected_endpoint_maps(monthly_mu_start, monthly_mu_stop, monthly_mu_step, monthly_sigma_start, monthly_sigma_stop, monthly_sigma_step,
-                                    num_patients_per_trial, num_trials_per_bin, num_days_per_month, num_months_per_patient_baseline, num_months_per_patient_testing):
+def generate_expected_endpoint_maps(monthly_mu_axis_start, monthly_mu_axis_stop, monthly_mu_axis_step, 
+                                    monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step, 
+                                    num_patients_per_trial, num_trials_per_bin,
+                                    num_months_per_patient_baseline, num_months_per_patient_testing):
+
     '''
 
     Inputs:
 
-        1) monthly_mu_start
+        1) monthly_mu_axis_start:
 
             (float) - 
 
-        2) monthly_mu_stop
-
+        2) monthly_mu_axis_stop: 
+        
             (float) - 
         
-        3) monthly_mu_step:
+        3) monthly_mu_axis_step:
 
+            (float) - 
+
+        4)  monthly_sigma_axis_start:
+        
             (float) - 
         
-        4) monthly_sigma_start:
-
-            (float) - 
-
-        5) monthly_sigma_stop:
-
+        5) monthly_sigma_axis_stop:
+        
             (float) - 
         
-        6) monthly_sigma_step:
+        6) monthly_sigma_axis_step:
 
             (float) - 
-        
+
         7) num_patients_per_trial:
-
-            (int) - 
+        
+            (float) - 
         
         8) num_trials_per_bin:
-
-            (int) - 
         
-        9) num_days_per_month:
-            
-            (int) - 
-        
-        10) num_months_per_patient_baseline:
+            (float) -  
 
-            (int) - 
+        9) num_months_per_patient_baseline:
         
-        11) num_months_per_patient_testing:
+            (float) - 
+        
+        10) num_months_per_patient_testing:
 
-            (int) - 
+            (float) - 
 
     Outputs:
+    
+        1) num_monthly_mu:
+        
+            (int) - 
 
-        1) expected_RR50_map:
+        2) num_monthly_sigma:
+
+            (int) -  
+        
+        3)  monthly_mu_array:
+
+            (1D Numpy array) - 
+
+        3) RR50_matrix:
 
             (2D Numpy array) - 
         
-        2) expected_MPC_array:
+        4) MPC_matrix:
 
             (2D Numpy array) - 
 
     '''
 
-    # initialize the axes of the maps to be generated
-    monthly_mu_array = np.arange(monthly_mu_start, monthly_mu_stop + monthly_mu_step, monthly_mu_step)
-    monthly_sigma_array = np.arange(monthly_sigma_start, monthly_sigma_stop + monthly_sigma_step, monthly_sigma_step)
+    # create the monthly mean and monthly standard deviation axes
+    monthly_mu_array = np.arange(monthly_mu_axis_start, monthly_mu_axis_stop + monthly_mu_axis_step, monthly_mu_axis_step)
+    monthly_sigma_array = np.flip( np.arange(monthly_sigma_axis_start, monthly_sigma_axis_stop + monthly_sigma_axis_step, monthly_sigma_axis_step), 0 )
 
-    # get the lengths of each axis
-    num_monthly_mus = len(monthly_mu_array)
-    num_monthly_sigmas = len(monthly_sigma_array)
+    # get the lengths of these axes
+    num_monthly_mu = len(monthly_mu_array)
+    num_monthly_sigma = len(monthly_sigma_array)
 
-    # initialize the 2D arrays which will become the expected endpoint value maps 
-    expected_RR50_map = np.zeros((num_monthly_sigmas, num_monthly_mus))
-    expected_MPC_map = np.zeros((num_monthly_sigmas, num_monthly_mus))
+    # initialize the two 2D numpy array in which the expected RR50s and the expected MPCs will be stored
+    expected_RR50_map = np.zeros((num_monthly_sigma, num_monthly_mu))
+    expected_MPC_map = np.zeros((num_monthly_sigma, num_monthly_mu))
 
-    # for every monthly mean
-    for monthly_mu_index in range(num_monthly_mus):
+    # over each monthly mean index:
+    for monthly_sigma_index in range(num_monthly_sigma):
 
-        # for every monthly standard deviation
-        for monthly_sigma_index in range(num_monthly_sigmas):
+        # over each monthly standard deviation index:
+        for monthly_mu_index in range(num_monthly_mu):
 
-            # extract the monthly mean and standard deviations for on particular location
+            # extract the current monthly mean and monthly standard deviation using the relevant indices
             monthly_mu = monthly_mu_array[monthly_mu_index]
             monthly_sigma = monthly_sigma_array[monthly_sigma_index]
 
-            # calculate the exepcted RR50 and the expected MPC for that location
-            [expected_RR50, expected_MPC] = estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_trial, num_trials_per_bin, num_days_per_month, 
+            # actually calculate the expected RR50 as well as the expected MPC
+            [expected_RR50, expected_MPC] = estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_trial, num_trials_per_bin,
                                                                         num_months_per_patient_baseline, num_months_per_patient_testing)
-
-            # palce the respective endpoint calculations into the relevant location in their own maps
+            
+            print('\n\nmonthly mean: '             + str(monthly_mu)    + 
+                    '\nmonthly standard deviation: ' + str(monthly_sigma) + 
+                    '\nexpected RR50: '            + str(expected_RR50) + 
+                    '\nexpected MPC: '             + str(expected_MPC)    )
+            
+            # store the expected RR50 and expected MPC into their respective 2D arrays
             expected_RR50_map[monthly_sigma_index, monthly_mu_index] = expected_RR50
             expected_MPC_map[monthly_sigma_index, monthly_mu_index] = expected_MPC
+    
+    return [num_monthly_mu, num_monthly_sigma, monthly_mu_array, expected_RR50_map, expected_MPC_map]
 
-            print('monthly mu: ' + str(np.round(monthly_mu, 2)) + '\nmonthly_sigma: ' + str(np.round(monthly_sigma, 2)) + '\nexpected RR50: ' + str(np.round(expected_RR50, 2)) + '\nexpected MPC: ' + str(np.round(expected_MPC, 2)) + '\n\n')
-
-    # format the maps to be more readable
-    expected_RR50_map = np.flipud(expected_RR50_map)
-    expected_MPC_map = np.flipud(expected_MPC_map)
-
-    return [expected_RR50_map, expected_MPC_map]
 
 def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_model, num_months_per_patient, num_days_per_month):
     '''
@@ -316,19 +318,24 @@ def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_mode
 
     return [model_monthly_count_averages, model_monthly_count_standard_deviations]
 
-def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha_2, beta_2, num_patients_per_model, num_months_per_patient, num_days_per_month,
-                        monthly_mu_start, monthly_mu_stop, monthly_mu_step, monthly_sigma_start, monthly_sigma_stop, monthly_sigma_step,
-                        num_patients_per_trial, num_trials_per_bin, num_months_per_patient_baseline, num_months_per_patient_testing):
+
+def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha_2, beta_2, 
+                        num_patients_per_model, num_months_per_patient, num_days_per_month,
+                        monthly_mu_axis_start, monthly_mu_axis_stop, monthly_mu_axis_step, 
+                        monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step,
+                        num_patients_per_trial, num_trials_per_bin,
+                        num_months_per_patient_baseline, num_months_per_patient_testing):
+
     '''
 
     Inputs:
 
         1) shape_1:
-
+        
             (float) - 
         
         2) scale_1:
-
+        
             (float) - 
         
         3) alpha_1:
@@ -338,65 +345,65 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha
         4) beta_1:
         
             (float) - 
-            
-        5) shape_2:
 
+        5) shape_2:
+        
             (float) - 
         
-        6) scale_2: 
-
+        6) scale_2:
+        
             (float) - 
 
         7) alpha_2:
-
+        
             (float) - 
-         
+        
         8) beta_2:
+
+            (float) -  
         
-            (float) - 
-        
-        9) num_patients_per_model
+        9) num_patients_per_model:
         
             (int) - 
         
-        10) num_months_per_patient
+        10) num_months_per_patient:
         
             (int) - 
         
         11) num_days_per_month:
 
             (int) - 
-        
-        12) monthly_mu_start:
-        
-            (float) -     
-        
-        13) monthly_mu_stop:
+
+        12) monthly_mu_axis_start:
         
             (float) - 
-        
-        14) monthly_mu_step:
-        
-            (float) - 
-        
-        15) monthly_sigma_start:
+            
+        13) monthly_mu_axis_stop:
         
             (float) - 
-        
-        16) monthly_sigma_stop:
-        
-            (float) - 
-        
-        17) monthly_sigma_step:
+            
+        14) monthly_mu_axis_step:
 
             (float) - 
+
+        15) monthly_sigma_axis_start:
         
+            (float) - 
+        
+        16) monthly_sigma_axis_stop:
+        
+            (float) - 
+        
+        17) monthly_sigma_axis_step:
+
+            (float) - 
+
         18) num_patients_per_trial:
         
-            (int) - 
-        
+            (int) -  
+            
         19) num_trials_per_bin:
-        
+
             (int) - 
         
         20) num_months_per_patient_baseline:
@@ -408,59 +415,83 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha
             (int) - 
 
     Outputs:
+    
+        1) num_monthly_mu:
+        
+            (int) - 
 
-        1) Model_1_expected_RR50:
+        2) num_monthly_sigma:
+
+            (int) - 
         
-            (float) - 
-        
-        2) Model_1_expected_MPC:
-        
-            (float) - 
-        
-        3) Model_2_expected_RR50:
-        
-            (float) - 
-        
-        4) Model_2_expected_MPC:
+        3) monthly_mu_array:
+
+            (1D Numpy array) - 
+
+        4) Model_1_expected_RR50:
             
             (float) - 
         
-        5) H_model_1:
+        5) Model_1_expected_MPC:
         
-            (2D Numpy Array) - 
+            (float) - 
         
-        6) H_model_2:
+        6) Model_2_expected_RR50
+        
+            (float) - 
 
-            (2D NUmpy Array) - 
+        7) Model_2_expected_MPC:
+        
+            (float) - 
+        
+        8) expected_RR50_map:
+        
+            (2D Numpy array) - 
+        
+        9) expected_MPC_map:
+        
+            (2D Numpy array) - 
+        
+        10) H_model_1:
+            
+            (2D Numpy array) - 
+        
+        11) H_model_2:
+
+            (2D Numpy array) - 
 
     '''
+
+    # generate the expected RR50 and expected MPC maps
+    [num_monthly_mu, num_monthly_sigma, monthly_mu_array, expected_RR50_map, expected_MPC_map] = \
+        generate_expected_endpoint_maps(monthly_mu_axis_start, monthly_mu_axis_stop, monthly_mu_axis_step, 
+                                        monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step, 
+                                        num_patients_per_trial, num_trials_per_bin,
+                                        num_months_per_patient_baseline, num_months_per_patient_testing)
+
     # generate Model 1 patients
     [model_1_monthly_count_averages, model_1_monthly_count_standard_deviations] = \
                                         generate_model_patient_data(shape_1, scale_1, alpha_1, beta_1,
-                                                                num_patients_per_model, num_months_per_patient, num_days_per_month)
+                                                                    num_patients_per_model, num_months_per_patient, num_days_per_month)
 
     # generate Model 2 patients
     [model_2_monthly_count_averages, model_2_monthly_count_standard_deviations] = \
-                                        generate_model_patient_data(shape_2, scale_2, alpha_2, beta_2, 
+                                    generate_model_patient_data(shape_2, scale_2, alpha_2, beta_2,
                                                                 num_patients_per_model, num_months_per_patient, num_days_per_month)
-
-    # generate the expected RR50 and expected MPC maps
-    [expected_RR50_map, expected_MPC_map] = generate_expected_endpoint_maps(monthly_mu_start, monthly_mu_stop, monthly_mu_step, monthly_sigma_start, monthly_sigma_stop, monthly_sigma_step,
-                                                                            num_patients_per_trial, num_trials_per_bin, num_days_per_month, num_months_per_patient_baseline, num_months_per_patient_testing)
 
     # get the size of those expected endpoint maps
     [nx, ny] = expected_RR50_map.shape
 
     # calculate the histogram of the Model 1 patients
     [H_model_1, _, _] = np.histogram2d(model_1_monthly_count_averages, model_1_monthly_count_standard_deviations, bins=[ny, nx], 
-                                        range=[[monthly_mu_start, monthly_mu_stop], [monthly_sigma_start, monthly_sigma_stop]])
+                                        range=[[monthly_mu_axis_start, monthly_mu_axis_stop], [monthly_sigma_axis_start, monthly_sigma_axis_stop]])
     H_model_1 = np.flipud(np.fliplr(np.transpose(np.flipud(H_model_1))))
     norm_const_1 = np.sum(np.sum(H_model_1, 0))
     H_model_1 = H_model_1/norm_const_1
 
     # calculate the histogram of the Model 2 patients
     [H_model_2, _, _] = np.histogram2d(model_2_monthly_count_averages, model_2_monthly_count_standard_deviations, bins=[ny, nx], 
-                                        range=[[monthly_mu_start, monthly_mu_stop], [monthly_sigma_start, monthly_sigma_stop]])
+                                    range=[[monthly_mu_axis_start, monthly_mu_axis_stop], [monthly_sigma_axis_start, monthly_sigma_axis_stop]])
     H_model_2 = np.flipud(np.fliplr(np.transpose(np.flipud(H_model_2))))
     norm_const_2 = np.sum(np.sum(H_model_2, 0))
     H_model_2 = H_model_2/norm_const_2
@@ -471,108 +502,268 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha
     Model_2_expected_RR50 = np.sum(np.nansum(np.multiply(H_model_2, expected_RR50_map), 0))
     Model_2_expected_MPC  = np.sum(np.nansum(np.multiply(H_model_2, expected_MPC_map),  0))
 
-    return [Model_1_expected_RR50, Model_1_expected_MPC, Model_2_expected_RR50, Model_2_expected_MPC, expected_RR50_map, expected_MPC_map, H_model_1, H_model_2]
+    return [num_monthly_mu, num_monthly_sigma, monthly_mu_array, Model_1_expected_RR50, 
+            Model_1_expected_MPC, Model_2_expected_RR50, Model_2_expected_MPC, 
+            expected_RR50_map, expected_MPC_map, H_model_1, H_model_2]
 
 
-def create_plots(expected_RR50_map, expected_MPC_map, H_model_1, H_model_2, 
-                 monthly_mu_start, monthly_mu_stop, monthly_sigma_start, monthly_sigma_stop):
+def plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha_2, beta_2, 
+                                            num_patients_per_model, num_months_per_patient, num_days_per_month,
+                                            monthly_mu_axis_start, monthly_mu_axis_stop, monthly_mu_axis_step, 
+                                            monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step, 
+                                            monthly_mu_tick_spacing, monthly_sigma_tick_spacing,
+                                            num_patients_per_trial, num_trials_per_bin, 
+                                            num_months_per_patient_baseline, num_months_per_patient_testing,
+                                            max_power_law_slope, min_power_law_slope, power_law_slope_spacing, legend_decimal_round,
+                                            expected_RR50_filename, expected_MPC_filename, 
+                                            expected_RR50_with_curves_filename, expected_MPC_with_curves_filename, 
+                                            model_1_2D_hist_filename, model_2_2D_hist_filename):
     '''
 
     Inputs:
 
-        1) expected_RR50_map:
-            
-            (2D Numpy Array) -
-        
-        2) expected_MPC_map: 
-        
-            (2D Numpy Array) - 
-        
-        3) H_model_1:
-        
-            (2D Numpy Array) - 
-        
-        4) H_model_2:
-            
-            (2D Numpy Array) - 
-        
-        5) monthly_mu_start:
+        1) shape_1:
         
             (float) - 
         
-        6) monthly_mu_stop:
-            
+        2) scale_1:
+        
+            (float) - 
+        
+        3) alpha_1:
+        
+            (float) - 
+        
+        4) beta_1:
+        
+            (float) - 
+
+        5) shape_2:
+        
+            (float) - 
+        
+        6) scale_2:
+        
+            (float) - 
+
+        7) alpha_2:
+        
+            (float) - 
+        
+        8) beta_2:
+
             (float) -  
         
-        7) monthly_mu_step:
+        9) num_patients_per_model:
+        
+            (int) - 
+        
+        10) num_months_per_patient:
+        
+            (int) - 
+        
+        11) num_days_per_month:
+
+            (int) - 
+
+        12) monthly_mu_axis_start:
+        
+            (float) - 
+            
+        13) monthly_mu_axis_stop:
+        
+            (float) - 
+            
+        14) monthly_mu_axis_step:
 
             (float) - 
-        
-        8) monthly_sigma_start:
+
+        15) monthly_sigma_axis_start:
         
             (float) - 
         
-        9) monthly_sigma_stop:
-
+        16) monthly_sigma_axis_stop:
+        
             (float) - 
         
-        10) monthly_sigma_step:
+        17) monthly_sigma_axis_step:
 
             (float) - 
-        
-        11) power_law_slopes:
 
-            (1D Numpy Array) - 
+        18) num_patients_per_trial:
+        
+            (int) -  
+            
+        19) num_trials_per_bin:
+
+            (int) - 
+        
+        20) num_months_per_patient_baseline:
+        
+            (int) - 
+        
+        21) num_months_per_patient_testing:
+
+            (int) - 
+        
+        22) max_power_law_slope:
+        
+            (float) - 
+        
+        23) min_power_law_slope:
+    
+            (float) - 
+
+        24) power_law_slope_spacing:
+        
+            (float) -  
+        
+        25) legend_decimal_round:
+
+            (int) - 
+        
+        26) expected_RR50_filename:
+        
+            (string) - 
+        
+        27) expected_MPC_filename:
+
+            (string) - 
+        
+        28) expected_RR50_with_curves_filename:
+        
+            (string) - 
+        
+        29) expected_MPC_with_curves_filename:
+
+            (string) - 
+                                        
+        30) model_1_2D_hist_filename:
+        
+            (string) - 
+        
+        31) model_2_2D_hist_filename:
+
+            (string) - 
 
     Outputs:
 
-        Technically none, but practically, the output is four pyplot figures that are saved in the same folder as this script.
+        Technically none
 
     '''
+    # calculate the expected enpoint response maps, the Model 1 and Model 2 histograms, and the corresponding expected Model endpoints
+    [num_monthly_mu, num_monthly_sigma, monthly_mu_array, 
+     Model_1_expected_RR50, Model_1_expected_MPC, Model_2_expected_RR50, Model_2_expected_MPC, 
+     expected_RR50_map, expected_MPC_map, H_model_1, H_model_2] = \
+        generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha_2, beta_2, 
+                        num_patients_per_model, num_months_per_patient, num_days_per_month,
+                        monthly_mu_axis_start, monthly_mu_axis_stop, monthly_mu_axis_step, 
+                        monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step,
+                        num_patients_per_trial, num_trials_per_bin,
+                        num_months_per_patient_baseline, num_months_per_patient_testing)
 
-    mu_ticks = np.arange(monthly_mu_start, 1 + monthly_mu_stop, 1)
-    sigma_ticks = np.flip( np.arange(monthly_sigma_start, 1 + monthly_sigma_stop, 1), 0 )
+    # generate the tick labels for the monthly mean axis as well as for the monthly standard deviation axis
+    # the tick labels are distinctly different from the actual ticks
+    monthly_mu_tick_labels = np.arange(monthly_mu_axis_start, monthly_mu_axis_stop + monthly_mu_tick_spacing, monthly_mu_tick_spacing)
+    monthly_sigma_tick_labels = np.arange(monthly_sigma_axis_start, monthly_sigma_axis_stop + monthly_sigma_tick_spacing, monthly_sigma_tick_spacing)
 
-    fig1 = plt.figure()
-    ax1 = sns.heatmap(expected_RR50_map)
-    ax1.set_xticklabels( mu_ticks )
-    ax1.set_yticklabels( sigma_ticks, rotation='horizontal' )
+    # get the number of tick labels for both axes
+    num_monthly_mu_tick_labels = len(monthly_mu_tick_labels)
+    num_monthly_sigma_tick_labels = len(monthly_sigma_tick_labels)
+
+    # calculate the ticks (location of each tick) for the monthly mean axis and monthly standard deviation axis
+    monthly_mu_ticks = monthly_mu_tick_labels/monthly_mu_axis_step + 0.5*np.ones(num_monthly_mu_tick_labels)
+    monthly_sigma_ticks = np.flip( monthly_sigma_tick_labels/monthly_sigma_axis_step + 0.5*np.ones(num_monthly_sigma_tick_labels), 0)
+
+    # plot the expected RR50
+    plt.figure()
+    ax = sns.heatmap(expected_RR50_map, cbar_kws={'label':'estimated expected endpoint response in percentages'})
+    ax.set_xticks(monthly_mu_ticks)
+    ax.set_xticklabels(monthly_mu_tick_labels, rotation='horizontal')
+    ax.set_yticks(monthly_sigma_ticks)
+    ax.set_yticklabels(monthly_sigma_tick_labels, rotation='horizontal')
     plt.xlabel('monthly seizure count mean')
     plt.ylabel('monthly seizure count standard deviation')
     plt.title('Expected RR50 Placebo')
-    #fig1.savefig('Expected RR50 map.png')
+    plt.savefig(os.getcwd() + '/' + expected_RR50_filename + '.png')
 
-    fig2 = plt.figure()
-    ax2 = sns.heatmap(expected_MPC_map)
-    ax2.set_xticklabels( mu_ticks )
-    ax2.set_yticklabels( sigma_ticks, rotation='horizontal' )
+    # plot the expected MPC
+    plt.figure()
+    ax = sns.heatmap(expected_MPC_map, cbar_kws={'label':'estimated expected endpoint response in percentages'})
+    ax.set_xticks(monthly_mu_ticks)
+    ax.set_xticklabels(monthly_mu_tick_labels, rotation='horizontal')
+    ax.set_yticks(monthly_sigma_ticks)
+    ax.set_yticklabels(monthly_sigma_tick_labels, rotation='horizontal')
     plt.xlabel('monthly seizure count mean')
     plt.ylabel('monthly seizure count standard deviation')
     plt.title('Expected MPC Placebo')
-    #fig2.savefig('Expected MPC map.png')
+    plt.savefig(os.getcwd() + '/' + expected_MPC_filename + '.png')
 
-    fig3 = plt.figure()
-    ax3 = sns.heatmap(H_model_1)
-    ax3.set_xticklabels( mu_ticks )
-    ax3.set_yticklabels( sigma_ticks, rotation='horizontal' )
+    # get the scaling ratios for any other data that needs to be plotted on top of the heatmap
+    monthly_mu_scale_ratio = num_monthly_mu/(monthly_mu_axis_stop - monthly_mu_axis_start)
+    monthly_sigma_scale_ratio = num_monthly_sigma/(monthly_sigma_axis_stop - monthly_sigma_axis_start)
+    power_law_slopes = np.arange(min_power_law_slope/power_law_slope_spacing, max_power_law_slope/power_law_slope_spacing + 1, 1)*power_law_slope_spacing
+
+    # plot the expected RR50 with corresponding power law curves
+    plt.figure()
+    ax = sns.heatmap(expected_RR50_map, cbar_kws={'label':'estimated expected endpoint response in percentages'})
+    ax.set_xticks(monthly_mu_ticks)
+    ax.set_xticklabels(monthly_mu_tick_labels, rotation='horizontal')
+    ax.set_yticks(monthly_sigma_ticks)
+    ax.set_yticklabels(monthly_sigma_tick_labels, rotation='horizontal')
+    for power_law_slope_index in range(len(power_law_slopes)):
+        power_law_slope = power_law_slopes[power_law_slope_index]
+        power_law_monthly_sigma_array = np.power(monthly_mu_array, power_law_slope)
+        plt.plot(monthly_mu_array*monthly_mu_scale_ratio, (monthly_sigma_axis_stop - power_law_monthly_sigma_array)*monthly_sigma_scale_ratio )
+    plt.legend( [ str(np.round(power_law_slopes[power_law_slope_index], legend_decimal_round)) for power_law_slope_index in range(len(power_law_slopes)) ] )
+    plt.xlabel('monthly seizure count mean')
+    plt.ylabel('monthly seizure count standard deviation')
+    plt.title('Expected RR50 Placebo')
+    plt.savefig(os.getcwd() + '/' + expected_RR50_with_curves_filename + '.png')
+
+    # plot the expected MPC with corresponding power law curves
+    plt.figure()
+    ax = sns.heatmap(expected_MPC_map, cbar_kws={'label':'estimated expected endpoint response in percentages'})
+    ax.set_xticks(monthly_mu_ticks)
+    ax.set_xticklabels(monthly_mu_tick_labels, rotation='horizontal')
+    ax.set_yticks(monthly_sigma_ticks)
+    ax.set_yticklabels(monthly_sigma_tick_labels, rotation='horizontal')
+    for power_law_slope_index in range(len(power_law_slopes)):
+        power_law_slope = power_law_slopes[power_law_slope_index]
+        power_law_monthly_sigma_array = np.power(monthly_mu_array, power_law_slope)
+        plt.plot(monthly_mu_array*monthly_mu_scale_ratio, (monthly_sigma_axis_stop - power_law_monthly_sigma_array)*monthly_sigma_scale_ratio )
+    plt.legend( [ str(np.round(power_law_slopes[power_law_slope_index], legend_decimal_round)) for power_law_slope_index in range(len(power_law_slopes)) ] ) 
+    plt.xlabel('monthly seizure count mean')
+    plt.ylabel('monthly seizure count standard deviation')
+    plt.title('Expected MPC Placebo')
+    plt.savefig(os.getcwd() + '/' + expected_MPC_with_curves_filename + '.png')
+
+    # plot the 2D histogram of Model 1 patients
+    plt.figure()
+    ax = sns.heatmap(H_model_1, cbar_kws={'label':'probability of sampling patient from a point'})
+    ax.set_xticks(monthly_mu_ticks)
+    ax.set_xticklabels(monthly_mu_tick_labels, rotation='horizontal')
+    ax.set_yticks(monthly_sigma_ticks)
+    ax.set_yticklabels(monthly_sigma_tick_labels, rotation='horizontal')
     plt.xlabel('monthly seizure count mean')
     plt.ylabel('monthly seizure count standard deviation')
     plt.title('Model 1 patient population')
-    #fig3.savefig('Model 1 patients 2D Histogram.png')
+    plt.savefig(os.getcwd() + '/' + model_1_2D_hist_filename + '.png')
 
-    fig4 = plt.figure()
-    ax4 = sns.heatmap(H_model_2)
-    ax4.set_xticklabels( mu_ticks )
-    ax4.set_yticklabels( sigma_ticks, rotation='horizontal' )
+    # plot the 2D histogram of Model 2 patients
+    plt.figure()
+    ax = sns.heatmap(H_model_2, cbar_kws={'label':'probability of sampling patient from a point'})
+    ax.set_xticks(monthly_mu_ticks)
+    ax.set_xticklabels(monthly_mu_tick_labels, rotation='horizontal')
+    ax.set_yticks(monthly_sigma_ticks)
+    ax.set_yticklabels(monthly_sigma_tick_labels, rotation='horizontal')
     plt.xlabel('monthly seizure count mean')
     plt.ylabel('monthly seizure count standard deviation')
     plt.title('Model 2 patient population')
-    #fig4.savefig('Model 2 patients 2D Histogram.png')
+    plt.savefig(os.getcwd() + '/' + model_2_2D_hist_filename + '.png')
 
 
 if (__name__ == '__main__'):
-
-    start_time_in_seconds = time.time()
 
     # take in the command-line arguments
     parser = argparse.ArgumentParser()
@@ -580,56 +771,25 @@ if (__name__ == '__main__'):
     args = parser.parse_args()
     arg_array = args.array
 
-    # parameters for defining the x-axis of the maps which correspond to the mean
-    monthly_mu_start = int(arg_array[0])
-    monthly_mu_stop = int(arg_array[1])
-    monthly_mu_step = float(arg_array[2])
-
-    # parameters for defining the x-axis of the maps which correspond to the standard deviation
-    monthly_sigma_start = int(arg_array[3])
-    monthly_sigma_stop = int(arg_array[4])
-    monthly_sigma_step = float(arg_array[5])
-
-    # parameters for creating the expected endpoint response maps
-    num_patients_per_trial = int(arg_array[6])
-    num_trials_per_bin = int(arg_array[7])
-    num_days_per_month = int(arg_array[8])
-    num_months_per_patient_baseline = int(arg_array[9])
-    num_months_per_patient_testing = int(arg_array[10])
-
-    # parameters for generating the synthetic model 1 and model 2 patients
-    num_patients_per_model = int(arg_array[11])
-    num_months_per_patient = int(arg_array[12])
-
-    # parameters for formatting the output
-    model_expected_endpoints_file_name = arg_array[13]
-    expected_endpoints_decimal_round = int(arg_array[14])
-    plots_flag = bool(arg_array[15])
-
     '''
-    monthly_mu_start = 0
-    monthly_mu_stop = 15
-    monthly_mu_step = 1
+    # heatmap parameters
+    monthly_mu_axis_start = 0
+    monthly_mu_axis_stop = 16
+    monthly_mu_axis_step = 1
 
-    monthly_sigma_start = 0
-    monthly_sigma_stop = 15
-    monthly_sigma_step = 1
+    monthly_sigma_axis_start = 0
+    monthly_sigma_axis_stop = 16
+    monthly_sigma_axis_step = 1
 
-    num_patients_per_trial = 150
-    num_trials_per_bin = 30
-    num_days_per_month = 28
+    monthly_mu_tick_spacing = 1
+    monthly_sigma_tick_spacing = 1
+
+    num_patients_per_trial = 153
+    num_trials_per_bin = 100
     num_months_per_patient_baseline = 2
     num_months_per_patient_testing = 3
 
-    num_patients_per_model = 10000
-    num_months_per_patient = 24
-    num_days_per_month = 28
-
-    model_expected_endpoints_file_name = 'model_1_and_model_2_expected_endpoints'
-    expected_endpoints_decimal_round = 3
-    plots_flag = True
-    '''
-
+    # model 1 and model 2 parameters
     shape_1 = 24.143
     scale_1 = 297.366
     alpha_1 = 284.024
@@ -640,38 +800,80 @@ if (__name__ == '__main__'):
     alpha_2 = 296.339
     beta_2 = 243.719
 
-    folder = os.getcwd()
-    model_expected_endpoints_file_path = folder + '/' + model_expected_endpoints_file_name + '.txt'
+    num_patients_per_model = 10000
+    num_months_per_patient = 24
+    num_days_per_month = 28
 
-    [Model_1_expected_RR50, Model_1_expected_MPC, Model_2_expected_RR50, Model_2_expected_MPC, expected_RR50_map, expected_MPC_map, H_model_1, H_model_2] = \
-                generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha_2, beta_2, num_patients_per_model, num_months_per_patient, num_days_per_month,
-                                  monthly_mu_start, monthly_mu_stop, monthly_mu_step, monthly_sigma_start, monthly_sigma_stop, monthly_sigma_step,
-                                  num_patients_per_trial, num_trials_per_bin, num_months_per_patient_baseline, num_months_per_patient_testing)
+    # power law parameters
+    max_power_law_slope = 1.3
+    min_power_law_slope = 0.5
+    power_law_slope_spacing = 0.1
+    legend_decimal_round = 1
 
 
-    text_data =     'Model 1 expected RR50: ' + str(np.round(Model_1_expected_RR50, expected_endpoints_decimal_round)) + \
-                '\n\nModel 1 expected MPC: '  + str(np.round(Model_1_expected_MPC,  expected_endpoints_decimal_round)) + \
-                '\n\nModel 2 expected RR50: ' + str(np.round(Model_2_expected_RR50, expected_endpoints_decimal_round)) + \
-                '\n\nModel 2 expected MPC: '  + str(np.round(Model_2_expected_MPC,  expected_endpoints_decimal_round))                                  
+    # picture file names
+    expected_RR50_filename = 'expected_RR50'
+    expected_MPC_filename = 'expected_MPC'
+    expected_RR50_with_curves_filename = 'expected_RR50_with_power_law_curves'
+    expected_MPC_with_curves_filename = 'expected_MPC_with_power_law_curves'
+    model_1_2D_hist_filename = 'Model_1_2D_histogram'
+    model_2_2D_hist_filename = 'Model_2_2D_histogram'
+    '''
 
-    with open(model_expected_endpoints_file_path, 'w+') as model_expected_endpoint_text_file:
+    # heatmap parameters
+    monthly_mu_axis_start = float(arg_array[0])
+    monthly_mu_axis_stop = float(arg_array[1])
+    monthly_mu_axis_step = float(arg_array[2])
 
-            model_expected_endpoint_text_file.write(text_data)
+    monthly_sigma_axis_start = float(arg_array[3])
+    monthly_sigma_axis_stop = float(arg_array[4])
+    monthly_sigma_axis_step = float(arg_array[5])
 
-    if(plots_flag):
+    monthly_mu_tick_spacing = float(arg_array[6])
+    monthly_sigma_tick_spacing = float(arg_array[7])
 
-        create_plots(expected_RR50_map, expected_MPC_map, H_model_1, H_model_2, 
-                     monthly_mu_start, monthly_mu_stop, monthly_sigma_start, monthly_sigma_stop)
+    num_patients_per_trial = int(arg_array[8])
+    num_trials_per_bin = int(arg_array[9])
+    num_months_per_patient_baseline = int(arg_array[10])
+    num_months_per_patient_testing = int(arg_array[11])
 
-    stop_time_in_seconds = time.time()
-    total_time_in_seconds = stop_time_in_seconds - start_time_in_seconds
-    total_time_in_minutes = total_time_in_seconds/60
+    # model 1 and model 2 parameters
+    shape_1 = 24.143
+    scale_1 = 297.366
+    alpha_1 = 284.024
+    beta_1 = 369.628
 
-    svem = psutil.virtual_memory()
-    total_mem_in_bytes = svem.total
-    available_mem_in_bytes = svem.available
-    used_mem_in_bytes = total_mem_in_bytes - available_mem_in_bytes
-    used_mem_in_gigabytes = used_mem_in_bytes/np.power(1024, 3)
+    shape_2 = 111.313
+    scale_2 = 296.728
+    alpha_2 = 296.339
+    beta_2 = 243.719
 
-    print('\n\ntotal time in minutes: ' + str(total_time_in_minutes) + 
-           '\nmemory used in GB: ' + str(used_mem_in_gigabytes) + '\n\n')
+    num_patients_per_model = int(arg_array[12])
+    num_months_per_patient = int(arg_array[13])
+    num_days_per_month = int(arg_array[14])
+
+    # power law parameters
+    max_power_law_slope = float(arg_array[15])
+    min_power_law_slope = float(arg_array[16])
+    power_law_slope_spacing = float(arg_array[17])
+    legend_decimal_round = int(arg_array[18])
+
+    # picture file names
+    expected_RR50_filename = arg_array[19]
+    expected_MPC_filename = arg_array[20]
+    expected_RR50_with_curves_filename = arg_array[21]
+    expected_MPC_with_curves_filename = arg_array[22]
+    model_1_2D_hist_filename = arg_array[23]
+    model_2_2D_hist_filename = arg_array[24]
+
+    plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha_2, beta_2, 
+                                            num_patients_per_model, num_months_per_patient, num_days_per_month,
+                                            monthly_mu_axis_start, monthly_mu_axis_stop, monthly_mu_axis_step, 
+                                            monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step, 
+                                            monthly_mu_tick_spacing, monthly_sigma_tick_spacing,
+                                            num_patients_per_trial, num_trials_per_bin, 
+                                            num_months_per_patient_baseline, num_months_per_patient_testing,
+                                            max_power_law_slope, min_power_law_slope, power_law_slope_spacing, legend_decimal_round,
+                                            expected_RR50_filename, expected_MPC_filename, 
+                                            expected_RR50_with_curves_filename, expected_MPC_with_curves_filename, 
+                                            model_1_2D_hist_filename, model_2_2D_hist_filename)

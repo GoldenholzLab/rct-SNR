@@ -31,4 +31,4 @@ inputs[12]=1000
 inputs[13]="Gaussianity_map"
 inputs[14]="Gaussianity_map_with_models"
 
-python lemma_check_v2.py ${inputs[@]}
+srun -c 1 python lemma_check.py ${inputs[@]}
