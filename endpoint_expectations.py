@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import argparse
+import time
+import psutil
 
 
 def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_trial, num_trials_per_bin,
@@ -765,6 +767,8 @@ def plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, sh
 
 if (__name__ == '__main__'):
 
+    start_time_in_seconds = time.time()
+
     # take in the command-line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('array', nargs='+')
@@ -877,3 +881,15 @@ if (__name__ == '__main__'):
                                             expected_RR50_filename, expected_MPC_filename, 
                                             expected_RR50_with_curves_filename, expected_MPC_with_curves_filename, 
                                             model_1_2D_hist_filename, model_2_2D_hist_filename)
+    
+    stop_time_in_seconds = time.time()
+
+    total_time_in_minutes = (stop_time_in_seconds - start_time_in_seconds)/60
+
+    svem = psutil.virtual_memory()
+    total_mem_in_bytes = svem.total
+    available_mem_in_bytes = svem.available
+    used_mem_in_bytes = total_mem_in_bytes - available_mem_in_bytes
+    used_mem_in_gigabytes = used_mem_in_bytes/np.power(1024, 3)
+
+    print('\n\ncpu time in minutes: ' + str(total_time_in_minutes) + '\nmemory usage in GB: ' + str(used_mem_in_gigabytes) + '\n' )
