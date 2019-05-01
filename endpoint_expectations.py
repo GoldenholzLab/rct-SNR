@@ -788,55 +788,6 @@ if (__name__ == '__main__'):
     args = parser.parse_args()
     arg_array = args.array
 
-    '''
-    # heatmap parameters
-    monthly_mu_axis_start = 0
-    monthly_mu_axis_stop = 16
-    monthly_mu_axis_step = 1
-
-    monthly_sigma_axis_start = 0
-    monthly_sigma_axis_stop = 16
-    monthly_sigma_axis_step = 1
-
-    monthly_mu_tick_spacing = 1
-    monthly_sigma_tick_spacing = 1
-
-    num_patients_per_trial = 153
-    num_trials_per_bin = 100
-    num_months_per_patient_baseline = 2
-    num_months_per_patient_testing = 3
-
-    # model 1 and model 2 parameters
-    shape_1 = 24.143
-    scale_1 = 297.366
-    alpha_1 = 284.024
-    beta_1 = 369.628
-
-    shape_2 = 111.313
-    scale_2 = 296.728
-    alpha_2 = 296.339
-    beta_2 = 243.719
-
-    num_patients_per_model = 10000
-    num_months_per_patient = 24
-    num_days_per_month = 28
-
-    # power law parameters
-    max_power_law_slope = 1.3
-    min_power_law_slope = 0.5
-    power_law_slope_spacing = 0.1
-    legend_decimal_round = 1
-
-
-    # picture file names
-    expected_RR50_filename = 'expected_RR50'
-    expected_MPC_filename = 'expected_MPC'
-    expected_RR50_with_curves_filename = 'expected_RR50_with_power_law_curves'
-    expected_MPC_with_curves_filename = 'expected_MPC_with_power_law_curves'
-    model_1_2D_hist_filename = 'Model_1_2D_histogram'
-    model_2_2D_hist_filename = 'Model_2_2D_histogram'
-    '''
-
     # heatmap parameters
     monthly_mu_axis_start = float(arg_array[0])
     monthly_mu_axis_stop = float(arg_array[1])
