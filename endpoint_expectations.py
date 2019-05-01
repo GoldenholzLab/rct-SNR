@@ -8,7 +8,8 @@ import psutil
 
 
 def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_trial, num_trials_per_bin,
-                                num_months_per_patient_baseline, num_months_per_patient_testing):
+                                num_months_per_patient_baseline, num_months_per_patient_testing,
+                                min_required_baseline_seizures):
     '''
 
     Inputs:
@@ -34,6 +35,10 @@ def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_tria
             (int) - 
         
         6) num_months_per_patient_testing:
+
+            (int) - 
+        
+        7) min_required_baseline_seizures:
 
             (int) - 
 
@@ -76,27 +81,35 @@ def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_tria
             # for every trial...
             for trial_index in range(num_trials_per_bin):
 
-                # initialize the 2D array of monthly counts from multiple patients over one trial
-                monthly_counts = np.zeros((num_patients_per_trial, num_months_per_patient_total))
+                acceptable_baseline_rate = False
+            
+                while(not acceptable_baseline_rate):
 
-                # for each individual patient
-                for patient_index in range(num_patients_per_trial):
+                    # initialize the 2D array of monthly counts from multiple patients over one trial
+                    monthly_counts = np.zeros((num_patients_per_trial, num_months_per_patient_total))
 
-                    # for each month in each individual patient's diary
-                    for month_index in range(num_months_per_patient_total):
+                    # for each individual patient
+                    for patient_index in range(num_patients_per_trial):
 
-                        # generate a monthly count according to gamma-poisson mixture
-                        monthly_rate = np.random.gamma(1/monthly_alpha, monthly_alpha*monthly_mu)
-                        monthly_count = np.random.poisson(monthly_rate)
+                        # for each month in each individual patient's diary
+                        for month_index in range(num_months_per_patient_total):
 
-                        # store the monthly count
-                        monthly_counts[patient_index, month_index] = monthly_count 
+                            # generate a monthly count according to gamma-poisson mixture
+                            monthly_rate = np.random.gamma(1/monthly_alpha, monthly_alpha*monthly_mu)
+                            monthly_count = np.random.poisson(monthly_rate)
+
+                            # store the monthly count
+                            monthly_counts[patient_index, month_index] = monthly_count 
+
+                    if( np.sum(monthly_counts[patient_index, 0:num_months_per_patient_baseline]) >= min_required_baseline_seizures ):
+
+                        acceptable_baseline_rate = True
 
                 # separate the monthly counts into baseline and testing periods
                 baseline_monthly_counts = monthly_counts[:, 0:num_months_per_patient_baseline]
                 testing_monthly_counts = monthly_counts[:, num_months_per_patient_baseline:]
         
-                # calculate the seizure frequencies of the basline and test period for each patient
+                # calculate the seizure frequencies of the baseline and test period for each patient
                 baseline_monthly_frequencies = np.mean(baseline_monthly_counts, 1)
                 testing_monthly_frequencies = np.mean(testing_monthly_counts, 1)
 
@@ -141,7 +154,8 @@ def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_tria
 def generate_expected_endpoint_maps(monthly_mu_axis_start, monthly_mu_axis_stop, monthly_mu_axis_step, 
                                     monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step, 
                                     num_patients_per_trial, num_trials_per_bin,
-                                    num_months_per_patient_baseline, num_months_per_patient_testing):
+                                    num_months_per_patient_baseline, num_months_per_patient_testing,
+                                    min_required_baseline_seizures):
 
     '''
 
@@ -185,7 +199,11 @@ def generate_expected_endpoint_maps(monthly_mu_axis_start, monthly_mu_axis_stop,
         
         10) num_months_per_patient_testing:
 
-            (float) - 
+            (int) - 
+        
+        11) min_required_baseline_seizures:
+
+            (int) - 
 
     Outputs:
     
@@ -235,12 +253,13 @@ def generate_expected_endpoint_maps(monthly_mu_axis_start, monthly_mu_axis_stop,
 
             # actually calculate the expected RR50 as well as the expected MPC
             [expected_RR50, expected_MPC] = estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_trial, num_trials_per_bin,
-                                                                        num_months_per_patient_baseline, num_months_per_patient_testing)
+                                                                        num_months_per_patient_baseline, num_months_per_patient_testing,
+                                                                        min_required_baseline_seizures)
             
-            print('\n\nmonthly mean: '               + str(np.round(monthly_mu))    + 
-                    '\nmonthly standard deviation: ' + str(np.round(monthly_sigma)) + 
-                    '\nexpected RR50: '              + str(np.round(expected_RR50)) + 
-                    '\nexpected MPC: '               + str(np.round(expected_MPC))    )
+            print('\n\nmonthly mean: '               + str(np.round(monthly_mu, 2))    + 
+                    '\nmonthly standard deviation: ' + str(np.round(monthly_sigma, 2)) + 
+                    '\nexpected RR50: '              + str(np.round(expected_RR50, 2)) + 
+                    '\nexpected MPC: '               + str(np.round(expected_MPC, 2))    )
             
             # store the expected RR50 and expected MPC into their respective 2D arrays
             expected_RR50_map[monthly_sigma_index, monthly_mu_index] = expected_RR50
@@ -326,7 +345,8 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha
                         monthly_mu_axis_start, monthly_mu_axis_stop, monthly_mu_axis_step, 
                         monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step,
                         num_patients_per_trial, num_trials_per_bin,
-                        num_months_per_patient_baseline, num_months_per_patient_testing):
+                        num_months_per_patient_baseline, num_months_per_patient_testing,
+                        min_required_baseline_seizures):
 
     '''
 
@@ -415,6 +435,10 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha
         21) num_months_per_patient_testing:
 
             (int) - 
+        
+        22) min_required_baseline_seizures:
+
+            (int) - 
 
     Outputs:
     
@@ -469,7 +493,8 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha
         generate_expected_endpoint_maps(monthly_mu_axis_start, monthly_mu_axis_stop, monthly_mu_axis_step, 
                                         monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step, 
                                         num_patients_per_trial, num_trials_per_bin,
-                                        num_months_per_patient_baseline, num_months_per_patient_testing)
+                                        num_months_per_patient_baseline, num_months_per_patient_testing,
+                                        min_required_baseline_seizures)
 
     # generate Model 1 patients
     [model_1_monthly_count_averages, model_1_monthly_count_standard_deviations] = \
@@ -515,7 +540,7 @@ def plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, sh
                                             monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step, 
                                             monthly_mu_tick_spacing, monthly_sigma_tick_spacing,
                                             num_patients_per_trial, num_trials_per_bin, 
-                                            num_months_per_patient_baseline, num_months_per_patient_testing,
+                                            num_months_per_patient_baseline, num_months_per_patient_testing, min_required_baseline_seizures, 
                                             max_power_law_slope, min_power_law_slope, power_law_slope_spacing, legend_decimal_round,
                                             expected_RR50_filename, expected_MPC_filename, 
                                             expected_RR50_with_curves_filename, expected_MPC_with_curves_filename, 
@@ -608,48 +633,52 @@ def plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, sh
         21) num_months_per_patient_testing:
 
             (int) - 
-        
-        22) max_power_law_slope:
-        
-            (float) - 
-        
-        23) min_power_law_slope:
-    
-            (float) - 
 
-        24) power_law_slope_spacing:
-        
-            (float) -  
-        
-        25) legend_decimal_round:
+        22) min_required_baseline_seizures:
 
             (int) - 
         
-        26) expected_RR50_filename:
+        23) max_power_law_slope:
+        
+            (float) - 
+        
+        24) min_power_law_slope:
+    
+            (float) - 
+
+        25) power_law_slope_spacing:
+        
+            (float) -  
+        
+        26) legend_decimal_round:
+
+            (int) - 
+        
+        27) expected_RR50_filename:
         
             (string) - 
         
-        27) expected_MPC_filename:
+        28) expected_MPC_filename:
 
             (string) - 
         
-        28) expected_RR50_with_curves_filename:
+        29) expected_RR50_with_curves_filename:
         
             (string) - 
         
-        29) expected_MPC_with_curves_filename:
+        30) expected_MPC_with_curves_filename:
 
             (string) - 
                                         
-        30) model_1_2D_hist_filename:
+        31) model_1_2D_hist_filename:
         
             (string) - 
         
-        31) model_2_2D_hist_filename:
+        32) model_2_2D_hist_filename:
 
             (string) - 
         
-        32) model_expected_endpoints_filename:
+        33) model_expected_endpoints_filename:
 
             (string) - 
 
@@ -667,7 +696,8 @@ def plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, sh
                         monthly_mu_axis_start, monthly_mu_axis_stop, monthly_mu_axis_step, 
                         monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step,
                         num_patients_per_trial, num_trials_per_bin,
-                        num_months_per_patient_baseline, num_months_per_patient_testing)
+                        num_months_per_patient_baseline, num_months_per_patient_testing,
+                        min_required_baseline_seizures)
 
     # generate the tick labels for the monthly mean axis as well as for the monthly standard deviation axis
     # the tick labels are distinctly different from the actual ticks
@@ -804,6 +834,7 @@ if (__name__ == '__main__'):
     num_trials_per_bin = int(arg_array[9])
     num_months_per_patient_baseline = int(arg_array[10])
     num_months_per_patient_testing = int(arg_array[11])
+    min_required_baseline_seizures = int(arg_array[12])
 
     # model 1 and model 2 parameters
     shape_1 = 24.143
@@ -816,24 +847,24 @@ if (__name__ == '__main__'):
     alpha_2 = 296.339
     beta_2 = 243.719
 
-    num_patients_per_model = int(arg_array[12])
-    num_months_per_patient = int(arg_array[13])
-    num_days_per_month = int(arg_array[14])
+    num_patients_per_model = int(arg_array[13])
+    num_months_per_patient = int(arg_array[14])
+    num_days_per_month = int(arg_array[15])
 
     # power law parameters
-    max_power_law_slope = float(arg_array[15])
-    min_power_law_slope = float(arg_array[16])
-    power_law_slope_spacing = float(arg_array[17])
-    legend_decimal_round = int(arg_array[18])
+    max_power_law_slope = float(arg_array[16])
+    min_power_law_slope = float(arg_array[17])
+    power_law_slope_spacing = float(arg_array[18])
+    legend_decimal_round = int(arg_array[19])
 
     # picture file names
-    expected_RR50_filename = arg_array[19]
-    expected_MPC_filename = arg_array[20]
-    expected_RR50_with_curves_filename = arg_array[21]
-    expected_MPC_with_curves_filename = arg_array[22]
-    model_1_2D_hist_filename = arg_array[23]
-    model_2_2D_hist_filename = arg_array[24]
-    model_expected_endpoints_filename = arg_array[25]
+    expected_RR50_filename = arg_array[20]
+    expected_MPC_filename = arg_array[21]
+    expected_RR50_with_curves_filename = arg_array[22]
+    expected_MPC_with_curves_filename = arg_array[23]
+    model_1_2D_hist_filename = arg_array[24]
+    model_2_2D_hist_filename = arg_array[25]
+    model_expected_endpoints_filename = arg_array[26]
 
     plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha_2, beta_2, 
                                             num_patients_per_model, num_months_per_patient, num_days_per_month,
@@ -841,7 +872,7 @@ if (__name__ == '__main__'):
                                             monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step, 
                                             monthly_mu_tick_spacing, monthly_sigma_tick_spacing,
                                             num_patients_per_trial, num_trials_per_bin, 
-                                            num_months_per_patient_baseline, num_months_per_patient_testing,
+                                            num_months_per_patient_baseline, num_months_per_patient_testing, min_required_baseline_seizures,
                                             max_power_law_slope, min_power_law_slope, power_law_slope_spacing, legend_decimal_round,
                                             expected_RR50_filename, expected_MPC_filename, 
                                             expected_RR50_with_curves_filename, expected_MPC_with_curves_filename, 
