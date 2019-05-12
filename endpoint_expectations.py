@@ -808,6 +808,7 @@ def plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, sh
 
         text_file.write(data)
 
+
 if (__name__ == '__main__'):
 
     start_time_in_seconds = time.time()
