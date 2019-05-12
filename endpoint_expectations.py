@@ -81,15 +81,15 @@ def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_tria
             # for every trial...
             for trial_index in range(num_trials_per_bin):
 
-                acceptable_baseline_rate = False
+                # initialize the 2D array of monthly counts from multiple patients over one trial
+                monthly_counts = np.zeros((num_patients_per_trial, num_months_per_patient_total))
+
+                # for each individual patient
+                for patient_index in range(num_patients_per_trial):
+
+                    acceptable_baseline_rate = False
             
-                while(not acceptable_baseline_rate):
-
-                    # initialize the 2D array of monthly counts from multiple patients over one trial
-                    monthly_counts = np.zeros((num_patients_per_trial, num_months_per_patient_total))
-
-                    # for each individual patient
-                    for patient_index in range(num_patients_per_trial):
+                    while(not acceptable_baseline_rate):
 
                         # for each month in each individual patient's diary
                         for month_index in range(num_months_per_patient_total):
@@ -101,9 +101,9 @@ def estimate_expected_endpoints(monthly_mu, monthly_sigma, num_patients_per_tria
                             # store the monthly count
                             monthly_counts[patient_index, month_index] = monthly_count 
 
-                    if( np.sum(monthly_counts[patient_index, 0:num_months_per_patient_baseline]) >= min_required_baseline_seizures ):
+                        if( np.sum(monthly_counts[patient_index, 0:num_months_per_patient_baseline]) >= min_required_baseline_seizures ):
 
-                        acceptable_baseline_rate = True
+                            acceptable_baseline_rate = True
 
                 # separate the monthly counts into baseline and testing periods
                 baseline_monthly_counts = monthly_counts[:, 0:num_months_per_patient_baseline]
@@ -736,7 +736,7 @@ def plot_expected_endpoint_maps_and_models(shape_1, scale_1, alpha_1, beta_1, sh
     plt.title('Expected MPC Placebo')
     plt.savefig(os.getcwd() + '/' + expected_MPC_filename + '.png')
 
-    # get the scaling ratios for any other data that needs to be plotted on top of the heatmap
+    # get the scaling ratios for any other data that needs to be plotted on top of the heatmaps
     monthly_mu_scale_ratio = num_monthly_mu/(monthly_mu_axis_stop - monthly_mu_axis_start)
     monthly_sigma_scale_ratio = num_monthly_sigma/(monthly_sigma_axis_stop - monthly_sigma_axis_start)
     power_law_slopes = np.arange(min_power_law_slope/power_law_slope_spacing, max_power_law_slope/power_law_slope_spacing + 1, 1)*power_law_slope_spacing
