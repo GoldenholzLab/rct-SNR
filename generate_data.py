@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import json
+import pandas as pd
 
 def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients, 
                                    num_baseline_days, num_testing_days, 
@@ -216,7 +217,7 @@ def estimate_expected_endpoints(monthly_mean, monthly_std_dev,
 
     '''
 
-    if(monthly_std_dev >= np.sqrt(monthly_mean)):
+    if(monthly_std_dev > np.sqrt(monthly_mean)):
 
         # convert the monthly mean and monthly standard deviation into a daily mean and daily standard deviation
         daily_mean = monthly_mean/28
@@ -264,6 +265,58 @@ def estimate_expected_endpoints(monthly_mean, monthly_std_dev,
         return [np.nan, np.nan]
 
 
+def generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,    step_monthly_mean, 
+                                    start_monthly_std_dev,    stop_monthly_std_dev, step_monthly_std_dev,
+                                    num_baseline_months,      num_testing_months,   min_req_base_sz_count, 
+                                    num_patients_per_trial,   num_trials):
+
+    monthly_mean_array = np.arange(start_monthly_mean, stop_monthly_mean + step_monthly_mean, step_monthly_mean)
+    monthly_std_dev_array = np.arange(start_monthly_std_dev, stop_monthly_std_dev + step_monthly_std_dev, step_monthly_std_dev)
+
+    monthly_std_dev_array = np.flip(monthly_std_dev_array, 0)
+
+    num_monthly_means = len(monthly_mean_array)
+    num_monthly_std_devs = len(monthly_std_dev_array)
+
+    expected_RR50_endpoint_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    expected_MPC_endpoint_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+
+    for monthly_std_dev_index in range(num_monthly_std_devs):
+
+        for monthly_mean_index in range(num_monthly_means):
+
+            monthly_mean = monthly_mean_array[monthly_mean_index]
+            monthly_std_dev = monthly_std_dev_array[monthly_std_dev_index]
+
+            [expected_RR50, expected_MPC] =  \
+                estimate_expected_endpoints(monthly_mean, monthly_std_dev, 
+                                            num_baseline_months, num_testing_months, 
+                                            min_req_base_sz_count, num_patients_per_trial, num_trials)
+
+            expected_RR50_endpoint_map[monthly_std_dev_index, monthly_mean_index] = expected_RR50
+            expected_MPC_endpoint_map[monthly_std_dev_index, monthly_mean_index] = expected_MPC
+
+            RR50_string = str(np.round(expected_RR50, 2))
+            MPC_string = str(np.round(expected_MPC, 2))
+            monthly_mean_string = str(np.round(monthly_mean, 2))
+            monthly_std_dev_string = str(np.round(monthly_std_dev, 2))
+            orientation_string = 'monthly mean, monthly standard deviation: (' + monthly_mean_string + ', ' + monthly_std_dev_string + ')'
+            data_string = '\n\n' + orientation_string + ':\nexpected RR50: ' +  RR50_string + '\nexpected MPC: ' +  MPC_string
+
+            print(data_string)
+    
+    return [expected_RR50_endpoint_map, expected_MPC_endpoint_map]
+
+
+
+start_monthly_mean = 0
+stop_monthly_mean = 16
+step_monthly_mean = 1
+
+start_monthly_std_dev = 0
+stop_monthly_std_dev = 16
+step_monthly_std_dev = 1
+
 monthly_mean = 8.7
 monthly_std_dev = 2.95
 num_baseline_months = 2
@@ -272,12 +325,13 @@ min_req_base_sz_count = 4
 num_patients_per_trial = 153
 num_trials = 100
 
-[expected_RR50, expected_MPC] =  \
-    estimate_expected_endpoints(monthly_mean, monthly_std_dev, 
-                                num_baseline_months, num_testing_months, 
-                                min_req_base_sz_count, num_patients_per_trial, num_trials)
-    
+[expected_RR50_endpoint_map, expected_MPC_endpoint_map] = \
+    generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,    step_monthly_mean, 
+                                    start_monthly_std_dev,    stop_monthly_std_dev, step_monthly_std_dev,
+                                    num_baseline_months,      num_testing_months,   min_req_base_sz_count, 
+                                    num_patients_per_trial,   num_trials)
 
+print('\n\n' + pd.DataFrame(expected_RR50_endpoint_map).to_string() + '\n\n' + pd.DataFrame(expected_MPC_endpoint_map).to_string() + '\n\n')
 
 
 
