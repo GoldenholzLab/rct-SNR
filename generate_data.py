@@ -1,90 +1,70 @@
 import numpy as np
 import os
 import json
-import pandas as pd
 
-def generate_patients(mean, std_dev, num_patients, 
-                      num_baseline_intervals, num_testing_intervals, 
-                      min_req_base_sz_count, time_scale_const):
+def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients, 
+                                   num_baseline_days, num_testing_days, 
+                                   min_req_base_sz_count):
     '''
 
-    This function generates an array of seizure diaries, where the mean and standard deviation of the seizure counts for each individual 
-
-    seizure diary are the same across all seizure diaries. Furthermore, the seizure diaries are designed to be split up into a baseline
-
-    and testing period, and are generated such that the number of baseline seizure counts each patient has will not be below an integer
-
-    specififed by the user, in order to enforce eligibility criteria. 
-
-        If for some reason the seizure diaries need to be on a different time scale than the time scale that the mean and standard deviation 
-        
-    were specified on, then the timescale constant can be set to a positive number other than its default of 1. For example, if the mean and 
+    This function generates an array of equal-length daily seizure diaries, where the mean and standard deviation of the daily seizure 
     
-    standard deviation are specified for monthly seizure counts, but the seizure diaries need to contain daily seizure counts instead, than the 
+    counts for each individual seizure diary are the same across all seizure diaries. Furthermore, the seizure diaries are designed to 
     
-    timescale constant can be set to 1/28 in otder to generate daily seizure diaries. Vice versa, if the mean and standard deviation are for daily 
+    be split up into a baseline and testing period, and are generated such that the number of baseline seizure counts each patient has 
     
-    seizure counts, and monthly seizure diaries are needed, than the timescale constant can be set to 28 to get monthly seizure diaries. The number
+    will not be below an integer specififed by the user, in order to enforce eligibility criteria. 
 
-    of baseline intervals and the number of testing intervals should both be adjusted appropriately.
 
     Inputs:
 
-        1) mean:
+        1) daily_mean:
 
-            (float) - the mean of the seizure counts in each patient's seizure diary
+            (float) - the mean of the daily seizure counts in each patient's seizure diary
 
-        2) std_dev:
+        2) daily_std_dev:
 
-            (float) - the standard deviation of the seizure counts in each patient's seizure diary
+            (float) - the standard deviation of the daily seizure counts in each patient's seizure diary
 
         3) num_patients:
 
             (int) - the number of seizure diaries in this array of seizure diaries
         
-        4) num_baseline_intervals:
+        4) num_baseline_days:
 
-            (int) - the number of baseline intervals in each patient's seizure diary
+            (int) - the number of baseline days in each patient's seizure diary
         
-        5) num_testing_intervals:
+        5) num_testing_days:
 
-            (int) - the number of testing intervals in each patient's seizure diary
+            (int) - the number of testing days in each patient's seizure diary
         
         6) min_req_base_sz_count:
 
             (int) - the minimum number of required baseline seizure counts
         
-        7) time_scale_const:
-
-            (float) - a number by which the timescale of the seizure diaries can be adjusted 
-                      
-                      to be different from the mean and standard deviation specified; if the 
-
-                      time scales do not need to be adjusted, this parameter should be set to 1
-
     Outputs:
 
-        1) seizure_diaries:
+        1) daily_seizure_diaries:
 
-            (2D Numpy array) - the array of seizure diaries in the form of a 2D Numpy array,
+            (2D Numpy array) - the array of daily seizure diaries in the form of a 2D Numpy array,
                                
                                the first dimension corresponds to the patient number while the
 
-                               second dimension refers to the interval of the seizure count being
+                               second dimension refers to the days of the seizure count being
 
                                accessed
 
     '''
-    # calculate the total number of intervals from the number of baseline and testing intervals
-    num_total_intervals = num_baseline_intervals + num_testing_intervals
+    # calculate the total number of days from the number of baseline and testing intervals
+    num_total_days = num_baseline_days + num_testing_days
 
-    # initialize 2D array of seizure diaries for all patients
-    seizure_diaries = np.zeros((num_patients, num_total_intervals))
+    # initialize 2D array of daily seizure diaries for all patients
+    daily_seizure_diaries = np.zeros((num_patients, num_total_days))
 
-    # calculate the overdispersion parameter
-    mean_squared = np.power(mean, 2)
-    var = np.power(std_dev, 2)
-    overdispersion = (var  - mean)/mean_squared
+    # calculate the daily overdispersion parameter
+    daily_mean_squared = np.power(daily_mean, 2)
+    daily_var = np.power(daily_std_dev, 2)
+    daily_overdispersion = (daily_var  - daily_mean)/daily_mean_squared
 
     # for each patient in the array of seizure diaries
     for patient_index in range(num_patients):
@@ -97,29 +77,214 @@ def generate_patients(mean, std_dev, num_patients,
         while(not acceptable_baseline_counts):
 
             # for each interval in this patient's seizure diary
-            for interval_index in range(num_total_intervals):
+            for day_index in range(num_total_days):
 
-                # generate seizure counts according to negative binomial distribution, as
-                # implemented by negative binomial
-                rate = np.random.gamma(time_scale_const/overdispersion, overdispersion*mean)
-                count = np.random.poisson(rate)
+                # generate daily seizure counts according to negative binomial distribution, as implemented by Gamma-Poisson mixture
+                daily_rate = np.random.gamma(1/daily_overdispersion, daily_overdispersion*daily_mean)
+                daily_count = np.random.poisson(daily_rate)
 
                 # store each seizure count in each respective patient's seizure diary
-                seizure_diaries[patient_index, interval_index] = count
+                daily_seizure_diaries[patient_index, day_index] = daily_count
             
-            # if the summation of all seizures in the baseline is greater than or equal to the minimum required
-            # number of baseline seizure counts
-            if( np.sum( seizure_diaries[patient_index, 0:num_baseline_intervals] ) >= min_req_base_sz_count ):
+            # if the summation of all seizures in the baseline is greater than or equal to the minimum required number of baseline seizure counts
+            if( np.sum( daily_seizure_diaries[patient_index, 0:num_baseline_days] ) >= min_req_base_sz_count ):
 
                 # say that this patient satsifies the eligibility criteria
                 acceptable_baseline_counts = True
     
-    return seizure_diaries
+    return daily_seizure_diaries
+
+
+def calculate_percent_changes(daily_seizure_diaries, num_baseline_days, num_patients):
+    '''
+
+    This function calculates the percent change per patient given a set of equal-length daily
+
+    seizure diaries.
+
+    Inputs:
+
+        1) daily_seizure_diaries:
+
+            (2D Numpy array) - the array of daily seizure diaries in the form of a 2D Numpy array,
+                               
+                               the first dimension corresponds to the patient number while the
+
+                               second dimension refers to the days of the seizure count being
+
+                               accessed
         
+        2) num_baseline_days:
 
-def 
+            (int) - (int) - the number of baseline dayss in each patient's seizure diary
+
+        3) num_patients:
+
+            (int) - the number of seizure diaries in this array of seizure diaries
+
+    Outputs:
+
+        1) percent_changes:
+
+            (1D Numpy array) - an array of percent changes, one percent change for each patient
+                               
+                               with a seizure diary
+
+    '''
+
+    # separate the daily seizure diaries into baseline and testing periods
+    baseline_daily_seizure_diaries = daily_seizure_diaries[:, 0:num_baseline_days]
+    testing_daily_seizure_diaries = daily_seizure_diaries[:, num_baseline_days:]
+
+    # calculate the seizure frequencies for the baseline and testing period of each patient's seizure daily seizure diary
+    baseline_daily_seizure_frequencies = np.mean(baseline_daily_seizure_diaries, 1)
+    testing_daily_seizure_frequencies = np.mean(testing_daily_seizure_diaries, 1)
+
+    # for each patient' seizure diary
+    for patient_index in range(num_patients):
+
+        # if the baseline seizure frequency is zero
+        if(baseline_daily_seizure_frequencies[patient_index] == 0):
+
+            # set it to a really small number to avoid divide-by-zero errors when calculating the percent changes
+            baseline_daily_seizure_frequencies[patient_index] = 0.000000001
+
+    # calculate the percent changes (percent change per patient)
+    percent_changes = np.divide(baseline_daily_seizure_frequencies - testing_daily_seizure_frequencies, baseline_daily_seizure_frequencies)
+
+    return percent_changes
 
 
+def estimate_expected_endpoints(monthly_mean, monthly_std_dev, 
+                                num_baseline_months, num_testing_months, 
+                                min_req_base_sz_count, num_patients_per_trial, num_trials):
+    '''
+
+    This function estimates what the expected placebo response should be for a patient with a
+
+    monthly mean and monthly standard deviation as specified by the input parameters. This function 
+
+    will just return NaN if the standard deviation is less than the square root of the mean due to
+
+    mathematical restrictions on the negative binomial distribution which is generating all these
+
+    seizure counts.
+
+    Inputs:
+
+        1) monthly_mean:
+
+            (float) - the mean of the monthly seizure counts in each patient's seizure diary
+
+        2) monthly_std_dev:
+
+            (float) - the standard deviation of the monthly seizure counts in each patient's seizure diary
+
+        3) num_baseline_months:
+        
+            (int) - the number of baseline months in each patient's seizure diary
+
+        4) num_testing_months:
+
+            (int) - the number of testing months in each patient's seizure diary
+
+        5) min_req_base_sz_count:
+
+            (int) - the minimum number of required baseline seizure counts
+
+        6) num_patients_per_trial:
+
+            (int) - the number of patients generated per trial
+
+        7) num_trials:
+
+            (int) -  the number of trials used to estimate the expected endpoints
+    
+    Outputs:
+
+        1) expected_RR50:
+
+            (float) - the 50% responder rate which is expected from an individual with this specific 
+
+                      monthly mean and monthly standard deviation
+        
+        1) expected_MPC:
+
+            (float) - the median percent change which is expected from an individual with this specific 
+
+                      monthly mean and monthly standard deviation
+
+    '''
+
+    if(monthly_std_dev >= np.sqrt(monthly_mean)):
+
+        # convert the monthly mean and monthly standard deviation into a daily mean and daily standard deviation
+        daily_mean = monthly_mean/28
+        daily_std_dev = monthly_std_dev/np.sqrt(28)
+
+        # convert the the number of baseline months and testing months into baseline days and testing days
+        num_baseline_days = num_baseline_months*28
+        num_testing_days = num_testing_months*28
+
+        # initialize the array that will contain the 50% responder rates and median percent changes from every trial
+        RR50_array = np.zeros(num_trials)
+        MPC_array = np.zeros(num_trials)
+
+        # for every trial:
+        for trial_index in range(num_trials):
+
+            # generate one set of daily seizure diaries for each trial
+            '''
+            In the future, I will create two sets of diaries: one from placebo arm and one from drug arm.
+            '''
+            daily_seizure_diaries = \
+                generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients_per_trial, 
+                                               num_baseline_days, num_testing_days, 
+                                               min_req_base_sz_count)
+
+            # calculate the percent changes
+            percent_changes = calculate_percent_changes(daily_seizure_diaries, num_baseline_days, num_patients_per_trial)
+
+            # calculate the endpoints for this trial
+            RR50 = 100*np.sum(percent_changes >= 0.5)/num_patients_per_trial
+            MPC = 100*np.median(percent_changes)
+
+            # store the endpoints in their respective arrays
+            RR50_array[trial_index] = RR50
+            MPC_array[trial_index] = MPC
+
+        # calculate the means of the endpoints over all trials
+        expected_RR50 = np.mean(RR50_array)
+        expected_MPC = np.mean(MPC_array)
+
+        return [expected_RR50, expected_MPC]
+    
+    else:
+
+        return [np.nan, np.nan]
+
+
+monthly_mean = 8.7
+monthly_std_dev = 2.95
+num_baseline_months = 2
+num_testing_months = 3
+min_req_base_sz_count = 4
+num_patients_per_trial = 153
+num_trials = 100
+
+[expected_RR50, expected_MPC] =  \
+    estimate_expected_endpoints(monthly_mean, monthly_std_dev, 
+                                num_baseline_months, num_testing_months, 
+                                min_req_base_sz_count, num_patients_per_trial, num_trials)
+    
+
+
+
+
+
+
+
+'''
 def generate_map(start_monthly_mu,    stop_monthly_mu,    step_monthly_mu, 
                  start_monthly_sigma, stop_monthly_sigma, step_monthly_sigma):
 
@@ -171,7 +336,6 @@ def store_map(data_map,
         json.dump(metadata.tolist(), map_metadata_storage_file)
 
 
-
 start_monthly_mu = 0
 stop_monthly_mu = 16
 step_monthly_mu = 1
@@ -190,5 +354,4 @@ store_map(test_map,
           test_map_file_name, test_map_metadata_file_name,
           start_monthly_mu,    stop_monthly_mu,    step_monthly_mu,
           start_monthly_sigma, stop_monthly_sigma, step_monthly_sigma)
-
-
+'''
