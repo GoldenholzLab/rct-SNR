@@ -267,18 +267,37 @@ def plot_map(data_map_file_name,
     fig.savefig( data_plot_file_path )
 
 
-data_map_file_name = 'test_map'
-data_map_metadata_file_name = 'test_map_metadata'
-data_plot_file_name = 'test_plot'
+expected_RR50_file_name = 'expected_RR50_map'
+expected_RR50_metadata_file_name = 'expected_RR50_map_metadata'
+expected_RR50_plot_file_name = 'expected_RR50_plot'
+
+expected_MPC_file_name = 'expected_MPC_map'
+expected_MPC_metadata_file_name = 'expected_MPC_map_metadata'
+expected_MPC_plot_file_name = 'expected_MPC_plot'
+
 x_tick_spacing = 1
 y_tick_spacing = 1
 
-plot_curves =  True
 min_power_law_slope = 0.5
-max_power_law_slope = 1.5
+max_power_law_slope = 1.4
 power_law_slope_spacing = 0.1
 
-plot_map(data_map_file_name, 
-         data_map_metadata_file_name, data_plot_file_name, 
-         x_tick_spacing, y_tick_spacing, plot_curves,
+plot_map(expected_RR50_file_name, 
+         expected_RR50_metadata_file_name, expected_RR50_file_name, 
+         x_tick_spacing, y_tick_spacing, False,
+         min_power_law_slope, max_power_law_slope, power_law_slope_spacing)
+
+plot_map(expected_RR50_file_name, 
+         expected_RR50_metadata_file_name, expected_RR50_file_name, 
+         x_tick_spacing, y_tick_spacing, True,
+         min_power_law_slope, max_power_law_slope, power_law_slope_spacing)
+
+plot_map(expected_MPC_file_name, 
+         expected_MPC_metadata_file_name, expected_MPC_file_name, 
+         x_tick_spacing, y_tick_spacing, False,
+         min_power_law_slope, max_power_law_slope, power_law_slope_spacing)
+
+plot_map(expected_MPC_file_name, 
+         expected_MPC_metadata_file_name, expected_MPC_file_name, 
+         x_tick_spacing, y_tick_spacing, True,
          min_power_law_slope, max_power_law_slope, power_law_slope_spacing)

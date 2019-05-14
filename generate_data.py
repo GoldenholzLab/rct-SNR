@@ -284,21 +284,70 @@ def generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,
                                     num_patients_per_trial,   num_trials):
     '''
 
+    This function generates all of the expected endpoint maps to be stored for later plotting.
+
     Inputs:
 
         1) start_monthly_mean:
-        stop_monthly_mean:
-        step_monthly_mean: 
-        start_monthly_std_dev:
-        stop_monthly_std_dev:
-        step_monthly_std_dev:
-        num_baseline_months:
-        num_testing_months:
-        min_req_base_sz_count: 
-        num_patients_per_trial:
-        num_trials
+
+            (float) - the beginning of the monthly seizure count mean axis for all expected endpoint maps
+
+        2) stop_monthly_mean:
+
+            (float) - the end of the monthly seizure count mean axis for all expected endpoint maps
+
+        3) step_monthly_mean:
+
+            (float) - the spaces in between each location on the monthly seizure count mean axis for all expected endpoint maps
+
+        4) start_monthly_std_dev:
+        
+            (float) - the beginning of the monthly seizure count mean axis for all expected endpoint maps
+
+        5) stop_monthly_std_dev:
+
+            (float) - the end of the monthly seizure count mean axis for all expected endpoint maps
+        
+        6) step_monthly_std_dev:
+
+            (float) - the spaces in between each location on the monthly seizure count mean axis for all expected endpoint maps
+        
+        7) num_baseline_months:
+                
+            (int) - the number of baseline months in each patient's seizure diary
+        
+        8) num_testing_months:
+        
+            (int) - the number of testing months in each patient's seizure diary
+        
+        9) min_req_base_sz_count:
+
+            (int) - the minimum number of required baseline seizure counts
+        
+        10) num_patients_per_trial:
+
+            (int) - the number of patients generated per trial
+        
+        11) num_trials:
+
+            (int) -  the number of trials used to estimate the expected endpoints
+    
+    Outputs:
+
+        1) expected_RR50_endpoint_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the expected RR50 placebo response for many different patients with 
+            
+                               a given monthly seizure mean and monthly seizure count standard deviation
+
+        2) expected_MPC_endpoint_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the expected MPC placebo response for many different patients with 
+            
+                               a given monthly seizure mean and monthly seizure count standard deviation
 
     '''
+
     # create the monthly mean and monthly standard deviation axes
     monthly_mean_array = np.arange(start_monthly_mean, stop_monthly_mean + step_monthly_mean, step_monthly_mean)
     monthly_std_dev_array = np.arange(start_monthly_std_dev, stop_monthly_std_dev + step_monthly_std_dev, step_monthly_std_dev)
@@ -362,20 +411,81 @@ def store_map(data_map,
               data_map_file_name, data_map_meta_data_file_name,
               x_axis_start, x_axis_stop, x_axis_step,
               y_axis_start, y_axis_stop, y_axis_step):
+    '''
 
-    # 
+    This function takes a data map as the parameters used to create its axes (referred to as the metadata)
+
+    and puts all the information into JSON files which are located in the same folder as this script.
+
+    Inputs:
+
+        1) data_map:
+
+            (2D Numpy array) - a 2D numpy array containing data to be stored now in a JSON
+                               
+                               file and plotted later
+        
+        2) data_map_file_name:
+
+            (string) - the name of the JSON file which will contain the data map to be plotted
+
+                       later
+        
+        3) data_map_meta_data_file_name:
+
+            (string) - the name of the JSON file which will contain the metadata for the data 
+            
+                       map to be plotted later
+        
+        4) x_axis_start:
+
+            (float) - the beginning of the x-axis for the data map to be plotted later
+        
+        5) x_axis_stop:
+
+            (float) - the end of the x-axis for the data map to be plotted later
+        
+        6) x_axis_step:
+
+            (float) - the spaces in between each location on the x-axis for all expected endpoint maps
+        
+        7) y_axis_start:
+
+            (float) - the beginning of the y-axis for the data map to be plotted later
+        
+        8) y_axis_stop:
+
+            (float) - the end of the y-axis for the data map to be plotted later
+        
+        9) y_axis_step:
+
+            (float) - the spaces in between each location on the y-axis for all expected endpoint maps
+    
+    Outputs:
+
+        Technically None
+
+    '''
+
+    # get the file path for the JSON file that will store the data map 
     data_map_file_path = os.getcwd() + '/' + data_map_file_name + '.json'
 
+    # get the file path for the JSON file that will store the data map metadata
     data_map_metadata_file_path = os.getcwd() + '/' + data_map_meta_data_file_name + '.json'
 
+    # put all of the metadata into one array
     metadata = np.array([x_axis_start, x_axis_stop, x_axis_step, y_axis_start, y_axis_stop, y_axis_step])
 
+    # open/create the JSON file that will store the data map 
     with open(data_map_file_path, 'w+') as map_storage_file:
 
+        # store the data map
         json.dump(data_map.tolist(), map_storage_file)
 
+    # open/create the JSON file that will store the data map 
     with open(data_map_metadata_file_path, 'w+') as map_metadata_storage_file:
 
+        # store the data map
         json.dump(metadata.tolist(), map_metadata_storage_file)
 
 
@@ -411,8 +521,8 @@ store_map(expected_RR50_endpoint_map,
           start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
           start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
 
-store_map(expected_RR50_endpoint_map, 
-          expected_RR50_file_name, expected_RR50_metadata_file_name,
+store_map(expected_MPC_endpoint_map, 
+          expected_MPC_file_name, expected_MPC_metadata_file_name,
           start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
           start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
 
