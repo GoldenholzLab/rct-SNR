@@ -2,6 +2,7 @@ import numpy as np
 import os
 import json
 import pandas as pd
+import time
 
 def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients, 
                                    num_baseline_days, num_testing_days, 
@@ -169,7 +170,7 @@ def estimate_expected_endpoints(monthly_mean, monthly_std_dev,
 
     mathematical restrictions on the negative binomial distribution which is generating all these
 
-    seizure counts.
+    seizure counts. This function will also return NaN if the given monthly mean is just zero.
 
     Inputs:
 
@@ -217,51 +218,63 @@ def estimate_expected_endpoints(monthly_mean, monthly_std_dev,
 
     '''
 
-    if(monthly_std_dev > np.sqrt(monthly_mean)):
+    # make sure that the patient does not have a true mean seizure count of 0
+    if(monthly_mean != 0):
 
-        # convert the monthly mean and monthly standard deviation into a daily mean and daily standard deviation
-        daily_mean = monthly_mean/28
-        daily_std_dev = monthly_std_dev/np.sqrt(28)
+        # make sure that the patient is supposed to have overdispersed data
+        if(monthly_std_dev > np.sqrt(monthly_mean)):
 
-        # convert the the number of baseline months and testing months into baseline days and testing days
-        num_baseline_days = num_baseline_months*28
-        num_testing_days = num_testing_months*28
+            # convert the monthly mean and monthly standard deviation into a daily mean and daily standard deviation
+            daily_mean = monthly_mean/28
+            daily_std_dev = monthly_std_dev/np.sqrt(28)
 
-        # initialize the array that will contain the 50% responder rates and median percent changes from every trial
-        RR50_array = np.zeros(num_trials)
-        MPC_array = np.zeros(num_trials)
+            # convert the the number of baseline months and testing months into baseline days and testing days
+            num_baseline_days = num_baseline_months*28
+            num_testing_days = num_testing_months*28
 
-        # for every trial:
-        for trial_index in range(num_trials):
+            # initialize the array that will contain the 50% responder rates and median percent changes from every trial
+            RR50_array = np.zeros(num_trials)
+            MPC_array = np.zeros(num_trials)
 
-            # generate one set of daily seizure diaries for each trial
-            '''
-            In the future, I will create two sets of diaries: one from placebo arm and one from drug arm.
-            '''
-            daily_seizure_diaries = \
-                generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients_per_trial, 
-                                               num_baseline_days, num_testing_days, 
-                                               min_req_base_sz_count)
+            # for every trial:
+            for trial_index in range(num_trials):
 
-            # calculate the percent changes
-            percent_changes = calculate_percent_changes(daily_seizure_diaries, num_baseline_days, num_patients_per_trial)
+                # generate one set of daily seizure diaries for each trial
+                '''
+                In the future, I will create two sets of diaries: one from placebo arm and one from drug arm.
+                '''
+                daily_seizure_diaries = \
+                    generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients_per_trial, 
+                                                   num_baseline_days, num_testing_days, 
+                                                   min_req_base_sz_count)
 
-            # calculate the endpoints for this trial
-            RR50 = 100*np.sum(percent_changes >= 0.5)/num_patients_per_trial
-            MPC = 100*np.median(percent_changes)
+                # calculate the percent changes
+                percent_changes = calculate_percent_changes(daily_seizure_diaries, num_baseline_days, num_patients_per_trial)
 
-            # store the endpoints in their respective arrays
-            RR50_array[trial_index] = RR50
-            MPC_array[trial_index] = MPC
+                # calculate the endpoints for this trial
+                RR50 = 100*np.sum(percent_changes >= 0.5)/num_patients_per_trial
+                MPC = 100*np.median(percent_changes)
 
-        # calculate the means of the endpoints over all trials
-        expected_RR50 = np.mean(RR50_array)
-        expected_MPC = np.mean(MPC_array)
+                # store the endpoints in their respective arrays
+                RR50_array[trial_index] = RR50
+                MPC_array[trial_index] = MPC
 
-        return [expected_RR50, expected_MPC]
+            # calculate the means of the endpoints over all trials
+            expected_RR50 = np.mean(RR50_array)
+            expected_MPC = np.mean(MPC_array)
+
+            return [expected_RR50, expected_MPC]
     
+        # if the patient does not have overdispersed data:
+        else:
+
+            # say that calculating their placebo response is impossible
+            return [np.nan, np.nan]
+
+    # if the patient does not have a true mean seizure count of 0, then:
     else:
 
+        # say that calculating their placebo response is impossible
         return [np.nan, np.nan]
 
 
@@ -270,43 +283,83 @@ def generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,
                                     num_baseline_months,      num_testing_months,   min_req_base_sz_count, 
                                     num_patients_per_trial,   num_trials):
 
+    # create the monthly mean and monthly standard deviation axes
     monthly_mean_array = np.arange(start_monthly_mean, stop_monthly_mean + step_monthly_mean, step_monthly_mean)
     monthly_std_dev_array = np.arange(start_monthly_std_dev, stop_monthly_std_dev + step_monthly_std_dev, step_monthly_std_dev)
 
+    # flip the monthly seizure count standard deviation axes
     monthly_std_dev_array = np.flip(monthly_std_dev_array, 0)
 
+    # count up the number of locations on both axes
     num_monthly_means = len(monthly_mean_array)
     num_monthly_std_devs = len(monthly_std_dev_array)
 
+    # initialize the 2D numpy arrays that will hold the expected endpoint maps
     expected_RR50_endpoint_map = np.zeros((num_monthly_std_devs, num_monthly_means))
     expected_MPC_endpoint_map = np.zeros((num_monthly_std_devs, num_monthly_means))
 
+    # for every given monthly standard deviation on the y-axis
     for monthly_std_dev_index in range(num_monthly_std_devs):
 
+        # for every given monthly mean on the x-axis
         for monthly_mean_index in range(num_monthly_means):
 
+            # access the corresponding actual monthly mean and monthly standard deviation
             monthly_mean = monthly_mean_array[monthly_mean_index]
             monthly_std_dev = monthly_std_dev_array[monthly_std_dev_index]
 
+            # start keeping track of how long it takes to estimate the expected endpoints for the given mean and standard deviation
+            start_time_in_seconds = time.time()
+
+            # estimate the estimate the expected endpoints for the given mean and standard deviation
             [expected_RR50, expected_MPC] =  \
                 estimate_expected_endpoints(monthly_mean, monthly_std_dev, 
                                             num_baseline_months, num_testing_months, 
                                             min_req_base_sz_count, num_patients_per_trial, num_trials)
+            
+            # put a stop to the timer on the endpoint estimation
+            stop_time_in_seconds = time.time()
+            
+            # calculate the total number of minutes it took to estimate the expected endpoints for the given mean and standard deviation
+            total_time_in_minutes = (stop_time_in_seconds - start_time_in_seconds)/60
 
+            # store the esimtated expected endpoints
             expected_RR50_endpoint_map[monthly_std_dev_index, monthly_mean_index] = expected_RR50
             expected_MPC_endpoint_map[monthly_std_dev_index, monthly_mean_index] = expected_MPC
 
-            RR50_string = str(np.round(expected_RR50, 2))
-            MPC_string = str(np.round(expected_MPC, 2))
+            # prepare a string telling the user where the algorithm is in terms of map generation
+            cpu_time_string = 'cpu time (minutes): ' + str(np.round(total_time_in_minutes, 2))
+            RR50_string = 'expected RR50: ' +  str(np.round(expected_RR50, 2))
+            MPC_string = 'expected MPC: ' +  str(np.round(expected_MPC, 2))
             monthly_mean_string = str(np.round(monthly_mean, 2))
             monthly_std_dev_string = str(np.round(monthly_std_dev, 2))
             orientation_string = 'monthly mean, monthly standard deviation: (' + monthly_mean_string + ', ' + monthly_std_dev_string + ')'
-            data_string = '\n\n' + orientation_string + ':\nexpected RR50: ' +  RR50_string + '\nexpected MPC: ' +  MPC_string
+            data_string = '\n\n' + orientation_string + ':\n' + RR50_string + '\n' + MPC_string + '\n' + cpu_time_string
 
+            # print the string
             print(data_string)
     
     return [expected_RR50_endpoint_map, expected_MPC_endpoint_map]
 
+
+def store_map(data_map, 
+              data_map_file_name, data_map_meta_data_file_name,
+              x_axis_start, x_axis_stop, x_axis_step,
+              y_axis_start, y_axis_stop, y_axis_step):
+
+    data_map_file_path = os.getcwd() + '/' + data_map_file_name + '.json'
+
+    data_map_metadata_file_path = os.getcwd() + '/' + data_map_meta_data_file_name + '.json'
+
+    metadata = np.array([x_axis_start, x_axis_stop, x_axis_step, y_axis_start, y_axis_stop, y_axis_step])
+
+    with open(data_map_file_path, 'w+') as map_storage_file:
+
+        json.dump(data_map.tolist(), map_storage_file)
+
+    with open(data_map_metadata_file_path, 'w+') as map_metadata_storage_file:
+
+        json.dump(metadata.tolist(), map_metadata_storage_file)
 
 
 start_monthly_mean = 0
@@ -323,7 +376,7 @@ num_baseline_months = 2
 num_testing_months = 3
 min_req_base_sz_count = 4
 num_patients_per_trial = 153
-num_trials = 100
+num_trials = 10
 
 [expected_RR50_endpoint_map, expected_MPC_endpoint_map] = \
     generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,    step_monthly_mean, 
@@ -331,7 +384,6 @@ num_trials = 100
                                     num_baseline_months,      num_testing_months,   min_req_base_sz_count, 
                                     num_patients_per_trial,   num_trials)
 
-print('\n\n' + pd.DataFrame(expected_RR50_endpoint_map).to_string() + '\n\n' + pd.DataFrame(expected_MPC_endpoint_map).to_string() + '\n\n')
 
 
 
