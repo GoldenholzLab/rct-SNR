@@ -3,6 +3,7 @@ import os
 import json
 import pandas as pd
 import time
+import argparse
 
 def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients, 
                                    num_baseline_days, num_testing_days, 
@@ -489,40 +490,144 @@ def store_map(data_map,
         json.dump(metadata.tolist(), map_metadata_storage_file)
 
 
-start_monthly_mean = 0
-stop_monthly_mean = 16
-step_monthly_mean = 1
+def main(start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
+         start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+         num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
+         expected_RR50_file_name, expected_RR50_metadata_file_name, 
+         expected_MPC_file_name, expected_MPC_metadata_file_name):
+    '''
 
-start_monthly_std_dev = 0
-stop_monthly_std_dev = 16
-step_monthly_std_dev = 1
+    This function is the main function that should be called in order to fulfill this script's primary purpose,
 
-num_baseline_months = 2
-num_testing_months = 3
-min_req_base_sz_count = 4
-num_patients_per_trial = 153
-num_trials = 10
+    which is generating and storing the data needed to plot the expected placebo response maps to be plotted later.
 
-expected_RR50_file_name = 'expected_RR50_map'
-expected_RR50_metadata_file_name = 'expected_RR50_map_metadata'
-expected_MPC_file_name = 'expected_MPC_map'
-expected_MPC_metadata_file_name = 'expected_MPC_map_metadata'
+    Inputs:
 
-[expected_RR50_endpoint_map, expected_MPC_endpoint_map] = \
-    generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,    step_monthly_mean, 
-                                    start_monthly_std_dev,    stop_monthly_std_dev, step_monthly_std_dev,
-                                    num_baseline_months,      num_testing_months,   min_req_base_sz_count, 
-                                    num_patients_per_trial,   num_trials)
+        1) start_monthly_mean:
+        
+            (float) - the beginning of the monthly seizure count mean axis for all expected endpoint maps=
+        
+        2) stop_monthly_mean:
 
-store_map(expected_RR50_endpoint_map, 
-          expected_RR50_file_name, expected_RR50_metadata_file_name,
-          start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+            (float) - the end of the monthly seizure count mean axis for all expected endpoint maps
+        
+        3) step_monthly_mean:
 
-store_map(expected_MPC_endpoint_map, 
-          expected_MPC_file_name, expected_MPC_metadata_file_name,
-          start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+            (float) - the end of the monthly seizure count mean axis for all expected endpoint maps
+
+        4) start_monthly_std_dev:
+                
+            (float) - the beginning of the monthly seizure count mean axis for all expected endpoint maps
+        
+        5) stop_monthly_std_dev:
+
+            (float) - the end of the monthly seizure count mean axis for all expected endpoint maps
+        
+        6) step_monthly_std_dev:
+
+            (float) - the spaces in between each location on the monthly seizure count mean axis for all expected endpoint maps
+
+        7) num_baseline_months:
+                        
+            (int) - the number of baseline months in each patient's seizure diary
+        
+        8) num_testing_months:
+                
+            (int) - the number of testing months in each patient's seizure diary
+        
+        9) min_req_base_sz_count:
+
+            (int) - the minimum number of required baseline seizure counts
+        
+        10) num_patients_per_trial:
+
+            (int) - the number of patients generated per trial
+        
+        11) num_trials:
+
+            (int) -  the number of trials used to estimate the expected endpoints
+
+        12) expected_RR50_file_name:
+
+            (string) - the name of the JSON file which will contain the expected 50% responder rate placebo response 
+            
+                       map to be plotted later
+        
+        13) expected_RR50_metadata_file_name:
+
+            (string) - the name of the JSON file which will contain the expected 50% responder rate placebo response 
+            
+                       map metadata to be plotted later
+
+        14) expected_MPC_file_name:
+
+            (string) - the name of the JSON file which will contain the expected median percent change placebo response 
+            
+                       map to be plotted later
+        
+        15) expected_MPC_metadata_file_name:
+
+            (string) - the name of the JSON file which will contain the expected median percent change placebo response 
+            
+                       map metadata to be plotted later
+
+    '''
+
+    # generate all of the expected endpoint maps
+    [expected_RR50_endpoint_map, expected_MPC_endpoint_map] = \
+        generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,    step_monthly_mean, 
+                                        start_monthly_std_dev,    stop_monthly_std_dev, step_monthly_std_dev,
+                                        num_baseline_months,      num_testing_months,   min_req_base_sz_count, 
+                                        num_patients_per_trial,   num_trials)
+
+    # store the expected RR50 endpoint map
+    store_map(expected_RR50_endpoint_map, 
+              expected_RR50_file_name, expected_RR50_metadata_file_name,
+              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+
+    # store the expected MPC endpoint map
+    store_map(expected_MPC_endpoint_map, 
+              expected_MPC_file_name, expected_MPC_metadata_file_name,
+              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
 
 
+if(__name__=='__main__'):
+
+    # take in the command-line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('array', nargs='+')
+    args = parser.parse_args()
+    arg_array = args.array
+
+    # obtain the information needed for the x-axis of the expected placebo response maps
+    start_monthly_mean = float(arg_array[0])
+    stop_monthly_mean = float(arg_array[1])
+    step_monthly_mean = float(arg_array[2])
+
+    # obtain the information needed for the y-axis of the expected placebo response maps
+    start_monthly_std_dev = float(arg_array[3])
+    stop_monthly_std_dev = float(arg_array[4])
+    step_monthly_std_dev = float(arg_array[5])
+
+    # obtain the parameters for estimating the placebo response at each point on the expected placebo response maps
+    num_baseline_months = int(arg_array[6])
+    num_testing_months = int(arg_array[7])
+    min_req_base_sz_count = int(arg_array[8])
+    num_patients_per_trial = int(arg_array[9])
+    num_trials = int(arg_array[10])
+
+    # obtain the names of the files where the data/metadata will be stored
+    expected_RR50_file_name = arg_array[11]
+    expected_RR50_metadata_file_name = arg_array[12]
+    expected_MPC_file_name = arg_array[13]
+    expected_MPC_metadata_file_name = arg_array[14]
+
+    # call the main() function
+    main(start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
+         start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+         num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
+         expected_RR50_file_name, expected_RR50_metadata_file_name, 
+         expected_MPC_file_name, expected_MPC_metadata_file_name)
 
