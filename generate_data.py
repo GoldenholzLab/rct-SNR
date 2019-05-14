@@ -497,8 +497,6 @@ start_monthly_std_dev = 0
 stop_monthly_std_dev = 16
 step_monthly_std_dev = 1
 
-monthly_mean = 8.7
-monthly_std_dev = 2.95
 num_baseline_months = 2
 num_testing_months = 3
 min_req_base_sz_count = 4
