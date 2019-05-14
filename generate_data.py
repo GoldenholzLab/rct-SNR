@@ -4,6 +4,7 @@ import json
 import pandas as pd
 import time
 import argparse
+import psutil
 
 def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients, 
                                    num_baseline_days, num_testing_days, 
@@ -595,6 +596,8 @@ def main(start_monthly_mean, stop_monthly_mean, step_monthly_mean,
 
 if(__name__=='__main__'):
 
+    start_time_in_seconds = time.time()
+
     # take in the command-line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('array', nargs='+')
@@ -630,4 +633,17 @@ if(__name__=='__main__'):
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
          expected_RR50_file_name, expected_RR50_metadata_file_name, 
          expected_MPC_file_name, expected_MPC_metadata_file_name)
+    
+    stop_time_in_seconds = time.time()
+
+    total_time_in_minutes  = (stop_time_in_seconds - start_time_in_seconds)/60
+
+    svem = psutil.virtual_memory()
+    total_mem_in_bytes = svem.total
+    available_mem_in_bytes = svem.available
+    used_mem_in_bytes = total_mem_in_bytes - available_mem_in_bytes
+    used_mem_in_gigabytes = used_mem_in_bytes/np.power(1024, 3)
+
+    print('\n\ncpu time in minutes: ' + str(total_time_in_minutes) + '\nmemory usage in GB: ' + str(used_mem_in_gigabytes) + '\n' )
+
 

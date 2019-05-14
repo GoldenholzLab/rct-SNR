@@ -171,6 +171,8 @@ def plot_map(data_map_file_name,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing):
     '''
 
+    This function 
+
     Inputs:
     
         1) data_map_file_name:
