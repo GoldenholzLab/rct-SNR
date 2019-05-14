@@ -282,7 +282,7 @@ def generate_prob_gauss_plot(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2
                              monthly_mu_axis_start,    monthly_mu_axis_stop,    monthly_mu_axis_step, 
                              monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step,
                              num_patients_per_bin, num_months_per_patient, confidence_level_interval, rounding_decimal_place,
-                             first_file_name, second_file_name):
+                             first_file_name, second_file_name, third_file_name):
     '''
 
     Inputs:
@@ -438,7 +438,24 @@ def generate_prob_gauss_plot(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2
 
     plt.savefig( os.getcwd() + '/' + second_file_name + '.png' )
 
-    plt.show()
+    # Neurovista data
+    neurovista_means   = np.array([5.6, 1.4, 19.5, 2.8, 1.1, 5.9, 47.9, 23.4, 14.6, 38.9, 19.5, 0.6, 20.8, 0.6, 5.1])
+    neurovista_std_devs = np.array([2.9, 1,   12.7, 0.7, 0.8, 2.5, 51.9, 15.2,  5.3, 26.3, 12.6, 1.3, 11.8,   1, 1.9])
+
+    # plot the heatmap using seaborn and the relevant ticks\tick-labels
+    plt.figure()
+    ax = sns.heatmap(data_matrix, cbar_kws={'label':'probability that seizure count data is Gaussian'})
+    ax.set_xticks(monthly_mu_ticks)
+    ax.set_xticklabels(monthly_mu_tick_labels, rotation='horizontal')
+    ax.set_yticks(monthly_sigma_ticks)
+    ax.set_yticklabels(monthly_sigma_tick_labels, rotation='horizontal')
+
+    # plot the neurovista data
+    plt.scatter(neurovista_means*monthly_mu_scale_ratio, (monthly_sigma_axis_stop - neurovista_std_devs)*monthly_sigma_scale_ratio)
+
+    plt.savefig( os.getcwd() + '/' + third_file_name + '.png' )
+
+    #plt.show()
 
 
 if (__name__ == '__main__'):
@@ -482,12 +499,13 @@ if (__name__ == '__main__'):
     # get file names for PNGs
     first_file_name = arg_array[13]
     second_file_name = arg_array[14]
+    third_file_name = arg_array[15]
 
     generate_prob_gauss_plot(shape_1, scale_1, alpha_1, beta_1, shape_2, scale_2, alpha_2, beta_2, num_patients_per_model,
                              monthly_mu_axis_start,    monthly_mu_axis_stop,    monthly_mu_axis_step, 
                              monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step,
                              num_patients_per_bin, num_months_per_patient, confidence_level_interval, rounding_decimal_place,
-                             first_file_name, second_file_name)
+                             first_file_name, second_file_name, third_file_name)
 
     stop_time_in_seconds = time.time()
 
