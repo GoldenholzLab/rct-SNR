@@ -1,6 +1,9 @@
 # Apple Files
 *.DS_store
 
+# ignore JSON files
+*.json
+
 # pictures
 *.png
 
