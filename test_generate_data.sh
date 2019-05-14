@@ -10,9 +10,9 @@ inputs[7]=3
 inputs[8]=4
 inputs[9]=153
 inputs[10]=10
-inputs[7]='expected_RR50_map'
-inputs[8]='expected_RR50_map_metadata'
-inputs[9]='expected_MPC_map'
-inputs[10]='expected_MPC_map_metadata'
+inputs[11]='expected_RR50_map'
+inputs[12]='expected_RR50_map_metadata'
+inputs[13]='expected_MPC_map'
+inputs[14]='expected_MPC_map_metadata'
 
 python generate_data.py ${inputs[@]}
