@@ -338,7 +338,7 @@ def generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,
         
         11) num_trials:
 
-            (int) -  the number of trials used to estimate the expected endpoints
+            (int) -  the number of trials used to estimate the expected endpoints at each point in the map
     
     Outputs:
 
@@ -514,11 +514,11 @@ def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_mode
 def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, 
                       shape_2, scale_2, alpha_2, beta_2, 
                       num_patients_per_model, num_months_per_patient,
-                      monthly_mu_axis_start,    monthly_mu_axis_stop,    monthly_mu_axis_step, 
-                      monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step,
-                      num_patients_per_trial, num_trials_per_bin,
-                      num_months_per_patient_baseline, num_months_per_patient_testing,
-                      min_required_baseline_seizures):
+                      start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
+                      start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+                      num_patients_per_trial, num_trials,
+                      num_baseline_months, num_testing_months,
+                      min_req_base_sz_count):
 
     '''
 
@@ -572,29 +572,29 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
         
         10) num_months_per_patient:
         
-            (int) - the number of months that each patient should have in both models
+            (int) - the number of months that each patient should have in both NV models
 
-        12) monthly_mu_axis_start:
+        12) start_monthly_mean:
         
             (float) - the beginning of the monthly seizure count mean axis for all expected endpoint maps
             
-        13) monthly_mu_axis_stop:
+        13) stop_monthly_mean:
         
             (float) - the end of the monthly seizure count mean axis for all expected endpoint maps
             
-        14) monthly_mu_axis_step:
+        14) step_monthly_mean:
             
             (float) - the spaces in between each location on the monthly seizure count mean axis for all expected endpoint maps
 
-        15) monthly_sigma_axis_start:
+        15) start_monthly_std_dev:
         
             (float) - the beginning of the monthly seizure count standard devation axis for all expected endpoint maps
         
-        16) monthly_sigma_axis_stop:
+        16) stop_monthly_std_dev:
         
             (float) - the end of the monthly seizure count tandard devation axis for all expected endpoint maps
         
-        17) monthly_sigma_axis_step:
+        17) step_monthly_std_dev:
             
             (float) - the spaces in between each location on the monthly seizure count standard deviation axis for all expected endpoint maps
 
@@ -602,77 +602,76 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
         
             (int) -  the number of patients generated per trial
             
-        19) num_trials_per_bin:
+        19) num_trials:
             
-            (int) - the number of trials used to estimate the expected endpoints in each part of the expected endpoint response maps
+            (int) - the number of trials used to estimate the expected endpoints at each point in the expected endpoint response maps
         
-        20) num_months_per_patient_baseline:
+        20) num_baseline_months:
         
             (int) - the number of baseline months in each patient's seizure diary (different than num_months_per_patients, which affects
                     
                     the NV model patients as opposed to the patients used to estimate the expected endpoints)
         
-        21) num_months_per_patient_testing:
+        21) num_testing_months:
             
             (int) - the number of testing months in each patient's seizure diary (different than num_months_per_patients, which affects
                     
                     the NV model patients as opposed to the patients used to estimate the expected endpoints)
         
-        22) min_required_baseline_seizures:
+        22) min_req_base_sz_count:
             
             (int) - the minimum number of required baseline seizure counts for all patients used to estimate the expected placebo response maps
 
     Outputs:
 
-        4) Model_1_expected_RR50:
+        1) Model_1_expected_RR50:
             
             (float) - the collective placebo response for all of the patients from model 1, determined by a multiplication of the Model 1 patient
                       
                       histogram and the expected endpoint 50% responder rate placebo response maps
         
-        5) Model_1_expected_MPC:
+        2) Model_1_expected_MPC:
         
             (float) - the collective placebo response for all of the patients from model 1, determined by a multiplication of the Model 1 patient
                       
                       histogram and the expected endpoint median percent change placebo response maps
         
-        6) Model_2_expected_RR50
+        3) Model_2_expected_RR50
         
             (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
                       
                       histogram and the expected endpoint 50% responder rate placebo response maps
 
-        7) Model_2_expected_MPC:
+        4) Model_2_expected_MPC:
         
             (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
                       
                       histogram and the expected endpoint median percent change placebo response maps
         
-        8) expected_RR50_map:
+        5) expected_RR50_endpoint_map:
         
             (2D Numpy array) - the expected endpoint 50% responder rate placebo response map
         
-        9) expected_MPC_map:
+        6) expected_MPC_endpoint_map:
         
             (2D Numpy array) - the expected endpoint median percent change placebo response map
         
-        10) H_model_1:
+        7) H_model_1:
             
             (2D Numpy array) - histogram of model 1 patients with the same dimensions and bins as the expected placebo response maps
         
-        11) H_model_2:
+        8) H_model_2:
 
             (2D Numpy array) - histogram of model 2 patients with the same dimensions and bins as the expected placebo response maps
 
     '''
 
     # generate the expected RR50 and expected MPC maps
-    [expected_RR50_map, expected_MPC_map] = \
-        generate_expected_endpoint_maps(monthly_mu_axis_start, monthly_mu_axis_stop, monthly_mu_axis_step, 
-                                        monthly_sigma_axis_start, monthly_sigma_axis_stop, monthly_sigma_axis_step, 
-                                        num_patients_per_trial, num_trials_per_bin,
-                                        num_months_per_patient_baseline, num_months_per_patient_testing,
-                                        min_required_baseline_seizures)
+    [expected_RR50_endpoint_map, expected_MPC_endpoint_map] = \
+        generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,    step_monthly_mean, 
+                                        start_monthly_std_dev,    stop_monthly_std_dev, step_monthly_std_dev,
+                                        num_baseline_months,      num_testing_months,   min_req_base_sz_count, 
+                                        num_patients_per_trial,   num_trials)
 
     # generate Model 1 patients
     [model_1_monthly_count_averages, model_1_monthly_count_standard_deviations] = \
@@ -685,32 +684,32 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
                                                                 num_patients_per_model, num_months_per_patient)
 
     # get the size of those expected endpoint maps
-    [nx, ny] = expected_RR50_map.shape
+    [nx, ny] = expected_RR50_endpoint_map.shape
 
     # calculate the histogram of the Model 1 patients
     [H_model_1, _, _] = np.histogram2d(model_1_monthly_count_averages, model_1_monthly_count_standard_deviations, bins=[ny, nx], 
-                                        range=[[monthly_mu_axis_start, monthly_mu_axis_stop], [monthly_sigma_axis_start, monthly_sigma_axis_stop]])
+                                        range=[[start_monthly_mean, stop_monthly_mean], [start_monthly_std_dev, stop_monthly_std_dev]])
     H_model_1 = np.flipud(np.fliplr(np.transpose(np.flipud(H_model_1))))
     norm_const_1 = np.sum(np.sum(H_model_1, 0))
     H_model_1 = H_model_1/norm_const_1
 
     # calculate the histogram of the Model 2 patients
     [H_model_2, _, _] = np.histogram2d(model_2_monthly_count_averages, model_2_monthly_count_standard_deviations, bins=[ny, nx], 
-                                    range=[[monthly_mu_axis_start, monthly_mu_axis_stop], [monthly_sigma_axis_start, monthly_sigma_axis_stop]])
+                                    range=[[start_monthly_mean, stop_monthly_mean], [start_monthly_std_dev, stop_monthly_std_dev]])
     H_model_2 = np.flipud(np.fliplr(np.transpose(np.flipud(H_model_2))))
     norm_const_2 = np.sum(np.sum(H_model_2, 0))
     H_model_2 = H_model_2/norm_const_2
 
     # combine the expected endpoint maps as well as the Model 1 and Model 2 histograms to get the expected RR50 and MPC for both models
-    Model_1_expected_RR50 = np.sum(np.nansum(np.multiply(H_model_1, expected_RR50_map), 0))
-    Model_1_expected_MPC  = np.sum(np.nansum(np.multiply(H_model_1, expected_MPC_map),  0))
-    Model_2_expected_RR50 = np.sum(np.nansum(np.multiply(H_model_2, expected_RR50_map), 0))
-    Model_2_expected_MPC  = np.sum(np.nansum(np.multiply(H_model_2, expected_MPC_map),  0))
+    Model_1_expected_RR50 = np.sum(np.nansum(np.multiply(H_model_1, expected_RR50_endpoint_map), 0))
+    Model_1_expected_MPC  = np.sum(np.nansum(np.multiply(H_model_1, expected_MPC_endpoint_map),  0))
+    Model_2_expected_RR50 = np.sum(np.nansum(np.multiply(H_model_2, expected_RR50_endpoint_map), 0))
+    Model_2_expected_MPC  = np.sum(np.nansum(np.multiply(H_model_2, expected_MPC_endpoint_map),  0))
 
-    return [Model_1_expected_RR50, Model_1_expected_MPC, 
-            Model_2_expected_RR50, Model_2_expected_MPC, 
-            expected_RR50_map,     expected_MPC_map, 
-            H_model_1,             H_model_2            ]
+    return [Model_1_expected_RR50,      Model_1_expected_MPC, 
+            Model_2_expected_RR50,      Model_2_expected_MPC, 
+            expected_RR50_endpoint_map, expected_MPC_endpoint_map, 
+            H_model_1,                  H_model_2                 ]
 
 
 def store_map(data_map, 
@@ -795,7 +794,10 @@ def store_map(data_map,
         json.dump(metadata.tolist(), map_metadata_storage_file)
 
 
-def main(start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
+def main(shape_1, scale_1, alpha_1, beta_1, 
+         shape_2, scale_2, alpha_2, beta_2,
+         num_patients_per_model, num_months_per_patient,
+         start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
          expected_RR50_file_name, expected_RR50_metadata_file_name, 
@@ -808,69 +810,109 @@ def main(start_monthly_mean, stop_monthly_mean, step_monthly_mean,
 
     Inputs:
 
-        1) start_monthly_mean:
+        1) shape_1:
+        
+            (float) - the first parameter for NV model 1
+        
+        2) scale_1:
+        
+            (float) - the second parameter for NV model 1
+        
+        3) alpha_1:
+        
+            (float) - the third parameter for NV model 1
+        
+        4) beta_1:
+        
+            (float) - the fourth parameter for NV model 1
+
+        5) shape_2:
+        
+            (float) - the first parameter for NV model 2
+        
+        6) scale_2:
+        
+            (float) - the second parameter for NV model 2
+
+        7) alpha_2:
+        
+            (float) - the third parameter for NV model 2
+        
+        8) beta_2:
+
+            (float) -  the fourth parameter for NV model 2
+
+        9) num_patients_per_model:
+                
+            (int) - the number of patients to generate for the histograms of models 1 and 2
+        
+        10) num_months_per_patient:
+
+            (int) - the number of months that each patient should have in both NV models
+
+        11) start_monthly_mean:
         
             (float) - the beginning of the monthly seizure count mean axis for all expected endpoint maps=
         
-        2) stop_monthly_mean:
+        12) stop_monthly_mean:
 
             (float) - the end of the monthly seizure count mean axis for all expected endpoint maps
         
-        3) step_monthly_mean:
+        13) step_monthly_mean:
 
             (float) - the end of the monthly seizure count mean axis for all expected endpoint maps
 
-        4) start_monthly_std_dev:
+        14) start_monthly_std_dev:
                 
             (float) - the beginning of the monthly seizure count mean axis for all expected endpoint maps
         
-        5) stop_monthly_std_dev:
+        15) stop_monthly_std_dev:
 
             (float) - the end of the monthly seizure count mean axis for all expected endpoint maps
         
-        6) step_monthly_std_dev:
+        16) step_monthly_std_dev:
 
             (float) - the spaces in between each location on the monthly seizure count mean axis for all expected endpoint maps
 
-        7) num_baseline_months:
+        17) num_baseline_months:
                         
             (int) - the number of baseline months in each patient's seizure diary
         
-        8) num_testing_months:
+        18) num_testing_months:
                 
             (int) - the number of testing months in each patient's seizure diary
         
-        9) min_req_base_sz_count:
+        19) min_req_base_sz_count:
 
             (int) - the minimum number of required baseline seizure counts
         
-        10) num_patients_per_trial:
+        20) num_patients_per_trial:
 
             (int) - the number of patients generated per trial
         
-        11) num_trials:
+        21) num_trials:
 
-            (int) -  the number of trials used to estimate the expected endpoints
+            (int) -  the number of trials used to estimate the expected endpoints at each point in the expected placebo response maps
 
-        12) expected_RR50_file_name:
+        22) expected_RR50_file_name:
 
             (string) - the name of the JSON file which will contain the expected 50% responder rate placebo response 
             
                        map to be plotted later
         
-        13) expected_RR50_metadata_file_name:
+        23) expected_RR50_metadata_file_name:
 
             (string) - the name of the JSON file which will contain the expected 50% responder rate placebo response 
             
                        map metadata to be plotted later
 
-        14) expected_MPC_file_name:
+        24) expected_MPC_file_name:
 
             (string) - the name of the JSON file which will contain the expected median percent change placebo response 
             
                        map to be plotted later
         
-        15) expected_MPC_metadata_file_name:
+        25) expected_MPC_metadata_file_name:
 
             (string) - the name of the JSON file which will contain the expected median percent change placebo response 
             
@@ -879,11 +921,18 @@ def main(start_monthly_mean, stop_monthly_mean, step_monthly_mean,
     '''
 
     # generate all of the expected endpoint maps
-    [expected_RR50_endpoint_map, expected_MPC_endpoint_map] = \
-        generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,    step_monthly_mean, 
-                                        start_monthly_std_dev,    stop_monthly_std_dev, step_monthly_std_dev,
-                                        num_baseline_months,      num_testing_months,   min_req_base_sz_count, 
-                                        num_patients_per_trial,   num_trials)
+    [Model_1_expected_RR50, Model_1_expected_MPC, 
+     Model_2_expected_RR50, Model_2_expected_MPC, 
+     expected_RR50_endpoint_map, expected_MPC_endpoint_map, 
+     H_model_1,             H_model_2            ] = \
+        generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, 
+                          shape_2, scale_2, alpha_2, beta_2, 
+                          num_patients_per_model, num_months_per_patient,
+                          start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
+                          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+                          num_patients_per_trial, num_trials,
+                          num_baseline_months, num_testing_months,
+                          min_req_base_sz_count)
 
     # store the expected RR50 endpoint map
     store_map(expected_RR50_endpoint_map, 
@@ -901,6 +950,16 @@ def main(start_monthly_mean, stop_monthly_mean, step_monthly_mean,
 if(__name__=='__main__'):
 
     start_time_in_seconds = time.time()
+
+    # define the parameters for NV model 1 and NV model 2
+    shape_1 = 24.143
+    scale_1 = 297.366
+    alpha_1 = 284.024
+    beta_1 = 369.628
+    shape_2 = 111.313
+    scale_2 = 296.728
+    alpha_2 = 296.339
+    beta_2 = 243.719
 
     # take in the command-line arguments
     parser = argparse.ArgumentParser()
@@ -925,14 +984,21 @@ if(__name__=='__main__'):
     num_patients_per_trial = int(arg_array[9])
     num_trials = int(arg_array[10])
 
+    # obtain the parameters needed for generating the histograms of the model 1 and model 2 patients
+    num_patients_per_model = int(arg_array[11])
+    num_months_per_patient = int(arg_array[12])
+
     # obtain the names of the files where the data/metadata will be stored
-    expected_RR50_file_name = arg_array[11]
-    expected_RR50_metadata_file_name = arg_array[12]
-    expected_MPC_file_name = arg_array[13]
-    expected_MPC_metadata_file_name = arg_array[14]
+    expected_RR50_file_name = arg_array[13]
+    expected_RR50_metadata_file_name = arg_array[14]
+    expected_MPC_file_name = arg_array[15]
+    expected_MPC_metadata_file_name = arg_array[16]
 
     # call the main() function
-    main(start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
+    main(shape_1, scale_1, alpha_1, beta_1, 
+         shape_2, scale_2, alpha_2, beta_2,
+         num_patients_per_model, num_months_per_patient,
+         start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
          expected_RR50_file_name, expected_RR50_metadata_file_name, 
