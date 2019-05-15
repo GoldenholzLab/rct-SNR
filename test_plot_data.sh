@@ -10,8 +10,8 @@ inputs[4]='expected_MPC_map_metadata'
 inputs[5]='expected_MPC_plot'
 
 # The spacing in between each of the labelled x-axis and y-axis ticks
-inputs[6]=1
-inputs[7]=1
+inputs[6]=2
+inputs[7]=2
 
 # The slopes of the power law curves to be plotted
 inputs[8]=0.5
