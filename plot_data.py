@@ -172,7 +172,7 @@ def plot_map(data_map_file_name,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing):
     '''
 
-    This function 
+    This function plots one expected placebo response map with the given input parameters.
 
     Inputs:
     
@@ -270,11 +270,20 @@ def plot_map(data_map_file_name,
     fig.savefig( data_plot_file_path )
 
 
+def plot_histogram():
+
+    
+
+
 def main(expected_RR50_file_name, expected_RR50_metadata_file_name, expected_RR50_plot_file_name, expected_RR50_plot_with_power_curves_file_name,
          expected_MPC_file_name, expected_MPC_metadata_file_name, expected_MPC_plot_file_name, expected_MPC_plot_with_power_curves_file_name,
          x_tick_spacing, y_tick_spacing, 
          min_power_law_slope, max_power_law_slope, power_law_slope_spacing):
     '''
+
+    This function is the main function is the main function which coordinates all of the other functions in this script. It generates the expected
+
+    placebo response maps as well as the histograms of model 1 and model 2.
 
     Inputs:
 
