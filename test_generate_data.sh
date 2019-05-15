@@ -16,10 +16,14 @@ inputs[8]=4
 inputs[9]=153
 inputs[10]=10
 
+# The parameters needed for generating the histograms of the model 1 and model 2 patients
+inputs[11]=10000
+inputs[12]=24
+
 # The names of the files where the data/metadata will be stored
-inputs[11]='expected_RR50_map'
-inputs[12]='expected_RR50_map_metadata'
-inputs[13]='expected_MPC_map'
-inputs[14]='expected_MPC_map_metadata'
+inputs[13]='expected_RR50_map'
+inputs[14]='expected_RR50_map_metadata'
+inputs[15]='expected_MPC_map'
+inputs[16]='expected_MPC_map_metadata'
 
 python generate_data.py ${inputs[@]}
