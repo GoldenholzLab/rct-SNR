@@ -26,4 +26,7 @@ inputs[14]='expected_RR50_map_metadata'
 inputs[15]='expected_MPC_map'
 inputs[16]='expected_MPC_map_metadata'
 
+# The name of text file which will contain the placebo responses for NV model 1 and NV model 2
+inputs[17]='NV_model_placebo_response'
+
 python generate_data.py ${inputs[@]}

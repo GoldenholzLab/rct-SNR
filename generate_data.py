@@ -796,9 +796,42 @@ def store_map(data_map,
 
 def save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC, 
                                     Model_2_expected_RR50, Model_2_expected_MPC,
-                                    NV_model_response_text_file_name):
+                                    NV_model_placebo_response_text_file_name):
+    '''
 
-    with open(os.getcwd() + '/' + NV_model_response_text_file_name + '.txt', 'w+') as text_file:
+    Inputs:
+
+        1) Model_1_expected_RR50:
+                    
+            (float) - the collective placebo response for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+                      
+                      histogram and the expected endpoint 50% responder rate placebo response maps
+
+        2) Model_1_expected_MPC:
+                
+            (float) - the collective placebo response for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+                      
+                      histogram and the expected endpoint median percent change placebo response maps
+        
+        3) Model_2_expected_RR50:
+                
+            (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
+                      
+                      histogram and the expected endpoint 50% responder rate placebo response maps
+
+        4) Model_2_expected_MPC:
+                
+            (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
+                      
+                      histogram and the expected endpoint median percent change placebo response maps
+        
+        5) NV_model_placebo_response_text_file_name:
+
+            (string) - the name of the text file which will contain the placebo responses to NV model 1 and NV model 2
+
+    '''
+
+    with open(os.getcwd() + '/' + NV_model_placebo_response_text_file_name + '.txt', 'w+') as text_file:
 
         data =  '\n\nModel 1 expected RR50: ' + str(Model_1_expected_RR50) + \
                 '\n\nModel 1 expected MPC: '  + str(Model_1_expected_MPC)  + \
@@ -815,7 +848,8 @@ def main(shape_1, scale_1, alpha_1, beta_1,
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
          expected_RR50_file_name, expected_RR50_metadata_file_name, 
-         expected_MPC_file_name, expected_MPC_metadata_file_name):
+         expected_MPC_file_name, expected_MPC_metadata_file_name,
+         NV_model_placebo_response_text_file_name):
     '''
 
     This function is the main function that should be called in order to fulfill this script's primary purpose,
@@ -932,6 +966,10 @@ def main(shape_1, scale_1, alpha_1, beta_1,
             
                        map metadata to be plotted later
 
+        26) NV_model_placebo_response_text_file_name:
+
+            (string) - the name of the text file which will contain the placebo responses to NV model 1 and NV model 2
+
     '''
 
     # generate all of the expected endpoint maps
@@ -959,6 +997,11 @@ def main(shape_1, scale_1, alpha_1, beta_1,
               expected_MPC_file_name, expected_MPC_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+    
+    # store the estimated placebo responses for NV model 1 and NV model 2
+    save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC, 
+                                    Model_2_expected_RR50, Model_2_expected_MPC,
+                                    NV_model_placebo_response_text_file_name)
 
 
 if(__name__=='__main__'):
@@ -1008,6 +1051,9 @@ if(__name__=='__main__'):
     expected_MPC_file_name = arg_array[15]
     expected_MPC_metadata_file_name = arg_array[16]
 
+    # obtain the name of text file which will contain the placebo responses for NV model 1 and NV model 2
+    NV_model_placebo_response_text_file_name = arg_array[17]
+
     # call the main() function
     main(shape_1, scale_1, alpha_1, beta_1, 
          shape_2, scale_2, alpha_2, beta_2,
@@ -1016,7 +1062,8 @@ if(__name__=='__main__'):
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
          expected_RR50_file_name, expected_RR50_metadata_file_name, 
-         expected_MPC_file_name, expected_MPC_metadata_file_name)
+         expected_MPC_file_name, expected_MPC_metadata_file_name,
+         NV_model_placebo_response_text_file_name)
     
     stop_time_in_seconds = time.time()
 
