@@ -270,8 +270,8 @@ def plot_map(data_map_file_name,
     fig.savefig( data_plot_file_path )
 
 
-def main(expected_RR50_file_name, expected_RR50_metadata_file_name, expected_RR50_plot_file_name, 
-         expected_MPC_file_name, expected_MPC_metadata_file_name, expected_MPC_plot_file_name, 
+def main(expected_RR50_file_name, expected_RR50_metadata_file_name, expected_RR50_plot_file_name, expected_RR50_plot_with_power_curves_file_name,
+         expected_MPC_file_name, expected_MPC_metadata_file_name, expected_MPC_plot_file_name, expected_MPC_plot_with_power_curves_file_name,
          x_tick_spacing, y_tick_spacing, 
          min_power_law_slope, max_power_law_slope, power_law_slope_spacing):
     '''
@@ -296,41 +296,53 @@ def main(expected_RR50_file_name, expected_RR50_metadata_file_name, expected_RR5
                        
                        of the expected 50% responder rate placebo response map
         
-        4) expected_MPC_file_name:
+        4) expected_RR50_plot_with_power_curves_file_name:
+
+            (string) - the name of the file that will eventually contain the PNG image of the plot 
+                       
+                       of the expected 50% responder rate placebo response map with power law curves
+        
+        5) expected_MPC_file_name:
 
             (string) - the name of the file containing the expected median percent change placebo 
                        
                        response map to be plotted
         
-        5) expected_MPC_metadata_file_name:
+        6) expected_MPC_metadata_file_name:
         
             (string) - the name of the file containing the metadata for the expected 50% responder 
             
                        rate placebo response map to be plotted
         
-        6) expected_MPC_plot_file_name: 
+        7) expected_MPC_plot_file_name: 
         
             (string) - the name of the file that will eventually contain the PNG image of the plot 
                        
                        of the expected median percent change placebo response map
         
-        7) x_tick_spacing:
+        8) expected_MPC_plot_file_name_with_power_curves:
+
+            (string) - the name of the file that will eventually contain the PNG image of the plot 
+                       
+                       of the expected median percent change placebo response map with power law curves
+
+        9) x_tick_spacing:
         
             (float) - the spacing in between each of the labelled x-axis ticks
         
-        8) y_tick_spacing:
+        10) y_tick_spacing:
 
             (float) - the spacing in between each of the labelled y-axis ticks
         
-        9) min_power_law_slope:
+        11) min_power_law_slope:
 
             (float) - the minimum power law slope to be plotted on the expected placebo reponse maps
         
-        10) max_power_law_slope:
+        12) max_power_law_slope:
 
             (float) - the maximum power law slope to be plotted on the expected placebo reponse maps
         
-        11) power_law_slope_spacing:
+        13) power_law_slope_spacing:
 
             (float) - the size of the spaces in between each y-axis value of the power law curves on the 
                       
@@ -350,7 +362,7 @@ def main(expected_RR50_file_name, expected_RR50_metadata_file_name, expected_RR5
 
     # plot the expected 50% responder rate placebo response map with power law curves
     plot_map(expected_RR50_file_name, 
-             expected_RR50_metadata_file_name, expected_RR50_file_name, 
+             expected_RR50_metadata_file_name, expected_RR50_plot_with_power_curves_file_name, 
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing)
     
@@ -362,7 +374,7 @@ def main(expected_RR50_file_name, expected_RR50_metadata_file_name, expected_RR5
 
     # plot the expected median percent change placebo response map with power law curves
     plot_map(expected_MPC_file_name, 
-             expected_MPC_metadata_file_name, expected_MPC_file_name, 
+             expected_MPC_metadata_file_name, expected_MPC_plot_with_power_curves_file_name, 
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing)
 
@@ -379,22 +391,24 @@ if(__name__=='__main__'):
     expected_RR50_file_name = arg_array[0]
     expected_RR50_metadata_file_name = arg_array[1]
     expected_RR50_plot_file_name = arg_array[2]
+    expected_RR50_plot_with_power_curves_file_name = arg_array[3]
 
     # obtain the names of the files associated with the median percent change placebo response map
-    expected_MPC_file_name = arg_array[3]
-    expected_MPC_metadata_file_name = arg_array[4]
-    expected_MPC_plot_file_name = arg_array[5]
+    expected_MPC_file_name = arg_array[4]
+    expected_MPC_metadata_file_name = arg_array[5]
+    expected_MPC_plot_file_name = arg_array[6]
+    expected_MPC_plot_file_name_with_power_curves = arg_array[7]
 
     # obtain the spacing in between each of the labelled x-axis and y-axis ticks
-    x_tick_spacing = float(arg_array[6])
-    y_tick_spacing = float(arg_array[7])
+    x_tick_spacing = float(arg_array[8])
+    y_tick_spacing = float(arg_array[9])
 
     # obtain the slopes of the power law curves to be plotted
-    min_power_law_slope = float(arg_array[8])
-    max_power_law_slope = float(arg_array[9])
-    power_law_slope_spacing = float(arg_array[10])
+    min_power_law_slope = float(arg_array[10])
+    max_power_law_slope = float(arg_array[11])
+    power_law_slope_spacing = float(arg_array[12])
 
-    main(expected_RR50_file_name, expected_RR50_metadata_file_name, expected_RR50_plot_file_name, 
-         expected_MPC_file_name, expected_MPC_metadata_file_name, expected_MPC_plot_file_name, 
+    main(expected_RR50_file_name, expected_RR50_metadata_file_name, expected_RR50_plot_file_name, expected_RR50_plot_with_power_curves_file_name,
+         expected_MPC_file_name, expected_MPC_metadata_file_name, expected_MPC_plot_file_name, expected_MPC_plot_file_name_with_power_curves,
          x_tick_spacing, y_tick_spacing, 
          min_power_law_slope, max_power_law_slope, power_law_slope_spacing)

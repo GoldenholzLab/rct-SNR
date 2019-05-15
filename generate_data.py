@@ -794,6 +794,20 @@ def store_map(data_map,
         json.dump(metadata.tolist(), map_metadata_storage_file)
 
 
+def save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC, 
+                                    Model_2_expected_RR50, Model_2_expected_MPC,
+                                    NV_model_response_text_file_name):
+
+    with open(os.getcwd() + '/' + NV_model_response_text_file_name + '.txt', 'w+') as text_file:
+
+        data =  '\n\nModel 1 expected RR50: ' + str(Model_1_expected_RR50) + \
+                '\n\nModel 1 expected MPC: '  + str(Model_1_expected_MPC)  + \
+                '\n\nModel 2 expected RR50: ' + str(Model_2_expected_RR50) + \
+                '\n\nModel 2 expected MPC: '  + str(Model_2_expected_MPC)
+
+        text_file.write(data)
+
+
 def main(shape_1, scale_1, alpha_1, beta_1, 
          shape_2, scale_2, alpha_2, beta_2,
          num_patients_per_model, num_months_per_patient,
