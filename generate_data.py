@@ -799,6 +799,12 @@ def save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC,
                                     NV_model_placebo_response_text_file_name):
     '''
 
+    This function stores the expected placebo responses for NV model 1 ande NV model 2 as 
+    
+    predicted by the multiplication of the SNR maps and the histograms for both NV models into
+
+    a text file. 
+
     Inputs:
 
         1) Model_1_expected_RR50:
@@ -849,6 +855,8 @@ def main(shape_1, scale_1, alpha_1, beta_1,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
          expected_RR50_file_name, expected_RR50_metadata_file_name, 
          expected_MPC_file_name, expected_MPC_metadata_file_name,
+         H_model_1_file_name, H_model_1_metadata_file_name,
+         H_model_2_file_name, H_model_2_metadata_file_name,
          NV_model_placebo_response_text_file_name):
     '''
 
@@ -965,18 +973,38 @@ def main(shape_1, scale_1, alpha_1, beta_1,
             (string) - the name of the JSON file which will contain the expected median percent change placebo response 
             
                        map metadata to be plotted later
+        
+        26) H_model_1_file_name:
+        
+            (string) - the name of the JSON file which will contain the histogram of NV model 1 to be plotted later
 
-        26) NV_model_placebo_response_text_file_name:
+        27) H_model_1_metadata_file_name:
+                
+            (string) - the name of the JSON file which will contain the histogram of NV model 1 metadata to be plotted 
+            
+                       later
+
+        28) H_model_2_file_name:
+                
+            (string) - the name of the JSON file which will contain the histogram of NV model 2 to be plotted later
+
+        29) H_model_2_metadata_file_name:
+        
+            (string) - the name of the JSON file which will contain the histogram of NV model 2 metadata to be plotted 
+            
+                       later
+
+        30) NV_model_placebo_response_text_file_name:
 
             (string) - the name of the text file which will contain the placebo responses to NV model 1 and NV model 2
 
     '''
 
     # generate all of the expected endpoint maps
-    [Model_1_expected_RR50, Model_1_expected_MPC, 
-     Model_2_expected_RR50, Model_2_expected_MPC, 
+    [Model_1_expected_RR50,      Model_1_expected_MPC, 
+     Model_2_expected_RR50,      Model_2_expected_MPC, 
      expected_RR50_endpoint_map, expected_MPC_endpoint_map, 
-     H_model_1,             H_model_2            ] = \
+     H_model_1,                  H_model_2                 ] = \
         generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, 
                           shape_2, scale_2, alpha_2, beta_2, 
                           num_patients_per_model, num_months_per_patient,
@@ -995,6 +1023,17 @@ def main(shape_1, scale_1, alpha_1, beta_1,
     # store the expected MPC endpoint map
     store_map(expected_MPC_endpoint_map, 
               expected_MPC_file_name, expected_MPC_metadata_file_name,
+              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+
+    # store the histogram of Model 1
+    store_map(H_model_1,
+              H_model_1_file_name, H_model_1_metadata_file_name,
+              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+    
+    store_map(H_model_2,
+              H_model_2_file_name, H_model_2_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
     
@@ -1050,9 +1089,13 @@ if(__name__=='__main__'):
     expected_RR50_metadata_file_name = arg_array[14]
     expected_MPC_file_name = arg_array[15]
     expected_MPC_metadata_file_name = arg_array[16]
+    H_model_1_file_name = arg_array[17]
+    H_model_1_metadata_file_name = arg_array[18]
+    H_model_2_file_name = arg_array[19]
+    H_model_2_metadata_file_name = arg_array[20]
 
     # obtain the name of text file which will contain the placebo responses for NV model 1 and NV model 2
-    NV_model_placebo_response_text_file_name = arg_array[17]
+    NV_model_placebo_response_text_file_name = arg_array[21]
 
     # call the main() function
     main(shape_1, scale_1, alpha_1, beta_1, 
@@ -1063,6 +1106,8 @@ if(__name__=='__main__'):
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
          expected_RR50_file_name, expected_RR50_metadata_file_name, 
          expected_MPC_file_name, expected_MPC_metadata_file_name,
+         H_model_1_file_name, H_model_1_metadata_file_name,
+         H_model_2_file_name, H_model_2_metadata_file_name,
          NV_model_placebo_response_text_file_name)
     
     stop_time_in_seconds = time.time()
