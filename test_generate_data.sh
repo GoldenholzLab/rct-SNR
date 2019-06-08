@@ -25,12 +25,14 @@ inputs[13]='expected_RR50_map'
 inputs[14]='expected_RR50_map_metadata'
 inputs[15]='expected_MPC_map'
 inputs[16]='expected_MPC_map_metadata'
-inputs[17]='H_model_1_hist'
-inputs[18]='H_model_1_hist_metadata'
-inputs[19]='H_model_2_hist'
-inputs[20]='H_model_2_hist_metadata'
+inputs[17]='expected_TTP_map'
+inputs[18]='expected_TTP_map_metadata'
+inputs[19]='H_model_1_hist'
+inputs[20]='H_model_1_hist_metadata'
+inputs[21]='H_model_2_hist'
+inputs[22]='H_model_2_hist_metadata'
 
 # The name of text file which will contain the placebo responses for NV model 1 and NV model 2
-inputs[21]='NV_model_placebo_response'
+inputs[23]='NV_model_placebo_response'
 
 python generate_data.py ${inputs[@]}

@@ -159,6 +159,105 @@ def calculate_percent_changes(daily_seizure_diaries, num_baseline_days, num_pati
     return percent_changes
 
 
+def calculate_times_to_prerandomization(daily_seizure_diaries, num_months_baseline, num_testing_days, num_patients):
+    '''
+
+    This function calculates the time-to-prerandomization endpoint for each patient' daily seizure diary.
+
+    Inputs:
+
+        1) daily_seizure_diaries:
+        
+            (2D Numpy array) - an array of all the seizure diaries for each patient, all of equal length
+                               
+                               and with daily seizure counts inside
+
+        2) num_months_baseline:
+
+            (int) - the length of the baseline period in months
+        
+        3) num_testing_days:
+        
+            (int) - the lenght of the testing period in days
+        
+        4) num_patients:
+
+            (int) - the number of seizure diaries for each patient
+
+    Outputs:
+
+        1) ttp_times:
+
+            (1D Numpy array) - an array of times-to-prerandomization, with one time for each patient's diary
+
+    '''
+
+    # calculate the number of baseline days
+    num_days_in_one_month = 28
+    num_baseline_days = num_months_baseline*num_days_in_one_month
+
+    # separate the baseline period and testing period in each seizure diary
+    baseline_daily_seizure_diaries = daily_seizure_diaries[:, :num_baseline_days]
+    testing_daily_seizure_diaries = daily_seizure_diaries[:, num_baseline_days:]
+
+    # initialize the 2D Numpy array which will hold all the monthly seizure diaries for the baseline period of each patient
+    baseline_monthly_seizure_diaries = np.zeros((num_patients, num_months_baseline))
+
+    # for each month in the baseline period:
+    for month_index in range(num_months_baseline):
+    
+        # sort out which days in the seizure diary are the beginnning day and end day for each separate month
+        beginning_day_index = 0 + num_days_in_one_month*month_index
+        end_day_index = num_days_in_one_month*(1 + month_index)
+    
+        # extract the month in question using the daily indices found above
+        month_of_baseline_seizure_counts = baseline_daily_seizure_diaries[:, beginning_day_index:end_day_index]
+    
+        # store the monthly seizure counts as the sum of the daily seizure counts over 28 days for each month in each diary
+        baseline_monthly_seizure_diaries[:, month_index] = np.sum( month_of_baseline_seizure_counts, 1 )
+
+    # calculate the monthly seizure frequency for each patient
+    baseline_monthly_seizure_frequencies = np.mean(baseline_monthly_seizure_diaries, 1)
+
+    # initialize the array which will hold the times-to-prerandomization
+    TTP_times = np.zeros(num_patients)
+
+    # for each patient:
+    for patient_index in range(num_patients):
+    
+        # get the specific diary from the testing period for one patient
+        testing_daily_seizure_diary = testing_daily_seizure_diaries[patient_index, :]
+
+        # get the baseline seizure frequency corresponding to that patient
+        baseline_monthly_seizure_frequency = baseline_monthly_seizure_frequencies[patient_index]
+    
+        # initialize a boolean flag indicating whether or not the patient's cumulative seizure count has reached their prerandomization count yet
+        reached_count_yet = False
+    
+        # initialize an index to keep track of which day the following while loop is on
+        day_index = 0
+    
+        # keep track of the cumulaitve count of all the daily seizure counts so far
+        sum_count = 0
+
+        # while the patient's cumulative count has no yet reached their prerandomization time:P
+        while(not reached_count_yet):
+        
+            # iterate the cumulative count for the current day
+            sum_count = sum_count + testing_daily_seizure_diary[day_index]
+        
+            # check if  the patient has either reached their prerandomization count or reached the end of their testing period
+            reached_count_yet = ( sum_count >= baseline_monthly_seizure_frequency ) or ( day_index == (num_testing_days - 1) )
+    
+            # iterate the day index
+            day_index = day_index + 1
+        
+        # store the day on which the patient reached their prerandomization time
+        TTP_times[patient_index] = day_index
+    
+    return TTP_times
+
+
 def estimate_expected_endpoints(monthly_mean, monthly_std_dev, 
                                 num_baseline_months, num_testing_months, 
                                 min_req_base_sz_count, num_patients_per_trial, num_trials):
@@ -212,9 +311,15 @@ def estimate_expected_endpoints(monthly_mean, monthly_std_dev,
 
                       monthly mean and monthly standard deviation
         
-        1) expected_MPC:
+        2) expected_MPC:
 
             (float) - the median percent change which is expected from an individual with this specific 
+
+                      monthly mean and monthly standard deviation
+
+        3) expected_TTP:
+
+            (float) - the time-to-prerandomization which is expected from an individual with this specific 
 
                       monthly mean and monthly standard deviation
 
@@ -234,9 +339,10 @@ def estimate_expected_endpoints(monthly_mean, monthly_std_dev,
             num_baseline_days = num_baseline_months*28
             num_testing_days = num_testing_months*28
 
-            # initialize the array that will contain the 50% responder rates and median percent changes from every trial
+            # initialize the array that will contain the 50% responder rates, median percent changes, and time-to-prerandomization from every trial
             RR50_array = np.zeros(num_trials)
             MPC_array = np.zeros(num_trials)
+            TTP_array = np.zeros(num_trials)
 
             # for every trial:
             for trial_index in range(num_trials):
@@ -253,31 +359,37 @@ def estimate_expected_endpoints(monthly_mean, monthly_std_dev,
                 # calculate the percent changes
                 percent_changes = calculate_percent_changes(daily_seizure_diaries, num_baseline_days, num_patients_per_trial)
 
+                # calcualte the times-to-prerandomization for each patient
+                TTP_times = calculate_times_to_prerandomization(daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial)
+
                 # calculate the endpoints for this trial
                 RR50 = 100*np.sum(percent_changes >= 0.5)/num_patients_per_trial
                 MPC = 100*np.median(percent_changes)
+                med_TTP_time = np.median(TTP_times)
 
                 # store the endpoints in their respective arrays
                 RR50_array[trial_index] = RR50
                 MPC_array[trial_index] = MPC
+                TTP_array[trial_index] = med_TTP_time
 
             # calculate the means of the endpoints over all trials
             expected_RR50 = np.mean(RR50_array)
             expected_MPC = np.mean(MPC_array)
+            expected_TTP = np.mean(TTP_array)
 
-            return [expected_RR50, expected_MPC]
+            return [expected_RR50, expected_MPC, expected_TTP]
     
         # if the patient does not have overdispersed data:
         else:
 
             # say that calculating their placebo response is impossible
-            return [np.nan, np.nan]
+            return [np.nan, np.nan, np.nan]
 
     # if the patient does not have a true mean seizure count of 0, then:
     else:
 
         # say that calculating their placebo response is impossible
-        return [np.nan, np.nan]
+        return [np.nan, np.nan, np.nan]
 
 
 def generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,    step_monthly_mean, 
@@ -354,6 +466,12 @@ def generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,
             
                                a given monthly seizure mean and monthly seizure count standard deviation
 
+        3) expected_TTP_endpoint_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the expected TTP placebo response for many different patients with 
+            
+                               a given monthly seizure mean and monthly seizure count standard deviation
+
     '''
 
     # create the monthly mean and monthly standard deviation axes
@@ -370,6 +488,7 @@ def generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,
     # initialize the 2D numpy arrays that will hold the expected endpoint maps
     expected_RR50_endpoint_map = np.zeros((num_monthly_std_devs, num_monthly_means))
     expected_MPC_endpoint_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    expected_TTP_endpoint_map = np.zeros((num_monthly_std_devs, num_monthly_means))
 
     # for every given monthly standard deviation on the y-axis
     for monthly_std_dev_index in range(num_monthly_std_devs):
@@ -385,7 +504,7 @@ def generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,
             start_time_in_seconds = time.time()
 
             # estimate the estimate the expected endpoints for the given mean and standard deviation
-            [expected_RR50, expected_MPC] =  \
+            [expected_RR50, expected_MPC, expected_TTP] =  \
                 estimate_expected_endpoints(monthly_mean, monthly_std_dev, 
                                             num_baseline_months, num_testing_months, 
                                             min_req_base_sz_count, num_patients_per_trial, num_trials)
@@ -396,23 +515,25 @@ def generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,
             # calculate the total number of minutes it took to estimate the expected endpoints for the given mean and standard deviation
             total_time_in_minutes = (stop_time_in_seconds - start_time_in_seconds)/60
 
-            # store the esimtated expected endpoints
+            # store the estimated expected endpoints
             expected_RR50_endpoint_map[monthly_std_dev_index, monthly_mean_index] = expected_RR50
             expected_MPC_endpoint_map[monthly_std_dev_index, monthly_mean_index] = expected_MPC
+            expected_TTP_endpoint_map[monthly_std_dev_index, monthly_mean_index] = expected_TTP
 
             # prepare a string telling the user where the algorithm is in terms of map generation
             cpu_time_string = 'cpu time (minutes): ' + str(np.round(total_time_in_minutes, 2))
             RR50_string = 'expected RR50: ' +  str(np.round(expected_RR50, 2))
             MPC_string = 'expected MPC: ' +  str(np.round(expected_MPC, 2))
+            TTP_string = 'expected TTP: ' + str(np.round(expected_TTP, 2))
             monthly_mean_string = str(np.round(monthly_mean, 2))
             monthly_std_dev_string = str(np.round(monthly_std_dev, 2))
             orientation_string = 'monthly mean, monthly standard deviation: (' + monthly_mean_string + ', ' + monthly_std_dev_string + ')'
-            data_string = '\n\n' + orientation_string + ':\n' + RR50_string + '\n' + MPC_string + '\n' + cpu_time_string
+            data_string = '\n\n' + orientation_string + ':\n' + RR50_string + '\n' + MPC_string + '\n' + TTP_string + '\n' + cpu_time_string
 
             # print the string
             print(data_string)
     
-    return [expected_RR50_endpoint_map, expected_MPC_endpoint_map]
+    return [expected_RR50_endpoint_map, expected_MPC_endpoint_map, expected_TTP_endpoint_map]
 
 
 def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_model, num_months_per_patient):
@@ -636,38 +757,54 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
                       
                       histogram and the expected endpoint median percent change placebo response maps
         
-        3) Model_2_expected_RR50
+        3) Model_1_expected_TTP:
+        
+            (float) - the collective placebo response for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+                      
+                      histogram and the expected endpoint time-to-prerandomization placebo response maps
+        
+        4) Model_2_expected_RR50
         
             (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
                       
                       histogram and the expected endpoint 50% responder rate placebo response maps
 
-        4) Model_2_expected_MPC:
+        5) Model_2_expected_MPC:
         
             (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
                       
                       histogram and the expected endpoint median percent change placebo response maps
         
-        5) expected_RR50_endpoint_map:
+        6) Model_2_expected_TTP:
+        
+            (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
+                      
+                      histogram and the expected endpoint time-to-prerandomization placebo response maps
+        
+        7) expected_RR50_endpoint_map:
         
             (2D Numpy array) - the expected endpoint 50% responder rate placebo response map
         
-        6) expected_MPC_endpoint_map:
+        8) expected_MPC_endpoint_map:
         
             (2D Numpy array) - the expected endpoint median percent change placebo response map
         
-        7) H_model_1:
+        9) expected_TTP_endpoint_map:
+        
+            (2D Numpy array) - the expected endpoint time-to-prerandomization placebo response map
+        
+        10) H_model_1:
             
             (2D Numpy array) - histogram of model 1 patients with the same dimensions and bins as the expected placebo response maps
         
-        8) H_model_2:
+        11) H_model_2:
 
             (2D Numpy array) - histogram of model 2 patients with the same dimensions and bins as the expected placebo response maps
 
     '''
 
     # generate the expected RR50 and expected MPC maps
-    [expected_RR50_endpoint_map, expected_MPC_endpoint_map] = \
+    [expected_RR50_endpoint_map, expected_MPC_endpoint_map, expected_TTP_endpoint_map] = \
         generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,    step_monthly_mean, 
                                         start_monthly_std_dev,    stop_monthly_std_dev, step_monthly_std_dev,
                                         num_baseline_months,      num_testing_months,   min_req_base_sz_count, 
@@ -703,12 +840,14 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
     # combine the expected endpoint maps as well as the Model 1 and Model 2 histograms to get the expected RR50 and MPC for both models
     Model_1_expected_RR50 = np.sum(np.nansum(np.multiply(H_model_1, expected_RR50_endpoint_map), 0))
     Model_1_expected_MPC  = np.sum(np.nansum(np.multiply(H_model_1, expected_MPC_endpoint_map),  0))
+    Model_1_expected_TTP  = np.sum(np.nansum(np.multiply(H_model_1, expected_TTP_endpoint_map),  0))
     Model_2_expected_RR50 = np.sum(np.nansum(np.multiply(H_model_2, expected_RR50_endpoint_map), 0))
     Model_2_expected_MPC  = np.sum(np.nansum(np.multiply(H_model_2, expected_MPC_endpoint_map),  0))
+    Model_2_expected_TTP  = np.sum(np.nansum(np.multiply(H_model_2, expected_TTP_endpoint_map),  0))
 
-    return [Model_1_expected_RR50,      Model_1_expected_MPC, 
-            Model_2_expected_RR50,      Model_2_expected_MPC, 
-            expected_RR50_endpoint_map, expected_MPC_endpoint_map, 
+    return [Model_1_expected_RR50,      Model_1_expected_MPC,      Model_1_expected_TTP,
+            Model_2_expected_RR50,      Model_2_expected_MPC,      Model_2_expected_TTP,
+            expected_RR50_endpoint_map, expected_MPC_endpoint_map, expected_TTP_endpoint_map,
             H_model_1,                  H_model_2                 ]
 
 
@@ -794,8 +933,8 @@ def store_map(data_map,
         json.dump(metadata.tolist(), map_metadata_storage_file)
 
 
-def save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC, 
-                                    Model_2_expected_RR50, Model_2_expected_MPC,
+def save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC, Model_1_expected_TTP,
+                                    Model_2_expected_RR50, Model_2_expected_MPC, Model_2_expected_TTP,
                                     NV_model_placebo_response_text_file_name):
     '''
 
@@ -819,19 +958,31 @@ def save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC,
                       
                       histogram and the expected endpoint median percent change placebo response maps
         
-        3) Model_2_expected_RR50:
+        3) Model_1_expected_TTP:
+                
+            (float) - the collective placebo response for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+                      
+                      histogram and the expected endpoint time-to-prerandomization placebo response maps
+        
+        4) Model_2_expected_RR50:
                 
             (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
                       
                       histogram and the expected endpoint 50% responder rate placebo response maps
 
-        4) Model_2_expected_MPC:
+        5) Model_2_expected_MPC:
                 
             (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
                       
                       histogram and the expected endpoint median percent change placebo response maps
         
-        5) NV_model_placebo_response_text_file_name:
+        6) Model_2_expected_TTP:
+                
+            (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
+                      
+                      histogram and the expected endpoint time-to-prerandomization placebo response maps
+        
+        7) NV_model_placebo_response_text_file_name:
 
             (string) - the name of the text file which will contain the placebo responses to NV model 1 and NV model 2
 
@@ -841,8 +992,10 @@ def save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC,
 
         data =  '\n\nModel 1 expected RR50: ' + str(Model_1_expected_RR50) + \
                 '\n\nModel 1 expected MPC: '  + str(Model_1_expected_MPC)  + \
+                '\n\nModel 1 expected TTP: '  + str(Model_1_expected_TTP)  + \
                 '\n\nModel 2 expected RR50: ' + str(Model_2_expected_RR50) + \
-                '\n\nModel 2 expected MPC: '  + str(Model_2_expected_MPC)
+                '\n\nModel 2 expected MPC: '  + str(Model_2_expected_MPC)  + \
+                '\n\nModel 2 expected TTP: '  + str(Model_2_expected_TTP)
 
         text_file.write(data)
 
@@ -855,6 +1008,7 @@ def main(shape_1, scale_1, alpha_1, beta_1,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
          expected_RR50_file_name, expected_RR50_metadata_file_name, 
          expected_MPC_file_name, expected_MPC_metadata_file_name,
+         expected_TTP_file_name, expected_TTP_metadata_file_name,
          H_model_1_file_name, H_model_1_metadata_file_name,
          H_model_2_file_name, H_model_2_metadata_file_name,
          NV_model_placebo_response_text_file_name):
@@ -974,6 +1128,18 @@ def main(shape_1, scale_1, alpha_1, beta_1,
             
                        map metadata to be plotted later
         
+        26) expected_TTP_file_name: 
+        
+            (string) - the name of the JSON file which will contain the expected time-to-prerandomization placebo response 
+            
+                       map to be plotted later
+
+        27) expected_TTP_metadata_file_name:
+        
+            (string) - the name of the JSON file which will contain the expected time-to-prerandomization placebo response 
+            
+                       map metadata to be plotted later
+        
         26) H_model_1_file_name:
         
             (string) - the name of the JSON file which will contain the histogram of NV model 1 to be plotted later
@@ -1001,9 +1167,9 @@ def main(shape_1, scale_1, alpha_1, beta_1,
     '''
 
     # generate all of the expected endpoint maps
-    [Model_1_expected_RR50,      Model_1_expected_MPC, 
-     Model_2_expected_RR50,      Model_2_expected_MPC, 
-     expected_RR50_endpoint_map, expected_MPC_endpoint_map, 
+    [Model_1_expected_RR50,      Model_1_expected_MPC,       Model_1_expected_TTP,
+     Model_2_expected_RR50,      Model_2_expected_MPC,       Model_2_expected_TTP,
+     expected_RR50_endpoint_map, expected_MPC_endpoint_map,  expected_TTP_endpoint_map,
      H_model_1,                  H_model_2                 ] = \
         generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, 
                           shape_2, scale_2, alpha_2, beta_2, 
@@ -1025,6 +1191,12 @@ def main(shape_1, scale_1, alpha_1, beta_1,
               expected_MPC_file_name, expected_MPC_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+    
+    # store the expected TTP endpoint map
+    store_map(expected_TTP_endpoint_map, 
+              expected_TTP_file_name, expected_TTP_metadata_file_name,
+              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
 
     # store the histogram of Model 1
     store_map(H_model_1,
@@ -1032,14 +1204,15 @@ def main(shape_1, scale_1, alpha_1, beta_1,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
     
+    # store the histogram of Model 1
     store_map(H_model_2,
               H_model_2_file_name, H_model_2_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
     
     # store the estimated placebo responses for NV model 1 and NV model 2
-    save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC, 
-                                    Model_2_expected_RR50, Model_2_expected_MPC,
+    save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC, Model_1_expected_TTP,
+                                    Model_2_expected_RR50, Model_2_expected_MPC, Model_2_expected_TTP,
                                     NV_model_placebo_response_text_file_name)
 
 
@@ -1089,13 +1262,15 @@ if(__name__=='__main__'):
     expected_RR50_metadata_file_name = arg_array[14]
     expected_MPC_file_name = arg_array[15]
     expected_MPC_metadata_file_name = arg_array[16]
-    H_model_1_file_name = arg_array[17]
-    H_model_1_metadata_file_name = arg_array[18]
-    H_model_2_file_name = arg_array[19]
-    H_model_2_metadata_file_name = arg_array[20]
+    expected_TTP_file_name = arg_array[17]
+    expected_TTP_metadata_file_name = arg_array[18]
+    H_model_1_file_name = arg_array[19]
+    H_model_1_metadata_file_name = arg_array[20]
+    H_model_2_file_name = arg_array[21]
+    H_model_2_metadata_file_name = arg_array[22]
 
     # obtain the name of text file which will contain the placebo responses for NV model 1 and NV model 2
-    NV_model_placebo_response_text_file_name = arg_array[21]
+    NV_model_placebo_response_text_file_name = arg_array[23]
 
     # call the main() function
     main(shape_1, scale_1, alpha_1, beta_1, 
@@ -1106,6 +1281,7 @@ if(__name__=='__main__'):
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
          expected_RR50_file_name, expected_RR50_metadata_file_name, 
          expected_MPC_file_name, expected_MPC_metadata_file_name,
+         expected_TTP_file_name, expected_TTP_metadata_file_name,
          H_model_1_file_name, H_model_1_metadata_file_name,
          H_model_2_file_name, H_model_2_metadata_file_name,
          NV_model_placebo_response_text_file_name)

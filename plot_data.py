@@ -364,9 +364,12 @@ def plot_histogram(H_model_file_name,
     fig.savefig( H_model_plot_file_path )
 
 
-def main(expected_RR50_file_name, expected_RR50_metadata_file_name, expected_RR50_plot_file_name, expected_RR50_plot_with_power_curves_file_name,
-         expected_MPC_file_name, expected_MPC_metadata_file_name, expected_MPC_plot_file_name, expected_MPC_plot_with_power_curves_file_name,
-         expected_RR50_plot_title, expected_RR50_plot_with_power_curves_title, expected_MPC_plot_title, expected_MPC_plot_with_power_curves_title,
+def main(expected_RR50_file_name,  expected_RR50_metadata_file_name, expected_RR50_plot_file_name, expected_RR50_plot_with_power_curves_file_name,
+         expected_MPC_file_name,   expected_MPC_metadata_file_name,  expected_MPC_plot_file_name,  expected_MPC_plot_with_power_curves_file_name,
+         expected_TTP_file_name,   expected_TTP_metadata_file_name,  expected_TTP_plot_file_name,  expected_TTP_plot_with_power_curves_file_name,
+         expected_RR50_plot_title, expected_RR50_plot_with_power_curves_title, 
+         expected_MPC_plot_title,  expected_MPC_plot_with_power_curves_title,
+         expected_TTP_plot_title,  expected_TTP_plot_with_power_curves_title,
          H_model_1_file_name, H_model_1_metadata_file_name, H_model_1_plot_file_name, H_model_1_plot_title,
          H_model_2_file_name, H_model_2_metadata_file_name, H_model_2_plot_file_name, H_model_2_plot_title,
          x_tick_spacing, y_tick_spacing, 
@@ -427,87 +430,123 @@ def main(expected_RR50_file_name, expected_RR50_metadata_file_name, expected_RR5
                        
                        of the expected median percent change placebo response map with power law curves
         
-        9) expected_RR50_plot_title:
+        9) expected_TTP_file_name:
+        
+            (string) - the name of the file containing the expected time-to-prerandomization placebo 
+                       
+                       response map to be plotted
+
+        10) expected_TTP_metadata_file_name:
+                
+            (string) - the name of the file containing the metadata for the expected 50% time-to-prerandomization
+                       
+                       placebo response map to be plotted
+        
+        11) expected_TTP_plot_file_name:
+                
+            (string) - the name of the file that will eventually contain the PNG image of the plot 
+                       
+                       of the expected time-to-prerandomization placebo response map
+        
+        12) expected_TTP_plot_with_power_curves_file_name:
+        
+            (string) - the name of the file that will eventually contain the PNG image of the plot 
+                       
+                       of the expected time-to-prerandomization placebo response map with power law curves
+        
+        13) expected_RR50_plot_title:
 
             (string) - the title of the expected RR50 placebo response map that will be in the corresponding 
             
                        PNG image
         
-        10) expected_RR50_plot_with_power_curves_title:
+        14) expected_RR50_plot_with_power_curves_title:
 
             (string) - the title of the expected RR50 placebo response map with power law curves that will be 
             
                        in the corresponding PNG image
         
-        11) expected_MPC_plot_title:
+        15) expected_MPC_plot_title:
         
             (string) - the title of the expected MPC placebo response map that will be in the corresponding 
             
                        PNG image
         
-        12) expected_MPC_plot_with_power_curves_title:
+        16) expected_MPC_plot_with_power_curves_title:
 
             (string) - the title of the expected MPC placebo response map with power law curves that will be 
             
                        in the corresponding PNG image
         
-        13) H_model_1_file_name
+        17) expected_TTP_plot_title:
+                
+            (string) - the title of the expected TTP placebo response map that will be in the corresponding 
+            
+                       PNG image
+        
+        18) expected_TTP_plot_with_power_curves_title:
+
+            (string) - the title of the expected TTP placebo response map with power law curves that will be 
+            
+                       in the corresponding PNG image
+        
+        19) H_model_1_file_name
 
             (string) - the name of the file containing the histogram of all the model 1 patients to be plotted
 
-        14) H_model_1_metadata_file_name
+        20) H_model_1_metadata_file_name
 
             (string) - the name of the file containing the metadata for the histogram of all the model 1 patients 
                        
                        to be plotted
 
-        15) H_model_1_plot_file_name
+        21) H_model_1_plot_file_name
 
             (string) - the name of the file that will eventually contain the PNG image of the 
 
                        histogram of the NV model 1 patients
 
-        16) H_model_1_plot_title
+        22) H_model_1_plot_title
         
             (string) - the title of the histogram of all the NV model 1 patients to be plotted
 
-        17) H_model_2_file_name
+        23) H_model_2_file_name
 
             (string) - the name of the file containing the histogram of of all the model 2 patients to be plotted
 
-        18) H_model_2_metadata_file_name
+        24) H_model_2_metadata_file_name
 
             (string) - the name of the file containing the metadata for the histogram of all the model 2 patients 
                        
                        to be plotted
 
-        19) H_model_2_plot_file_name
+        25) H_model_2_plot_file_name
 
             (string) - the name of the file that will eventually contain the PNG image of the 
 
                        histogram of the NV model 2 patients
 
-        20) H_model_2_plot_title
+        26) H_model_2_plot_title
 
             (string) - the title of the histogram of all the NV model 2 patients to be plotted
 
-        21) x_tick_spacing:
+        27) x_tick_spacing:
         
             (float) - the spacing in between each of the labelled x-axis ticks
         
-        22) y_tick_spacing:
+        28) y_tick_spacing:
 
             (float) - the spacing in between each of the labelled y-axis ticks
         
-        23) min_power_law_slope:
+        29) min_power_law_slope:
 
             (float) - the minimum power law slope to be plotted on the expected placebo reponse maps
         
-        24) max_power_law_slope:
+        30) max_power_law_slope:
 
             (float) - the maximum power law slope to be plotted on the expected placebo reponse maps
         
-        25) power_law_slope_spacing:
+        31) power_law_slope_spacing:
 
             (float) - the size of the spaces in between each y-axis value of the power law curves on the 
                       
@@ -546,6 +585,20 @@ def main(expected_RR50_file_name, expected_RR50_metadata_file_name, expected_RR5
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              expected_MPC_plot_with_power_curves_title)
+    
+    # plot the expected time-to-prerandomization placebo response map
+    plot_map(expected_TTP_file_name, 
+             expected_TTP_metadata_file_name, expected_TTP_file_name, 
+             x_tick_spacing, y_tick_spacing, False,
+             min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
+             expected_TTP_plot_title)
+
+    # plot the expected time-to-prerandomization placebo response map with power law curves
+    plot_map(expected_TTP_file_name, 
+             expected_TTP_metadata_file_name, expected_TTP_plot_with_power_curves_file_name, 
+             x_tick_spacing, y_tick_spacing, True,
+             min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
+             expected_TTP_plot_with_power_curves_title)
     
     # plot the histogram of all the NV model 1 patients
     plot_histogram(H_model_1_file_name, 
@@ -586,32 +639,45 @@ if(__name__=='__main__'):
     expected_MPC_plot_title = "Expected MPC placebo response"
     expected_MPC_plot_with_power_curves_title = "Expected MPC placebo response with power law curves"
 
-    # obtain the names of the files associated with the NV model 1 histogram
-    H_model_1_file_name = arg_array[8]
-    H_model_1_metadata_file_name = arg_array[9]
-    H_model_1_plot_file_name = arg_array[10]
+    # obtain the names of the files associated with the median percent change placebo response map
+    expected_TTP_file_name = arg_array[8]
+    expected_TTP_metadata_file_name = arg_array[9]
+    expected_TTP_plot_file_name = arg_array[10]
+    expected_TTP_plot_with_power_curves_file_name = arg_array[11]
+
+    # set the titles of the plots to be generated for the median percent change placebo response maps
+    expected_TTP_plot_title = "Expected TTP placebo response"
+    expected_TTP_plot_with_power_curves_title = "Expected TTP placebo response with power law curves"
 
     # obtain the names of the files associated with the NV model 1 histogram
-    H_model_2_file_name = arg_array[11]
-    H_model_2_metadata_file_name = arg_array[12]
-    H_model_2_plot_file_name = arg_array[13]
+    H_model_1_file_name = arg_array[12]
+    H_model_1_metadata_file_name = arg_array[13]
+    H_model_1_plot_file_name = arg_array[14]
+
+    # obtain the names of the files associated with the NV model 1 histogram
+    H_model_2_file_name = arg_array[15]
+    H_model_2_metadata_file_name = arg_array[16]
+    H_model_2_plot_file_name = arg_array[17]
 
     # set the titles of the histograms for both Model 1 and Model 2
     H_model_1_plot_title = "Model 1 patient population"
     H_model_2_plot_title = "Model 2 patient population"
 
     # obtain the spacing in between each of the labelled x-axis and y-axis ticks for all maps and histograms
-    x_tick_spacing = float(arg_array[14])
-    y_tick_spacing = float(arg_array[15])
+    x_tick_spacing = float(arg_array[18])
+    y_tick_spacing = float(arg_array[19])
 
     # obtain the slopes of the power law curves to be plotted
-    min_power_law_slope = float(arg_array[16])
-    max_power_law_slope = float(arg_array[17])
-    power_law_slope_spacing = float(arg_array[18])
+    min_power_law_slope = float(arg_array[20])
+    max_power_law_slope = float(arg_array[21])
+    power_law_slope_spacing = float(arg_array[22])
 
-    main(expected_RR50_file_name, expected_RR50_metadata_file_name, expected_RR50_plot_file_name, expected_RR50_plot_with_power_curves_file_name,
-         expected_MPC_file_name, expected_MPC_metadata_file_name, expected_MPC_plot_file_name, expected_MPC_plot_file_name_with_power_curves,
-         expected_RR50_plot_title, expected_RR50_plot_with_power_curves_title, expected_MPC_plot_title, expected_MPC_plot_with_power_curves_title,
+    main(expected_RR50_file_name,  expected_RR50_metadata_file_name, expected_RR50_plot_file_name, expected_RR50_plot_with_power_curves_file_name,
+         expected_MPC_file_name,   expected_MPC_metadata_file_name,  expected_MPC_plot_file_name,  expected_MPC_plot_file_name_with_power_curves,
+         expected_TTP_file_name,   expected_TTP_metadata_file_name,  expected_TTP_plot_file_name,  expected_TTP_plot_with_power_curves_file_name,
+         expected_RR50_plot_title, expected_RR50_plot_with_power_curves_title, 
+         expected_MPC_plot_title, expected_MPC_plot_with_power_curves_title,
+         expected_TTP_plot_title,  expected_TTP_plot_with_power_curves_title,
          H_model_1_file_name, H_model_1_metadata_file_name, H_model_1_plot_file_name, H_model_1_plot_title,
          H_model_2_file_name, H_model_2_metadata_file_name, H_model_2_plot_file_name, H_model_2_plot_title,
          x_tick_spacing, y_tick_spacing, 
