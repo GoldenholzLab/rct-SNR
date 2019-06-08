@@ -99,6 +99,90 @@ def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients,
     return daily_seizure_diaries
 
 
+def apply_effect(effect_mu, effect_sigma, daily_seizure_diaries,
+                 num_patients, num_baseline_days, num_testing_days):
+    '''
+
+    This function modifies the seziure counts in the testing period of one patient's daily seizure diary 
+
+    according to a randomly generated effect size (generated via Normal distribution). If the effect is
+
+    postive, it removes seizures. If it is negative, it adds them.
+
+    Inputs:
+
+        1) effect_mu:
+
+            (float) - the mean of the desired effect's distribution
+        
+        2) effect_sigma:
+
+            (float) - the standard deviation of the desired effect's distribution
+
+        3) daily_seizure_diaries:
+        
+            (2D Numpy array) - the seizure diaries of multiple patients, with each one being of equal length
+                               
+                               in both the baseline and testing period
+
+        4) num_baseline_days:
+        
+            (int) - the number of days in the baseline period of each patients
+
+        5) num_testing_days:
+
+            (int) - the number of days in the testing period of each patient
+        
+    Outputs:
+    
+        1) daily_seizure_diary:
+
+            (1D Numpy array) - the seizure diary of one patient, with seizure counts of the testing period modified by the effect
+
+    '''
+
+    # for each patient's seizure diary:
+    for patient_index in range(num_patients):
+
+        # randomly generate an effect from the given distribution
+        effect = np.random.normal(effect_mu, effect_sigma)
+    
+        # if the effect is greater than 100%:
+        if(effect > 1):
+        
+            # threshold it so that it cannot be greater than 100%
+            effect = 1
+    
+        # extract only the seizure counts from the testing period of the patient's seizure diary
+        testing_counts = daily_seizure_diaries[patient_index, num_baseline_days:]
+    
+        # for each seizure count in the testing period:
+        for testing_count_index in range(num_testing_days):
+        
+            # initialize the number of seizures removed per each seizure count
+            num_removed = 0
+
+            # extract only the relevant seizure count from the testing period
+            testing_count = testing_counts[testing_count_index]
+            
+            # for each individual seizure in the relevant seizure count
+            for count_index in range(np.int_(testing_count)):
+                
+                # if a randomly generated number between 0 and 1 is less than or equal to the absolute value of the effect
+                if(np.random.random() <= np.abs(effect)):
+                    
+                    # iterate the number of seizures removed by the sign of the effect
+                    num_removed = num_removed + np.sign(effect)
+        
+            # remove (or add) the number of seizures from the relevant seizure count as determined by the probabilistic algorithm above
+            testing_counts[testing_count_index] = testing_count  - num_removed
+    
+        # set the patient's seizure counts from the testing period equal to the newly modified seizure counts
+        daily_seizure_diaries[patient_index, num_baseline_days:] = testing_counts
+    
+    return daily_seizure_diaries
+
+
 def calculate_percent_changes(daily_seizure_diaries, num_baseline_days, num_patients):
     '''
 
