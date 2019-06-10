@@ -1,4 +1,6 @@
 import numpy as np
+from scipy import stats
+from lifelines.statistics import logrank_test
 import os
 import json
 import pandas as pd
@@ -342,6 +344,252 @@ def calculate_times_to_prerandomization(daily_seizure_diaries, num_months_baseli
     return TTP_times
 
 
+def generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_trial_arm,
+                                  num_baseline_days, num_testing_days, min_req_base_sz_count,
+                                  placebo_mu, placebo_sigma, drug_mu, drug_sigma):
+    '''
+
+    This function generates the patient diaries needed for one trial which is assumed to have a
+
+    drug arm and a placebo arm. The patient populations of both the drug arm and the placebo arm
+
+    both have the same number of patients.
+
+    Inputs:
+
+        1) daily_mean:
+
+            (float) - the mean of the daily seizure counts in each patient's seizure diary
+
+        2) daily_std_dev:
+
+            (float) - the standard deviation of the daily seizure counts in each patient's seizure diary
+
+        3) num_patients_per_trial_arm:
+
+            (int) - the number of patients generated per trial arm
+
+        4) num_baseline_days:
+
+            (int) - the number of baseline days in each patient's seizure diary
+
+        5) num_testing_days:
+
+            (int) - the number of testing days in each patient's seizure diary
+
+        6) min_req_base_sz_count:
+        
+            (int) - the minimum number of required baseline seizure counts
+
+        7) placebo_mu:
+
+            (float) - the mean of the placebo effect
+
+        8) placebo_sigma:
+        
+            (float) - the standard deviation of the placebo effect
+
+        9) drug_mu:
+
+            (float) - the mean of the drug effect
+
+        10) drug_sigma:
+
+            (float) - the standard deviation of the drug effect
+
+    Outputs:
+
+        1) placebo_arm_daily_seizure_diaries:
+        
+            (2D Numpy array) - an array of the patient diaries from the placebo arm of one trial
+
+        2) drug_arm_daily_seizure_diaries:
+
+            (2D Numpy array) - an array of the patient diaries from the drug arm of one trial
+
+    '''
+    
+    # generate all the seizure diaries for the placebo arm
+    placebo_arm_daily_seizure_diaries = \
+        generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients_per_trial_arm, 
+                                       num_baseline_days, num_testing_days, 
+                                       min_req_base_sz_count)
+
+    # modify the placebo arm diaries via the placebo effect
+    placebo_arm_daily_seizure_diaries = \
+        apply_effect(placebo_mu, placebo_sigma, placebo_arm_daily_seizure_diaries,
+                     num_patients_per_trial_arm, num_baseline_days, num_testing_days)
+
+    # generate all the seizure diaries for the drug arm
+    drug_arm_daily_seizure_diaries = \
+        generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients_per_trial_arm, 
+                                       num_baseline_days, num_testing_days, 
+                                       min_req_base_sz_count)
+
+    # modify the placebo arm diaries via the placebo effect
+    drug_arm_daily_seizure_diaries = \
+        apply_effect(placebo_mu, placebo_sigma, drug_arm_daily_seizure_diaries,
+                     num_patients_per_trial_arm, num_baseline_days, num_testing_days)
+
+    # modify the placebo arm diaries via the drug effect, after they've already been modified by the placebo effect
+    drug_arm_daily_seizure_diaries = \
+        apply_effect(drug_mu, drug_sigma, drug_arm_daily_seizure_diaries,
+                     num_patients_per_trial_arm, num_baseline_days, num_testing_days)
+    
+    return [placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries]
+
+
+def esimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
+                                       num_patients_per_trial_arm, num_trials,
+                                       num_baseline_months, num_testing_months, min_req_base_sz_count,
+                                       placebo_mu, placebo_sigma, drug_mu, drug_sigma):
+    '''
+
+    This function estimates the statistical power of a 
+
+    Inputs:
+
+        1) monthly_mean:
+
+            (float) - the mean of the monthly seizure counts in each patient's seizure diary
+
+        2) monthly_std_dev:
+
+            (float) - the standard deviation of the monthly seizure counts in each patient's seizure diary
+
+        3) num_patients_per_trial_arm:
+
+            (int) - the number of patients generated per trial arm
+
+        4) num_baseline_days:
+
+            (int) - the number of baseline days in each patient's seizure diary
+
+        5) num_testing_days:
+
+            (int) - the number of testing days in each patient's seizure diary
+
+        6) min_req_base_sz_count:
+        
+            (int) - the minimum number of required baseline seizure counts
+
+        7) placebo_mu:
+
+            (float) - the mean of the placebo effect
+
+        8) placebo_sigma:
+        
+            (float) - the standard deviation of the placebo effect
+
+        9) drug_mu:
+
+            (float) - the mean of the drug effect
+
+        10) drug_sigma:
+
+            (float) - the standard deviation of the drug effect
+
+    Outputs:
+
+        1) RR50_power
+        
+            (float) - the statistical power of the 50% responder rate endpoint for a given 
+            
+                      monthly seizure frequency and monthly standard deviation
+
+        2) MPC_power
+
+            (float) - the statistical power of the median percent change endpoint for a given 
+            
+                      monthly seizure frequency and monthly standard deviation
+        
+        3) TTP_power
+
+            (float) - the statistical power of the time-to-prerandomization endpoint for a given 
+            
+                      monthly seizure frequency and monthly standard deviation
+
+    '''
+
+
+    # make sure that the patient does not have a true mean seizure count of 0
+    if(monthly_mean != 0):
+
+        # make sure that the patient is supposed to have overdispersed data
+        if(monthly_std_dev > np.sqrt(monthly_mean)):
+
+            # hard-code the number of days in one month into this program
+            num_days_in_one_month = 28
+
+            # convert the monthly mean and monthly standard deviation into a daily mean and daily standard deviation
+            daily_mean = monthly_mean/num_days_in_one_month
+            daily_std_dev = monthly_std_dev/(num_days_in_one_month**0.5)
+    
+            # convert the the number of baseline months and testing months into baseline days and testing days
+            num_baseline_days = num_days_in_one_month*num_baseline_months
+            num_testing_days = num_days_in_one_month*num_testing_months
+
+            # initialize the array that will contain the p_values for the 50% responder rates, median percent changes, and time-to-prerandomization from every trial
+            RR50_p_value_array = np.zeros(num_trials)
+            MPC_p_value_array = np.zeros(num_trials)
+            TTP_p_value_array = np.zeros(num_trials)
+
+            # for every trial:
+            for trial_index in range(num_trials):
+
+                # generate one set of daily seizure diaries for each placebo arm and drug arm of a trial
+                [placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries] = \
+                    generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_trial_arm,
+                                                  num_baseline_days, num_testing_days, min_req_base_sz_count,
+                                                  placebo_mu, placebo_sigma, drug_mu, drug_sigma)
+
+                # calculate the percent changes
+                placebo_percent_changes = calculate_percent_changes(placebo_arm_daily_seizure_diaries, num_baseline_days, num_patients_per_trial_arm)
+                drug_percent_changes = calculate_percent_changes(drug_arm_daily_seizure_diaries, num_baseline_days, num_patients_per_trial_arm)
+
+                placebo_TTP_times = calculate_times_to_prerandomization(placebo_arm_daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial_arm)
+                drug_TTP_times = calculate_times_to_prerandomization(drug_arm_daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial_arm)
+        
+                placebo_50_percent_responders = np.sum(placebo_percent_changes >= 0.5)
+                placebo_50_percent_non_responders = num_patients_per_trial_arm - placebo_50_percent_responders
+                drug_50_percent_responders = np.sum(drug_percent_changes >= 0.5)
+                drug_50_percent_non_responders = num_patients_per_trial_arm - drug_50_percent_responders
+    
+                table = np.array([[placebo_50_percent_responders, placebo_50_percent_non_responders],[drug_50_percent_responders, drug_50_percent_non_responders]])
+                [_, RR50_p_value] = stats.fisher_exact(table)
+                [_, MPC_p_value] = stats.ranksums(placebo_percent_changes, drug_percent_changes)
+
+                # the following two arrays are to meant to say to the logrank test that none of the data is censored (i.e., missing)
+                events_observed_placebo = np.ones(len(placebo_TTP_times))
+                events_observed_drug = np.ones(len(drug_TTP_times))
+
+                TTP_results = logrank_test(placebo_TTP_times, drug_TTP_times, events_observed_placebo, events_observed_drug)
+                TTP_p_value = TTP_results.p_value
+    
+                RR50_p_value_array[trial_index] = RR50_p_value
+                MPC_p_value_array[trial_index] = MPC_p_value
+                TTP_p_value_array[trial_index] = TTP_p_value
+    
+            RR50_power = np.sum(RR50_p_value_array < 0.05)/num_trials
+            MPC_power = np.sum(MPC_p_value_array < 0.05)/num_trials
+            TTP_power = np.sum(TTP_p_value_array < 0.05)/num_trials
+
+            return [RR50_power, MPC_power, TTP_power]
+        
+        # if the patient does not have overdispersed data:
+        else:
+
+            # say that calculating their placebo response is impossible
+            return [np.nan, np.nan, np.nan]
+    
+    # if the patient does not have a true mean seizure count of 0, then:
+    else:
+
+        # say that calculating their placebo response is impossible
+        return [np.nan, np.nan, np.nan]
+
+
+
 def estimate_expected_endpoints(monthly_mean, monthly_std_dev, 
                                 num_baseline_months, num_testing_months, 
                                 min_req_base_sz_count, num_patients_per_trial, num_trials):
@@ -381,7 +629,7 @@ def estimate_expected_endpoints(monthly_mean, monthly_std_dev,
 
         6) num_patients_per_trial:
 
-            (int) - the number of patients generated per trial
+            (int) - the number of patients generated per trial arm
 
         7) num_trials:
 
