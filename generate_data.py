@@ -439,7 +439,7 @@ def generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_tr
     return [placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries]
 
 
-def esimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
+def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
                                        num_patients_per_trial_arm, num_trials,
                                        num_baseline_months, num_testing_months, min_req_base_sz_count,
                                        placebo_mu, placebo_sigma, drug_mu, drug_sigma):
@@ -603,147 +603,14 @@ def esimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
         return [np.nan, np.nan, np.nan]
 
 
-def estimate_expected_endpoints(monthly_mean, monthly_std_dev, 
-                                num_baseline_months, num_testing_months, 
-                                min_req_base_sz_count, num_patients_per_trial, num_trials):
+def generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mean,    step_monthly_mean, 
+                                    start_monthly_std_dev,      stop_monthly_std_dev, step_monthly_std_dev,
+                                    num_baseline_months,        num_testing_months,   min_req_base_sz_count, 
+                                    num_patients_per_trial_arm, num_trials,
+                                    placebo_mu, placebo_sigma,  drug_mu, drug_sigma):
     '''
 
-    This function estimates what the expected placebo response should be for a patient with a
-
-    monthly mean and monthly standard deviation as specified by the input parameters. This function 
-
-    will just return NaN if the standard deviation is less than the square root of the mean due to
-
-    mathematical restrictions on the negative binomial distribution which is generating all these
-
-    seizure counts. This function will also return NaN if the given monthly mean is just zero.
-
-    Inputs:
-
-        1) monthly_mean:
-
-            (float) - the mean of the monthly seizure counts in each patient's seizure diary
-
-        2) monthly_std_dev:
-
-            (float) - the standard deviation of the monthly seizure counts in each patient's seizure diary
-
-        3) num_baseline_months:
-        
-            (int) - the number of baseline months in each patient's seizure diary
-
-        4) num_testing_months:
-
-            (int) - the number of testing months in each patient's seizure diary
-
-        5) min_req_base_sz_count:
-
-            (int) - the minimum number of required baseline seizure counts
-
-        6) num_patients_per_trial:
-
-            (int) - the number of patients generated per trial arm
-
-        7) num_trials:
-
-            (int) -  the number of trials used to estimate the expected endpoints
-    
-    Outputs:
-
-        1) expected_RR50:
-
-            (float) - the 50% responder rate which is expected from an individual with this specific 
-
-                      monthly mean and monthly standard deviation
-        
-        2) expected_MPC:
-
-            (float) - the median percent change which is expected from an individual with this specific 
-
-                      monthly mean and monthly standard deviation
-
-        3) expected_TTP:
-
-            (float) - the time-to-prerandomization which is expected from an individual with this specific 
-
-                      monthly mean and monthly standard deviation
-
-    '''
-
-    # make sure that the patient does not have a true mean seizure count of 0
-    if(monthly_mean != 0):
-
-        # make sure that the patient is supposed to have overdispersed data
-        if(monthly_std_dev > np.sqrt(monthly_mean)):
-
-            # convert the monthly mean and monthly standard deviation into a daily mean and daily standard deviation
-            daily_mean = monthly_mean/28
-            daily_std_dev = monthly_std_dev/np.sqrt(28)
-
-            # convert the the number of baseline months and testing months into baseline days and testing days
-            num_baseline_days = num_baseline_months*28
-            num_testing_days = num_testing_months*28
-
-            # initialize the array that will contain the 50% responder rates, median percent changes, and time-to-prerandomization from every trial
-            RR50_array = np.zeros(num_trials)
-            MPC_array = np.zeros(num_trials)
-            TTP_array = np.zeros(num_trials)
-
-            # for every trial:
-            for trial_index in range(num_trials):
-
-                # generate one set of daily seizure diaries for each trial
-                '''
-                In the future, I will create two sets of diaries: one from placebo arm and one from drug arm.
-                '''
-                daily_seizure_diaries = \
-                    generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients_per_trial, 
-                                                   num_baseline_days, num_testing_days, 
-                                                   min_req_base_sz_count)
-
-                # calculate the percent changes
-                percent_changes = calculate_percent_changes(daily_seizure_diaries, num_baseline_days, num_patients_per_trial)
-
-                # calcualte the times-to-prerandomization for each patient
-                TTP_times = calculate_times_to_prerandomization(daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial)
-
-                # calculate the endpoints for this trial
-                RR50 = 100*np.sum(percent_changes >= 0.5)/num_patients_per_trial
-                MPC = 100*np.median(percent_changes)
-                med_TTP_time = np.median(TTP_times)
-
-                # store the endpoints in their respective arrays
-                RR50_array[trial_index] = RR50
-                MPC_array[trial_index] = MPC
-                TTP_array[trial_index] = med_TTP_time
-
-            # calculate the means of the endpoints over all trials
-            expected_RR50 = np.mean(RR50_array)
-            expected_MPC = np.mean(MPC_array)
-            expected_TTP = np.mean(TTP_array)
-
-            return [expected_RR50, expected_MPC, expected_TTP]
-    
-        # if the patient does not have overdispersed data:
-        else:
-
-            # say that calculating their placebo response is impossible
-            return [np.nan, np.nan, np.nan]
-
-    # if the patient does not have a true mean seizure count of 0, then:
-    else:
-
-        # say that calculating their placebo response is impossible
-        return [np.nan, np.nan, np.nan]
-
-
-def generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,    step_monthly_mean, 
-                                    start_monthly_std_dev,    stop_monthly_std_dev, step_monthly_std_dev,
-                                    num_baseline_months,      num_testing_months,   min_req_base_sz_count, 
-                                    num_patients_per_trial,   num_trials):
-    '''
-
-    This function generates all of the expected endpoint maps to be stored for later plotting. It also 
+    This function generates all of the statistical power maps to be stored for later plotting. It also 
 
     generates some metadata about these maps that can be utilized alongside models of patient seizure 
 
@@ -789,13 +656,29 @@ def generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,
 
             (int) - the minimum number of required baseline seizure counts
         
-        10) num_patients_per_trial:
+        10) num_patients_per_trial_arm:
 
-            (int) - the number of patients generated per trial
+            (int) - the number of patients generated per trial arm
         
         11) num_trials:
 
             (int) -  the number of trials used to estimate the expected endpoints at each point in the map
+        
+        12) placebo_mu:
+
+            (float) - the mean of the placebo effect
+
+        13) placebo_sigma:
+        
+            (float) - the standard deviation of the placebo effect
+
+        14) drug_mu:
+
+            (float) - the mean of the drug effect
+
+        15) drug_sigma:
+
+            (float) - the standard deviation of the drug effect
     
     Outputs:
 
@@ -850,9 +733,10 @@ def generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,
 
             # estimate the estimate the expected endpoints for the given mean and standard deviation
             [expected_RR50, expected_MPC, expected_TTP] =  \
-                estimate_expected_endpoints(monthly_mean, monthly_std_dev, 
-                                            num_baseline_months, num_testing_months, 
-                                            min_req_base_sz_count, num_patients_per_trial, num_trials)
+                estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
+                                                    num_patients_per_trial_arm, num_trials,
+                                                    num_baseline_months, num_testing_months, min_req_base_sz_count,
+                                                    placebo_mu, placebo_sigma, drug_mu, drug_sigma)
             
             # put a stop to the timer on the endpoint estimation
             stop_time_in_seconds = time.time()
@@ -982,21 +866,21 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
                       num_patients_per_model, num_months_per_patient,
                       start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
                       start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-                      num_patients_per_trial, num_trials,
-                      num_baseline_months, num_testing_months,
-                      min_req_base_sz_count):
+                      num_patients_per_trial_arm, num_trials,
+                      num_baseline_months, num_testing_months, min_req_base_sz_count,
+                      placebo_mu, placebo_sigma,  drug_mu, drug_sigma):
 
     '''
 
-    This function generates several things: first of all, it generates the expected placebo response maps
-
-    for the 50% responder rate and the median percent change. Second of all, it generates histograms of all the 
+    This function generates several things: first of all, it generates the statistical power maps for the 50% 
     
-    patients generated by NV model 1 and NV model 2. Third of all, it generates the collective placebo response 
+    responder rate and the median percent change. Second of all, it generates histograms of all the patients generated by 
     
-    of all the patients generated from NV model 1 and NV model 2, which is calculated by summing over the multiplication
-
-    of the expected endpoint placebo response maps and the model 1 and model 2 histograms.
+    NV model 1 and NV model 2. Third of all, it generates the collective placebo response of all the patients generated from 
+    
+    NV model 1 and NV model 2, which is calculated by summing over the multiplication of the expected endpoint placebo response 
+    
+    maps and the model 1 and model 2 histograms.
 
     Inputs:
 
@@ -1064,9 +948,9 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
             
             (float) - the spaces in between each location on the monthly seizure count standard deviation axis for all expected endpoint maps
 
-        18) num_patients_per_trial:
+        18) num_patients_per_trial_arm:
         
-            (int) -  the number of patients generated per trial
+            (int) -  the number of patients generated per trial arm
             
         19) num_trials:
             
@@ -1087,6 +971,22 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
         22) min_req_base_sz_count:
             
             (int) - the minimum number of required baseline seizure counts for all patients used to estimate the expected placebo response maps
+        
+        23) placebo_mu:
+
+            (float) - the mean of the placebo effect
+
+        24) placebo_sigma:
+        
+            (float) - the standard deviation of the placebo effect
+
+        25) drug_mu:
+
+            (float) - the mean of the drug effect
+
+        26) drug_sigma:
+
+            (float) - the standard deviation of the drug effect
 
     Outputs:
 
@@ -1150,10 +1050,11 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
 
     # generate the expected RR50 and expected MPC maps
     [expected_RR50_endpoint_map, expected_MPC_endpoint_map, expected_TTP_endpoint_map] = \
-        generate_expected_endpoint_maps(start_monthly_mean,       stop_monthly_mean,    step_monthly_mean, 
-                                        start_monthly_std_dev,    stop_monthly_std_dev, step_monthly_std_dev,
-                                        num_baseline_months,      num_testing_months,   min_req_base_sz_count, 
-                                        num_patients_per_trial,   num_trials)
+        generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mean,    step_monthly_mean, 
+                                        start_monthly_std_dev,      stop_monthly_std_dev, step_monthly_std_dev,
+                                        num_baseline_months,        num_testing_months,   min_req_base_sz_count, 
+                                        num_patients_per_trial_arm, num_trials,
+                                        placebo_mu, placebo_sigma,  drug_mu, drug_sigma)
 
     # generate Model 1 patients
     [model_1_monthly_count_averages, model_1_monthly_count_standard_deviations] = \
@@ -1350,7 +1251,8 @@ def main(shape_1, scale_1, alpha_1, beta_1,
          num_patients_per_model, num_months_per_patient,
          start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-         num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
+         num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
+         placebo_mu, placebo_sigma,  drug_mu, drug_sigma,
          expected_RR50_file_name, expected_RR50_metadata_file_name, 
          expected_MPC_file_name, expected_MPC_metadata_file_name,
          expected_TTP_file_name, expected_TTP_metadata_file_name,
@@ -1441,71 +1343,87 @@ def main(shape_1, scale_1, alpha_1, beta_1,
 
             (int) - the minimum number of required baseline seizure counts
         
-        20) num_patients_per_trial:
+        20) num_patients_per_trial_arm:
 
-            (int) - the number of patients generated per trial
+            (int) - the number of patients generated per trial arm
         
         21) num_trials:
 
             (int) -  the number of trials used to estimate the expected endpoints at each point in the expected placebo response maps
+        
+        22) placebo_mu:
 
-        22) expected_RR50_file_name:
+            (float) - the mean of the placebo effect
+
+        23) placebo_sigma:
+        
+            (float) - the standard deviation of the placebo effect
+
+        24) drug_mu:
+
+            (float) - the mean of the drug effect
+
+        25) drug_sigma:
+
+            (float) - the standard deviation of the drug effect
+
+        26) expected_RR50_file_name:
 
             (string) - the name of the JSON file which will contain the expected 50% responder rate placebo response 
             
                        map to be plotted later
         
-        23) expected_RR50_metadata_file_name:
+        27) expected_RR50_metadata_file_name:
 
             (string) - the name of the JSON file which will contain the expected 50% responder rate placebo response 
             
                        map metadata to be plotted later
 
-        24) expected_MPC_file_name:
+        28) expected_MPC_file_name:
 
             (string) - the name of the JSON file which will contain the expected median percent change placebo response 
             
                        map to be plotted later
         
-        25) expected_MPC_metadata_file_name:
+        29) expected_MPC_metadata_file_name:
 
             (string) - the name of the JSON file which will contain the expected median percent change placebo response 
             
                        map metadata to be plotted later
         
-        26) expected_TTP_file_name: 
+        30) expected_TTP_file_name: 
         
             (string) - the name of the JSON file which will contain the expected time-to-prerandomization placebo response 
             
                        map to be plotted later
 
-        27) expected_TTP_metadata_file_name:
+        31) expected_TTP_metadata_file_name:
         
             (string) - the name of the JSON file which will contain the expected time-to-prerandomization placebo response 
             
                        map metadata to be plotted later
         
-        26) H_model_1_file_name:
+        32) H_model_1_file_name:
         
             (string) - the name of the JSON file which will contain the histogram of NV model 1 to be plotted later
 
-        27) H_model_1_metadata_file_name:
+        33) H_model_1_metadata_file_name:
                 
             (string) - the name of the JSON file which will contain the histogram of NV model 1 metadata to be plotted 
             
                        later
 
-        28) H_model_2_file_name:
+        34) H_model_2_file_name:
                 
             (string) - the name of the JSON file which will contain the histogram of NV model 2 to be plotted later
 
-        29) H_model_2_metadata_file_name:
+        35) H_model_2_metadata_file_name:
         
             (string) - the name of the JSON file which will contain the histogram of NV model 2 metadata to be plotted 
             
                        later
 
-        30) NV_model_placebo_response_text_file_name:
+        36) NV_model_placebo_response_text_file_name:
 
             (string) - the name of the text file which will contain the placebo responses to NV model 1 and NV model 2
 
@@ -1521,9 +1439,9 @@ def main(shape_1, scale_1, alpha_1, beta_1,
                           num_patients_per_model, num_months_per_patient,
                           start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
                           start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-                          num_patients_per_trial, num_trials,
-                          num_baseline_months, num_testing_months,
-                          min_req_base_sz_count)
+                          num_patients_per_trial_arm, num_trials,
+                          num_baseline_months, num_testing_months, min_req_base_sz_count,
+                          placebo_mu, placebo_sigma,  drug_mu, drug_sigma)
 
     # store the expected RR50 endpoint map
     store_map(expected_RR50_endpoint_map, 
@@ -1595,27 +1513,33 @@ if(__name__=='__main__'):
     num_baseline_months = int(arg_array[6])
     num_testing_months = int(arg_array[7])
     min_req_base_sz_count = int(arg_array[8])
-    num_patients_per_trial = int(arg_array[9])
+    num_patients_per_trial_arm = int(arg_array[9])
     num_trials = int(arg_array[10])
 
+    # obtain the parameters for generating the placebo and drug effects
+    placebo_mu = int(arg_array[11])
+    placebo_sigma = int(arg_array[12])
+    drug_mu = int(arg_array[13])
+    drug_sigma = int(arg_array[14])
+
     # obtain the parameters needed for generating the histograms of the model 1 and model 2 patients
-    num_patients_per_model = int(arg_array[11])
-    num_months_per_patient = int(arg_array[12])
+    num_patients_per_model = int(arg_array[15])
+    num_months_per_patient = int(arg_array[16])
 
     # obtain the names of the files where the data/metadata will be stored
-    expected_RR50_file_name = arg_array[13]
-    expected_RR50_metadata_file_name = arg_array[14]
-    expected_MPC_file_name = arg_array[15]
-    expected_MPC_metadata_file_name = arg_array[16]
-    expected_TTP_file_name = arg_array[17]
-    expected_TTP_metadata_file_name = arg_array[18]
-    H_model_1_file_name = arg_array[19]
-    H_model_1_metadata_file_name = arg_array[20]
-    H_model_2_file_name = arg_array[21]
-    H_model_2_metadata_file_name = arg_array[22]
+    expected_RR50_file_name = arg_array[17]
+    expected_RR50_metadata_file_name = arg_array[18]
+    expected_MPC_file_name = arg_array[19]
+    expected_MPC_metadata_file_name = arg_array[20]
+    expected_TTP_file_name = arg_array[21]
+    expected_TTP_metadata_file_name = arg_array[22]
+    H_model_1_file_name = arg_array[23]
+    H_model_1_metadata_file_name = arg_array[24]
+    H_model_2_file_name = arg_array[25]
+    H_model_2_metadata_file_name = arg_array[26]
 
     # obtain the name of text file which will contain the placebo responses for NV model 1 and NV model 2
-    NV_model_placebo_response_text_file_name = arg_array[23]
+    NV_model_placebo_response_text_file_name = arg_array[27]
 
     # call the main() function
     main(shape_1, scale_1, alpha_1, beta_1, 
@@ -1623,7 +1547,8 @@ if(__name__=='__main__'):
          num_patients_per_model, num_months_per_patient,
          start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-         num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial, num_trials, 
+         num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
+         placebo_mu, placebo_sigma,  drug_mu, drug_sigma,
          expected_RR50_file_name, expected_RR50_metadata_file_name, 
          expected_MPC_file_name, expected_MPC_metadata_file_name,
          expected_TTP_file_name, expected_TTP_metadata_file_name,
