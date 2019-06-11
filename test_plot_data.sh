@@ -36,4 +36,7 @@ inputs[20]=0.5
 inputs[21]=1.4
 inputs[22]=0.1
 
+# the decimal place to which all power law slopes should be rounded to on legends
+inputs[23]=1
+
 python plot_data.py ${inputs[@]}

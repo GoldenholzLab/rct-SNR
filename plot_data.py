@@ -89,8 +89,9 @@ def retrieve_map(data_map_file_name, data_map_metadata_file_name):
 
 
 def plot_power_law_curves(ax, min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-                x_axis_start, x_axis_stop, x_axis_step, 
-                y_axis_start, y_axis_stop, y_axis_step):
+                          x_axis_start, x_axis_stop, x_axis_step, 
+                          y_axis_start, y_axis_stop, y_axis_step,
+                          legend_decimal_round):
     '''
 
     This function plots the power law curves onto a heatmap which has already been plotted.
@@ -138,6 +139,20 @@ def plot_power_law_curves(ax, min_power_law_slope, max_power_law_slope, power_la
         10) y_axis_step:
 
             (float) - the size of the spaces in between each y-axis value
+        
+        11) legend_decimal_round:
+
+            (int) - the decimal place to which the power law slopes should be rounded to
+                    
+                    within the legend of power law slopes
+    
+    Outputs:
+
+        1) ax:
+
+            (matplotlib.axes.Axes object) - the axes object containing the plot of the map with
+                                            
+                                            power law curves and an accompanying legend 
 
     '''
 
@@ -163,6 +178,9 @@ def plot_power_law_curves(ax, min_power_law_slope, max_power_law_slope, power_la
         # actaully plot the power law curve corresponding to this power law slope
         ax.plot(x_axis_array*x_axis_scale_ratio, (y_axis_stop - power_law_y_axis_points)*y_axis_scale_ratio )
 
+    # add the legend saying what slope each curve corresponds to
+    ax.legend( [ str(np.round(power_law_slopes[power_law_slope_index], legend_decimal_round)) for power_law_slope_index in range(len(power_law_slopes)) ] ) 
+
     return ax
 
 
@@ -170,7 +188,7 @@ def plot_map(data_map_file_name,
              data_map_metadata_file_name, data_plot_file_name, 
              x_tick_spacing, y_tick_spacing, plot_curves,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             map_title):
+             map_title, legend_decimal_round):
     '''
 
     This function plots one statistical power map with the given input parameters.
@@ -220,6 +238,12 @@ def plot_map(data_map_file_name,
         10) map_title:
 
             (string) - the title of the map to be plotted
+        
+        11) legend_decimal_round:
+
+            (int) - the decimal place to which the power law slopes should be rounded to
+                    
+                    within the legends of power law slopes
 
     Outputs:
 
@@ -272,7 +296,8 @@ def plot_map(data_map_file_name,
         # plot the power law curves
         ax = plot_power_law_curves(ax, min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
                                    x_axis_start, x_axis_stop, x_axis_step, 
-                                   y_axis_start, y_axis_stop, y_axis_step)
+                                   y_axis_start, y_axis_stop, y_axis_step,
+                                   legend_decimal_round)
 
     # save the figure as a PNG file in the same folder as this script
     fig.savefig( data_plot_file_path )
@@ -373,7 +398,7 @@ def main(RR50_stat_power_file_name,  RR50_stat_power_metadata_file_name, RR50_st
          H_model_1_file_name, H_model_1_metadata_file_name, H_model_1_plot_file_name, H_model_1_plot_title,
          H_model_2_file_name, H_model_2_metadata_file_name, H_model_2_plot_file_name, H_model_2_plot_title,
          x_tick_spacing, y_tick_spacing, 
-         min_power_law_slope, max_power_law_slope, power_law_slope_spacing):
+         min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round):
     '''
 
     This function is the main function is the main function which coordinates all of the other functions in this script. It generates the statistical
@@ -551,6 +576,12 @@ def main(RR50_stat_power_file_name,  RR50_stat_power_metadata_file_name, RR50_st
             (float) - the size of the spaces in between each y-axis value of the power law curves on the 
                       
                       expected placebo reponse maps
+        
+        32) legend_decimal_round:
+
+            (int) - the decimal place to which the power law slopes should be rounded to
+                    
+                    within the legends of power law slopes
     
     Outputs:
 
@@ -563,42 +594,42 @@ def main(RR50_stat_power_file_name,  RR50_stat_power_metadata_file_name, RR50_st
              RR50_stat_power_metadata_file_name, RR50_stat_power_plot_file_name, 
              x_tick_spacing, y_tick_spacing, False,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             RR50_stat_power_plot_title)
+             RR50_stat_power_plot_title, legend_decimal_round)
 
     # plot the expected 50% responder rate placebo response map with power law curves
     plot_map(RR50_stat_power_file_name, 
              RR50_stat_power_metadata_file_name, RR50_stat_power_plot_with_power_curves_file_name, 
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             RR50_stat_power_plot_with_power_curves_title)
+             RR50_stat_power_plot_with_power_curves_title, legend_decimal_round)
     
     # plot the expected median percent change placebo response map
     plot_map(MPC_stat_power_file_name, 
              MPC_stat_power_metadata_file_name, MPC_stat_power_plot_file_name, 
              x_tick_spacing, y_tick_spacing, False,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             MPC_stat_power_plot_title)
+             MPC_stat_power_plot_title, legend_decimal_round)
 
     # plot the expected median percent change placebo response map with power law curves
     plot_map(MPC_stat_power_file_name,
              MPC_stat_power_metadata_file_name, MPC_stat_power_plot_with_power_curves_file_name, 
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             MPC_stat_power_plot_with_power_curves_title)
+             MPC_stat_power_plot_with_power_curves_title, legend_decimal_round)
     
     # plot the expected time-to-prerandomization placebo response map
     plot_map(TTP_stat_power_file_name, 
              TTP_stat_power_metadata_file_name, TTP_stat_power_plot_file_name, 
              x_tick_spacing, y_tick_spacing, False,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             TTP_stat_power_plot_title)
+             TTP_stat_power_plot_title, legend_decimal_round)
 
     # plot the expected time-to-prerandomization placebo response map with power law curves
     plot_map(TTP_stat_power_file_name, 
              TTP_stat_power_metadata_file_name, TTP_stat_power_plot_with_power_curves_file_name, 
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             TTP_stat_power_plot_with_power_curves_title)
+             TTP_stat_power_plot_with_power_curves_title, legend_decimal_round)
     
     # plot the histogram of all the NV model 1 patients
     plot_histogram(H_model_1_file_name, 
@@ -671,6 +702,7 @@ if(__name__=='__main__'):
     min_power_law_slope = float(arg_array[20])
     max_power_law_slope = float(arg_array[21])
     power_law_slope_spacing = float(arg_array[22])
+    legend_decimal_round = int(arg_array[23])
 
     # run the main function
     main(RR50_stat_power_file_name,  RR50_stat_power_metadata_file_name, RR50_stat_power_plot_file_name, RR50_stat_power_plot_with_power_curves_file_name,
@@ -682,4 +714,4 @@ if(__name__=='__main__'):
          H_model_1_file_name, H_model_1_metadata_file_name, H_model_1_plot_file_name, H_model_1_plot_title,
          H_model_2_file_name, H_model_2_metadata_file_name, H_model_2_plot_file_name, H_model_2_plot_title,
          x_tick_spacing, y_tick_spacing, 
-         min_power_law_slope, max_power_law_slope, power_law_slope_spacing)
+         min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
