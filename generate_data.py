@@ -752,7 +752,7 @@ def generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mea
             # prepare a string telling the user where the algorithm is in terms of map generation
             cpu_time_string = 'cpu time (minutes): ' + str( np.round(total_time_in_minutes, 2) )
             RR50_string = 'RR50 stat power: ' +  str( 100*np.round(RR50_power, 4) ) + ' %'
-            MPC_string = 'MPC stat power:  ' +  str( 100*np.round(MPC_power, 4) ) ) + ' %'
+            MPC_string = 'MPC stat power:  ' +  str( 100*np.round(MPC_power, 4) ) + ' %'
             TTP_string = 'TTP stat power:  ' + str( 100*np.round(TTP_power, 4) ) + ' %'
             monthly_mean_string = str(np.round(monthly_mean, 2))
             monthly_std_dev_string = str(np.round(monthly_std_dev, 2))
