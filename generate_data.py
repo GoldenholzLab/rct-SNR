@@ -990,53 +990,59 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
 
     Outputs:
 
-        1) Model_1_expected_RR50:
+        1) Model_1_RR50_stat_power:
             
-            (float) - the collective placebo response for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+            (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the Model 1 patient
                       
-                      histogram and the expected endpoint 50% responder rate placebo response maps
+                      histogram and the 50% responder rate statistical power maps
         
-        2) Model_1_expected_MPC:
+        2) Model_1_MPC_stat_power:
         
-            (float) - the collective placebo response for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+            (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the Model 1 patient
                       
-                      histogram and the expected endpoint median percent change placebo response maps
+                      histogram and the median percent change statistical power maps
         
-        3) Model_1_expected_TTP:
+        3) Model_1_TTP_stat_power:
         
-            (float) - the collective placebo response for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+            (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the Model 1 patient
                       
-                      histogram and the expected endpoint time-to-prerandomization placebo response maps
+                      histogram and the time-to-prerandomization statistical power maps
         
-        4) Model_2_expected_RR50
+        4)  Model_2_RR50_stat_power:
         
-            (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
+            (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the Model 2 patient
                       
-                      histogram and the expected endpoint 50% responder rate placebo response maps
+                      histogram and the 50% responder rate statistical power maps
 
-        5) Model_2_expected_MPC:
+        5) Model_2_MPC_stat_power:
         
-            (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
+            (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the Model 2 patient
                       
-                      histogram and the expected endpoint median percent change placebo response maps
+                      histogram and the median percent change statistical power maps
         
-        6) Model_2_expected_TTP:
+        6) Model_2_TTP_stat_power:
         
-            (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
+            (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the Model 2 patient
                       
-                      histogram and the expected endpoint time-to-prerandomization placebo response maps
+                      histogram and the time-to-prerandomization statistical power maps
         
-        7) expected_RR50_endpoint_map:
+        7) RR50_stat_power_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the RR50 statistical power map for many different patients with 
+            
+                               a given monthly seizure mean and monthly seizure count standard deviation
         
-            (2D Numpy array) - the expected endpoint 50% responder rate placebo response map
+        8) MPC_stat_power_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the MPC statistical power map for many different patients with 
+            
+                               a given monthly seizure mean and monthly seizure count standard deviation
         
-        8) expected_MPC_endpoint_map:
-        
-            (2D Numpy array) - the expected endpoint median percent change placebo response map
-        
-        9) expected_TTP_endpoint_map:
-        
-            (2D Numpy array) - the expected endpoint time-to-prerandomization placebo response map
+        9) TTP_stat_power_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the TTP statistical power map for many different patients with 
+            
+                               a given monthly seizure mean and monthly seizure count standard deviation
         
         10) H_model_1:
             
@@ -1048,8 +1054,8 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
 
     '''
 
-    # generate the expected RR50 and expected MPC maps
-    [expected_RR50_endpoint_map, expected_MPC_endpoint_map, expected_TTP_endpoint_map] = \
+    # generate the statistical power maps for RR50 and MPC
+    [RR50_stat_power_map, MPC_stat_power_map, TTP_stat_power_map] = \
         generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mean,    step_monthly_mean, 
                                         start_monthly_std_dev,      stop_monthly_std_dev, step_monthly_std_dev,
                                         num_baseline_months,        num_testing_months,   min_req_base_sz_count, 
@@ -1066,8 +1072,8 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
                                     generate_model_patient_data(shape_2, scale_2, alpha_2, beta_2,
                                                                 num_patients_per_model, num_months_per_patient)
 
-    # get the size of those expected endpoint maps
-    [nx, ny] = expected_RR50_endpoint_map.shape
+    # get the size of those ednpoint statistical power maps
+    [nx, ny] = RR50_stat_power_map.shape
 
     # calculate the histogram of the Model 1 patients
     [H_model_1, _, _] = np.histogram2d(model_1_monthly_count_averages, model_1_monthly_count_standard_deviations, bins=[ny, nx], 
@@ -1083,17 +1089,17 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
     norm_const_2 = np.sum(np.sum(H_model_2, 0))
     H_model_2 = H_model_2/norm_const_2
 
-    # combine the expected endpoint maps as well as the Model 1 and Model 2 histograms to get the expected RR50 and MPC for both models
-    Model_1_expected_RR50 = np.sum(np.nansum(np.multiply(H_model_1, expected_RR50_endpoint_map), 0))
-    Model_1_expected_MPC  = np.sum(np.nansum(np.multiply(H_model_1, expected_MPC_endpoint_map),  0))
-    Model_1_expected_TTP  = np.sum(np.nansum(np.multiply(H_model_1, expected_TTP_endpoint_map),  0))
-    Model_2_expected_RR50 = np.sum(np.nansum(np.multiply(H_model_2, expected_RR50_endpoint_map), 0))
-    Model_2_expected_MPC  = np.sum(np.nansum(np.multiply(H_model_2, expected_MPC_endpoint_map),  0))
-    Model_2_expected_TTP  = np.sum(np.nansum(np.multiply(H_model_2, expected_TTP_endpoint_map),  0))
+    # combine the expected endpoint maps as well as the Model 1 and Model 2 histograms to get the statistical of RR50 and MPC for both models
+    Model_1_RR50_stat_power = np.sum(np.nansum(np.multiply(H_model_1, RR50_stat_power_map), 0))
+    Model_1_MPC_stat_power  = np.sum(np.nansum(np.multiply(H_model_1, MPC_stat_power_map),  0))
+    Model_1_TTP_stat_power  = np.sum(np.nansum(np.multiply(H_model_1, TTP_stat_power_map),  0))
+    Model_2_RR50_stat_power = np.sum(np.nansum(np.multiply(H_model_2, RR50_stat_power_map), 0))
+    Model_2_MPC_stat_power  = np.sum(np.nansum(np.multiply(H_model_2, MPC_stat_power_map),  0))
+    Model_2_TTP_stat_power  = np.sum(np.nansum(np.multiply(H_model_2, TTP_stat_power_map),  0))
 
-    return [Model_1_expected_RR50,      Model_1_expected_MPC,      Model_1_expected_TTP,
-            Model_2_expected_RR50,      Model_2_expected_MPC,      Model_2_expected_TTP,
-            expected_RR50_endpoint_map, expected_MPC_endpoint_map, expected_TTP_endpoint_map,
+    return [Model_1_RR50_stat_power,      Model_1_MPC_stat_power,      Model_1_TTP_stat_power,
+            Model_2_RR50_stat_power,      Model_2_MPC_stat_power,      Model_2_TTP_stat_power,
+            RR50_stat_power_map,        MPC_stat_power_map,        TTP_stat_power_map,
             H_model_1,                  H_model_2                 ]
 
 
@@ -1179,9 +1185,9 @@ def store_map(data_map,
         json.dump(metadata.tolist(), map_metadata_storage_file)
 
 
-def save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC, Model_1_expected_TTP,
-                                    Model_2_expected_RR50, Model_2_expected_MPC, Model_2_expected_TTP,
-                                    NV_model_placebo_response_text_file_name):
+def save_NV_model_statistical_powers(Model_1_RR50_stat_power, Model_1_MPC_stat_power, Model_1_TTP_stat_power,
+                                     Model_2_RR50_stat_power, Model_2_MPC_stat_power, Model_2_TTP_stat_power,
+                                     NV_model_statistical_power_text_file_name):
     '''
 
     This function stores the expected placebo responses for NV model 1 ande NV model 2 as 
@@ -1192,56 +1198,58 @@ def save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC,
 
     Inputs:
 
-        1) Model_1_expected_RR50:
-                    
-            (float) - the collective placebo response for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+        1) Model_1_RR50_stat_power:
+            
+            (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the Model 1 patient
                       
-                      histogram and the expected endpoint 50% responder rate placebo response maps
+                      histogram and the 50% responder rate statistical power maps
+        
+        2) Model_1_MPC_stat_power:
+        
+            (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+                      
+                      histogram and the median percent change statistical power maps
+        
+        3) Model_1_TTP_stat_power:
+        
+            (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+                      
+                      histogram and the time-to-prerandomization statistical power maps
+        
+        4)  Model_2_RR50_stat_power:
+        
+            (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the Model 2 patient
+                      
+                      histogram and the 50% responder rate statistical power maps
 
-        2) Model_1_expected_MPC:
-                
-            (float) - the collective placebo response for all of the patients from model 1, determined by a multiplication of the Model 1 patient
-                      
-                      histogram and the expected endpoint median percent change placebo response maps
+        5) Model_2_MPC_stat_power:
         
-        3) Model_1_expected_TTP:
-                
-            (float) - the collective placebo response for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+            (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the Model 2 patient
                       
-                      histogram and the expected endpoint time-to-prerandomization placebo response maps
+                      histogram and the median percent change statistical power maps
         
-        4) Model_2_expected_RR50:
-                
-            (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
+        6) Model_2_TTP_stat_power:
+        
+            (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the Model 2 patient
                       
-                      histogram and the expected endpoint 50% responder rate placebo response maps
+                      histogram and the time-to-prerandomization statistical power maps
+        
+        7) NV_model_statistical_power_text_file_name:
 
-        5) Model_2_expected_MPC:
-                
-            (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
-                      
-                      histogram and the expected endpoint median percent change placebo response maps
-        
-        6) Model_2_expected_TTP:
-                
-            (float) - the collective placebo response for all of the patients from model 2, determined by a multiplication of the Model 1 patient
-                      
-                      histogram and the expected endpoint time-to-prerandomization placebo response maps
-        
-        7) NV_model_placebo_response_text_file_name:
-
-            (string) - the name of the text file which will contain the placebo responses to NV model 1 and NV model 2
+            (string) - the name of the text file which will contain the statistical powers of the endpoints for NV 
+                       
+                       model 1 and NV model 2
 
     '''
 
-    with open(os.getcwd() + '/' + NV_model_placebo_response_text_file_name + '.txt', 'w+') as text_file:
+    with open(os.getcwd() + '/' + NV_model_statistical_power_text_file_name + '.txt', 'w+') as text_file:
 
-        data =  '\n\nModel 1 expected RR50: ' + str(Model_1_expected_RR50) + \
-                '\n\nModel 1 expected MPC: '  + str(Model_1_expected_MPC)  + \
-                '\n\nModel 1 expected TTP: '  + str(Model_1_expected_TTP)  + \
-                '\n\nModel 2 expected RR50: ' + str(Model_2_expected_RR50) + \
-                '\n\nModel 2 expected MPC: '  + str(Model_2_expected_MPC)  + \
-                '\n\nModel 2 expected TTP: '  + str(Model_2_expected_TTP)
+        data =  '\n\nModel 1 expected RR50: ' + str(Model_1_RR50_stat_power) + \
+                '\n\nModel 1 expected MPC: '  + str(Model_1_MPC_stat_power)  + \
+                '\n\nModel 1 expected TTP: '  + str(Model_1_TTP_stat_power)  + \
+                '\n\nModel 2 expected RR50: ' + str(Model_2_RR50_stat_power) + \
+                '\n\nModel 2 expected MPC: '  + str(Model_2_MPC_stat_power)  + \
+                '\n\nModel 2 expected TTP: '  + str(Model_2_TTP_stat_power)
 
         text_file.write(data)
 
@@ -1258,7 +1266,7 @@ def main(shape_1, scale_1, alpha_1, beta_1,
          expected_TTP_file_name, expected_TTP_metadata_file_name,
          H_model_1_file_name, H_model_1_metadata_file_name,
          H_model_2_file_name, H_model_2_metadata_file_name,
-         NV_model_placebo_response_text_file_name):
+         NV_model_statistical_power_text_file_name):
     '''
 
     This function is the main function that should be called in order to fulfill this script's primary purpose,
@@ -1423,17 +1431,19 @@ def main(shape_1, scale_1, alpha_1, beta_1,
             
                        later
 
-        36) NV_model_placebo_response_text_file_name:
+        36) NV_model_statistical_power_text_file_name:
 
-            (string) - the name of the text file which will contain the placebo responses to NV model 1 and NV model 2
+            (string) - the name of the text file which will contain the statistical powers of the endpoints for NV 
+                       
+                       model 1 and NV model 2
 
     '''
 
     # generate all of the expected endpoint maps
-    [Model_1_expected_RR50,      Model_1_expected_MPC,       Model_1_expected_TTP,
-     Model_2_expected_RR50,      Model_2_expected_MPC,       Model_2_expected_TTP,
-     expected_RR50_endpoint_map, expected_MPC_endpoint_map,  expected_TTP_endpoint_map,
-     H_model_1,                  H_model_2                 ] = \
+    [Model_1_RR50_stat_power,      Model_1_MPC_stat_power,      Model_1_TTP_stat_power,
+     Model_2_RR50_stat_power,      Model_2_MPC_stat_power,      Model_2_TTP_stat_power,
+     RR50_stat_power_map,          MPC_stat_power_map,          TTP_stat_power_map,
+     H_model_1,                    H_model_2                                            ] = \
         generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, 
                           shape_2, scale_2, alpha_2, beta_2, 
                           num_patients_per_model, num_months_per_patient,
@@ -1443,20 +1453,20 @@ def main(shape_1, scale_1, alpha_1, beta_1,
                           num_baseline_months, num_testing_months, min_req_base_sz_count,
                           placebo_mu, placebo_sigma,  drug_mu, drug_sigma)
 
-    # store the expected RR50 endpoint map
-    store_map(expected_RR50_endpoint_map, 
+    # store the RR50 statistical power map
+    store_map(RR50_stat_power_map, 
               expected_RR50_file_name, expected_RR50_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
 
-    # store the expected MPC endpoint map
-    store_map(expected_MPC_endpoint_map, 
+    # store the MPC statistical power map
+    store_map(MPC_stat_power_map, 
               expected_MPC_file_name, expected_MPC_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
     
-    # store the expected TTP endpoint map
-    store_map(expected_TTP_endpoint_map, 
+    # store the TTP statistical power map
+    store_map(TTP_stat_power_map, 
               expected_TTP_file_name, expected_TTP_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
@@ -1474,9 +1484,9 @@ def main(shape_1, scale_1, alpha_1, beta_1,
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
     
     # store the estimated placebo responses for NV model 1 and NV model 2
-    save_NV_model_placebo_responses(Model_1_expected_RR50, Model_1_expected_MPC, Model_1_expected_TTP,
-                                    Model_2_expected_RR50, Model_2_expected_MPC, Model_2_expected_TTP,
-                                    NV_model_placebo_response_text_file_name)
+    save_NV_model_statistical_powers(Model_1_RR50_stat_power, Model_1_MPC_stat_power, Model_1_TTP_stat_power,
+                                     Model_2_RR50_stat_power, Model_2_MPC_stat_power, Model_2_TTP_stat_power,
+                                     NV_model_statistical_power_text_file_name)
 
 
 if(__name__=='__main__'):
@@ -1539,7 +1549,7 @@ if(__name__=='__main__'):
     H_model_2_metadata_file_name = arg_array[26]
 
     # obtain the name of text file which will contain the placebo responses for NV model 1 and NV model 2
-    NV_model_placebo_response_text_file_name = arg_array[27]
+    NV_model_statistical_power_text_file_name = arg_array[27]
 
     # call the main() function
     main(shape_1, scale_1, alpha_1, beta_1, 
@@ -1554,7 +1564,7 @@ if(__name__=='__main__'):
          expected_TTP_file_name, expected_TTP_metadata_file_name,
          H_model_1_file_name, H_model_1_metadata_file_name,
          H_model_2_file_name, H_model_2_metadata_file_name,
-         NV_model_placebo_response_text_file_name)
+         NV_model_statistical_power_text_file_name)
     
     stop_time_in_seconds = time.time()
 

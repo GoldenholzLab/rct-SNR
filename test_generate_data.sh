@@ -39,6 +39,6 @@ inputs[25]='H_model_2_hist'
 inputs[26]='H_model_2_hist_metadata'
 
 # The name of text file which will contain the placebo responses for NV model 1 and NV model 2
-inputs[27]='NV_model_placebo_response'
+inputs[27]='NV_model_statistical_power'
 
 python generate_data.py ${inputs[@]}
