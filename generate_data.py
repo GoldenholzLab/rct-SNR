@@ -1517,10 +1517,10 @@ if(__name__=='__main__'):
     num_trials = int(arg_array[10])
 
     # obtain the parameters for generating the placebo and drug effects
-    placebo_mu = int(arg_array[11])
-    placebo_sigma = int(arg_array[12])
-    drug_mu = int(arg_array[13])
-    drug_sigma = int(arg_array[14])
+    placebo_mu = float(arg_array[11])
+    placebo_sigma = float(arg_array[12])
+    drug_mu = float(arg_array[13])
+    drug_sigma = float(arg_array[14])
 
     # obtain the parameters needed for generating the histograms of the model 1 and model 2 patients
     num_patients_per_model = int(arg_array[15])
