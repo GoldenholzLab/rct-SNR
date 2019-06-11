@@ -559,46 +559,46 @@ def main(RR50_stat_power_file_name,  RR50_stat_power_metadata_file_name, RR50_st
     '''
 
     # plot the expected 50% responder rate placebo response map
-    plot_map(expected_RR50_file_name, 
-             expected_RR50_metadata_file_name, expected_RR50_file_name, 
+    plot_map(RR50_stat_power_file_name, 
+             RR50_stat_power_metadata_file_name, RR50_stat_power_plot_file_name, 
              x_tick_spacing, y_tick_spacing, False,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             expected_RR50_plot_title)
+             RR50_stat_power_plot_title)
 
     # plot the expected 50% responder rate placebo response map with power law curves
-    plot_map(expected_RR50_file_name, 
-             expected_RR50_metadata_file_name, expected_RR50_plot_with_power_curves_file_name, 
+    plot_map(RR50_stat_power_file_name, 
+             RR50_stat_power_metadata_file_name, RR50_stat_power_plot_with_power_curves_file_name, 
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             expected_RR50_plot_with_power_curves_title)
+             RR50_stat_power_plot_with_power_curves_title)
     
     # plot the expected median percent change placebo response map
-    plot_map(expected_MPC_file_name, 
-             expected_MPC_metadata_file_name, expected_MPC_file_name, 
+    plot_map(MPC_stat_power_file_name, 
+             MPC_stat_power_metadata_file_name, MPC_stat_power_plot_file_name, 
              x_tick_spacing, y_tick_spacing, False,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             expected_MPC_plot_title)
+             MPC_stat_power_plot_title)
 
     # plot the expected median percent change placebo response map with power law curves
-    plot_map(expected_MPC_file_name, 
-             expected_MPC_metadata_file_name, MPC_stat_power_plot_with_power_curves_file_name, 
+    plot_map(MPC_stat_power_file_name,
+             MPC_stat_power_metadata_file_name, MPC_stat_power_plot_with_power_curves_file_name, 
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             expected_MPC_plot_with_power_curves_title)
+             MPC_stat_power_plot_with_power_curves_title)
     
     # plot the expected time-to-prerandomization placebo response map
-    plot_map(expected_TTP_file_name, 
-             expected_TTP_metadata_file_name, expected_TTP_file_name, 
+    plot_map(TTP_stat_power_file_name, 
+             TTP_stat_power_metadata_file_name, TTP_stat_power_plot_file_name, 
              x_tick_spacing, y_tick_spacing, False,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             expected_TTP_plot_title)
+             TTP_stat_power_plot_title)
 
     # plot the expected time-to-prerandomization placebo response map with power law curves
-    plot_map(expected_TTP_file_name, 
-             expected_TTP_metadata_file_name, expected_TTP_plot_with_power_curves_file_name, 
+    plot_map(TTP_stat_power_file_name, 
+             TTP_stat_power_metadata_file_name, TTP_stat_power_plot_with_power_curves_file_name, 
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             expected_TTP_plot_with_power_curves_title)
+             TTP_stat_power_plot_with_power_curves_title)
     
     # plot the histogram of all the NV model 1 patients
     plot_histogram(H_model_1_file_name, 
@@ -620,34 +620,34 @@ if(__name__=='__main__'):
     arg_array = args.array
 
     # obtain the names of the files associated with the 50% responder rate placebo response map
-    expected_RR50_file_name = arg_array[0]
-    expected_RR50_metadata_file_name = arg_array[1]
-    expected_RR50_plot_file_name = arg_array[2]
-    expected_RR50_plot_with_power_curves_file_name = arg_array[3]
+    RR50_stat_power_file_name = arg_array[0]
+    RR50_stat_power_metadata_file_name = arg_array[1]
+    RR50_stat_power_plot_file_name = arg_array[2]
+    RR50_stat_power_plot_with_power_curves_file_name = arg_array[3]
 
     # set the titles of the plots to be generated for the 50% responder rate placebo response maps
-    expected_RR50_plot_title = "Expected RR50 placebo response"
-    expected_RR50_plot_with_power_curves_title = "Expected RR50 placebo response with power law curves"
+    RR50_stat_power_plot_title = "Expected RR50 placebo response"
+    RR50_stat_power_plot_with_power_curves_title = "Expected RR50 placebo response with power law curves"
 
     # obtain the names of the files associated with the median percent change placebo response map
-    expected_MPC_file_name = arg_array[4]
-    expected_MPC_metadata_file_name = arg_array[5]
-    expected_MPC_plot_file_name = arg_array[6]
-    expected_MPC_plot_file_name_with_power_curves = arg_array[7]
+    MPC_stat_power_file_name = arg_array[4]
+    MPC_stat_power_metadata_file_name = arg_array[5]
+    MPC_stat_power_plot_file_name = arg_array[6]
+    MPC_stat_power_plot_with_power_curves_file_name = arg_array[7]
 
     # set the titles of the plots to be generated for the median percent change placebo response maps
-    expected_MPC_plot_title = "Expected MPC placebo response"
-    expected_MPC_plot_with_power_curves_title = "Expected MPC placebo response with power law curves"
+    MPC_stat_power_plot_title = "Expected MPC placebo response"
+    MPC_stat_power_plot_with_power_curves_title = "Expected MPC placebo response with power law curves"
 
     # obtain the names of the files associated with the median percent change placebo response map
-    expected_TTP_file_name = arg_array[8]
-    expected_TTP_metadata_file_name = arg_array[9]
-    expected_TTP_plot_file_name = arg_array[10]
-    expected_TTP_plot_with_power_curves_file_name = arg_array[11]
+    TTP_stat_power_file_name = arg_array[8]
+    TTP_stat_power_metadata_file_name = arg_array[9]
+    TTP_stat_power_plot_file_name = arg_array[10]
+    TTP_stat_power_plot_with_power_curves_file_name = arg_array[11]
 
     # set the titles of the plots to be generated for the median percent change placebo response maps
-    expected_TTP_plot_title = "Expected TTP placebo response"
-    expected_TTP_plot_with_power_curves_title = "Expected TTP placebo response with power law curves"
+    TTP_stat_power_plot_title = "Expected TTP placebo response"
+    TTP_stat_power_plot_with_power_curves_title = "Expected TTP placebo response with power law curves"
 
     # obtain the names of the files associated with the NV model 1 histogram
     H_model_1_file_name = arg_array[12]
@@ -672,12 +672,13 @@ if(__name__=='__main__'):
     max_power_law_slope = float(arg_array[21])
     power_law_slope_spacing = float(arg_array[22])
 
-    main(expected_RR50_file_name,  expected_RR50_metadata_file_name, expected_RR50_plot_file_name, expected_RR50_plot_with_power_curves_file_name,
-         expected_MPC_file_name,   expected_MPC_metadata_file_name,  expected_MPC_plot_file_name,  expected_MPC_plot_file_name_with_power_curves,
-         expected_TTP_file_name,   expected_TTP_metadata_file_name,  expected_TTP_plot_file_name,  expected_TTP_plot_with_power_curves_file_name,
-         expected_RR50_plot_title, expected_RR50_plot_with_power_curves_title, 
-         expected_MPC_plot_title, expected_MPC_plot_with_power_curves_title,
-         expected_TTP_plot_title,  expected_TTP_plot_with_power_curves_title,
+    # run the main function
+    main(RR50_stat_power_file_name,  RR50_stat_power_metadata_file_name, RR50_stat_power_plot_file_name, RR50_stat_power_plot_with_power_curves_file_name,
+         MPC_stat_power_file_name,   MPC_stat_power_metadata_file_name,  MPC_stat_power_plot_file_name,  MPC_stat_power_plot_with_power_curves_file_name,
+         TTP_stat_power_file_name,   TTP_stat_power_metadata_file_name,  TTP_stat_power_plot_file_name,  TTP_stat_power_plot_with_power_curves_file_name,
+         RR50_stat_power_plot_title, RR50_stat_power_plot_with_power_curves_title, 
+         MPC_stat_power_plot_title,  MPC_stat_power_plot_with_power_curves_title,
+         TTP_stat_power_plot_title,  TTP_stat_power_plot_with_power_curves_title,
          H_model_1_file_name, H_model_1_metadata_file_name, H_model_1_plot_file_name, H_model_1_plot_title,
          H_model_2_file_name, H_model_2_metadata_file_name, H_model_2_plot_file_name, H_model_2_plot_title,
          x_tick_spacing, y_tick_spacing, 
