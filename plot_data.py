@@ -173,7 +173,7 @@ def plot_map(data_map_file_name,
              map_title):
     '''
 
-    This function plots one expected placebo response map with the given input parameters.
+    This function plots one statistical power map with the given input parameters.
 
     Inputs:
     
@@ -364,129 +364,129 @@ def plot_histogram(H_model_file_name,
     fig.savefig( H_model_plot_file_path )
 
 
-def main(expected_RR50_file_name,  expected_RR50_metadata_file_name, expected_RR50_plot_file_name, expected_RR50_plot_with_power_curves_file_name,
-         expected_MPC_file_name,   expected_MPC_metadata_file_name,  expected_MPC_plot_file_name,  expected_MPC_plot_with_power_curves_file_name,
-         expected_TTP_file_name,   expected_TTP_metadata_file_name,  expected_TTP_plot_file_name,  expected_TTP_plot_with_power_curves_file_name,
-         expected_RR50_plot_title, expected_RR50_plot_with_power_curves_title, 
-         expected_MPC_plot_title,  expected_MPC_plot_with_power_curves_title,
-         expected_TTP_plot_title,  expected_TTP_plot_with_power_curves_title,
+def main(RR50_stat_power_file_name,  RR50_stat_power_metadata_file_name, RR50_stat_power_plot_file_name, RR50_stat_power_plot_with_power_curves_file_name,
+         MPC_stat_power_file_name,   MPC_stat_power_metadata_file_name,  MPC_stat_power_plot_file_name,  MPC_stat_power_plot_with_power_curves_file_name,
+         TTP_stat_power_file_name,   TTP_stat_power_metadata_file_name,  TTP_stat_power_plot_file_name,  TTP_stat_power_plot_with_power_curves_file_name,
+         RR50_stat_power_plot_title, RR50_stat_power_plot_with_power_curves_title, 
+         MPC_stat_power_plot_title,  MPC_stat_power_plot_with_power_curves_title,
+         TTP_stat_power_plot_title,  TTP_stat_power_plot_with_power_curves_title,
          H_model_1_file_name, H_model_1_metadata_file_name, H_model_1_plot_file_name, H_model_1_plot_title,
          H_model_2_file_name, H_model_2_metadata_file_name, H_model_2_plot_file_name, H_model_2_plot_title,
          x_tick_spacing, y_tick_spacing, 
          min_power_law_slope, max_power_law_slope, power_law_slope_spacing):
     '''
 
-    This function is the main function is the main function which coordinates all of the other functions in this script. It generates the expected
+    This function is the main function is the main function which coordinates all of the other functions in this script. It generates the statistical
 
-    placebo response maps as well as the histograms of model 1 and model 2.
+    power maps as well as the histograms of model 1 and model 2.
 
     Inputs:
 
-        1) expected_RR50_file_name:
+        1) RR50_stat_power_file_name:
 
-            (string) - the name of the file containing the expected 50% responder rate placebo 
+            (string) - the name of the file containing the 50% responder rate statistical power map to 
                        
-                       response map to be plotted
+                       be plotted
         
-        2) expected_RR50_metadata_file_name:
+        2) RR50_stat_power_metadata_file_name:
 
-            (string) - the name of the file containing the metadata for the expected 50% responder 
+            (string) - the name of the file containing the metadata for the 50% responder rate statistical 
+                       
+                       power map to be plotted
+        
+        3) RR50_stat_power_plot_file_name:
+
+            (string) - the name of the file that will eventually contain the PNG image of the plot 
+                       
+                       of the 50% responder rate statistical power map
+        
+        4) RR50_stat_power_plot_with_power_curves_file_name:
+
+            (string) - the name of the file that will eventually contain the PNG image of the plot 
+                       
+                       of the 50% responder rate statistical power map with power law curves
+        
+        5) MPC_stat_power_file_name:
+
+            (string) - the name of the file containing the median percent change statistical power 
             
-                       rate placebo response map to be plotted
+                       map to be plotted
         
-        3) expected_RR50_plot_file_name:
-
-            (string) - the name of the file that will eventually contain the PNG image of the plot 
+        6) MPC_stat_power_metadata_file_name:
+        
+            (string) - the name of the file containing the metadata for the median percent change 
                        
-                       of the expected 50% responder rate placebo response map
+                       statistical power map to be plotted
         
-        4) expected_RR50_plot_with_power_curves_file_name:
-
-            (string) - the name of the file that will eventually contain the PNG image of the plot 
-                       
-                       of the expected 50% responder rate placebo response map with power law curves
-        
-        5) expected_MPC_file_name:
-
-            (string) - the name of the file containing the expected median percent change placebo 
-                       
-                       response map to be plotted
-        
-        6) expected_MPC_metadata_file_name:
-        
-            (string) - the name of the file containing the metadata for the expected 50% responder 
-            
-                       rate placebo response map to be plotted
-        
-        7) expected_MPC_plot_file_name: 
+        7) MPC_stat_power_plot_file_name: 
         
             (string) - the name of the file that will eventually contain the PNG image of the plot 
                        
-                       of the expected median percent change placebo response map
+                       of the  median percent change statistical power map
         
-        8) expected_MPC_plot_with_power_curves_file_name:
+        8) MPC_stat_power_plot_with_power_curves_file_name:
 
             (string) - the name of the file that will eventually contain the PNG image of the plot 
                        
-                       of the expected median percent change placebo response map with power law curves
+                       of the median percent change statistical power map with power law curves
         
-        9) expected_TTP_file_name:
+        9) TTP_stat_power_file_name:
         
-            (string) - the name of the file containing the expected time-to-prerandomization placebo 
+            (string) - the name of the file containing the expected time-to-prerandomization statistical 
                        
-                       response map to be plotted
+                       power map to be plotted
 
-        10) expected_TTP_metadata_file_name:
+        10) TTP_stat_power_metadata_file_name:
                 
-            (string) - the name of the file containing the metadata for the expected 50% time-to-prerandomization
+            (string) - the name of the file containing the metadata for the time-to-prerandomization
                        
-                       placebo response map to be plotted
+                       statistical power map to be plotted
         
-        11) expected_TTP_plot_file_name:
+        11) TTP_stat_power_plot_file_name:
                 
             (string) - the name of the file that will eventually contain the PNG image of the plot 
                        
-                       of the expected time-to-prerandomization placebo response map
+                       of the time-to-prerandomization statistical power map
         
-        12) expected_TTP_plot_with_power_curves_file_name:
+        12) TTP_stat_power_plot_with_power_curves_file_name:
         
             (string) - the name of the file that will eventually contain the PNG image of the plot 
                        
-                       of the expected time-to-prerandomization placebo response map with power law curves
+                       of the time-to-prerandomization statistical power map with power law curves
         
-        13) expected_RR50_plot_title:
+        13) RR50_stat_power_plot_title:
 
-            (string) - the title of the expected RR50 placebo response map that will be in the corresponding 
+            (string) - the title of the RR50 statistical power map that will be in the corresponding 
             
                        PNG image
         
-        14) expected_RR50_plot_with_power_curves_title:
+        14) RR50_stat_power_plot_with_power_curves_title:
 
-            (string) - the title of the expected RR50 placebo response map with power law curves that will be 
+            (string) - the title of the RR50 statistical power map with power law curves that will be 
             
                        in the corresponding PNG image
         
-        15) expected_MPC_plot_title:
+        15) MPC_stat_power_plot_title:
         
-            (string) - the title of the expected MPC placebo response map that will be in the corresponding 
+            (string) - the title of the MPC statistical power map that will be in the corresponding 
             
                        PNG image
         
-        16) expected_MPC_plot_with_power_curves_title:
+        16) MPC_stat_power_plot_with_power_curves_title:
 
-            (string) - the title of the expected MPC placebo response map with power law curves that will be 
+            (string) - the title of the MPC statistical power map with power law curves that will be 
             
                        in the corresponding PNG image
         
-        17) expected_TTP_plot_title:
+        17) TTP_stat_power_plot_title:
                 
-            (string) - the title of the expected TTP placebo response map that will be in the corresponding 
+            (string) - the title of the TTP statistical power map that will be in the corresponding 
             
                        PNG image
         
-        18) expected_TTP_plot_with_power_curves_title:
+        18) TTP_stat_power_plot_with_power_curves_title:
 
-            (string) - the title of the expected TTP placebo response map with power law curves that will be 
+            (string) - the title of the TTP statistical power map with power law curves that will be 
             
                        in the corresponding PNG image
         
@@ -581,7 +581,7 @@ def main(expected_RR50_file_name,  expected_RR50_metadata_file_name, expected_RR
 
     # plot the expected median percent change placebo response map with power law curves
     plot_map(expected_MPC_file_name, 
-             expected_MPC_metadata_file_name, expected_MPC_plot_with_power_curves_file_name, 
+             expected_MPC_metadata_file_name, MPC_stat_power_plot_with_power_curves_file_name, 
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              expected_MPC_plot_with_power_curves_title)
