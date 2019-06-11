@@ -1,21 +1,21 @@
 
 # The names of the files associated with the 50% responder rate placebo response map
-inputs[0]='expected_RR50_map'
-inputs[1]='expected_RR50_map_metadata'
-inputs[2]='expected_RR50_plot'
-inputs[3]='expected_RR50_plot_with_power_curves'
+inputs[0]='RR50_stat_power_map'
+inputs[1]='RR50_stat_power_map_metadata'
+inputs[2]='RR50_stat_power_plot'
+inputs[3]='RR50_stat_power_plot_with_power_curves'
 
 # The names of the files associated with the median percent change placebo response map
-inputs[4]='expected_MPC_map'
-inputs[5]='expected_MPC_map_metadata'
-inputs[6]='expected_MPC_plot'
-inputs[7]='expected_MPC_plot_with_power_curves'
+inputs[4]='MPC_stat_power_map'
+inputs[5]='MPC_stat_power_map_metadata'
+inputs[6]='MPC_stat_power_plot'
+inputs[7]='MPC_stat_power_plot_with_power_curves'
 
 # The names of the files associated with the time-to-prerandomization placebo response map
-inputs[8]='expected_TTP_map'
-inputs[9]='expected_TTP_map_metadata'
-inputs[10]='expected_TTP_plot'
-inputs[11]='expected_TTP_plot_with_power_curves'
+inputs[8]='TTP_stat_power_map'
+inputs[9]='TTP_stat_power_map_metadata'
+inputs[10]='TTP_stat_power_plot'
+inputs[11]='TTP_stat_power_plot_with_power_curves'
 
 # The names of the files associated with the histogram of Model 1 patients
 inputs[12]='H_model_1_hist' 

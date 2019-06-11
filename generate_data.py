@@ -682,21 +682,21 @@ def generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mea
     
     Outputs:
 
-        1) expected_RR50_endpoint_map:
+        1) RR50_stat_power_map:
 
-            (2D Numpy array) - a 2D numpy array which contains the expected RR50 placebo response for many different patients with 
+            (2D Numpy array) - a 2D numpy array which contains the RR50 statistical power map for many different patients with 
             
                                a given monthly seizure mean and monthly seizure count standard deviation
 
-        2) expected_MPC_endpoint_map:
+        2) MPC_stat_power_map:
 
-            (2D Numpy array) - a 2D numpy array which contains the expected MPC placebo response for many different patients with 
+            (2D Numpy array) - a 2D numpy array which contains the MPC statistical power map for many different patients with 
             
                                a given monthly seizure mean and monthly seizure count standard deviation
 
-        3) expected_TTP_endpoint_map:
+        3) TTP_stat_power_map:
 
-            (2D Numpy array) - a 2D numpy array which contains the expected TTP placebo response for many different patients with 
+            (2D Numpy array) - a 2D numpy array which contains the TTP statistical power map for many different patients with 
             
                                a given monthly seizure mean and monthly seizure count standard deviation
 
@@ -714,9 +714,9 @@ def generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mea
     num_monthly_std_devs = len(monthly_std_dev_array)
 
     # initialize the 2D numpy arrays that will hold the expected endpoint maps
-    expected_RR50_endpoint_map = np.zeros((num_monthly_std_devs, num_monthly_means))
-    expected_MPC_endpoint_map = np.zeros((num_monthly_std_devs, num_monthly_means))
-    expected_TTP_endpoint_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    RR50_stat_power_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    MPC_stat_power_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    TTP_stat_power_map = np.zeros((num_monthly_std_devs, num_monthly_means))
 
     # for every given monthly standard deviation on the y-axis
     for monthly_std_dev_index in range(num_monthly_std_devs):
@@ -732,7 +732,7 @@ def generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mea
             start_time_in_seconds = time.time()
 
             # estimate the estimate the expected endpoints for the given mean and standard deviation
-            [expected_RR50, expected_MPC, expected_TTP] =  \
+            [RR50_power, MPC_power, TTP_power] =  \
                 estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
                                                     num_patients_per_trial_arm, num_trials,
                                                     num_baseline_months, num_testing_months, min_req_base_sz_count,
@@ -745,15 +745,15 @@ def generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mea
             total_time_in_minutes = (stop_time_in_seconds - start_time_in_seconds)/60
 
             # store the estimated expected endpoints
-            expected_RR50_endpoint_map[monthly_std_dev_index, monthly_mean_index] = expected_RR50
-            expected_MPC_endpoint_map[monthly_std_dev_index, monthly_mean_index] = expected_MPC
-            expected_TTP_endpoint_map[monthly_std_dev_index, monthly_mean_index] = expected_TTP
+            RR50_stat_power_map[monthly_std_dev_index, monthly_mean_index] = RR50_power
+            MPC_stat_power_map[monthly_std_dev_index, monthly_mean_index] = MPC_power
+            TTP_stat_power_map[monthly_std_dev_index, monthly_mean_index] = TTP_power
 
             # prepare a string telling the user where the algorithm is in terms of map generation
-            cpu_time_string = 'cpu time (minutes): ' + str(np.round(total_time_in_minutes, 2))
-            RR50_string = 'expected RR50: ' +  str(np.round(expected_RR50, 2))
-            MPC_string = 'expected MPC: ' +  str(np.round(expected_MPC, 2))
-            TTP_string = 'expected TTP: ' + str(np.round(expected_TTP, 2))
+            cpu_time_string = 'cpu time (minutes): ' + str( np.round(total_time_in_minutes, 2) )
+            RR50_string = 'RR50 stat power: ' +  str( 100*np.round(RR50_power, 4) ) ) + ' %'
+            MPC_string = 'MPC stat power:  ' +  str( 100*np.round(MPC_power, 4) ) ) + ' %'
+            TTP_string = 'TTP stat power:  ' + str( 100*np.round(TTP_power, 4) ) + ' %'
             monthly_mean_string = str(np.round(monthly_mean, 2))
             monthly_std_dev_string = str(np.round(monthly_std_dev, 2))
             orientation_string = 'monthly mean, monthly standard deviation: (' + monthly_mean_string + ', ' + monthly_std_dev_string + ')'
@@ -762,7 +762,7 @@ def generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mea
             # print the string
             print(data_string)
     
-    return [expected_RR50_endpoint_map, expected_MPC_endpoint_map, expected_TTP_endpoint_map]
+    return [RR50_stat_power_map, MPC_stat_power_map, TTP_stat_power_map]
 
 
 def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_model, num_months_per_patient):
