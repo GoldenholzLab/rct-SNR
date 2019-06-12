@@ -439,6 +439,12 @@ def generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_tr
     return [placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries]
 
 
+def calculate_one_trial_quantities(placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries,
+                                   num_baseline_months, num_testing_months):
+
+    
+
+
 def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
                                         num_patients_per_trial_arm, num_trials,
                                         num_baseline_months, num_testing_months, min_req_base_sz_count,
@@ -468,32 +474,36 @@ def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
         3) num_patients_per_trial_arm:
 
             (int) - the number of patients generated per trial arm
+        
+        4) num_trials:
 
-        4) num_baseline_days:
+            (int) - the number of trials used to estimate the expected endpoints at each point in the expected placebo response maps
 
-            (int) - the number of baseline days in each patient's seizure diary
+        5) num_baseline_months:
 
-        5) num_testing_days:
+            (int) - the number of baseline months in each patient's seizure diary
 
-            (int) - the number of testing days in each patient's seizure diary
+        6) num_testing_months:
 
-        6) min_req_base_sz_count:
+            (int) - the number of testing months in each patient's seizure diary
+
+        7) min_req_base_sz_count:
         
             (int) - the minimum number of required baseline seizure counts
 
-        7) placebo_mu:
+        8) placebo_mu:
 
             (float) - the mean of the placebo effect
 
-        8) placebo_sigma:
+        9) placebo_sigma:
         
             (float) - the standard deviation of the placebo effect
 
-        9) drug_mu:
+        10) drug_mu:
 
             (float) - the mean of the drug effect
 
-        10) drug_sigma:
+        11) drug_sigma:
 
             (float) - the standard deviation of the drug effect
 
@@ -571,7 +581,7 @@ def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
                 placebo_TTP_times = calculate_times_to_prerandomization(placebo_arm_daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial_arm)
                 drug_TTP_times = calculate_times_to_prerandomization(drug_arm_daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial_arm)
 
-                # calculate the percent changes and times-to-prerandomization for each patient in boht the first and second type 1 error arms
+                # calculate the percent changes and times-to-prerandomization for each patient in both the first and second type 1 error arms
                 first_type_1_percent_changes = calculate_percent_changes(first_type_1_arm_daily_seizure_diaries, num_baseline_days, num_patients_per_trial_arm)
                 second_type_1_percent_changes = calculate_percent_changes(second_type_1_arm_daily_seizure_diaries, num_baseline_days, num_patients_per_trial_arm)
                 first_type_1_TTP_times = calculate_times_to_prerandomization(first_type_1_arm_daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial_arm)
@@ -583,6 +593,12 @@ def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
                 drug_50_percent_responders = np.sum(drug_percent_changes >= 0.5)
                 drug_50_percent_non_responders = num_patients_per_trial_arm - drug_50_percent_responders
                 table = np.array([[placebo_50_percent_responders, placebo_50_percent_non_responders],[drug_50_percent_responders, drug_50_percent_non_responders]])
+
+                # calculate the percent changes and times-to-prerandomization for each patient in both the first and second type 1 error arms
+                first_type_1_percent_changes = calculate_percent_changes(first_type_1_arm_daily_seizure_diaries, num_baseline_days, num_patients_per_trial_arm)
+                second_type_1_percent_changes = calculate_percent_changes(second_type_1_arm_daily_seizure_diaries, num_baseline_days, num_patients_per_trial_arm)
+                first_type_1_TTP_times = calculate_times_to_prerandomization(first_type_1_arm_daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial_arm)
+                second_type_1_TTP_times = calculate_times_to_prerandomization(second_type_1_arm_daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial_arm)
 
                 # construct the contingency table for the Fisher Exact Test of the RR50 endpoint (comparing placebo arm to placebo arm for type 1 error)
                 first_type_1_50_percent_responders = np.sum(first_type_1_percent_changes >= 0.5)
