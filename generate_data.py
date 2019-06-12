@@ -440,9 +440,9 @@ def generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_tr
 
 
 def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
-                                       num_patients_per_trial_arm, num_trials,
-                                       num_baseline_months, num_testing_months, min_req_base_sz_count,
-                                       placebo_mu, placebo_sigma, drug_mu, drug_sigma):
+                                        num_patients_per_trial_arm, num_trials,
+                                        num_baseline_months, num_testing_months, min_req_base_sz_count,
+                                        placebo_mu, placebo_sigma, drug_mu, drug_sigma):
     '''
 
     This function estimates what the statistical power should be for a patient with a
