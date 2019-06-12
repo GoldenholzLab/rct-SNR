@@ -537,7 +537,15 @@ def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
             num_baseline_days = num_days_in_one_month*num_baseline_months
             num_testing_days = num_days_in_one_month*num_testing_months
 
-            # initialize the array that will contain the p_values for the 50% responder rates, median percent changes, and time-to-prerandomization from every trial
+            # initialize the arrays that will contain the endpoint responses (50% responder rate, median percent change, time-to-prerandomization) for both the placebo and drug arms
+            placebo_RR50_array = np.zeros(num_trials)
+            drug_RR50_array = np.zeros(num_trials)
+            placebo_MPC_array = np.zeros(num_trials)
+            drug_MPC_array = np.zeros(num_trials)
+            placebo_med_TTP_array = np.zeros(num_trials)
+            drug_med_TTP_array = np.zeros(num_trials)
+
+            # initialize the arrays that will contain the p_values for the 50% responder rates, median percent changes, and time-to-prerandomization from every trial
             RR50_p_value_array = np.zeros(num_trials)
             MPC_p_value_array = np.zeros(num_trials)
             TTP_p_value_array = np.zeros(num_trials)
@@ -545,43 +553,84 @@ def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
             # for every trial:
             for trial_index in range(num_trials):
 
-                # generate one set of daily seizure diaries for each placebo arm and drug arm of a trial
+                # generate one set of daily seizure diaries for each placebo arm and drug arm of a trial (two sets in total)
                 [placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries] = \
                     generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_trial_arm,
                                                   num_baseline_days, num_testing_days, min_req_base_sz_count,
                                                   placebo_mu, placebo_sigma, drug_mu, drug_sigma)
+                
+                # generate two sets of daily seizure diaries, both from a placebo arm (meant for calculating type 1 Error)
+                [first_type_1_arm_daily_seizure_diaries, second_type_1_arm_daily_seizure_diaries] = \
+                    generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_trial_arm,
+                                                  num_baseline_days, num_testing_days, min_req_base_sz_count,
+                                                  placebo_mu, placebo_sigma, 0, 0)
 
-                # calculate the percent changes
+                # calculate the percent changes and times-to-prerandomization for each patient in boht the placebo and drug arm groups
                 placebo_percent_changes = calculate_percent_changes(placebo_arm_daily_seizure_diaries, num_baseline_days, num_patients_per_trial_arm)
                 drug_percent_changes = calculate_percent_changes(drug_arm_daily_seizure_diaries, num_baseline_days, num_patients_per_trial_arm)
-
-                # calculate the times-to-prerandomization for each patient
                 placebo_TTP_times = calculate_times_to_prerandomization(placebo_arm_daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial_arm)
                 drug_TTP_times = calculate_times_to_prerandomization(drug_arm_daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial_arm)
+
+                # calculate the percent changes and times-to-prerandomization for each patient in boht the first and second type 1 error arms
+                first_type_1_percent_changes = calculate_percent_changes(first_type_1_arm_daily_seizure_diaries, num_baseline_days, num_patients_per_trial_arm)
+                second_type_1_percent_changes = calculate_percent_changes(second_type_1_arm_daily_seizure_diaries, num_baseline_days, num_patients_per_trial_arm)
+                first_type_1_TTP_times = calculate_times_to_prerandomization(first_type_1_arm_daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial_arm)
+                second_type_1_TTP_times = calculate_times_to_prerandomization(second_type_1_arm_daily_seizure_diaries, num_baseline_months, num_testing_days, num_patients_per_trial_arm)
         
-                # construct the contingency table for the Fisher Exact Test of the RR50 endpoint
+                # construct the contingency table for the Fisher Exact Test of the RR50 endpoint (comparing placebo arm to drug arm for statistical power)
                 placebo_50_percent_responders = np.sum(placebo_percent_changes >= 0.5)
                 placebo_50_percent_non_responders = num_patients_per_trial_arm - placebo_50_percent_responders
                 drug_50_percent_responders = np.sum(drug_percent_changes >= 0.5)
                 drug_50_percent_non_responders = num_patients_per_trial_arm - drug_50_percent_responders
                 table = np.array([[placebo_50_percent_responders, placebo_50_percent_non_responders],[drug_50_percent_responders, drug_50_percent_non_responders]])
 
+                # construct the contingency table for the Fisher Exact Test of the RR50 endpoint (comparing placebo arm to placebo arm for type 1 error)
+                first_type_1_50_percent_responders = np.sum(first_type_1_percent_changes >= 0.5)
+                first_type_1_50_percent_non_responders = num_patients_per_trial_arm - first_type_1_50_percent_responders
+                second_type_1_50_percent_responders = np.sum(second_type_1_percent_changes >= 0.5)
+                second_type_1_50_percent_non_responders = num_patients_per_trial_arm - second_type_1_50_percent_responders
+                table = np.array([[first_type_1_50_percent_responders, first_type_1_50_percent_non_responders],[second_type_1_50_percent_responders, second_type_1_50_percent_non_responders]])
+
+                # calculate and store the 50% responder rate, median percent change, and median time-to-prerandomization for both the placebo and drug arm groups
+                placebo_RR50_array[trial_index] = placebo_50_percent_responders/num_patients_per_trial_arm
+                drug_RR50_array[trial_index] = drug_50_percent_responders/num_patients_per_trial_arm
+                placebo_MPC_array[trial_index] = np.median(placebo_percent_changes)
+                drug_MPC_array[trial_index] = np.median(drug_percent_changes)
+                placebo_med_TTP_array[trial_index] = np.median(placebo_TTP_times)
+                drug_med_TTP_array[trial_index] = np.median(drug_TTP_times)
+
                 # the following two arrays are to meant to say to the logrank test for the TTP endpoint that none of the data is censored (i.e., missing)
                 events_observed_placebo = np.ones(len(placebo_TTP_times))
                 events_observed_drug = np.ones(len(drug_TTP_times))
+                TTP_results = logrank_test(placebo_TTP_times, drug_TTP_times, events_observed_placebo, events_observed_drug)
 
-                # get the p-values for the 50% responder rate and the median percent change
+                # the following two arrays are to meant to say to the logrank test for the TTP type 1 error that none of the data is censored (i.e., missing)
+                events_observed_first_type_1 = np.ones(len(first_type_1_TTP_times))
+                events_observed_second_type_1 = np.ones(len(second_type_1_TTP_times))
+                type_1_error_TTP_results = logrank_test(first_type_1_TTP_times, second_type_1_TTP_times, events_observed_first_type_1, events_observed_second_type_1)
+
+                # calculate the p-values for the 50% responder rate, the median percent change and the time-to-prerandomization (statistical power)
                 [_, RR50_p_value] = stats.fisher_exact(table)
                 [_, MPC_p_value] = stats.ranksums(placebo_percent_changes, drug_percent_changes)
-
-                # get the the p-value for the logrank test
-                TTP_results = logrank_test(placebo_TTP_times, drug_TTP_times, events_observed_placebo, events_observed_drug)
                 TTP_p_value = TTP_results.p_value
+
+                # calculate the p-values for the 50% responder rate, the median percent change and the time-to-prerandomization (type 1 Error)
+                [_, type_1_error_RR50_p_value] = stats.fisher_exact(table)
+                [_, type_1_error_MPC_p_value] = stats.ranksums(placebo_percent_changes, drug_percent_changes)
+                type_1_error_TTP_p_value = TTP_results.p_value
     
                 # store the p-values for the 3 different endpoints
                 RR50_p_value_array[trial_index] = RR50_p_value
                 MPC_p_value_array[trial_index] = MPC_p_value
                 TTP_p_value_array[trial_index] = TTP_p_value
+            
+            # calculate the expected 
+            expected_placebo_RR50 = np.mean(placebo_RR50_array)
+            expected_placebo_MPC = np.mean(placebo_MPC_array)
+            expected_placebo_TTP = np.mean(placebo_med_TTP_array)
+            expected_drug_RR50 = np.mean(drug_RR50_array)
+            expected_drug_MPC = np.mean(drug_MPC_array)
+            expected_drug_TTP = np.mean(drug_med_TTP_array)
     
             # calculate the statistical power of each endpoint from all the different p-values calculated
             RR50_power = np.sum(RR50_p_value_array < 0.05)/num_trials
