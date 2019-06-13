@@ -557,21 +557,23 @@ def calculate_one_trial_quantities(placebo_arm_daily_seizure_diaries, drug_arm_d
             placebo_med_TTP, drug_med_TTP, TTP_p_value]
 
 
-def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
-                                        num_patients_per_trial_arm, num_trials,
-                                        num_baseline_months, num_testing_months, min_req_base_sz_count,
-                                        placebo_mu, placebo_sigma, drug_mu, drug_sigma):
+def estimate_endpoint_statistics(monthly_mean, monthly_std_dev,
+                                 num_patients_per_trial_arm, num_trials,
+                                 num_baseline_months, num_testing_months, min_req_base_sz_count,
+                                 placebo_mu, placebo_sigma, drug_mu, drug_sigma):
     '''
 
-    This function estimates what the statistical power should be for a patient with a
-
-    monthly mean and monthly standard deviation as specified by the input parameters. This function 
-
-    will just return NaN if the standard deviation is less than the square root of the mean due to
-
-    mathematical restrictions on the negative binomial distribution which is generating all these
-
-    seizure counts. This function will also return NaN if the given monthly mean is just zero.
+    This function estimates what the expected placebo arm response, the expected drug arm response, 
+    
+    the statistical power, and the type-1 error should be for a patient over all endpoints (50% responder rate,
+    
+    median percent change, time-to-prerandomization) with a monthly mean and monthly standard deviation as 
+    
+    specified by the input parameters. This function will just return NaN if the standard deviation is less than 
+    
+    the square root of the mean due to mathematical restrictions on the negative binomial distribution which is 
+    
+    generating all these seizure counts. This function will also return NaN if the given monthly mean is just zero.
 
     Inputs:
 
@@ -818,20 +820,17 @@ def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
                 np.nan, np.nan, np.nan]
 
 
-def generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mean,    step_monthly_mean, 
+def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_mean,    step_monthly_mean, 
                                     start_monthly_std_dev,      stop_monthly_std_dev, step_monthly_std_dev,
                                     num_baseline_months,        num_testing_months,   min_req_base_sz_count, 
                                     num_patients_per_trial_arm, num_trials,
                                     placebo_mu, placebo_sigma,  drug_mu, drug_sigma):
     '''
 
-    This function generates all of the statistical power maps to be stored for later plotting. It also 
-
-    generates some metadata about these maps that can be utilized alongside models of patient seizure 
-
-    diary simulations in order to evaluate the placebo response of any group of seizure diaries generated 
+    This function generates all of the 2D endpoint statistic arrays (i.e., expected placebo arm response, expected drug 
     
-    by said models.
+    response, statistical power, type-1 error) to be stored for later plotting.
+
 
     Inputs:
 
@@ -928,10 +927,19 @@ def generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mea
     num_monthly_means = len(monthly_mean_array)
     num_monthly_std_devs = len(monthly_std_dev_array)
 
-    # initialize the 2D numpy arrays that will hold the expected endpoint maps
+    # initialize the 2D numpy arrays that will hold the endpoint statistics maps
+    expected_placebo_RR50_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    expected_placebo_MPC_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    expected_placebo_TTP_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    expected_drug_RR50_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    expected_drug_MPC_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    expected_drug_TTP_map = np.zeros((num_monthly_std_devs, num_monthly_means))
     RR50_stat_power_map = np.zeros((num_monthly_std_devs, num_monthly_means))
     MPC_stat_power_map = np.zeros((num_monthly_std_devs, num_monthly_means))
     TTP_stat_power_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    RR50_type_1_error_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    MPC_type_1_error_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    TTP_type_1_error_map = np.zeros((num_monthly_std_devs, num_monthly_means))
 
     # for every given monthly standard deviation on the y-axis
     for monthly_std_dev_index in range(num_monthly_std_devs):
@@ -947,11 +955,14 @@ def generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mea
             start_time_in_seconds = time.time()
 
             # estimate the estimate the expected endpoints for the given mean and standard deviation
-            [RR50_power, MPC_power, TTP_power] =  \
-                estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
-                                                    num_patients_per_trial_arm, num_trials,
-                                                    num_baseline_months, num_testing_months, min_req_base_sz_count,
-                                                    placebo_mu, placebo_sigma, drug_mu, drug_sigma)
+            [expected_placebo_RR50, expected_placebo_MPC, expected_placebo_TTP, 
+             expected_drug_RR50,    expected_drug_MPC,    expected_drug_TTP,
+             RR50_power,            MPC_power,            TTP_power, 
+             RR50_type_1_error,     MPC_type_1_error,     TTP_type_1_error] =  \
+                estimate_endpoint_statistics(monthly_mean, monthly_std_dev,
+                                             num_patients_per_trial_arm, num_trials,
+                                             num_baseline_months, num_testing_months, min_req_base_sz_count,
+                                             placebo_mu, placebo_sigma, drug_mu, drug_sigma)
             
             # put a stop to the timer on the endpoint estimation
             stop_time_in_seconds = time.time()
@@ -959,25 +970,50 @@ def generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mea
             # calculate the total number of minutes it took to estimate the expected endpoints for the given mean and standard deviation
             total_time_in_minutes = (stop_time_in_seconds - start_time_in_seconds)/60
 
-            # store the estimated expected endpoints
-            RR50_stat_power_map[monthly_std_dev_index, monthly_mean_index] = RR50_power
-            MPC_stat_power_map[monthly_std_dev_index, monthly_mean_index] = MPC_power
-            TTP_stat_power_map[monthly_std_dev_index, monthly_mean_index] = TTP_power
+            # store the estimated endpoint statistics
+            expected_placebo_RR50_map[monthly_std_dev_index, monthly_mean_index] = expected_placebo_RR50
+            expected_placebo_MPC_map[monthly_std_dev_index, monthly_mean_index]  = expected_placebo_MPC
+            expected_placebo_TTP_map[monthly_std_dev_index, monthly_mean_index]  = expected_placebo_TTP
+            expected_drug_RR50_map[monthly_std_dev_index, monthly_mean_index]    = expected_drug_RR50
+            expected_drug_MPC_map[monthly_std_dev_index, monthly_mean_index]     = expected_drug_MPC
+            expected_drug_TTP_map[monthly_std_dev_index, monthly_mean_index]     = expected_drug_TTP
+            RR50_stat_power_map[monthly_std_dev_index, monthly_mean_index]       = RR50_power
+            MPC_stat_power_map[monthly_std_dev_index, monthly_mean_index]        = MPC_power
+            TTP_stat_power_map[monthly_std_dev_index, monthly_mean_index]        = TTP_power
+            RR50_type_1_error_map[monthly_std_dev_index, monthly_mean_index]     = RR50_type_1_error
+            MPC_type_1_error_map[monthly_std_dev_index, monthly_mean_index]      = MPC_type_1_error
+            TTP_type_1_error_map[monthly_std_dev_index, monthly_mean_index]      = TTP_type_1_error
 
             # prepare a string telling the user where the algorithm is in terms of map generation
             cpu_time_string = 'cpu time (minutes): ' + str( np.round(total_time_in_minutes, 2) )
-            RR50_string = 'RR50 stat power: ' +  str( 100*np.round(RR50_power, 4) ) + ' %'
-            MPC_string = 'MPC stat power:  ' +  str( 100*np.round(MPC_power, 4) ) + ' %'
-            TTP_string = 'TTP stat power:  ' + str( 100*np.round(TTP_power, 4) ) + ' %'
+            expected_placebo_RR50_string = 'expected placebo RR50: ' +  str( 100*np.round(expected_placebo_RR50, 4) ) + ' %'
+            expected_placebo_MPC_string = 'expected placebo MPC: ' +  str( 100*np.round(expected_placebo_MPC, 4) ) + ' %'
+            expected_placebo_TTP_string = 'expected placebo TTP: ' +  str( 100*np.round(expected_placebo_TTP, 4) ) + ' %'
+            expected_drug_RR50_string = 'expected drug RR50: ' +  str( 100*np.round(expected_placebo_RR50, 4) ) + ' %'
+            expected_drug_MPC_string = 'expected drug MPC: ' +  str( 100*np.round(expected_placebo_MPC, 4) ) + ' %'
+            expected_drug_TTP_string = 'expected drug TTP: ' +  str( 100*np.round(expected_placebo_TTP, 4) ) + ' %'
+            RR50_stat_power_string = 'RR50 stat power:  ' +  str( 100*np.round(RR50_power, 4) ) + ' %'
+            MPC_stat_power_string = 'MPC stat power:  ' +  str( 100*np.round(MPC_power, 4) ) + ' %'
+            TTP_stat_power_string = 'TTP stat power:  ' + str( 100*np.round(TTP_power, 4) ) + ' %'
+            RR50_type_1_error_string = 'RR50 stat power:  ' +  str( 100*np.round(RR50_power, 4) ) + ' %'
+            MPC_type_1_error_string = 'MPC stat power:  ' +  str( 100*np.round(MPC_power, 4) ) + ' %'
+            TTP_type_1_error_string = 'TTP stat power:  ' + str( 100*np.round(TTP_power, 4) ) + ' %'
+            expected_placebo_string = expected_placebo_RR50_string + '\n' + expected_placebo_MPC_string + '\n' + expected_placebo_TTP_string
+            expected_drug_string = expected_drug_RR50_string + '\n' + expected_drug_MPC_string + '\n' + expected_drug_TTP_string
+            stat_power_string = RR50_stat_power_string + '\n' + MPC_stat_power_string + '\n' + TTP_stat_power_string
+            type_1_error_string = RR50_type_1_error_string + '\n' + MPC_type_1_error_string + '\n' + TTP_type_1_error_string
             monthly_mean_string = str(np.round(monthly_mean, 2))
             monthly_std_dev_string = str(np.round(monthly_std_dev, 2))
             orientation_string = 'monthly mean, monthly standard deviation: (' + monthly_mean_string + ', ' + monthly_std_dev_string + ')'
-            data_string = '\n\n' + orientation_string + ':\n' + RR50_string + '\n' + MPC_string + '\n' + TTP_string + '\n' + cpu_time_string
+            data_string = '\n\n' + orientation_string + ':\n' + expected_placebo_string + '\n' + expected_drug_string + '\n' + stat_power_string + '\n' + type_1_error_string + '\n' + cpu_time_string
 
             # print the string
             print(data_string)
     
-    return [RR50_stat_power_map, MPC_stat_power_map, TTP_stat_power_map]
+    return [expected_placebo_RR50_map, expected_placebo_MPC_map, expected_placebo_TTP_map,
+            expected_drug_RR50_map,    expected_drug_MPC_map,    expected_drug_TTP_map,
+            RR50_stat_power_map,       MPC_stat_power_map,       TTP_stat_power_map,
+            RR50_type_1_error_map,     MPC_type_1_error_map,     TTP_type_1_error_map]
 
 
 def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_model, num_months_per_patient):
@@ -1270,12 +1306,15 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
     '''
 
     # generate the statistical power maps for RR50 and MPC
-    [RR50_stat_power_map, MPC_stat_power_map, TTP_stat_power_map] = \
-        generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mean,    step_monthly_mean, 
-                                        start_monthly_std_dev,      stop_monthly_std_dev, step_monthly_std_dev,
-                                        num_baseline_months,        num_testing_months,   min_req_base_sz_count, 
-                                        num_patients_per_trial_arm, num_trials,
-                                        placebo_mu, placebo_sigma,  drug_mu, drug_sigma)
+    [expected_placebo_RR50_map, expected_placebo_MPC_map, expected_placebo_TTP_map,
+     expected_drug_RR50_map,    expected_drug_MPC_map,    expected_drug_TTP_map,
+     RR50_stat_power_map,       MPC_stat_power_map,       TTP_stat_power_map,
+     RR50_type_1_error_map,     MPC_type_1_error_map,     TTP_type_1_error_map      ] = \
+        generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_mean,    step_monthly_mean, 
+                                         start_monthly_std_dev,      stop_monthly_std_dev, step_monthly_std_dev,
+                                         num_baseline_months,        num_testing_months,   min_req_base_sz_count, 
+                                         num_patients_per_trial_arm, num_trials,
+                                         placebo_mu, placebo_sigma,  drug_mu, drug_sigma)
 
     # generate Model 1 patients
     [model_1_monthly_count_averages, model_1_monthly_count_standard_deviations] = \
