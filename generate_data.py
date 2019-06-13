@@ -621,18 +621,52 @@ def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
 
     Outputs:
 
-        1) expected_placebo_RR50: 
+        1) expected_placebo_RR50:
+
+            (float) - 
+
         2) expected_placebo_MPC:
+
+            (float) - 
+
         3) expected_placebo_TTP: 
+
+            (float) - 
+
         4) expected_drug_RR50:
+
+            (float) - 
+
         5) expected_drug_MPC:
+
+            (float) - 
+
         6) expected_drug_TTP:
+
+            (float) - 
+
         7) RR50_power:
+
+            (float) - 
+
         8) MPC_power:
-        9) TTP_power: 
+
+            (float) - 
+
+        9) TTP_power:
+
+            (float) - 
+
         10) RR50_type_1_error:
+
+            (float) - 
+
         11) MPC_type_1_error:
-        12) TTP_type_1_error
+
+            (float) - 
+
+        12) TTP_type_1_error:
+
     '''
 
 
