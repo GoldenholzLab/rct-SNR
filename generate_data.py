@@ -589,7 +589,9 @@ def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
         
         4) num_trials:
 
-            (int) - the number of trials used to estimate the expected endpoints at each point in the expected placebo response maps
+            (int) - the number of trials used to estimate the expected endpoints at each point in the expected 
+                    
+                    placebo response maps
 
         5) num_baseline_months:
 
@@ -623,49 +625,75 @@ def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
 
         1) expected_placebo_RR50:
 
-            (float) - 
+            (float) - the 50% responder rate which is expected from an individual in the placebo arm with this 
+            
+                      specific monthly mean and monthly standard deviation
 
         2) expected_placebo_MPC:
 
-            (float) - 
+            (float) - the median percent change which is expected from an individual in the placebo arm with this 
+            
+                      specific monthly mean and monthly standard deviation
 
         3) expected_placebo_TTP: 
 
-            (float) - 
+            (float) - the time-to-prerandomization which is expected from an individual in the placebo arm with this 
+            
+                      specific monthly mean and monthly standard deviation
 
         4) expected_drug_RR50:
 
-            (float) - 
+            (float) - the 50% responder rate which is expected from an individual in the drug arm with this 
+            
+                      specific monthly mean and monthly standard deviation
 
         5) expected_drug_MPC:
 
-            (float) - 
+            (float) - the median percent change which is expected from an individual in the drug arm with this 
+            
+                      specific monthly mean and monthly standard deviation
 
         6) expected_drug_TTP:
 
-            (float) - 
+            (float) - the time-to-prerandomization which is expected from an individual in the drug arm with this 
+            
+                      specific monthly mean and monthly standard deviation
 
         7) RR50_power:
 
-            (float) - 
+            (float) - the statistical power of the 50% responder rate endpoint for a given monthly seizure frequency 
+                      
+                      and monthly standard deviation
 
         8) MPC_power:
 
-            (float) - 
+            (float) - the statistical power of the median percent change endpoint for a given monthly seizure 
+            
+                      frequency and monthly standard deviation
 
         9) TTP_power:
 
-            (float) - 
+            (float) - the statistical power of the time-to-prerandomization endpoint for a given monthly seizure 
+            
+                      frequency and monthly standard deviation
 
         10) RR50_type_1_error:
 
-            (float) - 
+            (float) - the type-1 error of the 50% responder rate endpoint for a given monthly seizure frequency and 
+            
+                      monthly standard deviation
 
         11) MPC_type_1_error:
 
-            (float) - 
+            (float) - the type-1 error of the median percent change endpoint for a given monthly seizure frequency 
+                      
+                      and monthly standard deviation
 
         12) TTP_type_1_error:
+
+            (float) - the statistical power of the time-to-prerandomization endpoint for a given monthly seizure 
+                      
+                      frequency and monthly standard deviation
 
     '''
 
@@ -736,12 +764,14 @@ def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
                 drug_med_TTP_array[trial_index] = drug_med_TTP
                 TTP_p_value_array[trial_index] = TTP_p_value
 
+                # calculate the p-values of the endpoints when two placebo arms are compared against each other
                 [_,    _,    pvp_RR50_p_value,
                  _,    _,    pvp_MPC_p_value,
                  _,    _,    pvp_TTP_p_value] = \
                      calculate_one_trial_quantities(first_type_1_arm_daily_seizure_diaries, second_type_1_arm_daily_seizure_diaries,
                                                    num_baseline_months, num_testing_months)
 
+                # store the p-values of the comparison between two placebo arms
                 RR50_p_value_array[trial_index] = pvp_RR50_p_value
                 MPC_p_value_array[trial_index] = pvp_MPC_p_value
                 TTP_p_value_array[trial_index] = pvp_TTP_p_value
@@ -759,7 +789,7 @@ def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
             MPC_power = np.sum(MPC_p_value_array < 0.05)/num_trials
             TTP_power = np.sum(TTP_p_value_array < 0.05)/num_trials
 
-            # calculate the statistical power of each endpoint from all the different p-values calculated
+            # calculate the type-1 error of each endpoint from all the different p-values calculated of the two placebo groups
             RR50_type_1_error = np.sum(pvp_RR50_p_value_array < 0.05)/num_trials
             MPC_type_1_error = np.sum(pvp_MPC_p_value_array < 0.05)/num_trials
             TTP_type_1_error = np.sum(pvp_TTP_p_value_array < 0.05)/num_trials
@@ -773,13 +803,19 @@ def estimate_endpoint_statistical_power(monthly_mean, monthly_std_dev,
         else:
 
             # say that calculating their placebo response is impossible
-            return [np.nan, np.nan, np.nan]
+            return [np.nan, np.nan, np.nan,
+                    np.nan, np.nan, np.nan,
+                    np.nan, np.nan, np.nan,
+                    np.nan, np.nan, np.nan]
     
     # if the patient does not have a true mean seizure count of 0, then:
     else:
 
         # say that calculating their placebo response is impossible
-        return [np.nan, np.nan, np.nan]
+        return [np.nan, np.nan, np.nan,
+                np.nan, np.nan, np.nan,
+                np.nan, np.nan, np.nan,
+                np.nan, np.nan, np.nan]
 
 
 def generate_statistical_power_maps(start_monthly_mean,         stop_monthly_mean,    step_monthly_mean, 
