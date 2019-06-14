@@ -1654,9 +1654,15 @@ def store_map(data_map,
         json.dump(metadata.tolist(), map_metadata_storage_file)
 
 
-def save_NV_model_statistical_powers(Model_1_RR50_stat_power, Model_1_MPC_stat_power, Model_1_TTP_stat_power,
-                                     Model_2_RR50_stat_power, Model_2_MPC_stat_power, Model_2_TTP_stat_power,
-                                     NV_model_statistical_power_text_file_name):
+def save_NV_model_endpoint_statistics(Model_1_expected_placebo_RR50, Model_1_expected_placebo_MPC, Model_1_expected_placebo_TTP,
+                                      Model_2_expected_placebo_RR50, Model_2_expected_placebo_MPC, Model_2_expected_placebo_TTP,
+                                      Model_1_expected_drug_RR50,    Model_1_expected_drug_MPC,    Model_1_expected_drug_TTP, 
+                                      Model_2_expected_drug_RR50,    Model_2_expected_drug_MPC,    Model_2_expected_drug_TTP,
+                                      Model_1_RR50_stat_power,       Model_1_MPC_stat_power,       Model_1_TTP_stat_power,
+                                      Model_2_RR50_stat_power,       Model_2_MPC_stat_power,       Model_2_TTP_stat_power,
+                                      Model_1_RR50_type_1_error,     Model_1_MPC_type_1_error,     Model_1_TTP_type_1_error,
+                                      Model_2_RR50_type_1_error,     Model_2_MPC_type_1_error,     Model_2_TTP_type_1_error,
+                                      NV_model_endpoint_statistics_text_file_name):
     '''
 
     This function stores the expected placebo responses for NV model 1 ande NV model 2 as 
@@ -1711,14 +1717,35 @@ def save_NV_model_statistical_powers(Model_1_RR50_stat_power, Model_1_MPC_stat_p
 
     '''
 
-    with open(os.getcwd() + '/' + NV_model_statistical_power_text_file_name + '.txt', 'w+') as text_file:
+    with open(os.getcwd() + '/' + NV_model_endpoint_statistics_text_file_name + '.txt', 'w+') as text_file:
 
-        data =  '\n\nModel 1 expected RR50: ' + str(Model_1_RR50_stat_power) + \
-                '\n\nModel 1 expected MPC: '  + str(Model_1_MPC_stat_power)  + \
-                '\n\nModel 1 expected TTP: '  + str(Model_1_TTP_stat_power)  + \
-                '\n\nModel 2 expected RR50: ' + str(Model_2_RR50_stat_power) + \
-                '\n\nModel 2 expected MPC: '  + str(Model_2_MPC_stat_power)  + \
-                '\n\nModel 2 expected TTP: '  + str(Model_2_TTP_stat_power)
+        placebo_response =  '\n\nModel 1 expected placebo RR50: ' + str(Model_1_expected_placebo_RR50) + \
+                            '\n\nModel 1 expected placebo MPC: '  + str(Model_1_MPC_stat_power)  + \
+                            '\n\nModel 1 expected placebo TTP: '  + str(Model_1_TTP_stat_power)  + \
+                            '\n\nModel 2 expected placebo RR50: ' + str(Model_2_RR50_stat_power) + \
+                            '\n\nModel 2 expected placebo MPC: '  + str(Model_2_MPC_stat_power)  + \
+                            '\n\nModel 2 expected placebo TTP: '  + str(Model_2_TTP_stat_power)
+        
+        drug_response =  '\n\nModel 1 expected drug RR50: ' + str(Model_1_RR50_stat_power) + \
+                         '\n\nModel 1 expected drug MPC: '  + str(Model_1_MPC_stat_power)  + \
+                         '\n\nModel 1 expected drug TTP: '  + str(Model_1_TTP_stat_power)  + \
+                         '\n\nModel 2 expected drug RR50: ' + str(Model_2_RR50_stat_power) + \
+                         '\n\nModel 2 expected drug MPC: '  + str(Model_2_MPC_stat_power)  + \
+                         '\n\nModel 2 expected drug TTP: '  + str(Model_2_TTP_stat_power)
+        
+        stat_power =  '\n\nModel 1 RR50 statistical power: ' + str(Model_1_RR50_stat_power) + \
+                      '\n\nModel 1 MPC statistical power: '  + str(Model_1_MPC_stat_power)  + \
+                      '\n\nModel 1 TTP statistical power: '  + str(Model_1_TTP_stat_power)  + \
+                      '\n\nModel 2 RR50 statistical power: ' + str(Model_2_RR50_stat_power) + \
+                      '\n\nModel 2 MPC statistical power: '  + str(Model_2_MPC_stat_power)  + \
+                      '\n\nModel 2 TTP statistical power: '  + str(Model_2_TTP_stat_power)
+        
+        type_1_error =  '\n\nModel 1 RR50 type-1 error: ' + str(Model_1_RR50_stat_power) + \
+                        '\n\nModel 1 MPC type-1 error: '  + str(Model_1_MPC_stat_power)  + \
+                        '\n\nModel 1 TTP type-1 error: '  + str(Model_1_TTP_stat_power)  + \
+                        '\n\nModel 2 RR50 type-1 error: ' + str(Model_2_RR50_stat_power) + \
+                        '\n\nModel 2 MPC type-1 error: '  + str(Model_2_MPC_stat_power)  + \
+                        '\n\nModel 2 TTP type-1 error: '  + str(Model_2_TTP_stat_power)
 
         text_file.write(data)
 
@@ -1744,7 +1771,7 @@ def main(shape_1, scale_1, alpha_1, beta_1,
          TTP_type_1_error_file_name,      TTP_type_1_error_metadata_file_name,
          H_model_1_file_name, H_model_1_metadata_file_name,
          H_model_2_file_name, H_model_2_metadata_file_name,
-         NV_model_statistical_power_text_file_name):
+         NV_model_endpoint_statistics_text_file_name):
     '''
 
     This function is the main function that should be called in order to fulfill this script's primary purpose,
@@ -1909,9 +1936,9 @@ def main(shape_1, scale_1, alpha_1, beta_1,
             
                        later
 
-        36) NV_model_statistical_power_text_file_name:
+        36) NV_model_endpoint_statistics_text_file_name:
 
-            (string) - the name of the text file which will contain the statistical powers of the endpoints for NV 
+            (string) - the name of the text file which will contain the endpoint statistics for NV 
                        
                        model 1 and NV model 2
     
@@ -2029,9 +2056,15 @@ def main(shape_1, scale_1, alpha_1, beta_1,
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
     
     # store the estimated placebo responses for NV model 1 and NV model 2
-    save_NV_model_statistical_powers(Model_1_RR50_stat_power, Model_1_MPC_stat_power, Model_1_TTP_stat_power,
-                                     Model_2_RR50_stat_power, Model_2_MPC_stat_power, Model_2_TTP_stat_power,
-                                     NV_model_statistical_power_text_file_name)
+    save_NV_model_endpoint_statistics(Model_1_expected_placebo_RR50, Model_1_expected_placebo_MPC, Model_1_expected_placebo_TTP,
+                                      Model_2_expected_placebo_RR50, Model_2_expected_placebo_MPC, Model_2_expected_placebo_TTP,
+                                      Model_1_expected_drug_RR50,    Model_1_expected_drug_MPC,    Model_1_expected_drug_TTP, 
+                                      Model_2_expected_drug_RR50,    Model_2_expected_drug_MPC,    Model_2_expected_drug_TTP,
+                                      Model_1_RR50_stat_power,       Model_1_MPC_stat_power,       Model_1_TTP_stat_power,
+                                      Model_2_RR50_stat_power,       Model_2_MPC_stat_power,       Model_2_TTP_stat_power,
+                                      Model_1_RR50_type_1_error,     Model_1_MPC_type_1_error,     Model_1_TTP_type_1_error,
+                                      Model_2_RR50_type_1_error,     Model_2_MPC_type_1_error,     Model_2_TTP_type_1_error,
+                                      NV_model_endpoint_statistics_text_file_name)
 
 
 if(__name__=='__main__'):
@@ -2112,7 +2145,7 @@ if(__name__=='__main__'):
     H_model_2_metadata_file_name              = 'H_model_2_hist_metadata'
 
     # obtain the name of text file which will contain the placebo responses for NV model 1 and NV model 2
-    NV_model_statistical_power_text_file_name = arg_array[27]
+    NV_model_endpoint_statistics_text_file_name = 'NV_model_endpoint_statistics'
 
     # call the main() function
     main(shape_1, scale_1, alpha_1, beta_1, 
@@ -2136,7 +2169,7 @@ if(__name__=='__main__'):
          TTP_type_1_error_file_name,      TTP_type_1_error_metadata_file_name,
          H_model_1_file_name, H_model_1_metadata_file_name,
          H_model_2_file_name, H_model_2_metadata_file_name,
-         NV_model_statistical_power_text_file_name)
+         NV_model_endpoint_statistics_text_file_name)
     
     stop_time_in_seconds = time.time()
 
