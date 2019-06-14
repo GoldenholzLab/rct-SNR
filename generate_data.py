@@ -1353,8 +1353,8 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
 
     return [Model_1_RR50_stat_power,      Model_1_MPC_stat_power,      Model_1_TTP_stat_power,
             Model_2_RR50_stat_power,      Model_2_MPC_stat_power,      Model_2_TTP_stat_power,
-            RR50_stat_power_map,        MPC_stat_power_map,        TTP_stat_power_map,
-            H_model_1,                  H_model_2                 ]
+            RR50_stat_power_map,          MPC_stat_power_map,        TTP_stat_power_map,
+            H_model_1,                    H_model_2                 ]
 
 
 def store_map(data_map, 
