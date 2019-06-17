@@ -26,19 +26,4 @@ inputs[14]=0.05
 inputs[15]=10000
 inputs[16]=24
 
-# The names of the files where the data/metadata will be stored
-inputs[17]='RR50_stat_power_map'
-inputs[18]='RR50_stat_power_map_metadata'
-inputs[19]='MPC_stat_power_map'
-inputs[20]='MPC_stat_power_map_metadata'
-inputs[21]='TTP_stat_power_map'
-inputs[22]='TTP_stat_power_map_metadata'
-inputs[23]='H_model_1_hist'
-inputs[24]='H_model_1_hist_metadata'
-inputs[25]='H_model_2_hist'
-inputs[26]='H_model_2_hist_metadata'
-
-# The name of text file which will contain the placebo responses for NV model 1 and NV model 2
-inputs[27]='NV_model_statistical_power'
-
 python generate_data.py ${inputs[@]}
