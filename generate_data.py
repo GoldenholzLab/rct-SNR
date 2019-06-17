@@ -1749,79 +1749,79 @@ def save_NV_model_endpoint_statistics(Model_1_expected_placebo_RR50, Model_1_exp
             
                       multiplication of the Model 2 patient histogram and the time-to-prerandomization expected placebo response maps
         
-        1) Model_1_RR50_stat_power:
+        13) Model_1_RR50_stat_power:
             
             (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the 
             
                       Model 1 patient histogram and the 50% responder rate statistical power maps
         
-        2) Model_1_MPC_stat_power:
+        14) Model_1_MPC_stat_power:
         
             (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the 
                       
                       Model 1 patient histogram and the median percent change statistical power maps
         
-        3) Model_1_TTP_stat_power:
+        15) Model_1_TTP_stat_power:
         
             (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the 
                       
                       Model 1 patient histogram and the time-to-prerandomization statistical power maps
         
-        4)  Model_2_RR50_stat_power:
+        16)  Model_2_RR50_stat_power:
         
             (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the 
             
                       Model 2 patient histogram and the 50% responder rate statistical power maps
 
-        5) Model_2_MPC_stat_power:
+        17) Model_2_MPC_stat_power:
         
             (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the 
             
                       Model 2 patient histogram and the median percent change statistical power maps
         
-        6) Model_2_TTP_stat_power:
+        18) Model_2_TTP_stat_power:
         
             (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the 
             
                       Model 2 patient histogram and the time-to-prerandomization statistical power maps
         
-        Model_1_RR50_type_1_error:
+        19) Model_1_RR50_type_1_error:
             
             (float) - the collective type-1 error for all of the patients from model 1, determined by a multiplication of the 
             
                       Model 1 patient histogram and the 50% responder rate statistical power maps
         
-        Model_1_MPC_type_1_error:
+        20) Model_1_MPC_type_1_error:
         
             (float) - the collective type-1 error for all of the patients from model 1, determined by a multiplication of the 
                       
                       Model 1 patient histogram and the median percent change type-1 error maps
         
-        Model_1_TTP_type_1_error:
+        21) Model_1_TTP_type_1_error:
         
             (float) - the collective type-1 error for all of the patients from model 1, determined by a multiplication of the 
                       
                       Model 1 patient histogram and the time-to-prerandomization type-1 error maps
         
-        Model_2_RR50_type_1_error:
+        22) Model_2_RR50_type_1_error:
         
             (float) - the collective type-1 error for all of the patients from model 2, determined by a multiplication of the 
             
                       Model 2 patient histogram and the 50% responder rate type-1 error maps
 
-        Model_2_MPC_type_1_error:
+        23) Model_2_MPC_type_1_error:
         
             (float) - the collective type-1 error for all of the patients from model 2, determined by a multiplication of the 
             
                       Model 2 patient histogram and the median percent change type-1 error maps
         
-        Model_2_TTP_type_1_error:
+        24) Model_2_TTP_type_1_error:
                 
             (float) - the collective type-1 error for all of the patients from model 2, determined by a multiplication of the 
             
                       Model 2 patient histogram and the time-to-prerandomization type-1 error maps
         
-        7) NV_model_statistical_power_text_file_name:
+        25) NV_model_statistical_power_text_file_name:
 
             (string) - the name of the text file which will contain the endpoint statistics for NV model 1 and NV model 2
 
@@ -1844,27 +1844,27 @@ def save_NV_model_endpoint_statistics(Model_1_expected_placebo_RR50, Model_1_exp
         
         # format all the endpoint statistics having to do with the drug arm
         drug_response =  '\nModel 1 expected drug RR50: ' + str(np.round(100*Model_1_expected_drug_RR50, 3)) + \
-                         '\nModel 1 expected drug MPC: '  + str(np.round(np.round(100*Model_1_expected_drug_MPC, 3))  + \
-                         '\nModel 1 expected drug TTP: '  + str(np.round(Model_1_expected_drug_TTP, 3))  + \
+                         '\nModel 1 expected drug MPC: '  + str(np.round(100*Model_1_expected_drug_MPC, 3))  + \
+                         '\nModel 1 expected drug TTP: '  + str(np.round(Model_1_expected_drug_TTP, 3))      + \
                          '\nModel 2 expected drug RR50: ' + str(np.round(100*Model_2_expected_drug_RR50, 3)) + \
                          '\nModel 2 expected drug MPC: '  + str(np.round(100*Model_2_expected_drug_MPC, 3))  + \
                          '\nModel 2 expected drug TTP: '  + str(np.round(Model_2_expected_drug_TTP, 3))
         
         # format all the endpoint statistics having to do with the statistical power
-        stat_power =  '\nModel 1 RR50 statistical power: ' + str(np.round(100*Model_1_RR50_type_1_error, 3)) + \
-                      '\nModel 1 MPC statistical power: '  + str(np.round(100*Model_1_MPC_type_1_error, 3))  + \
-                      '\nModel 1 TTP statistical power: '  + str(np.round(100*Model_1_TTP_type_1_error, 3))  + \
-                      '\nModel 2 RR50 statistical power: ' + str(np.round(100*Model_2_RR50_type_1_error, 3)) + \
-                      '\nModel 2 MPC statistical power: '  + str(np.round(100*Model_2_MPC_type_1_error, 3))  + \
-                      '\nModel 2 TTP statistical power: '  + str(np.round(100*Model_2_TTP_type_1_error, 3))
+        stat_power =  '\nModel 1 RR50 statistical power: ' + str(np.round(100*Model_1_RR50_stat_power, 3)) + \
+                      '\nModel 1 MPC statistical power: '  + str(np.round(100*Model_1_MPC_stat_power, 3))  + \
+                      '\nModel 1 TTP statistical power: '  + str(np.round(100*Model_1_TTP_stat_power, 3))  + \
+                      '\nModel 2 RR50 statistical power: ' + str(np.round(100*Model_2_RR50_stat_power, 3)) + \
+                      '\nModel 2 MPC statistical power: '  + str(np.round(100*Model_2_MPC_stat_power, 3))  + \
+                      '\nModel 2 TTP statistical power: '  + str(np.round(100*Model_2_TTP_stat_power, 3))
         
         # format all the endpoint statistics having to do with the type-1 error
-        type_1_error =  '\nModel 1 RR50 type-1 error: ' + str(np.round(100*Model_1_RR50_stat_power, 3)) + \
-                        '\nModel 1 MPC type-1 error: '  + str(np.round(100*Model_1_MPC_stat_power, 3))  + \
-                        '\nModel 1 TTP type-1 error: '  + str(np.round(100*Model_1_TTP_stat_power, 3))  + \
-                        '\nModel 2 RR50 type-1 error: ' + str(np.round(100*Model_2_RR50_stat_power, 3)) + \
-                        '\nModel 2 MPC type-1 error: '  + str(np.round(100*Model_2_MPC_stat_power, 3))  + \
-                        '\nModel 2 TTP type-1 error: '  + str(np.round(100*Model_2_TTP_stat_power, 3))
+        type_1_error =  '\nModel 1 RR50 type-1 error: ' + str(np.round(100*Model_1_RR50_type_1_error, 3)) + \
+                        '\nModel 1 MPC type-1 error: '  + str(np.round(100*Model_1_MPC_type_1_error, 3))  + \
+                        '\nModel 1 TTP type-1 error: '  + str(np.round(100*Model_1_TTP_type_1_error, 3))  + \
+                        '\nModel 2 RR50 type-1 error: ' + str(np.round(100*Model_2_RR50_type_1_error, 3)) + \
+                        '\nModel 2 MPC type-1 error: '  + str(np.round(100*Model_2_MPC_type_1_error, 3))  + \
+                        '\nModel 2 TTP type-1 error: '  + str(np.round(100*Model_2_TTP_type_1_error, 3))
         
         # put all the data together into one string
         data = '\n\n' + placebo_response + '\n\n' + drug_response + '\n\n' + stat_power + '\n\n' + type_1_error + '\n\n'
@@ -1873,193 +1873,89 @@ def save_NV_model_endpoint_statistics(Model_1_expected_placebo_RR50, Model_1_exp
         text_file.write(data)
 
 
-def main(shape_1, scale_1, alpha_1, beta_1, 
-         shape_2, scale_2, alpha_2, beta_2,
-         num_patients_per_model, num_months_per_patient,
+def main(num_patients_per_model, num_months_per_patient,
          start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
          placebo_mu, placebo_sigma,  drug_mu, drug_sigma,
-         expected_placebo_RR50_file_name, expected_placebo_RR50_metadata_file_name,
-         expected_placebo_MPC_file_name,  expected_placebo_MPC_metadata_file_name,
-         expected_placebo_TTP_file_name,  expected_placebo_TTP_metadata_file_name,
-         expected_drug_RR50_file_name,    expected_drug_RR50_metadata_file_name,
-         expected_drug_MPC_file_name,     expected_drug_MPC_metadata_file_name,
-         expected_drug_TTP_file_name,     expected_drug_TTP_metadata_file_name,
-         RR50_stat_power_file_name,       RR50_stat_power_metadata_file_name,
-         MPC_stat_power_file_name,        MPC_stat_power_metadata_file_name,
-         TTP_stat_power_file_name,        TTP_stat_power_metadata_file_name,
-         RR50_type_1_error_file_name,     RR50_type_1_error_metadata_file_name,
-         MPC_type_1_error_file_name,      MPC_type_1_error_metadata_file_name,
-         TTP_type_1_error_file_name,      TTP_type_1_error_metadata_file_name,
-         H_model_1_file_name, H_model_1_metadata_file_name,
-         H_model_2_file_name, H_model_2_metadata_file_name,
          NV_model_endpoint_statistics_text_file_name):
     '''
 
     This function is the main function that should be called in order to fulfill this script's primary purpose,
 
-    which is generating and storing the data needed to plot the expected placebo response maps to be plotted later.
+    which is generating and storing the data needed to plot the endpoint statistic maps to be plotted later.
 
     Inputs:
 
-        1) shape_1:
-        
-            (float) - the first parameter for NV model 1
-        
-        2) scale_1:
-        
-            (float) - the second parameter for NV model 1
-        
-        3) alpha_1:
-        
-            (float) - the third parameter for NV model 1
-        
-        4) beta_1:
-        
-            (float) - the fourth parameter for NV model 1
-
-        5) shape_2:
-        
-            (float) - the first parameter for NV model 2
-        
-        6) scale_2:
-        
-            (float) - the second parameter for NV model 2
-
-        7) alpha_2:
-        
-            (float) - the third parameter for NV model 2
-        
-        8) beta_2:
-
-            (float) -  the fourth parameter for NV model 2
-
-        9) num_patients_per_model:
+        1) num_patients_per_model:
                 
             (int) - the number of patients to generate for the histograms of models 1 and 2
         
-        10) num_months_per_patient:
+        2) num_months_per_patient:
 
             (int) - the number of months that each patient should have in both NV models
 
-        11) start_monthly_mean:
+        3) start_monthly_mean:
         
             (float) - the beginning of the monthly seizure count mean axis for all expected endpoint maps=
         
-        12) stop_monthly_mean:
+        4) stop_monthly_mean:
 
             (float) - the end of the monthly seizure count mean axis for all expected endpoint maps
         
-        13) step_monthly_mean:
+        5) step_monthly_mean:
 
             (float) - the end of the monthly seizure count mean axis for all expected endpoint maps
 
-        14) start_monthly_std_dev:
+        6) start_monthly_std_dev:
                 
             (float) - the beginning of the monthly seizure count mean axis for all expected endpoint maps
         
-        15) stop_monthly_std_dev:
+        7) stop_monthly_std_dev:
 
             (float) - the end of the monthly seizure count mean axis for all expected endpoint maps
         
-        16) step_monthly_std_dev:
+        8) step_monthly_std_dev:
 
             (float) - the spaces in between each location on the monthly seizure count mean axis for all expected endpoint maps
 
-        17) num_baseline_months:
+        9) num_baseline_months:
                         
             (int) - the number of baseline months in each patient's seizure diary
         
-        18) num_testing_months:
+        10) num_testing_months:
                 
             (int) - the number of testing months in each patient's seizure diary
         
-        19) min_req_base_sz_count:
+        11) min_req_base_sz_count:
 
             (int) - the minimum number of required baseline seizure counts
         
-        20) num_patients_per_trial_arm:
+        12) num_patients_per_trial_arm:
 
             (int) - the number of patients generated per trial arm
         
-        21) num_trials:
+        13) num_trials:
 
             (int) -  the number of trials used to estimate the expected endpoints at each point in the expected placebo response maps
         
-        22) placebo_mu:
+        14) placebo_mu:
 
             (float) - the mean of the placebo effect
 
-        23) placebo_sigma:
+        15) placebo_sigma:
         
             (float) - the standard deviation of the placebo effect
 
-        24) drug_mu:
+        16) drug_mu:
 
             (float) - the mean of the drug effect
 
-        25) drug_sigma:
+        17) drug_sigma:
 
             (float) - the standard deviation of the drug effect
 
-        26) expected_RR50_file_name:
-
-            (string) - the name of the JSON file which will contain the expected 50% responder rate placebo response 
-            
-                       map to be plotted later
-        
-        27) expected_RR50_metadata_file_name:
-
-            (string) - the name of the JSON file which will contain the expected 50% responder rate placebo response 
-            
-                       map metadata to be plotted later
-
-        28) expected_MPC_file_name:
-
-            (string) - the name of the JSON file which will contain the expected median percent change placebo response 
-            
-                       map to be plotted later
-        
-        29) expected_MPC_metadata_file_name:
-
-            (string) - the name of the JSON file which will contain the expected median percent change placebo response 
-            
-                       map metadata to be plotted later
-        
-        30) expected_TTP_file_name: 
-        
-            (string) - the name of the JSON file which will contain the expected time-to-prerandomization placebo response 
-            
-                       map to be plotted later
-
-        31) expected_TTP_metadata_file_name:
-        
-            (string) - the name of the JSON file which will contain the expected time-to-prerandomization placebo response 
-            
-                       map metadata to be plotted later
-        
-        32) H_model_1_file_name:
-        
-            (string) - the name of the JSON file which will contain the histogram of NV model 1 to be plotted later
-
-        33) H_model_1_metadata_file_name:
-                
-            (string) - the name of the JSON file which will contain the histogram of NV model 1 metadata to be plotted 
-            
-                       later
-
-        34) H_model_2_file_name:
-                
-            (string) - the name of the JSON file which will contain the histogram of NV model 2 to be plotted later
-
-        35) H_model_2_metadata_file_name:
-        
-            (string) - the name of the JSON file which will contain the histogram of NV model 2 metadata to be plotted 
-            
-                       later
-
-        36) NV_model_endpoint_statistics_text_file_name:
+        18) NV_model_endpoint_statistics_text_file_name:
 
             (string) - the name of the text file which will contain the endpoint statistics for NV 
                        
@@ -2071,7 +1967,49 @@ def main(shape_1, scale_1, alpha_1, beta_1,
 
     '''
 
-    # generate all of the expected endpoint maps
+    # set the names of the files that the data/metadata of the endpoint statistic maps will be stored in
+    expected_placebo_RR50_file_name           = 'expected_placebo_RR50_power_map'
+    expected_placebo_RR50_metadata_file_name  = 'expected_placebo_RR50_map_metadata'
+    expected_placebo_MPC_file_name            = 'expected_placebo_MPC_power_map'
+    expected_placebo_MPC_metadata_file_name   = 'expected_placebo_MPC_map_metadata'
+    expected_placebo_TTP_file_name            = 'expected_placebo_TTP_power_map'
+    expected_placebo_TTP_metadata_file_name   = 'expected_placebo_TTP_map_metadata'
+    expected_drug_RR50_file_name              = 'expected_drug_RR50_power_map'
+    expected_drug_RR50_metadata_file_name     = 'expected_drug_RR50_map_metadata'
+    expected_drug_MPC_file_name               = 'expected_drug_MPC_power_map'
+    expected_drug_MPC_metadata_file_name      = 'expected_drug_MPC_map_metadata'
+    expected_drug_TTP_file_name               = 'expected_drug_TTP_power_map'
+    expected_drug_TTP_metadata_file_name      = 'expected_drug_TTP_map_metadata'
+    RR50_stat_power_file_name                 = 'RR50_stat_power_map'
+    RR50_stat_power_metadata_file_name        = 'RR50_stat_power_map_metadata'
+    MPC_stat_power_file_name                  = 'MPC_stat_power_map'
+    MPC_stat_power_metadata_file_name         = 'MPC_stat_power_map_metadata'
+    TTP_stat_power_file_name                  = 'TTP_stat_power_map'
+    TTP_stat_power_metadata_file_name         = 'TTP_stat_power_map_metadata'
+    RR50_type_1_error_file_name               = 'RR50_type_1_error_map'
+    RR50_type_1_error_metadata_file_name      = 'RR50_type_1_error_map_metadata'
+    MPC_type_1_error_file_name                = 'MPC_type_1_error_map'
+    MPC_type_1_error_metadata_file_name       = 'MPC_type_1_error_map_metadata'
+    TTP_type_1_error_file_name                = 'TTP_type_1_error_map'
+    TTP_type_1_error_metadata_file_name       = 'TTP_type_1_error_map_metadata'
+    H_model_1_file_name                       = 'H_model_1_hist'
+    H_model_1_metadata_file_name              = 'H_model_1_hist_metadata'
+    H_model_2_file_name                       = 'H_model_2_hist'
+    H_model_2_metadata_file_name              = 'H_model_2_hist_metadata'
+
+    # set the group-level parameters for NV model 1
+    shape_1 = 24.143
+    scale_1 = 297.366
+    alpha_1 = 284.024
+    beta_1 = 369.628
+
+    # set the group-level parameters for NV model 2
+    shape_2 = 111.313
+    scale_2 = 296.728
+    alpha_2 = 296.339
+    beta_2 = 243.719
+
+    # generate all of the endpoint statistic maps as well as the endpoint statistics of NV models 1 and 2
     [Model_1_expected_placebo_RR50, Model_1_expected_placebo_MPC, Model_1_expected_placebo_TTP,
      Model_2_expected_placebo_RR50, Model_2_expected_placebo_MPC, Model_2_expected_placebo_TTP,
      Model_1_expected_drug_RR50,    Model_1_expected_drug_MPC,    Model_1_expected_drug_TTP, 
@@ -2194,16 +2132,6 @@ if(__name__=='__main__'):
 
     start_time_in_seconds = time.time()
 
-    # define the parameters for NV model 1 and NV model 2
-    shape_1 = 24.143
-    scale_1 = 297.366
-    alpha_1 = 284.024
-    beta_1 = 369.628
-    shape_2 = 111.313
-    scale_2 = 296.728
-    alpha_2 = 296.339
-    beta_2 = 243.719
-
     # take in the command-line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('array', nargs='+')
@@ -2237,61 +2165,15 @@ if(__name__=='__main__'):
     num_patients_per_model = int(arg_array[15])
     num_months_per_patient = int(arg_array[16])
 
-    # set the names of the files that the data/metadata of the endpoint statistic maps will be stored in
-    expected_placebo_RR50_file_name           = 'expected_placebo_RR50_power_map'
-    expected_placebo_RR50_metadata_file_name  = 'expected_placebo_RR50_map_metadata'
-    expected_placebo_MPC_file_name            = 'expected_placebo_MPC_power_map'
-    expected_placebo_MPC_metadata_file_name   = 'expected_placebo_MPC_map_metadata'
-    expected_placebo_TTP_file_name            = 'expected_placebo_TTP_power_map'
-    expected_placebo_TTP_metadata_file_name   = 'expected_placebo_TTP_map_metadata'
-    expected_drug_RR50_file_name              = 'expected_drug_RR50_power_map'
-    expected_drug_RR50_metadata_file_name     = 'expected_drug_RR50_map_metadata'
-    expected_drug_MPC_file_name               = 'expected_drug_MPC_power_map'
-    expected_drug_MPC_metadata_file_name      = 'expected_drug_MPC_map_metadata'
-    expected_drug_TTP_file_name               = 'expected_drug_TTP_power_map'
-    expected_drug_TTP_metadata_file_name      = 'expected_drug_TTP_map_metadata'
-    RR50_stat_power_file_name                 = 'RR50_stat_power_map'
-    RR50_stat_power_metadata_file_name        = 'RR50_stat_power_map_metadata'
-    MPC_stat_power_file_name                  = 'MPC_stat_power_map'
-    MPC_stat_power_metadata_file_name         = 'MPC_stat_power_map_metadata'
-    TTP_stat_power_file_name                  = 'TTP_stat_power_map'
-    TTP_stat_power_metadata_file_name         = 'TTP_stat_power_map_metadata'
-    RR50_type_1_error_file_name               = 'RR50_type_1_error_map'
-    RR50_type_1_error_metadata_file_name      = 'RR50_type_1_error_map_metadata'
-    MPC_type_1_error_file_name                = 'MPC_type_1_error_map'
-    MPC_type_1_error_metadata_file_name       = 'MPC_type_1_error_map_metadata'
-    TTP_type_1_error_file_name                = 'TTP_type_1_error_map'
-    TTP_type_1_error_metadata_file_name       = 'TTP_type_1_error_map_metadata'
-    H_model_1_file_name                       = 'H_model_1_hist'
-    H_model_1_metadata_file_name              = 'H_model_1_hist_metadata'
-    H_model_2_file_name                       = 'H_model_2_hist'
-    H_model_2_metadata_file_name              = 'H_model_2_hist_metadata'
-
     # obtain the name of text file which will contain the placebo responses for NV model 1 and NV model 2
     NV_model_endpoint_statistics_text_file_name = 'NV_model_endpoint_statistics'
 
     # call the main() function
-    main(shape_1, scale_1, alpha_1, beta_1, 
-         shape_2, scale_2, alpha_2, beta_2,
-         num_patients_per_model, num_months_per_patient,
+    main(num_patients_per_model, num_months_per_patient,
          start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
          placebo_mu, placebo_sigma,  drug_mu, drug_sigma,
-         expected_placebo_RR50_file_name, expected_placebo_RR50_metadata_file_name,
-         expected_placebo_MPC_file_name,  expected_placebo_MPC_metadata_file_name,
-         expected_placebo_TTP_file_name,  expected_placebo_TTP_metadata_file_name,
-         expected_drug_RR50_file_name,    expected_drug_RR50_metadata_file_name,
-         expected_drug_MPC_file_name,     expected_drug_MPC_metadata_file_name,
-         expected_drug_TTP_file_name,     expected_drug_TTP_metadata_file_name,
-         RR50_stat_power_file_name,       RR50_stat_power_metadata_file_name,
-         MPC_stat_power_file_name,        MPC_stat_power_metadata_file_name,
-         TTP_stat_power_file_name,        TTP_stat_power_metadata_file_name,
-         RR50_type_1_error_file_name,     RR50_type_1_error_metadata_file_name,
-         MPC_type_1_error_file_name,      MPC_type_1_error_metadata_file_name,
-         TTP_type_1_error_file_name,      TTP_type_1_error_metadata_file_name,
-         H_model_1_file_name, H_model_1_metadata_file_name,
-         H_model_2_file_name, H_model_2_metadata_file_name,
          NV_model_endpoint_statistics_text_file_name)
     
     stop_time_in_seconds = time.time()
