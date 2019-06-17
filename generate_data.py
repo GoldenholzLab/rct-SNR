@@ -1825,29 +1825,34 @@ def save_NV_model_endpoint_statistics(Model_1_expected_placebo_RR50, Model_1_exp
 
     '''
 
+    # open/create the JSON file that will contain all the enpdoint statistics
     with open(os.getcwd() + '/' + NV_model_endpoint_statistics_text_file_name + '.txt', 'w+') as text_file:
 
+        # format all the endpoint statistics having to do with the placebo arm
         placebo_response =  '\nModel 1 expected placebo RR50: ' + str(Model_1_expected_placebo_RR50) + \
-                            '\nModel 1 expected placebo MPC: '  + str(Model_1_MPC_stat_power)  + \
-                            '\nModel 1 expected placebo TTP: '  + str(Model_1_TTP_stat_power)  + \
-                            '\nModel 2 expected placebo RR50: ' + str(Model_2_RR50_stat_power) + \
-                            '\nModel 2 expected placebo MPC: '  + str(Model_2_MPC_stat_power)  + \
-                            '\nModel 2 expected placebo TTP: '  + str(Model_2_TTP_stat_power)
+                            '\nModel 1 expected placebo MPC: '  + str(Model_1_expected_placebo_MPC)  + \
+                            '\nModel 1 expected placebo TTP: '  + str(Model_1_expected_placebo_TTP)  + \
+                            '\nModel 2 expected placebo RR50: ' + str(Model_2_expected_placebo_RR50) + \
+                            '\nModel 2 expected placebo MPC: '  + str(Model_2_expected_placebo_MPC)  + \
+                            '\nModel 2 expected placebo TTP: '  + str(Model_2_expected_placebo_TTP)
         
-        drug_response =  '\nModel 1 expected drug RR50: ' + str(Model_1_RR50_stat_power) + \
-                         '\nModel 1 expected drug MPC: '  + str(Model_1_MPC_stat_power)  + \
-                         '\nModel 1 expected drug TTP: '  + str(Model_1_TTP_stat_power)  + \
-                         '\nModel 2 expected drug RR50: ' + str(Model_2_RR50_stat_power) + \
-                         '\nModel 2 expected drug MPC: '  + str(Model_2_MPC_stat_power)  + \
-                         '\nModel 2 expected drug TTP: '  + str(Model_2_TTP_stat_power)
+        # format all the endpoint statistics having to do with the drug arm
+        drug_response =  '\nModel 1 expected drug RR50: ' + str(Model_1_expected_drug_RR50) + \
+                         '\nModel 1 expected drug MPC: '  + str(Model_1_expected_drug_MPC)  + \
+                         '\nModel 1 expected drug TTP: '  + str(Model_1_expected_drug_TTP)  + \
+                         '\nModel 2 expected drug RR50: ' + str(Model_2_expected_drug_RR50) + \
+                         '\nModel 2 expected drug MPC: '  + str(Model_2_expected_drug_MPC)  + \
+                         '\nModel 2 expected drug TTP: '  + str(Model_2_expected_drug_TTP)
         
-        stat_power =  '\nModel 1 RR50 statistical power: ' + str(Model_1_RR50_stat_power) + \
-                      '\nModel 1 MPC statistical power: '  + str(Model_1_MPC_stat_power)  + \
-                      '\nModel 1 TTP statistical power: '  + str(Model_1_TTP_stat_power)  + \
-                      '\nModel 2 RR50 statistical power: ' + str(Model_2_RR50_stat_power) + \
-                      '\nModel 2 MPC statistical power: '  + str(Model_2_MPC_stat_power)  + \
-                      '\nModel 2 TTP statistical power: '  + str(Model_2_TTP_stat_power)
+        # format all the endpoint statistics having to do with the statistical power
+        stat_power =  '\nModel 1 RR50 statistical power: ' + str(Model_1_RR50_type_1_error) + \
+                      '\nModel 1 MPC statistical power: '  + str(Model_1_MPC_type_1_error)  + \
+                      '\nModel 1 TTP statistical power: '  + str(Model_1_TTP_type_1_error)  + \
+                      '\nModel 2 RR50 statistical power: ' + str(Model_2_RR50_type_1_error) + \
+                      '\nModel 2 MPC statistical power: '  + str(Model_2_MPC_type_1_error)  + \
+                      '\nModel 2 TTP statistical power: '  + str(Model_2_TTP_type_1_error)
         
+        # format all the endpoint statistics having to do with the type-1 error
         type_1_error =  '\nModel 1 RR50 type-1 error: ' + str(Model_1_RR50_stat_power) + \
                         '\nModel 1 MPC type-1 error: '  + str(Model_1_MPC_stat_power)  + \
                         '\nModel 1 TTP type-1 error: '  + str(Model_1_TTP_stat_power)  + \
