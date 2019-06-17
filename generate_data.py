@@ -1001,14 +1001,16 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
             MPC_type_1_error_string = 'MPC type-1 error:  '          + str( 100*np.round(MPC_power, 4) )             + ' %'
             TTP_type_1_error_string = 'TTP type-1 error:  '          + str( 100*np.round(TTP_power, 4) )             + ' %'
 
+            monthly_mean_string = str(np.round(monthly_mean, 2))
+            monthly_std_dev_string = str(np.round(monthly_std_dev, 2))
+
             expected_placebo_string = expected_placebo_RR50_string + '\n' + expected_placebo_MPC_string + '\n' + expected_placebo_TTP_string
             expected_drug_string = expected_drug_RR50_string + '\n' + expected_drug_MPC_string + '\n' + expected_drug_TTP_string
             stat_power_string = RR50_stat_power_string + '\n' + MPC_stat_power_string + '\n' + TTP_stat_power_string
             type_1_error_string = RR50_type_1_error_string + '\n' + MPC_type_1_error_string + '\n' + TTP_type_1_error_string
 
-            monthly_mean_string = str(np.round(monthly_mean, 2))
-            monthly_std_dev_string = str(np.round(monthly_std_dev, 2))
-
+            cpu_time_string = 'cpu time (minutes): ' + str( np.round(total_time_in_minutes, 2) )
+            
             orientation_string = 'monthly mean, monthly standard deviation: (' + monthly_mean_string + ', ' + monthly_std_dev_string + ')'
 
             data_string = '\n\n' + orientation_string + ':\n' + expected_placebo_string + '\n' + expected_drug_string + '\n' + stat_power_string + '\n' + type_1_error_string + '\n' + cpu_time_string
