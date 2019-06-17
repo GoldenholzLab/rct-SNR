@@ -997,9 +997,9 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
             RR50_stat_power_string = 'RR50 stat power:  ' +  str( 100*np.round(RR50_power, 4) ) + ' %'
             MPC_stat_power_string = 'MPC stat power:  ' +  str( 100*np.round(MPC_power, 4) ) + ' %'
             TTP_stat_power_string = 'TTP stat power:  ' + str( 100*np.round(TTP_power, 4) ) + ' %'
-            RR50_type_1_error_string = 'RR50 stat power:  ' +  str( 100*np.round(RR50_power, 4) ) + ' %'
-            MPC_type_1_error_string = 'MPC stat power:  ' +  str( 100*np.round(MPC_power, 4) ) + ' %'
-            TTP_type_1_error_string = 'TTP stat power:  ' + str( 100*np.round(TTP_power, 4) ) + ' %'
+            RR50_type_1_error_string = 'RR50 type-1 error:  ' +  str( 100*np.round(RR50_power, 4) ) + ' %'
+            MPC_type_1_error_string = 'MPC type-1 error:  ' +  str( 100*np.round(MPC_power, 4) ) + ' %'
+            TTP_type_1_error_string = 'TTP type-1 error:  ' + str( 100*np.round(TTP_power, 4) ) + ' %'
             expected_placebo_string = expected_placebo_RR50_string + '\n' + expected_placebo_MPC_string + '\n' + expected_placebo_TTP_string
             expected_drug_string = expected_drug_RR50_string + '\n' + expected_drug_MPC_string + '\n' + expected_drug_TTP_string
             stat_power_string = RR50_stat_power_string + '\n' + MPC_stat_power_string + '\n' + TTP_stat_power_string
