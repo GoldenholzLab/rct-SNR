@@ -14,7 +14,7 @@ inputs[6]=2
 inputs[7]=3
 inputs[8]=4
 inputs[9]=153
-inputs[10]=10
+inputs[10]=20
 
 # The parameters for generating the placebo and drug effects
 inputs[11]=0
