@@ -1665,87 +1665,197 @@ def save_NV_model_endpoint_statistics(Model_1_expected_placebo_RR50, Model_1_exp
                                       NV_model_endpoint_statistics_text_file_name):
     '''
 
-    This function stores the expected placebo responses for NV model 1 ande NV model 2 as 
+    This function stores the expected placebo responses for NV model 1 ande NV model 2 as predicted by the multiplication of the 
     
-    predicted by the multiplication of the SNR maps and the histograms for both NV models into
-
-    a text file. 
+    SNR maps and the histograms for both NV models into a text file. 
 
     Inputs:
 
+        1) Model_1_expected_placebo_RR50:
+            
+            (float) - the collective expected placebo arm 50% responder rate for all of the patients from model 1, determined by a 
+            
+                      multiplication of the Model 1 patient histogram and the 50% responder rate expected placebo response maps
+        
+        2) Model_1_expected_placebo_MPC:
+                    
+            (float) - the collective expected placebo arm median percent change for all of the patients from model 1, determined by a 
+            
+                      multiplication of the Model 1 patient histogram and the median percent change expected placebo response maps
+        
+        3) Model_1_expected_placebo_TTP:
+                            
+            (float) - the collective expected placebo arm time-to-prerandomization for all of the patients from model 1, determined by a 
+            
+                      multiplication of the Model 1 patient histogram and the time-to-prerandomization expected placebo response maps
+        
+        4) Model_2_expected_placebo_RR50:
+            
+            (float) - the collective expected placebo arm 50% responder rate for all of the patients from model 2, determined by a 
+            
+                      multiplication of the Model 2 patient histogram and the 50% responder rate expected placebo response maps
+        
+        5) Model_2_expected_placebo_MPC:
+                            
+            (float) - the collective expected placebo arm median percent change for all of the patients from model 2, determined by a 
+            
+                      multiplication of the Model 2 patient histogram and the median percent change expected placebo response maps
+        
+        6) Model_2_expected_placebo_TTP:
+                            
+            (float) - the collective expected placebo arm time-to-prerandomization for all of the patients from model 2, determined by a 
+            
+                      multiplication of the Model 2 patient histogram and the time-to-prerandomization expected placebo response maps
+        
+        7) Model_1_expected_drug_RR50:
+            
+            (float) - the collective expected drug arm 50% responder rate for all of the patients from model 1, determined by a 
+            
+                      multiplication of the Model 1 patient histogram and the 50% responder rate expected drug response maps
+        
+        8) Model_1_expected_drug_MPC:
+            
+            (float) - the collective expected drug arm median percent change for all of the patients from model 1, determined by a 
+            
+                      multiplication of the Model 1 patient histogram and the median percent change expected drug response maps
+        
+        9) Model_1_expected_drug_TTP:
+                            
+            (float) - the collective expected drug arm time-to-prerandomization for all of the patients from model 1, determined by a 
+            
+                      multiplication of the Model 1 patient histogram and the time-to-prerandomization expected placebo response maps
+        
+        10) Model_2_expected_drug_RR50:
+            
+            (float) - the collective expected drug arm 50% responder rate for all of the patients from model 2, determined by a 
+            
+                      multiplication of the Model 2 patient histogram and the 50% responder rate expected drug response maps
+        
+        11) Model_2_expected_drug_MPC:
+            
+            (float) - the collective expected drug arm median percent change for all of the patients from model 2, determined by a 
+            
+                      multiplication of the Model 2 patient histogram and the median percent change expected drug response maps
+        
+        12) Model_2_expected_drug_TTP:
+                            
+            (float) - the collective expected drug arm time-to-prerandomization for all of the patients from model 2, determined by a 
+            
+                      multiplication of the Model 2 patient histogram and the time-to-prerandomization expected placebo response maps
+        
         1) Model_1_RR50_stat_power:
             
-            (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the Model 1 patient
-                      
-                      histogram and the 50% responder rate statistical power maps
+            (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the 
+            
+                      Model 1 patient histogram and the 50% responder rate statistical power maps
         
         2) Model_1_MPC_stat_power:
         
-            (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+            (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the 
                       
-                      histogram and the median percent change statistical power maps
+                      Model 1 patient histogram and the median percent change statistical power maps
         
         3) Model_1_TTP_stat_power:
         
-            (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the Model 1 patient
+            (float) - the collective statistical power for all of the patients from model 1, determined by a multiplication of the 
                       
-                      histogram and the time-to-prerandomization statistical power maps
+                      Model 1 patient histogram and the time-to-prerandomization statistical power maps
         
         4)  Model_2_RR50_stat_power:
         
-            (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the Model 2 patient
-                      
-                      histogram and the 50% responder rate statistical power maps
+            (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the 
+            
+                      Model 2 patient histogram and the 50% responder rate statistical power maps
 
         5) Model_2_MPC_stat_power:
         
-            (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the Model 2 patient
-                      
-                      histogram and the median percent change statistical power maps
+            (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the 
+            
+                      Model 2 patient histogram and the median percent change statistical power maps
         
         6) Model_2_TTP_stat_power:
         
-            (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the Model 2 patient
+            (float) - the collective statistical power for all of the patients from model 2, determined by a multiplication of the 
+            
+                      Model 2 patient histogram and the time-to-prerandomization statistical power maps
+        
+        Model_1_RR50_type_1_error:
+            
+            (float) - the collective type-1 error for all of the patients from model 1, determined by a multiplication of the 
+            
+                      Model 1 patient histogram and the 50% responder rate statistical power maps
+        
+        Model_1_MPC_type_1_error:
+        
+            (float) - the collective type-1 error for all of the patients from model 1, determined by a multiplication of the 
                       
-                      histogram and the time-to-prerandomization statistical power maps
+                      Model 1 patient histogram and the median percent change type-1 error maps
+        
+        Model_1_TTP_type_1_error:
+        
+            (float) - the collective type-1 error for all of the patients from model 1, determined by a multiplication of the 
+                      
+                      Model 1 patient histogram and the time-to-prerandomization type-1 error maps
+        
+        Model_2_RR50_type_1_error:
+        
+            (float) - the collective type-1 error for all of the patients from model 2, determined by a multiplication of the 
+            
+                      Model 2 patient histogram and the 50% responder rate type-1 error maps
+
+        Model_2_MPC_type_1_error:
+        
+            (float) - the collective type-1 error for all of the patients from model 2, determined by a multiplication of the 
+            
+                      Model 2 patient histogram and the median percent change type-1 error maps
+        
+        Model_2_TTP_type_1_error:
+                
+            (float) - the collective type-1 error for all of the patients from model 2, determined by a multiplication of the 
+            
+                      Model 2 patient histogram and the time-to-prerandomization type-1 error maps
         
         7) NV_model_statistical_power_text_file_name:
 
-            (string) - the name of the text file which will contain the statistical powers of the endpoints for NV 
-                       
-                       model 1 and NV model 2
+            (string) - the name of the text file which will contain the endpoint statistics for NV model 1 and NV model 2
+
+    Outputs:
+
+        Technically None
 
     '''
 
     with open(os.getcwd() + '/' + NV_model_endpoint_statistics_text_file_name + '.txt', 'w+') as text_file:
 
-        placebo_response =  '\n\nModel 1 expected placebo RR50: ' + str(Model_1_expected_placebo_RR50) + \
-                            '\n\nModel 1 expected placebo MPC: '  + str(Model_1_MPC_stat_power)  + \
-                            '\n\nModel 1 expected placebo TTP: '  + str(Model_1_TTP_stat_power)  + \
-                            '\n\nModel 2 expected placebo RR50: ' + str(Model_2_RR50_stat_power) + \
-                            '\n\nModel 2 expected placebo MPC: '  + str(Model_2_MPC_stat_power)  + \
-                            '\n\nModel 2 expected placebo TTP: '  + str(Model_2_TTP_stat_power)
+        placebo_response =  '\nModel 1 expected placebo RR50: ' + str(Model_1_expected_placebo_RR50) + \
+                            '\nModel 1 expected placebo MPC: '  + str(Model_1_MPC_stat_power)  + \
+                            '\nModel 1 expected placebo TTP: '  + str(Model_1_TTP_stat_power)  + \
+                            '\nModel 2 expected placebo RR50: ' + str(Model_2_RR50_stat_power) + \
+                            '\nModel 2 expected placebo MPC: '  + str(Model_2_MPC_stat_power)  + \
+                            '\nModel 2 expected placebo TTP: '  + str(Model_2_TTP_stat_power)
         
-        drug_response =  '\n\nModel 1 expected drug RR50: ' + str(Model_1_RR50_stat_power) + \
-                         '\n\nModel 1 expected drug MPC: '  + str(Model_1_MPC_stat_power)  + \
-                         '\n\nModel 1 expected drug TTP: '  + str(Model_1_TTP_stat_power)  + \
-                         '\n\nModel 2 expected drug RR50: ' + str(Model_2_RR50_stat_power) + \
-                         '\n\nModel 2 expected drug MPC: '  + str(Model_2_MPC_stat_power)  + \
-                         '\n\nModel 2 expected drug TTP: '  + str(Model_2_TTP_stat_power)
+        drug_response =  '\nModel 1 expected drug RR50: ' + str(Model_1_RR50_stat_power) + \
+                         '\nModel 1 expected drug MPC: '  + str(Model_1_MPC_stat_power)  + \
+                         '\nModel 1 expected drug TTP: '  + str(Model_1_TTP_stat_power)  + \
+                         '\nModel 2 expected drug RR50: ' + str(Model_2_RR50_stat_power) + \
+                         '\nModel 2 expected drug MPC: '  + str(Model_2_MPC_stat_power)  + \
+                         '\nModel 2 expected drug TTP: '  + str(Model_2_TTP_stat_power)
         
-        stat_power =  '\n\nModel 1 RR50 statistical power: ' + str(Model_1_RR50_stat_power) + \
-                      '\n\nModel 1 MPC statistical power: '  + str(Model_1_MPC_stat_power)  + \
-                      '\n\nModel 1 TTP statistical power: '  + str(Model_1_TTP_stat_power)  + \
-                      '\n\nModel 2 RR50 statistical power: ' + str(Model_2_RR50_stat_power) + \
-                      '\n\nModel 2 MPC statistical power: '  + str(Model_2_MPC_stat_power)  + \
-                      '\n\nModel 2 TTP statistical power: '  + str(Model_2_TTP_stat_power)
+        stat_power =  '\nModel 1 RR50 statistical power: ' + str(Model_1_RR50_stat_power) + \
+                      '\nModel 1 MPC statistical power: '  + str(Model_1_MPC_stat_power)  + \
+                      '\nModel 1 TTP statistical power: '  + str(Model_1_TTP_stat_power)  + \
+                      '\nModel 2 RR50 statistical power: ' + str(Model_2_RR50_stat_power) + \
+                      '\nModel 2 MPC statistical power: '  + str(Model_2_MPC_stat_power)  + \
+                      '\nModel 2 TTP statistical power: '  + str(Model_2_TTP_stat_power)
         
-        type_1_error =  '\n\nModel 1 RR50 type-1 error: ' + str(Model_1_RR50_stat_power) + \
-                        '\n\nModel 1 MPC type-1 error: '  + str(Model_1_MPC_stat_power)  + \
-                        '\n\nModel 1 TTP type-1 error: '  + str(Model_1_TTP_stat_power)  + \
-                        '\n\nModel 2 RR50 type-1 error: ' + str(Model_2_RR50_stat_power) + \
-                        '\n\nModel 2 MPC type-1 error: '  + str(Model_2_MPC_stat_power)  + \
-                        '\n\nModel 2 TTP type-1 error: '  + str(Model_2_TTP_stat_power)
+        type_1_error =  '\nModel 1 RR50 type-1 error: ' + str(Model_1_RR50_stat_power) + \
+                        '\nModel 1 MPC type-1 error: '  + str(Model_1_MPC_stat_power)  + \
+                        '\nModel 1 TTP type-1 error: '  + str(Model_1_TTP_stat_power)  + \
+                        '\nnModel 2 RR50 type-1 error: ' + str(Model_2_RR50_stat_power) + \
+                        '\nModel 2 MPC type-1 error: '  + str(Model_2_MPC_stat_power)  + \
+                        '\nModel 2 TTP type-1 error: '  + str(Model_2_TTP_stat_power)
+        
+        data = '\n\n' + placebo_response + '\n\n' + drug_response + '\n\n' + stat_power + '\n\n' + type_1_error + '\n\n'
 
         text_file.write(data)
 
