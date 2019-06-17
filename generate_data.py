@@ -1310,17 +1310,17 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
                                
                                and the time-to-prerandomization over NV models 1 and 2 in the following order:
 
-                                    NV_models_1_and_2_expected_placebo_responses[0] = expected placebo arm 50% responder rate for Model 1 patients
+                                    NV_models_1_and_2_expected_placebo_responses[0][0] = expected placebo arm 50% responder rate for Model 1 patients
 
-                                    NV_models_1_and_2_expected_placebo_responses[1] = expected placebo arm median percent change for Model 1 patients
+                                    NV_models_1_and_2_expected_placebo_responses[0][1] = expected placebo arm median percent change for Model 1 patients
         
-                                    NV_models_1_and_2_expected_placebo_responses[2] = expected placebo arm time-to-prerandomization for Model 1 patients
+                                    NV_models_1_and_2_expected_placebo_responses[0][2] = expected placebo arm time-to-prerandomization for Model 1 patients
 
-                                    NV_models_1_and_2_expected_placebo_responses[3] = expected placebo arm 50% responder rate for Model 2 patients
+                                    NV_models_1_and_2_expected_placebo_responses[1][0] = expected placebo arm 50% responder rate for Model 2 patients
 
-                                    NV_models_1_and_2_expected_placebo_responses[4] = expected placebo arm median percent change for Model 2 patients
+                                    NV_models_1_and_2_expected_placebo_responses[1][1] = expected placebo arm median percent change for Model 2 patients
         
-                                    NV_models_1_and_2_expected_placebo_responses[5] = expected placebo arm time-to-prerandomization for Model 2 patients
+                                    NV_models_1_and_2_expected_placebo_responses[1][2] = expected placebo arm time-to-prerandomization for Model 2 patients
 
         16) NV_models_1_and_2_expected_drug_responses:
 
@@ -1346,17 +1346,17 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
                                
                                and the time-to-prerandomization over NV models 1 and 2 in the following order:
 
-                                    NV_models_1_and_2_statistical_powers[0] = statistical power of the 50% responder rate for Model 1 patients
+                                    NV_models_1_and_2_statistical_powers[0][0] = statistical power of the 50% responder rate for Model 1 patients
 
-                                    NV_models_1_and_2_statistical_powers[1] = statistical power of the median percent change for Model 1 patients
+                                    NV_models_1_and_2_statistical_powers[0][1] = statistical power of the median percent change for Model 1 patients
         
-                                    NV_models_1_and_2_statistical_powers[2] = statistical power of the time-to-prerandomization for Model 1 patients
+                                    NV_models_1_and_2_statistical_powers[0][2] = statistical power of the time-to-prerandomization for Model 1 patients
 
-                                    NV_models_1_and_2_statistical_powers[3] = statistical power of the 50% responder rate for Model 2 patients
+                                    NV_models_1_and_2_statistical_powers[1][0] = statistical power of the 50% responder rate for Model 2 patients
 
-                                    NV_models_1_and_2_statistical_powers[4] = statistical power of the median percent change for Model 2 patients
+                                    NV_models_1_and_2_statistical_powers[1][1] = statistical power of the median percent change for Model 2 patients
         
-                                    NV_models_1_and_2_statistical_powers[5] = statistical power of the time-to-prerandomization for Model 2 patients
+                                    NV_models_1_and_2_statistical_powers[1][2] = statistical power of the time-to-prerandomization for Model 2 patients
                                     
         18) NV_models_1_and_2_type_1_errors:
         
@@ -1364,17 +1364,17 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
                                
                                and the time-to-prerandomization over NV models 1 and 2 in the following order:
 
-                                    NV_models_1_and_2_type_1_errors[0] = type-1 error of the 50% responder rate for Model 1 patients
+                                    NV_models_1_and_2_type_1_errors[0][0] = type-1 error of the 50% responder rate for Model 1 patients
 
-                                    NV_models_1_and_2_type_1_errors[1] = type-1 error of the median percent change for Model 1 patients
+                                    NV_models_1_and_2_type_1_errors[0][1] = type-1 error of the median percent change for Model 1 patients
         
-                                    NV_models_1_and_2_type_1_errors[2] = type-1 error of the time-to-prerandomization for Model 1 patients
+                                    NV_models_1_and_2_type_1_errors[0][2] = type-1 error of the time-to-prerandomization for Model 1 patients
 
-                                    NV_models_1_and_2_type_1_errors[3] = type-1 error of the 50% responder rate for Model 2 patients
+                                    NV_models_1_and_2_type_1_errors[1][0] = type-1 error of the 50% responder rate for Model 2 patients
 
-                                    NV_models_1_and_2_type_1_errors[4] = type-1 error of the median percent change for Model 2 patients
+                                    NV_models_1_and_2_type_1_errors[1][1] = type-1 error of the median percent change for Model 2 patients
         
-                                    NV_models_1_and_2_type_1_errors[5] = type-1 error of the time-to-prerandomization for Model 2 patients
+                                    NV_models_1_and_2_type_1_errors[1][2] = type-1 error of the time-to-prerandomization for Model 2 patients
 
     '''
 
@@ -1586,17 +1586,17 @@ def save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_respons
                                
                                and the time-to-prerandomization over NV models 1 and 2 in the following order:
 
-                                    NV_models_1_and_2_expected_drug_responses[0] = expected drug arm 50% responder rate for Model 1 patients
+                                    NV_models_1_and_2_expected_drug_responses[0][0] = expected drug arm 50% responder rate for Model 1 patients
 
-                                    NV_models_1_and_2_expected_drug_responses[1] = expected drug arm median percent change for Model 1 patients
+                                    NV_models_1_and_2_expected_drug_responses[0][1] = expected drug arm median percent change for Model 1 patients
         
-                                    NV_models_1_and_2_expected_drug_responses[2] = expected drug arm time-to-prerandomization for Model 1 patients
+                                    NV_models_1_and_2_expected_drug_responses[0][2] = expected drug arm time-to-prerandomization for Model 1 patients
 
-                                    NV_models_1_and_2_expected_drug_responses[3] = expected drug arm 50% responder rate for Model 2 patients
+                                    NV_models_1_and_2_expected_drug_responses[1][0] = expected drug arm 50% responder rate for Model 2 patients
 
-                                    NV_models_1_and_2_expected_drug_responses[4] = expected drug arm median percent change for Model 2 patients
+                                    NV_models_1_and_2_expected_drug_responses[1][1] = expected drug arm median percent change for Model 2 patients
         
-                                    NV_models_1_and_2_expected_drug_responses[5] = expected drug arm time-to-prerandomization for Model 2 patients
+                                    NV_models_1_and_2_expected_drug_responses[1][2] = expected drug arm time-to-prerandomization for Model 2 patients
 
         3) NV_models_1_and_2_statistical_powers:
 
@@ -1604,17 +1604,17 @@ def save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_respons
                                
                                and the time-to-prerandomization over NV models 1 and 2 in the following order:
 
-                                    NV_models_1_and_2_statistical_powers[0] = statistical power of the 50% responder rate for Model 1 patients
+                                    NV_models_1_and_2_statistical_powers[0][0] = statistical power of the 50% responder rate for Model 1 patients
 
-                                    NV_models_1_and_2_statistical_powers[1] = statistical power of the median percent change for Model 1 patients
+                                    NV_models_1_and_2_statistical_powers[0][1] = statistical power of the median percent change for Model 1 patients
         
-                                    NV_models_1_and_2_statistical_powers[2] = statistical power of the time-to-prerandomization for Model 1 patients
+                                    NV_models_1_and_2_statistical_powers[0][2] = statistical power of the time-to-prerandomization for Model 1 patients
 
-                                    NV_models_1_and_2_statistical_powers[3] = statistical power of the 50% responder rate for Model 2 patients
+                                    NV_models_1_and_2_statistical_powers[1][0] = statistical power of the 50% responder rate for Model 2 patients
 
-                                    NV_models_1_and_2_statistical_powers[4] = statistical power of the median percent change for Model 2 patients
+                                    NV_models_1_and_2_statistical_powers[1][1] = statistical power of the median percent change for Model 2 patients
         
-                                    NV_models_1_and_2_statistical_powers[5] = statistical power of the time-to-prerandomization for Model 2 patients
+                                    NV_models_1_and_2_statistical_powers[1][2] = statistical power of the time-to-prerandomization for Model 2 patients
                                     
         4) NV_models_1_and_2_type_1_errors:
         
@@ -1622,17 +1622,17 @@ def save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_respons
                                
                                and the time-to-prerandomization over NV models 1 and 2 in the following order:
 
-                                    NV_models_1_and_2_type_1_errors[0] = type-1 error of the 50% responder rate for Model 1 patients
+                                    NV_models_1_and_2_type_1_errors[0][0] = type-1 error of the 50% responder rate for Model 1 patients
 
-                                    NV_models_1_and_2_type_1_errors[1] = type-1 error of the median percent change for Model 1 patients
+                                    NV_models_1_and_2_type_1_errors[0][1] = type-1 error of the median percent change for Model 1 patients
         
-                                    NV_models_1_and_2_type_1_errors[2] = type-1 error of the time-to-prerandomization for Model 1 patients
+                                    NV_models_1_and_2_type_1_errors[0][2] = type-1 error of the time-to-prerandomization for Model 1 patients
 
-                                    NV_models_1_and_2_type_1_errors[3] = type-1 error of the 50% responder rate for Model 2 patients
+                                    NV_models_1_and_2_type_1_errors[1][0] = type-1 error of the 50% responder rate for Model 2 patients
 
-                                    NV_models_1_and_2_type_1_errors[4] = type-1 error of the median percent change for Model 2 patients
+                                    NV_models_1_and_2_type_1_errors[1][1] = type-1 error of the median percent change for Model 2 patients
         
-                                    NV_models_1_and_2_type_1_errors[5] = type-1 error of the time-to-prerandomization for Model 2 patients
+                                    NV_models_1_and_2_type_1_errors[1][2] = type-1 error of the time-to-prerandomization for Model 2 patients
 
         
         5) NV_model_statistical_power_text_file_name:
@@ -1646,36 +1646,36 @@ def save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_respons
     '''
 
     # extract the placebo responses over all endpoints for both NV models
-    Model_1_expected_placebo_RR50 = NV_models_1_and_2_expected_placebo_responses[0]
-    Model_1_expected_placebo_MPC  = NV_models_1_and_2_expected_placebo_responses[1]
-    Model_1_expected_placebo_TTP  = NV_models_1_and_2_expected_placebo_responses[2]
-    Model_2_expected_placebo_RR50 = NV_models_1_and_2_expected_placebo_responses[3]
-    Model_2_expected_placebo_MPC  = NV_models_1_and_2_expected_placebo_responses[4]
-    Model_2_expected_placebo_TTP  = NV_models_1_and_2_expected_placebo_responses[5]
+    Model_1_expected_placebo_RR50 = NV_models_1_and_2_expected_placebo_responses[0][0]
+    Model_1_expected_placebo_MPC  = NV_models_1_and_2_expected_placebo_responses[0][1]
+    Model_1_expected_placebo_TTP  = NV_models_1_and_2_expected_placebo_responses[0][2]
+    Model_2_expected_placebo_RR50 = NV_models_1_and_2_expected_placebo_responses[1][0]
+    Model_2_expected_placebo_MPC  = NV_models_1_and_2_expected_placebo_responses[1][1]
+    Model_2_expected_placebo_TTP  = NV_models_1_and_2_expected_placebo_responses[1][2]
 
     # extract the drug responses over all endpoints for both NV models
-    Model_1_expected_drug_RR50 = NV_models_1_and_2_expected_drug_responses[0]
-    Model_1_expected_drug_MPC  = NV_models_1_and_2_expected_drug_responses[1]
-    Model_1_expected_drug_TTP  = NV_models_1_and_2_expected_drug_responses[2]
-    Model_2_expected_drug_RR50 = NV_models_1_and_2_expected_drug_responses[3]
-    Model_2_expected_drug_MPC  = NV_models_1_and_2_expected_drug_responses[4]
-    Model_2_expected_drug_TTP  = NV_models_1_and_2_expected_drug_responses[5]
+    Model_1_expected_drug_RR50 = NV_models_1_and_2_expected_drug_responses[0][0]
+    Model_1_expected_drug_MPC  = NV_models_1_and_2_expected_drug_responses[0][1]
+    Model_1_expected_drug_TTP  = NV_models_1_and_2_expected_drug_responses[0][2]
+    Model_2_expected_drug_RR50 = NV_models_1_and_2_expected_drug_responses[1][0]
+    Model_2_expected_drug_MPC  = NV_models_1_and_2_expected_drug_responses[1][1]
+    Model_2_expected_drug_TTP  = NV_models_1_and_2_expected_drug_responses[1][2]
 
     # extract the statistical powers over all endpoints for both NV models
-    Model_1_RR50_stat_power = NV_models_1_and_2_statistical_powers[0]
-    Model_1_MPC_stat_power  = NV_models_1_and_2_statistical_powers[1]
-    Model_1_TTP_stat_power  = NV_models_1_and_2_statistical_powers[2]
-    Model_2_RR50_stat_power = NV_models_1_and_2_statistical_powers[3]
-    Model_2_MPC_stat_power  = NV_models_1_and_2_statistical_powers[4]
-    Model_2_TTP_stat_power  = NV_models_1_and_2_statistical_powers[5]
+    Model_1_RR50_stat_power = NV_models_1_and_2_statistical_powers[0][0]
+    Model_1_MPC_stat_power  = NV_models_1_and_2_statistical_powers[0][1]
+    Model_1_TTP_stat_power  = NV_models_1_and_2_statistical_powers[0][2]
+    Model_2_RR50_stat_power = NV_models_1_and_2_statistical_powers[1][0]
+    Model_2_MPC_stat_power  = NV_models_1_and_2_statistical_powers[1][1]
+    Model_2_TTP_stat_power  = NV_models_1_and_2_statistical_powers[1][2]
 
     # extract the type-1 errors over all endpoints for both NV models
-    Model_1_RR50_type_1_error = NV_models_1_and_2_type_1_errors[0]
-    Model_1_MPC_type_1_error  = NV_models_1_and_2_type_1_errors[1]
-    Model_1_TTP_type_1_error  = NV_models_1_and_2_type_1_errors[2]
-    Model_2_RR50_type_1_error = NV_models_1_and_2_type_1_errors[3]
-    Model_2_MPC_type_1_error  = NV_models_1_and_2_type_1_errors[4]
-    Model_2_TTP_type_1_error  = NV_models_1_and_2_type_1_errors[5]
+    Model_1_RR50_type_1_error = NV_models_1_and_2_type_1_errors[0][0]
+    Model_1_MPC_type_1_error  = NV_models_1_and_2_type_1_errors[0][1]
+    Model_1_TTP_type_1_error  = NV_models_1_and_2_type_1_errors[0][2]
+    Model_2_RR50_type_1_error = NV_models_1_and_2_type_1_errors[1][0]
+    Model_2_MPC_type_1_error  = NV_models_1_and_2_type_1_errors[1][1]
+    Model_2_TTP_type_1_error  = NV_models_1_and_2_type_1_errors[1][2]
 
     # open/create the text file that will contain all the enpdoint statistics
     with open(os.getcwd() + '/' + NV_model_endpoint_statistics_text_file_name + '.txt', 'w+') as text_file:
