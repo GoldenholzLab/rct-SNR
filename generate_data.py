@@ -1835,36 +1835,36 @@ def save_NV_model_endpoint_statistics(Model_1_expected_placebo_RR50, Model_1_exp
     with open(os.getcwd() + '/' + NV_model_endpoint_statistics_text_file_name + '.txt', 'w+') as text_file:
 
         # format all the endpoint statistics having to do with the placebo arm
-        placebo_response =  '\nModel 1 expected placebo RR50: ' + str(100*Model_1_expected_placebo_RR50) + \
-                            '\nModel 1 expected placebo MPC: '  + str(100*Model_1_expected_placebo_MPC)  + \
-                            '\nModel 1 expected placebo TTP: '  + str(Model_1_expected_placebo_TTP)  + \
-                            '\nModel 2 expected placebo RR50: ' + str(100*Model_2_expected_placebo_RR50) + \
-                            '\nModel 2 expected placebo MPC: '  + str(100*Model_2_expected_placebo_MPC)  + \
-                            '\nModel 2 expected placebo TTP: '  + str(Model_2_expected_placebo_TTP)
+        placebo_response =  '\nModel 1 expected placebo RR50: ' + str(np.round(100*Model_1_expected_placebo_RR50, 3)) + \
+                            '\nModel 1 expected placebo MPC: '  + str(np.round(100*Model_1_expected_placebo_MPC, 3))  + \
+                            '\nModel 1 expected placebo TTP: '  + str(np.round(Model_1_expected_placebo_TTP, 3))  + \
+                            '\nModel 2 expected placebo RR50: ' + str(np.round(100*Model_2_expected_placebo_RR50, 3)) + \
+                            '\nModel 2 expected placebo MPC: '  + str(np.round(100*Model_2_expected_placebo_MPC, 3))  + \
+                            '\nModel 2 expected placebo TTP: '  + str(np.round(Model_2_expected_placebo_TTP, 3))
         
         # format all the endpoint statistics having to do with the drug arm
-        drug_response =  '\nModel 1 expected drug RR50: ' + str(100*Model_1_expected_drug_RR50) + \
-                         '\nModel 1 expected drug MPC: '  + str(100*Model_1_expected_drug_MPC)  + \
-                         '\nModel 1 expected drug TTP: '  + str(Model_1_expected_drug_TTP)  + \
-                         '\nModel 2 expected drug RR50: ' + str(100*Model_2_expected_drug_RR50) + \
-                         '\nModel 2 expected drug MPC: '  + str(100*Model_2_expected_drug_MPC)  + \
-                         '\nModel 2 expected drug TTP: '  + str(Model_2_expected_drug_TTP)
+        drug_response =  '\nModel 1 expected drug RR50: ' + str(np.round(100*Model_1_expected_drug_RR50, 3)) + \
+                         '\nModel 1 expected drug MPC: '  + str(np.round(np.round(100*Model_1_expected_drug_MPC, 3))  + \
+                         '\nModel 1 expected drug TTP: '  + str(np.round(Model_1_expected_drug_TTP, 3))  + \
+                         '\nModel 2 expected drug RR50: ' + str(np.round(100*Model_2_expected_drug_RR50, 3)) + \
+                         '\nModel 2 expected drug MPC: '  + str(np.round(100*Model_2_expected_drug_MPC, 3))  + \
+                         '\nModel 2 expected drug TTP: '  + str(np.round(Model_2_expected_drug_TTP, 3))
         
         # format all the endpoint statistics having to do with the statistical power
-        stat_power =  '\nModel 1 RR50 statistical power: ' + str(100*Model_1_RR50_type_1_error) + \
-                      '\nModel 1 MPC statistical power: '  + str(100*Model_1_MPC_type_1_error)  + \
-                      '\nModel 1 TTP statistical power: '  + str(100*Model_1_TTP_type_1_error)  + \
-                      '\nModel 2 RR50 statistical power: ' + str(100*Model_2_RR50_type_1_error) + \
-                      '\nModel 2 MPC statistical power: '  + str(100*Model_2_MPC_type_1_error)  + \
-                      '\nModel 2 TTP statistical power: '  + str(100*Model_2_TTP_type_1_error)
+        stat_power =  '\nModel 1 RR50 statistical power: ' + str(np.round(100*Model_1_RR50_type_1_error, 3)) + \
+                      '\nModel 1 MPC statistical power: '  + str(np.round(100*Model_1_MPC_type_1_error, 3))  + \
+                      '\nModel 1 TTP statistical power: '  + str(np.round(100*Model_1_TTP_type_1_error, 3))  + \
+                      '\nModel 2 RR50 statistical power: ' + str(np.round(100*Model_2_RR50_type_1_error, 3)) + \
+                      '\nModel 2 MPC statistical power: '  + str(np.round(100*Model_2_MPC_type_1_error, 3))  + \
+                      '\nModel 2 TTP statistical power: '  + str(np.round(100*Model_2_TTP_type_1_error, 3))
         
         # format all the endpoint statistics having to do with the type-1 error
-        type_1_error =  '\nModel 1 RR50 type-1 error: ' + str(100*Model_1_RR50_stat_power) + \
-                        '\nModel 1 MPC type-1 error: '  + str(100*Model_1_MPC_stat_power)  + \
-                        '\nModel 1 TTP type-1 error: '  + str(100*Model_1_TTP_stat_power)  + \
-                        '\nModel 2 RR50 type-1 error: ' + str(100*Model_2_RR50_stat_power) + \
-                        '\nModel 2 MPC type-1 error: '  + str(100*Model_2_MPC_stat_power)  + \
-                        '\nModel 2 TTP type-1 error: '  + str(100*Model_2_TTP_stat_power)
+        type_1_error =  '\nModel 1 RR50 type-1 error: ' + str(np.round(100*Model_1_RR50_stat_power, 3)) + \
+                        '\nModel 1 MPC type-1 error: '  + str(np.round(100*Model_1_MPC_stat_power, 3))  + \
+                        '\nModel 1 TTP type-1 error: '  + str(np.round(100*Model_1_TTP_stat_power, 3))  + \
+                        '\nModel 2 RR50 type-1 error: ' + str(np.round(100*Model_2_RR50_stat_power, 3)) + \
+                        '\nModel 2 MPC type-1 error: '  + str(np.round(100*Model_2_MPC_stat_power, 3))  + \
+                        '\nModel 2 TTP type-1 error: '  + str(np.round(100*Model_2_TTP_stat_power, 3))
         
         # put all the data together into one string
         data = '\n\n' + placebo_response + '\n\n' + drug_response + '\n\n' + stat_power + '\n\n' + type_1_error + '\n\n'
