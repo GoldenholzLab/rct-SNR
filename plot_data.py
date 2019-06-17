@@ -464,39 +464,168 @@ def plot_set_of_maps(RR50_file_name,                        RR50_metadata_file_n
                      MPC_file_name,                         MPC_metadata_file_name,  MPC_plot_file_name, 
                      MPC_plot_with_power_curves_file_name,  MPC_plot_title,          MPC_plot_with_power_curves_title,
                      TTP_file_name,                         TTP_metadata_file_name,  TTP_plot_file_name, 
-                     TTP_plot_with_power_curves_file_name,  TTP_plot_title,          TTP_plot_with_power_curves_title):
+                     TTP_plot_with_power_curves_file_name,  TTP_plot_title,          TTP_plot_with_power_curves_title,
+                     x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round):
+    '''
 
-    # plot the expected 50% responder rate statistical power map
+    This function plots a set of maps: the 50% responder data map, the 50% responder data map with power law curves, the median percent change map,
+    
+    the median percent change data map with power law curves, the time-to-prerandomization data map, and the time-to-prerandomization data map with 
+
+    power law curves. The phrase 'data map' refers to one of four types of data: expected placebo arm response, expected drug arm response, statistical
+
+    power, and type-1 error.
+
+    Inputs:
+
+        1) RR50_file_name:
+        
+            (string) - the name of the file containing the 50% responder rate data map to be plotted
+
+        2) RR50_metadata_file_name:
+        
+            (string) - the name of the file containing the metadata for the 50% responder rate data map to be plotted
+
+        3) RR50_plot_file_name:
+
+            (string) - the name of the file that will eventually contain the PNG image of the plot 
+                       
+                       of the 50% responder rate data map
+
+        4) RR50_plot_with_power_curves_file_name:
+        
+            (string) - the name of the file that will eventually contain the PNG image of the plot 
+                       
+                       of the 50% responder rate data map with power law curves
+
+        5) RR50_plot_title:
+        
+            (string) - the title of the 50% responder rate data map to be plotted
+        
+        6) RR50_plot_with_power_curves_title:
+        
+            (string) - the title of the 50% responder rate data map with power law curves to be plotted
+        
+        7) MPC_file_name: 
+                
+            (string) - the name of the file containing the median percent change data map to be plotted
+
+        8) MPC_metadata_file_name:
+                
+            (string) - the name of the file containing the metadata for the median percent change data map to be plotted
+
+        9) MPC_plot_file_name:
+        
+            (string) - the name of the file that will eventually contain the PNG image of the plot 
+                       
+                       of the median percent change data map
+
+        11) MPC_plot_with_power_curves_file_name:
+                
+            (string) - the name of the file that will eventually contain the PNG image of the plot 
+                       
+                       of the median percent change data map with power law curves
+
+        12) MPC_plot_title:
+                
+            (string) - the title of the median percent change data map to be plotted
+        
+        13) MPC_plot_with_power_curves_title:
+        
+            (string) - the title of the median percent change data map with power law curves to be plotted
+        
+        14) TTP_file_name:
+                        
+            (string) - the name of the file containing the time-to-prerandomization data map to be plotted
+
+        15) TTP_metadata_file_name:
+                        
+            (string) - the name of the file containing the metadata for the time-to-prerandomization data map to be plotted
+
+        16) TTP_plot_file_name:
+        
+            (string) - the name of the file that will eventually contain the PNG image of the plot 
+                       
+                       of the time-to-prerandomization data map
+
+        17) TTP_plot_with_power_curves_file_name:
+                        
+            (string) - the name of the file that will eventually contain the PNG image of the plot 
+                       
+                       of the time-to-prerandomization data map with power law curves
+
+        18) TTP_plot_title:
+                        
+            (string) - the title of the time-to-prerandomization data map to be plotted
+        
+        19) TTP_plot_with_power_curves_title:
+        
+            (string) - the title of the time-to-prerandomization data map with power law curves to be plotted
+        
+        20) x_tick_spacing:
+        
+            (float) - the spacing in between each of the labelled x-axis ticks on each map
+
+        21) y_tick_spacing:
+        
+            (float) - the spacing in between each of the labelled y-axis ticks on each map
+        
+        22) min_power_law_slope:
+        
+            (float) - the minimum power law slope to be plotted
+        
+        23) max_power_law_slope:
+        
+            (float) - the maximum power law slope to be plotted
+        
+        24) power_law_slope_spacing:
+        
+            (float) - the size of the spaces in between each y-axis value
+
+        25) legend_decimal_round:
+
+            (int) - the decimal place to which the power law slopes should be rounded to
+                    
+                    within the legends of power law slopes
+
+        
+    Outputs:
+
+        Technically None
+
+    '''
+
+    # plot the 50% responder rate data map
     plot_map(RR50_file_name, RR50_metadata_file_name, RR50_plot_file_name, 
              x_tick_spacing, y_tick_spacing, False,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              RR50_plot_title, legend_decimal_round)
 
-    # plot the expected 50% responder rate statistical power map with power law curves
+    # plot the 50% responder rate data map with power law curves
     plot_map(RR50_file_name, RR50_metadata_file_name, RR50_plot_with_power_curves_file_name, 
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              RR50_plot_with_power_curves_title, legend_decimal_round)
     
-    # plot the expected median percent change statistical power map
+    # plot the median percent change data map
     plot_map(MPC_file_name, MPC_metadata_file_name, MPC_plot_file_name, 
              x_tick_spacing, y_tick_spacing, False,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              MPC_plot_title, legend_decimal_round)
 
-    # plot the expected median percent change statistical power map with power law curves
+    # plot the median percent change data map with power law curves
     plot_map(MPC_file_name, MPC_metadata_file_name, MPC_plot_with_power_curves_file_name, 
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              MPC_plot_with_power_curves_title, legend_decimal_round)
     
-    # plot the expected time-to-prerandomization statistical power map
+    # plot the time-to-prerandomization data map
     plot_map(TTP_file_name, TTP_metadata_file_name, TTP_plot_file_name, 
              x_tick_spacing, y_tick_spacing, False,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              TTP_plot_title, legend_decimal_round)
 
-    # plot the expected time-to-prerandomization statistical power map with power law curves
+    # plot the time-to-prerandomization data map with power law curves
     plot_map(TTP_file_name, TTP_metadata_file_name, TTP_plot_with_power_curves_file_name, 
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
@@ -653,47 +782,41 @@ def main(x_tick_spacing, y_tick_spacing,
     H_model_1_plot_title = "Model 1 patient population"
     H_model_2_plot_title = "Model 2 patient population"
 
-    # plot the expected 50% responder rate statistical power map
-    plot_map(RR50_stat_power_file_name, 
-             RR50_stat_power_metadata_file_name, RR50_stat_power_plot_file_name, 
-             x_tick_spacing, y_tick_spacing, False,
-             min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             RR50_stat_power_plot_title, legend_decimal_round)
-
-    # plot the expected 50% responder rate statistical power map with power law curves
-    plot_map(RR50_stat_power_file_name, 
-             RR50_stat_power_metadata_file_name, RR50_stat_power_plot_with_power_curves_file_name, 
-             x_tick_spacing, y_tick_spacing, True,
-             min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             RR50_stat_power_plot_with_power_curves_title, legend_decimal_round)
+    # plot all of the endpoint statistic maps having to do with the expected placebo response
+    plot_set_of_maps(expected_placebo_RR50_file_name,                        expected_placebo_RR50_metadata_file_name, expected_placebo_RR50_plot_file_name, 
+                     expected_placebo_RR50_plot_with_power_curves_file_name, expected_placebo_RR50_plot_title,         expected_placebo_RR50_plot_with_power_curves_title,
+                     expected_placebo_MPC_file_name,                         expected_placebo_MPC_metadata_file_name,  expected_placebo_MPC_plot_file_name, 
+                     expected_placebo_MPC_plot_with_power_curves_file_name,  expected_placebo_MPC_plot_title,          expected_placebo_MPC_plot_with_power_curves_title,
+                     expected_placebo_TTP_file_name,                         expected_placebo_TTP_metadata_file_name,  expected_placebo_TTP_plot_file_name, 
+                     expected_placebo_TTP_plot_with_power_curves_file_name,  expected_placebo_TTP_plot_title,          expected_placebo_TTP_plot_with_power_curves_title,
+                     x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
     
-    # plot the expected median percent change statistical power map
-    plot_map(MPC_stat_power_file_name, 
-             MPC_stat_power_metadata_file_name, MPC_stat_power_plot_file_name, 
-             x_tick_spacing, y_tick_spacing, False,
-             min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             MPC_stat_power_plot_title, legend_decimal_round)
-
-    # plot the expected median percent change statistical power map with power law curves
-    plot_map(MPC_stat_power_file_name,
-             MPC_stat_power_metadata_file_name, MPC_stat_power_plot_with_power_curves_file_name, 
-             x_tick_spacing, y_tick_spacing, True,
-             min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             MPC_stat_power_plot_with_power_curves_title, legend_decimal_round)
+    # plot all of the endpoint statistic maps having to do with the expected drug response
+    plot_set_of_maps(expected_drug_RR50_file_name,                        expected_drug_RR50_metadata_file_name, expected_drug_RR50_plot_file_name, 
+                     expected_drug_RR50_plot_with_power_curves_file_name, expected_drug_RR50_plot_title,         expected_drug_RR50_plot_with_power_curves_title,
+                     expected_drug_MPC_file_name,                         expected_drug_MPC_metadata_file_name,  expected_drug_MPC_plot_file_name, 
+                     expected_drug_MPC_plot_with_power_curves_file_name,  expected_drug_MPC_plot_title,          expected_drug_MPC_plot_with_power_curves_title,
+                     expected_drug_TTP_file_name,                         expected_drug_TTP_metadata_file_name,  expected_drug_TTP_plot_file_name, 
+                     expected_drug_TTP_plot_with_power_curves_file_name,  expected_drug_TTP_plot_title,          expected_drug_TTP_plot_with_power_curves_title,
+                     x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
     
-    # plot the expected time-to-prerandomization statistical power map
-    plot_map(TTP_stat_power_file_name, 
-             TTP_stat_power_metadata_file_name, TTP_stat_power_plot_file_name, 
-             x_tick_spacing, y_tick_spacing, False,
-             min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             TTP_stat_power_plot_title, legend_decimal_round)
-
-    # plot the expected time-to-prerandomization statistical power map with power law curves
-    plot_map(TTP_stat_power_file_name, 
-             TTP_stat_power_metadata_file_name, TTP_stat_power_plot_with_power_curves_file_name, 
-             x_tick_spacing, y_tick_spacing, True,
-             min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
-             TTP_stat_power_plot_with_power_curves_title, legend_decimal_round)
+    # plot all of the endpoint statistic maps having to do with the statistical power
+    plot_set_of_maps(RR50_stat_power_file_name,                        RR50_stat_power_metadata_file_name, RR50_stat_power_plot_file_name, 
+                     RR50_stat_power_plot_with_power_curves_file_name, RR50_stat_power_plot_title,         RR50_stat_power_plot_with_power_curves_title,
+                     MPC_stat_power_file_name,                         MPC_stat_power_metadata_file_name,  MPC_stat_power_plot_file_name, 
+                     MPC_stat_power_plot_with_power_curves_file_name,  MPC_stat_power_plot_title,          MPC_stat_power_plot_with_power_curves_title,
+                     TTP_stat_power_file_name,                         TTP_stat_power_metadata_file_name,  TTP_stat_power_plot_file_name, 
+                     TTP_stat_power_plot_with_power_curves_file_name,  TTP_stat_power_plot_title,          TTP_stat_power_plot_with_power_curves_title,
+                     x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
+    
+    # plot all of the endpoint statistic maps having to do with the type_1 error
+    plot_set_of_maps(RR50_type_1_error_file_name,                        RR50_type_1_error_metadata_file_name, RR50_type_1_error_plot_file_name, 
+                     RR50_type_1_error_plot_with_power_curves_file_name, RR50_type_1_error_plot_title,         RR50_type_1_error_plot_with_power_curves_title,
+                     MPC_type_1_error_file_name,                         MPC_type_1_error_metadata_file_name,  MPC_type_1_error_plot_file_name, 
+                     MPC_type_1_error_plot_with_power_curves_file_name,  MPC_type_1_error_plot_title,          MPC_type_1_error_plot_with_power_curves_title,
+                     TTP_type_1_error_file_name,                         TTP_type_1_error_metadata_file_name,  TTP_type_1_error_plot_file_name, 
+                     TTP_type_1_error_plot_with_power_curves_file_name,  TTP_type_1_error_plot_title,          TTP_type_1_error_plot_with_power_curves_title,
+                     x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
     
     # plot the histograms of NV models 1 and 2
     plot_histograms(H_model_1_file_name, H_model_1_metadata_file_name, H_model_1_plot_file_name, H_model_1_plot_title,
