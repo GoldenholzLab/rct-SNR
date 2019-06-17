@@ -650,45 +650,105 @@ if(__name__=='__main__'):
     args = parser.parse_args()
     arg_array = args.array
 
-    # obtain the names of the files associated with the 50% responder rate placebo response map
-    RR50_stat_power_file_name = arg_array[0]
-    RR50_stat_power_metadata_file_name = arg_array[1]
-    RR50_stat_power_plot_file_name = arg_array[2]
-    RR50_stat_power_plot_with_power_curves_file_name = arg_array[3]
+    # set the names of the files associated with the 50% responder rate statistical power map, median percent change statistical power map, and time-to-prerandomization statistical power map
+    expected_placebo_RR50_file_name                        = 'expected_placebo_RR50_map'
+    expected_placebo_RR50_metadata_file_name               = 'expected_placebo_RR50_map_metadata'
+    expected_placebo_RR50_plot_file_name                   = 'expected_placebo_RR50_plot'
+    expected_placebo_RR50_plot_with_power_curves_file_name = 'expected_placebo_RR50_plot_with_power_curves'
+    expected_placebo_MPC_file_name                         = 'expected_placebo_MPC_map'
+    expected_placebo_MPC_metadata_file_name                = 'expected_placebo_MPC_map_metadata'
+    expected_placebo_MPC_plot_file_name                    = 'expected_placebo_MPC_plot'
+    expected_placebo_MPC_plot_with_power_curves_file_name  = 'expected_placebo_MPC_plot_with_power_curves'
+    expected_placebo_TTP_file_name                         = 'expected_placebo_TTP_map'
+    expected_placebo_TTP_metadata_file_name                = 'expected_placebo_TTP_map_metadata'
+    expected_placebo_TTP_plot_file_name                    = 'expected_placebo_TTP_plot'
+    expected_placebo_TTP_plot_with_power_curves_file_name  = 'expected_placebo_TTP_with_power_curves'
+
+    # put all the different file names for the expected placebo response maps in arrays corresponding to each endpoint for the sake of convenience
+    expected_placebo_RR50_file_names = [expected_placebo_RR50_file_name,      expected_placebo_RR50_metadata_file_name, 
+                                        expected_placebo_RR50_plot_file_name, expected_placebo_RR50_plot_with_power_curves_file_name]
+    expected_placebo_MPC_file_names =  [expected_placebo_MPC_file_name,       expected_placebo_MPC_metadata_file_name,
+                                        expected_placebo_MPC_plot_file_name,  expected_placebo_MPC_plot_with_power_curves_file_name]
+    expected_placebo_TTP_file_names =  [expected_placebo_TTP_file_name,       expected_placebo_TTP_metadata_file_name,
+                                        expected_placebo_TTP_plot_file_name,  expected_placebo_TTP_plot_with_power_curves_file_name]
 
     # set the titles of the plots to be generated for the 50% responder rate placebo response maps
-    RR50_stat_power_plot_title = "Expected RR50 placebo response"
-    RR50_stat_power_plot_with_power_curves_title = "Expected RR50 placebo response with power law curves"
+    RR50_stat_power_plot_title                   = "50% responder rate statistical power"
+    RR50_stat_power_plot_with_power_curves_title = "50% responder rate statistical power with power law curves"
+    MPC_stat_power_plot_title                    = "Median percent change statistical power"
+    MPC_stat_power_plot_with_power_curves_title  = "Median percent change statistical power with power law curves"
+    TTP_stat_power_plot_title                    = "Time-to-prerandomization statistical power"
+    TTP_stat_power_plot_with_power_curves_title  = "Time-to-prerandomization statistical power with power law curves"
 
-    # obtain the names of the files associated with the median percent change placebo response map
-    MPC_stat_power_file_name = arg_array[4]
-    MPC_stat_power_metadata_file_name = arg_array[5]
-    MPC_stat_power_plot_file_name = arg_array[6]
-    MPC_stat_power_plot_with_power_curves_file_name = arg_array[7]
+    # set the names of the files associated with the 50% responder rate statistical power map, median percent change statistical power map, and time-to-prerandomization statistical power map
+    RR50_stat_power_file_name                        = 'RR50_stat_power_map'
+    RR50_stat_power_metadata_file_name               = 'RR50_stat_power_map_metadata'
+    RR50_stat_power_plot_file_name                   = 'RR50_stat_power_plot'
+    RR50_stat_power_plot_with_power_curves_file_name = 'RR50_stat_power_plot_with_power_curves'
+    MPC_stat_power_file_name                         = 'MPC_stat_power_map'
+    MPC_stat_power_metadata_file_name                = 'MPC_stat_power_map_metadata'
+    MPC_stat_power_plot_file_name                    = 'MPC_stat_power_plot'
+    MPC_stat_power_plot_with_power_curves_file_name  = 'MPC_stat_power_plot_with_power_curves'
+    TTP_stat_power_file_name                         = 'TTP_stat_power_map'
+    TTP_stat_power_metadata_file_name                = 'TTP_stat_power_map_metadata'
+    TTP_stat_power_plot_file_name                    = 'TTP_stat_power_plot'
+    TTP_stat_power_plot_with_power_curves_file_name  = 'TTP_stat_power_plot_with_power_curves'
 
-    # set the titles of the plots to be generated for the median percent change placebo response maps
-    MPC_stat_power_plot_title = "Expected MPC placebo response"
-    MPC_stat_power_plot_with_power_curves_title = "Expected MPC placebo response with power law curves"
+    # put all the different file names for the statistical power maps in arrays corresponding to each endpoint for the sake of convenience
+    RR50_stat_power_file_names = [RR50_stat_power_file_name,      RR50_stat_power_metadata_file_name, 
+                                  RR50_stat_power_plot_file_name, RR50_stat_power_plot_with_power_curves_file_name]
+    MPC_stat_power_file_names = [MPC_stat_power_file_name,      MPC_stat_power_metadata_file_name,
+                                 MPC_stat_power_plot_file_name, MPC_stat_power_plot_with_power_curves_file_name]
+    TTP_stat_power_file_names = [TTP_stat_power_file_name,      TTP_stat_power_metadata_file_name,
+                                 TTP_stat_power_plot_file_name, TTP_stat_power_plot_with_power_curves_file_name]
 
-    # obtain the names of the files associated with the median percent change placebo response map
-    TTP_stat_power_file_name = arg_array[8]
-    TTP_stat_power_metadata_file_name = arg_array[9]
-    TTP_stat_power_plot_file_name = arg_array[10]
-    TTP_stat_power_plot_with_power_curves_file_name = arg_array[11]
+    # set the titles of the plots to be generated for the statistical power maps
+    RR50_stat_power_plot_title                   = "50% responder rate statistical power"
+    RR50_stat_power_plot_with_power_curves_title = "50% responder rate statistical power with power law curves"
+    MPC_stat_power_plot_title                    = "Median percent change statistical power"
+    MPC_stat_power_plot_with_power_curves_title  = "Median percent change statistical power with power law curves"
+    TTP_stat_power_plot_title                    = "Time-to-prerandomization statistical power"
+    TTP_stat_power_plot_with_power_curves_title  = "Time-to-prerandomization statistical power with power law curves"
 
-    # set the titles of the plots to be generated for the median percent change placebo response maps
-    TTP_stat_power_plot_title = "Expected TTP placebo response"
-    TTP_stat_power_plot_with_power_curves_title = "Expected TTP placebo response with power law curves"
+    # set the names of the files associated with the 50% responder rate type-1 error map, median percent change type-1 error map, and time-to-prerandomization type-1 error map
+    RR50_type_1_error_file_name                        = 'RR50_type_1_error_map'
+    RR50_type_1_error_metadata_file_name               = 'RR50_type_1_error_map_metadata'
+    RR50_type_1_error_plot_file_name                   = 'RR50_type_1_error_plot'
+    RR50_type_1_error_plot_with_power_curves_file_name = 'RR50_type_1_error_plot_with_power_curves'
+    MPC_type_1_error_file_name                         = 'MPC_type_1_error_map'
+    MPC_type_1_error_metadata_file_name                = 'MPC_type_1_error_map_metadata'
+    MPC_type_1_error_plot_file_name                    = 'MPC_type_1_error_plot'
+    MPC_type_1_error_plot_with_power_curves_file_name  = 'MPC_type_1_error_plot_with_power_curves'
+    TTP_type_1_error_file_name                         = 'TTP_type_1_error_map'
+    TTP_type_1_error_metadata_file_name                = 'TTP_type_1_error_map_metadata'
+    TTP_type_1_error_plot_file_name                    = 'TTP_type_1_error_plot'
+    TTP_type_1_error_plot_with_power_curves_file_name  = 'TTP_type_1_error_plot_with_power_curves'
+
+    # put all the different file names for the type-1 error maps in arrays corresponding to each endpoint for the sake of convenience
+    RR50_type_1_error_file_names = [RR50_type_1_error_file_name,      RR50_type_1_error_metadata_file_name, 
+                                    RR50_type_1_error_plot_file_name, RR50_type_1_error_plot_with_power_curves_file_name]
+    MPC_type_1_error_file_names =  [MPC_type_1_error_file_name,       MPC_type_1_error_metadata_file_name,
+                                    MPC_type_1_error_plot_file_name,  MPC_type_1_error_plot_with_power_curves_file_name]
+    TTP_type_1_error_file_names =  [TTP_type_1_error_file_name,       TTP_type_1_error_metadata_file_name,
+                                    TTP_type_1_error_plot_file_name,  TTP_type_1_error_plot_with_power_curves_file_name]
+
+    # set the titles of the plots to be generated for the type-1 error maps
+    RR50_type_1_error_plot_title                   = "50% responder rate type-1 error"
+    RR50_type_1_error_plot_with_power_curves_title = "50% responder rate type-1 error with power law curves"
+    MPC_type_1_error_plot_title                    = "Median percent change type-1 error"
+    MPC_type_1_error_plot_with_power_curves_title  = "Median percent change type-1 error with power law curves"
+    TTP_type_1_error_plot_title                    = "Time-to-prerandomization type-1 error"
+    TTP_type_1_error_plot_with_power_curves_title  = "Time-to-prerandomization type-1 error with power law curves"
 
     # obtain the names of the files associated with the NV model 1 histogram
-    H_model_1_file_name = arg_array[12]
-    H_model_1_metadata_file_name = arg_array[13]
-    H_model_1_plot_file_name = arg_array[14]
+    H_model_1_file_name          = 'H_model_1_hist' 
+    H_model_1_metadata_file_name = 'H_model_1_hist_metadata'
+    H_model_1_plot_file_name     = 'H_model_1_plot'
 
-    # obtain the names of the files associated with the NV model 1 histogram
-    H_model_2_file_name = arg_array[15]
-    H_model_2_metadata_file_name = arg_array[16]
-    H_model_2_plot_file_name = arg_array[17]
+    # obtain the names of the files associated with the NV model 2 histogram
+    H_model_2_file_name          = 'H_model_2_hist' 
+    H_model_2_metadata_file_name = 'H_model_2_hist_metadata'
+    H_model_2_plot_file_name     = 'H_model_2_plot'
 
     # set the titles of the histograms for both Model 1 and Model 2
     H_model_1_plot_title = "Model 1 patient population"

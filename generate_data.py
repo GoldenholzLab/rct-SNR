@@ -1835,36 +1835,36 @@ def save_NV_model_endpoint_statistics(Model_1_expected_placebo_RR50, Model_1_exp
     with open(os.getcwd() + '/' + NV_model_endpoint_statistics_text_file_name + '.txt', 'w+') as text_file:
 
         # format all the endpoint statistics having to do with the placebo arm
-        placebo_response =  '\nModel 1 expected placebo RR50: ' + str(Model_1_expected_placebo_RR50) + \
-                            '\nModel 1 expected placebo MPC: '  + str(Model_1_expected_placebo_MPC)  + \
+        placebo_response =  '\nModel 1 expected placebo RR50: ' + str(100*Model_1_expected_placebo_RR50) + \
+                            '\nModel 1 expected placebo MPC: '  + str(100*Model_1_expected_placebo_MPC)  + \
                             '\nModel 1 expected placebo TTP: '  + str(Model_1_expected_placebo_TTP)  + \
-                            '\nModel 2 expected placebo RR50: ' + str(Model_2_expected_placebo_RR50) + \
-                            '\nModel 2 expected placebo MPC: '  + str(Model_2_expected_placebo_MPC)  + \
+                            '\nModel 2 expected placebo RR50: ' + str(100*Model_2_expected_placebo_RR50) + \
+                            '\nModel 2 expected placebo MPC: '  + str(100*Model_2_expected_placebo_MPC)  + \
                             '\nModel 2 expected placebo TTP: '  + str(Model_2_expected_placebo_TTP)
         
         # format all the endpoint statistics having to do with the drug arm
-        drug_response =  '\nModel 1 expected drug RR50: ' + str(Model_1_expected_drug_RR50) + \
-                         '\nModel 1 expected drug MPC: '  + str(Model_1_expected_drug_MPC)  + \
+        drug_response =  '\nModel 1 expected drug RR50: ' + str(100*Model_1_expected_drug_RR50) + \
+                         '\nModel 1 expected drug MPC: '  + str(100*Model_1_expected_drug_MPC)  + \
                          '\nModel 1 expected drug TTP: '  + str(Model_1_expected_drug_TTP)  + \
-                         '\nModel 2 expected drug RR50: ' + str(Model_2_expected_drug_RR50) + \
-                         '\nModel 2 expected drug MPC: '  + str(Model_2_expected_drug_MPC)  + \
+                         '\nModel 2 expected drug RR50: ' + str(100*Model_2_expected_drug_RR50) + \
+                         '\nModel 2 expected drug MPC: '  + str(100*Model_2_expected_drug_MPC)  + \
                          '\nModel 2 expected drug TTP: '  + str(Model_2_expected_drug_TTP)
         
         # format all the endpoint statistics having to do with the statistical power
-        stat_power =  '\nModel 1 RR50 statistical power: ' + str(Model_1_RR50_type_1_error) + \
-                      '\nModel 1 MPC statistical power: '  + str(Model_1_MPC_type_1_error)  + \
-                      '\nModel 1 TTP statistical power: '  + str(Model_1_TTP_type_1_error)  + \
-                      '\nModel 2 RR50 statistical power: ' + str(Model_2_RR50_type_1_error) + \
-                      '\nModel 2 MPC statistical power: '  + str(Model_2_MPC_type_1_error)  + \
-                      '\nModel 2 TTP statistical power: '  + str(Model_2_TTP_type_1_error)
+        stat_power =  '\nModel 1 RR50 statistical power: ' + str(100*Model_1_RR50_type_1_error) + \
+                      '\nModel 1 MPC statistical power: '  + str(100*Model_1_MPC_type_1_error)  + \
+                      '\nModel 1 TTP statistical power: '  + str(100*Model_1_TTP_type_1_error)  + \
+                      '\nModel 2 RR50 statistical power: ' + str(100*Model_2_RR50_type_1_error) + \
+                      '\nModel 2 MPC statistical power: '  + str(100*Model_2_MPC_type_1_error)  + \
+                      '\nModel 2 TTP statistical power: '  + str(100*Model_2_TTP_type_1_error)
         
         # format all the endpoint statistics having to do with the type-1 error
-        type_1_error =  '\nModel 1 RR50 type-1 error: ' + str(Model_1_RR50_stat_power) + \
-                        '\nModel 1 MPC type-1 error: '  + str(Model_1_MPC_stat_power)  + \
-                        '\nModel 1 TTP type-1 error: '  + str(Model_1_TTP_stat_power)  + \
-                        '\nnModel 2 RR50 type-1 error: ' + str(Model_2_RR50_stat_power) + \
-                        '\nModel 2 MPC type-1 error: '  + str(Model_2_MPC_stat_power)  + \
-                        '\nModel 2 TTP type-1 error: '  + str(Model_2_TTP_stat_power)
+        type_1_error =  '\nModel 1 RR50 type-1 error: ' + str(100*Model_1_RR50_stat_power) + \
+                        '\nModel 1 MPC type-1 error: '  + str(100*Model_1_MPC_stat_power)  + \
+                        '\nModel 1 TTP type-1 error: '  + str(100*Model_1_TTP_stat_power)  + \
+                        '\nModel 2 RR50 type-1 error: ' + str(100*Model_2_RR50_stat_power) + \
+                        '\nModel 2 MPC type-1 error: '  + str(100*Model_2_MPC_stat_power)  + \
+                        '\nModel 2 TTP type-1 error: '  + str(100*Model_2_TTP_stat_power)
         
         # put all the data together into one string
         data = '\n\n' + placebo_response + '\n\n' + drug_response + '\n\n' + stat_power + '\n\n' + type_1_error + '\n\n'
@@ -2256,12 +2256,12 @@ if(__name__=='__main__'):
     MPC_stat_power_metadata_file_name         = 'MPC_stat_power_map_metadata'
     TTP_stat_power_file_name                  = 'TTP_stat_power_map'
     TTP_stat_power_metadata_file_name         = 'TTP_stat_power_map_metadata'
-    RR50_type_1_error_file_name               = 'RR50_stat_power_map'
-    RR50_type_1_error_metadata_file_name      = 'RR50_stat_power_map_metadata'
-    MPC_type_1_error_file_name                = 'MPC_stat_power_map'
-    MPC_type_1_error_metadata_file_name       = 'MPC_stat_power_map_metadata'
-    TTP_type_1_error_file_name                = 'TTP_stat_power_map'
-    TTP_type_1_error_metadata_file_name       = 'TTP_stat_power_map_metadata'
+    RR50_type_1_error_file_name               = 'RR50_type_1_error_map'
+    RR50_type_1_error_metadata_file_name      = 'RR50_type_1_error_map_metadata'
+    MPC_type_1_error_file_name                = 'MPC_type_1_error_map'
+    MPC_type_1_error_metadata_file_name       = 'MPC_type_1_error_map_metadata'
+    TTP_type_1_error_file_name                = 'TTP_type_1_error_map'
+    TTP_type_1_error_metadata_file_name       = 'TTP_type_1_error_map_metadata'
     H_model_1_file_name                       = 'H_model_1_hist'
     H_model_1_metadata_file_name              = 'H_model_1_hist_metadata'
     H_model_2_file_name                       = 'H_model_2_hist'
