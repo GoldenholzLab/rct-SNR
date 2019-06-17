@@ -997,9 +997,9 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
             RR50_stat_power_string = 'RR50 stat power:  '            + str( 100*np.round(RR50_power, 4) )            + ' %'
             MPC_stat_power_string = 'MPC stat power:  '              + str( 100*np.round(MPC_power, 4) )             + ' %'
             TTP_stat_power_string = 'TTP stat power:  '              + str( 100*np.round(TTP_power, 4) )             + ' %'
-            RR50_type_1_error_string = 'RR50 type-1 error:  '        + str( 100*np.round(RR50_power, 4) )            + ' %'
-            MPC_type_1_error_string = 'MPC type-1 error:  '          + str( 100*np.round(MPC_power, 4) )             + ' %'
-            TTP_type_1_error_string = 'TTP type-1 error:  '          + str( 100*np.round(TTP_power, 4) )             + ' %'
+            RR50_type_1_error_string = 'RR50 type-1 error:  '        + str( 100*np.round(RR50_type_1_error, 4) )            + ' %'
+            MPC_type_1_error_string = 'MPC type-1 error:  '          + str( 100*np.round(MPC_type_1_error, 4) )             + ' %'
+            TTP_type_1_error_string = 'TTP type-1 error:  '          + str( 100*np.round(TTP_type_1_error, 4) )             + ' %'
 
             monthly_mean_string = str(np.round(monthly_mean, 2))
             monthly_std_dev_string = str(np.round(monthly_std_dev, 2))
@@ -1010,7 +1010,7 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
             type_1_error_string = RR50_type_1_error_string + '\n' + MPC_type_1_error_string + '\n' + TTP_type_1_error_string
 
             cpu_time_string = 'cpu time (minutes): ' + str( np.round(total_time_in_minutes, 2) )
-            
+
             orientation_string = 'monthly mean, monthly standard deviation: (' + monthly_mean_string + ', ' + monthly_std_dev_string + ')'
 
             data_string = '\n\n' + orientation_string + ':\n' + expected_placebo_string + '\n' + expected_drug_string + '\n' + stat_power_string + '\n' + type_1_error_string + '\n' + cpu_time_string
