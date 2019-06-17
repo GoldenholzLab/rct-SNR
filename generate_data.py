@@ -1825,7 +1825,7 @@ def save_NV_model_endpoint_statistics(Model_1_expected_placebo_RR50, Model_1_exp
 
     '''
 
-    # open/create the JSON file that will contain all the enpdoint statistics
+    # open/create the text file that will contain all the enpdoint statistics
     with open(os.getcwd() + '/' + NV_model_endpoint_statistics_text_file_name + '.txt', 'w+') as text_file:
 
         # format all the endpoint statistics having to do with the placebo arm
@@ -1860,8 +1860,10 @@ def save_NV_model_endpoint_statistics(Model_1_expected_placebo_RR50, Model_1_exp
                         '\nModel 2 MPC type-1 error: '  + str(Model_2_MPC_stat_power)  + \
                         '\nModel 2 TTP type-1 error: '  + str(Model_2_TTP_stat_power)
         
+        # put all the data together into one string
         data = '\n\n' + placebo_response + '\n\n' + drug_response + '\n\n' + stat_power + '\n\n' + type_1_error + '\n\n'
 
+        # write the string full of data to the designated text file
         text_file.write(data)
 
 
