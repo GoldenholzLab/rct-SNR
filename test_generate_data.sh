@@ -1,15 +1,15 @@
 
-# The information needed for the x-axis of the expected placebo response maps
+# The information needed for the x-axis of the endpoint statistic maps
 inputs[0]=0
 inputs[1]=16
 inputs[2]=1
 
-# The information needed for the y-axis of the expected placebo response maps
+# The information needed for the y-axis of the endpoint statistic maps
 inputs[3]=0
 inputs[4]=16
 inputs[5]=1
 
-# The parameters for estimating the placebo response at each point on the expected placebo response maps
+# The parameters for estimating the value at each point on the endpoint statistic maps
 inputs[6]=2
 inputs[7]=3
 inputs[8]=4
