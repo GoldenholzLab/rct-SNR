@@ -993,7 +993,7 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
             expected_placebo_TTP_string = 'expected placebo TTP: ' +  str( np.round(expected_placebo_TTP, 4) )
             expected_drug_RR50_string = 'expected drug RR50: ' +  str( 100*np.round(expected_placebo_RR50, 4) ) + ' %'
             expected_drug_MPC_string = 'expected drug MPC: ' +  str( 100*np.round(expected_placebo_MPC, 4) ) + ' %'
-            expected_drug_TTP_string = 'expected drug TTP: ' +  str( np.round(expected_placebo_TTP, 4) )
+            expected_drug_TTP_string = 'expected drug TTP: ' +  str( np.round(expected_drug_TTP, 4) )
             RR50_stat_power_string = 'RR50 stat power:  ' +  str( 100*np.round(RR50_power, 4) ) + ' %'
             MPC_stat_power_string = 'MPC stat power:  ' +  str( 100*np.round(MPC_power, 4) ) + ' %'
             TTP_stat_power_string = 'TTP stat power:  ' + str( 100*np.round(TTP_power, 4) ) + ' %'
