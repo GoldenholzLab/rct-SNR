@@ -833,14 +833,14 @@ if(__name__=='__main__'):
     arg_array = args.array
 
     # obtain the spacing in between each of the labelled x-axis and y-axis ticks for all maps and histograms
-    x_tick_spacing = float(arg_array[18])
-    y_tick_spacing = float(arg_array[19])
+    x_tick_spacing = float(arg_array[0])
+    y_tick_spacing = float(arg_array[1])
 
     # obtain the slopes of the power law curves to be plotted
-    min_power_law_slope = float(arg_array[20])
-    max_power_law_slope = float(arg_array[21])
-    power_law_slope_spacing = float(arg_array[22])
-    legend_decimal_round = int(arg_array[23])
+    min_power_law_slope = float(arg_array[2])
+    max_power_law_slope = float(arg_array[3])
+    power_law_slope_spacing = float(arg_array[4])
+    legend_decimal_round = int(arg_array[5])
 
     # run the main function
     main(x_tick_spacing, y_tick_spacing, 
