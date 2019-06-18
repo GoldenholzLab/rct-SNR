@@ -32,7 +32,7 @@ directory='/Users/juanromero/Documents/GitHub/rct-SNR'
 
 for ((num_req_baseline_sz=0; num_req_baseline_sz<5; num_req_baseline_sz=num_req_baseline_sz+1));
     do
-        for ((folder=1; folder<6; folder=folder+1));
+        for ((folder_num=1; folder_num<6; folder_num=folder_num+1));
             do
                 inputs[0]=$mu_start
                 inputs[1]=$mu_stop
@@ -52,7 +52,7 @@ for ((num_req_baseline_sz=0; num_req_baseline_sz<5; num_req_baseline_sz=num_req_
                 inputs[15]=$num_patients_per_NV_model
                 inputs[16]=$num_months_per_NV_model_patient
                 inputs[17]=$directory
-                inputs[18]=$folder
+                inputs[18]=$folder_num
 
                 bash test_generate_map.sh ${inputs[@]}
         done
