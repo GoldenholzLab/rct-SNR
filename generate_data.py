@@ -1478,8 +1478,7 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
             RR50_type_1_error_map,         MPC_type_1_error_map,         TTP_type_1_error_map,]
 
 
-def store_map(data_map, 
-              data_map_file_name, data_map_meta_data_file_name,
+def store_map(data_map, data_map_file_name,
               directory, min_req_base_sz_count, folder):
     '''
 
@@ -1503,15 +1502,15 @@ def store_map(data_map,
 
                        later
         
+        ***********************************************************
+        *************BEGINNING OF DEPRECATED INPUTS****************
+        ***********************************************************
+
         3) data_map_meta_data_file_name:
 
             (string) - the name of the JSON file which will contain the metadata for the data 
             
                        map to be plotted later
-        
-        ***********************************************************
-        *************BEGINNING OF DEPRECATED INPUTS****************
-        ***********************************************************
 
         4) x_axis_start:
 
@@ -1858,38 +1857,37 @@ def main(num_patients_per_model, num_months_per_patient,
 
     # set the names of the files that the data/metadata of the endpoint statistic maps will be stored in
     expected_placebo_RR50_file_name           = 'expected_placebo_RR50_map'
-    expected_placebo_RR50_metadata_file_name  = 'expected_placebo_RR50_map_metadata'
     expected_placebo_MPC_file_name            = 'expected_placebo_MPC_map'
-    expected_placebo_MPC_metadata_file_name   = 'expected_placebo_MPC_map_metadata'
     expected_placebo_TTP_file_name            = 'expected_placebo_TTP_map'
-    expected_placebo_TTP_metadata_file_name   = 'expected_placebo_TTP_map_metadata'
     expected_drug_RR50_file_name              = 'expected_drug_RR50_map'
-    expected_drug_RR50_metadata_file_name     = 'expected_drug_RR50_map_metadata'
     expected_drug_MPC_file_name               = 'expected_drug_MPC_map'
-    expected_drug_MPC_metadata_file_name      = 'expected_drug_MPC_map_metadata'
     expected_drug_TTP_file_name               = 'expected_drug_TTP_map'
-    expected_drug_TTP_metadata_file_name      = 'expected_drug_TTP_map_metadata'
     RR50_stat_power_file_name                 = 'RR50_stat_power_map'
-    RR50_stat_power_metadata_file_name        = 'RR50_stat_power_map_metadata'
     MPC_stat_power_file_name                  = 'MPC_stat_power_map'
-    MPC_stat_power_metadata_file_name         = 'MPC_stat_power_map_metadata'
     TTP_stat_power_file_name                  = 'TTP_stat_power_map'
-    TTP_stat_power_metadata_file_name         = 'TTP_stat_power_map_metadata'
     RR50_type_1_error_file_name               = 'RR50_type_1_error_map'
-    RR50_type_1_error_metadata_file_name      = 'RR50_type_1_error_map_metadata'
     MPC_type_1_error_file_name                = 'MPC_type_1_error_map'
-    MPC_type_1_error_metadata_file_name       = 'MPC_type_1_error_map_metadata'
     TTP_type_1_error_file_name                = 'TTP_type_1_error_map'
+    
+    '''
+    expected_placebo_RR50_metadata_file_name  = 'expected_placebo_RR50_map_metadata'
+    expected_placebo_MPC_metadata_file_name   = 'expected_placebo_MPC_map_metadata'
+    expected_placebo_TTP_metadata_file_name   = 'expected_placebo_TTP_map_metadata'
+    expected_drug_RR50_metadata_file_name     = 'expected_drug_RR50_map_metadata'
+    expected_drug_MPC_metadata_file_name      = 'expected_drug_MPC_map_metadata'
+    expected_drug_TTP_metadata_file_name      = 'expected_drug_TTP_map_metadata'
+    RR50_stat_power_metadata_file_name        = 'RR50_stat_power_map_metadata'
+    MPC_stat_power_metadata_file_name         = 'MPC_stat_power_map_metadata'
+    TTP_stat_power_metadata_file_name         = 'TTP_stat_power_map_metadata'
+    RR50_type_1_error_metadata_file_name      = 'RR50_type_1_error_map_metadata'
+    MPC_type_1_error_metadata_file_name       = 'MPC_type_1_error_map_metadata'
     TTP_type_1_error_metadata_file_name       = 'TTP_type_1_error_map_metadata'
 
-    '''
     H_model_1_file_name                       = 'H_model_1_hist'
     H_model_1_metadata_file_name              = 'H_model_1_hist_metadata'
     H_model_2_file_name                       = 'H_model_2_hist'
     H_model_2_metadata_file_name              = 'H_model_2_hist_metadata'
-    '''
 
-    '''
     # set the name of text file which will contain the placebo responses for NV model 1 and NV model 2
     NV_model_endpoint_statistics_text_file_name = 'NV_model_endpoint_statistics'
     '''
@@ -1938,63 +1936,51 @@ def main(num_patients_per_model, num_months_per_patient,
                           placebo_mu, placebo_sigma,  drug_mu, drug_sigma)
 
     # store the expected 50% responder rate placebo arm response map
-    store_map(expected_placebo_RR50_map, 
-              expected_placebo_RR50_file_name, expected_placebo_RR50_metadata_file_name,
+    store_map(expected_placebo_RR50_map, expected_placebo_RR50_file_name,
               directory, min_req_base_sz_count, folder)
     
     # store the expected median percent change placebo arm response map
-    store_map(expected_placebo_MPC_map, 
-              expected_placebo_MPC_file_name, expected_placebo_MPC_metadata_file_name,
+    store_map(expected_placebo_MPC_map, expected_placebo_MPC_file_name,
               directory, min_req_base_sz_count, folder)
 
     # store the expected time-to-prerandomization placebo arm response map
-    store_map(expected_placebo_TTP_map, 
-              expected_placebo_TTP_file_name, expected_placebo_TTP_metadata_file_name,
+    store_map(expected_placebo_TTP_map, expected_placebo_TTP_file_name,
               directory, min_req_base_sz_count, folder)
 
     # store the expected 50% responder rate drug arm response map
-    store_map(expected_drug_RR50_map, 
-              expected_drug_RR50_file_name, expected_drug_RR50_metadata_file_name,
+    store_map(expected_drug_RR50_map, expected_drug_RR50_file_name,
               directory, min_req_base_sz_count, folder)
     
     # store the expected median percent change drug arm response map
-    store_map(expected_drug_MPC_map, 
-              expected_drug_MPC_file_name, expected_drug_MPC_metadata_file_name,
+    store_map(expected_drug_MPC_map, expected_drug_MPC_file_name,
               directory, min_req_base_sz_count, folder)
 
     # store the expected time-to-prerandomization drug arm response map
-    store_map(expected_drug_TTP_map, 
-              expected_drug_TTP_file_name, expected_drug_TTP_metadata_file_name,
+    store_map(expected_drug_TTP_map, expected_drug_TTP_file_name,
               directory, min_req_base_sz_count, folder)
 
     # store the 50% responder rate statistical power map
-    store_map(RR50_stat_power_map, 
-              RR50_stat_power_file_name, RR50_stat_power_metadata_file_name,
+    store_map(RR50_stat_power_map, RR50_stat_power_file_name,
               directory, min_req_base_sz_count, folder)
 
     # store the median percent change statistical power map
-    store_map(MPC_stat_power_map, 
-              MPC_stat_power_file_name, MPC_stat_power_metadata_file_name,
+    store_map(MPC_stat_power_map, MPC_stat_power_file_name,
               directory, min_req_base_sz_count, folder)
     
     # store the time-to-prerandomization statistical power map
-    store_map(TTP_stat_power_map, 
-              TTP_stat_power_file_name, TTP_stat_power_metadata_file_name,
+    store_map(TTP_stat_power_map, TTP_stat_power_file_name,
               directory, min_req_base_sz_count, folder)
 
     # store the 50% responder rate type-1 error map
-    store_map(RR50_type_1_error_map, 
-              RR50_type_1_error_file_name, RR50_type_1_error_metadata_file_name,
+    store_map(RR50_type_1_error_map, RR50_type_1_error_file_name,
               directory, min_req_base_sz_count, folder)
 
     # store the median percent change type-1 error map
-    store_map(MPC_type_1_error_map, 
-              MPC_type_1_error_file_name, MPC_type_1_error_metadata_file_name,
+    store_map(MPC_type_1_error_map, MPC_type_1_error_file_name,
               directory, min_req_base_sz_count, folder)
     
     # store the time-to-prerandomization type-1 error map
-    store_map(TTP_type_1_error_map, 
-              TTP_type_1_error_file_name, TTP_type_1_error_metadata_file_name,
+    store_map(TTP_type_1_error_map, TTP_type_1_error_file_name,
               directory, min_req_base_sz_count, folder)
 
     '''
