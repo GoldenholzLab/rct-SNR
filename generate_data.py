@@ -1473,12 +1473,14 @@ def store_map(data_map,
               data_map_file_name, data_map_meta_data_file_name,
               x_axis_start, x_axis_stop, x_axis_step,
               y_axis_start, y_axis_stop, y_axis_step,
-              folder):
+              directory, folder):
     '''
 
     This function takes a data map as the parameters used to create its axes (referred to as the metadata)
 
-    and puts all the information into JSON files which are located in the same folder as this script.
+    and puts all the information into intermediate JSON files which are located in a folder specified by 
+    
+    the end user.
 
     Inputs:
 
@@ -1523,6 +1525,14 @@ def store_map(data_map,
         9) y_axis_step:
 
             (float) - the spaces in between each location on the y-axis for all expected endpoint maps
+        
+        10) directory:
+
+            (string) - the name of the directory which contains the folder in which all the intermediate JSON files will be stored
+        
+        11) folder:
+
+            (string) - the name of the actual folder in which all the intermediate JSON files will be stored
     
     Outputs:
 
@@ -1530,14 +1540,22 @@ def store_map(data_map,
 
     '''
 
+    # get the file path for the folder specified
+    folder_path = directory + '/' + folder
+
     # get the file path for the JSON file that will store the data map 
-    data_map_file_path = folder + '/' + data_map_file_name + '.json'
+    data_map_file_path = folder_path + '/' + data_map_file_name + '.json'
 
     # get the file path for the JSON file that will store the data map metadata
-    data_map_metadata_file_path = folder + '/' + data_map_meta_data_file_name + '.json'
+    data_map_metadata_file_path = folder_path + '/' + data_map_meta_data_file_name + '.json'
 
     # put all of the metadata into one array
     metadata = np.array([x_axis_start, x_axis_stop, x_axis_step, y_axis_start, y_axis_stop, y_axis_step])
+
+    # make sure that the specified folder exists if it doesn't already
+    if ( not os.path.exists(folder_path) ):
+
+        os.makedirs(folder_path)
 
     # open/create the JSON file that will store the data map 
     with open(data_map_file_path, 'w+') as map_storage_file:
@@ -1724,12 +1742,14 @@ def main(num_patients_per_model, num_months_per_patient,
          start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
-         placebo_mu, placebo_sigma,  drug_mu, drug_sigma, folder):
+         placebo_mu, placebo_sigma,  drug_mu, drug_sigma, directory, folder):
     '''
 
     This function is the main function that should be called in order to fulfill this script's primary purpose,
 
-    which is generating and storing the data needed to plot the endpoint statistic maps to be plotted later.
+    which is generating and storing the data needed to plot the endpoint statistic maps to be plotted later. This data
+
+    is stored as intermediate JSON files in a folder specified by the end user.
 
     Inputs:
 
@@ -1801,9 +1821,13 @@ def main(num_patients_per_model, num_months_per_patient,
 
             (float) - the standard deviation of the drug effect
         
-        18) folder:
+        18) directory:
 
-            (string) - the name of folder in which all the intermediate JSON files will be stored
+            (string) - the name of the directory which contains the folder in which all the intermediate JSON files will be stored
+        
+        19) folder:
+
+            (string) - the name of the actual folder in which all the intermediate JSON files will be stored
     
     Outputs:
 
@@ -1878,98 +1902,98 @@ def main(num_patients_per_model, num_months_per_patient,
               expected_placebo_RR50_file_name, expected_placebo_RR50_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
     
     # store the expected median percent change placebo arm response map
     store_map(expected_placebo_MPC_map, 
               expected_placebo_MPC_file_name, expected_placebo_MPC_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
 
     # store the expected time-to-prerandomization placebo arm response map
     store_map(expected_placebo_TTP_map, 
               expected_placebo_TTP_file_name, expected_placebo_TTP_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
 
     # store the expected 50% responder rate drug arm response map
     store_map(expected_drug_RR50_map, 
               expected_drug_RR50_file_name, expected_drug_RR50_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
     
     # store the expected median percent change drug arm response map
     store_map(expected_drug_MPC_map, 
               expected_drug_MPC_file_name, expected_drug_MPC_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
 
     # store the expected time-to-prerandomization drug arm response map
     store_map(expected_drug_TTP_map, 
               expected_drug_TTP_file_name, expected_drug_TTP_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
 
     # store the 50% responder rate statistical power map
     store_map(RR50_stat_power_map, 
               RR50_stat_power_file_name, RR50_stat_power_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
 
     # store the median percent change statistical power map
     store_map(MPC_stat_power_map, 
               MPC_stat_power_file_name, MPC_stat_power_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
     
     # store the time-to-prerandomization statistical power map
     store_map(TTP_stat_power_map, 
               TTP_stat_power_file_name, TTP_stat_power_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
 
     # store the 50% responder rate type-1 error map
     store_map(RR50_type_1_error_map, 
               RR50_type_1_error_file_name, RR50_type_1_error_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
 
     # store the median percent change type-1 error map
     store_map(MPC_type_1_error_map, 
               MPC_type_1_error_file_name, MPC_type_1_error_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
     
     # store the time-to-prerandomization type-1 error map
     store_map(TTP_type_1_error_map, 
               TTP_type_1_error_file_name, TTP_type_1_error_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
 
     # store the histogram of Model 1
     store_map(H_model_1,
               H_model_1_file_name, H_model_1_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
     
     # store the histogram of Model 1
     store_map(H_model_2,
               H_model_2_file_name, H_model_2_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
-              folder)
+              directory, folder)
     
     # store the estimated placebo responses for NV model 1 and NV model 2
     save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_responses, NV_models_1_and_2_expected_drug_responses,
@@ -2014,15 +2038,18 @@ if(__name__=='__main__'):
     num_patients_per_model = int(arg_array[15])
     num_months_per_patient = int(arg_array[16])
 
-    # obtain the folder in which the JSON files will be stored
-    folder = arg_array[17]
+    # obtain the location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
+    directory = arg_array[17]
+
+    # obtain the name of the actual folder in which all the intermediate JSON files for this specific map will be stored
+    folder = arg_array[18]
 
     # call the main() function
     main(num_patients_per_model, num_months_per_patient,
          start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
-         placebo_mu, placebo_sigma,  drug_mu, drug_sigma, folder)
+         placebo_mu, placebo_sigma,  drug_mu, drug_sigma, directory, folder)
     
     stop_time_in_seconds = time.time()
 
