@@ -30,6 +30,6 @@ inputs[16]=24
 inputs[17]='/Users/juanromero/Documents/GitHub/rct-SNR'
 
 # Set the name of the folder in which all the intermediate JSON files for this specific map will be stored
-inputs[18]=$1
+inputs[18]='fly'
 
 python generate_data.py ${inputs[@]}
