@@ -1,10 +1,12 @@
 
 # The information needed for the monthly seizure frequency axis of the endpoint statistic maps
+# These parameters need to be passed off as metadata to plotting scripts
 mu_start=0
 mu_stop=16
 mu_step=1
 
 # The information needed for the monthly seizure standard deviation axis of the endpoint statistic maps
+# These parameters need to be passed off as metadata to plotting scripts
 sigma_start=0
 sigma_stop=16
 sigma_step=1
