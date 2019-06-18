@@ -2011,17 +2011,17 @@ if(__name__=='__main__'):
     args = parser.parse_args()
     arg_array = args.array
 
-    # obtain the information needed for the x-axis of the expected placebo response maps
+    # obtain the information needed for the x-axis of the endpoint statistic maps
     start_monthly_mean = float(arg_array[0])
     stop_monthly_mean = float(arg_array[1])
     step_monthly_mean = float(arg_array[2])
 
-    # obtain the information needed for the y-axis of the expected placebo response maps
+    # obtain the information needed for the y-axis of the endpoint statistic maps
     start_monthly_std_dev = float(arg_array[3])
     stop_monthly_std_dev = float(arg_array[4])
     step_monthly_std_dev = float(arg_array[5])
 
-    # obtain the parameters for estimating the placebo response at each point on the expected placebo response maps
+    # obtain the parameters for estimating the placebo response at each point on the endpoint statistic maps
     num_baseline_months = int(arg_array[6])
     num_testing_months = int(arg_array[7])
     min_req_base_sz_count = int(arg_array[8])
