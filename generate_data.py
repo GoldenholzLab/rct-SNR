@@ -1569,17 +1569,17 @@ def save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_respons
                                
                                and the time-to-prerandomization over NV models 1 and 2 in the following order:
 
-                                    NV_models_1_and_2_expected_placebo_responses[0] = expected placebo arm 50% responder rate for Model 1 patients
+                                    NV_models_1_and_2_expected_placebo_responses[0][0] = expected placebo arm 50% responder rate for Model 1 patients
 
-                                    NV_models_1_and_2_expected_placebo_responses[1] = expected placebo arm median percent change for Model 1 patients
+                                    NV_models_1_and_2_expected_placebo_responses[0][1] = expected placebo arm median percent change for Model 1 patients
         
-                                    NV_models_1_and_2_expected_placebo_responses[2] = expected placebo arm time-to-prerandomization for Model 1 patients
+                                    NV_models_1_and_2_expected_placebo_responses[0][2] = expected placebo arm time-to-prerandomization for Model 1 patients
 
-                                    NV_models_1_and_2_expected_placebo_responses[3] = expected placebo arm 50% responder rate for Model 2 patients
+                                    NV_models_1_and_2_expected_placebo_responses[1][0] = expected placebo arm 50% responder rate for Model 2 patients
 
-                                    NV_models_1_and_2_expected_placebo_responses[4] = expected placebo arm median percent change for Model 2 patients
+                                    NV_models_1_and_2_expected_placebo_responses[1][1] = expected placebo arm median percent change for Model 2 patients
         
-                                    NV_models_1_and_2_expected_placebo_responses[5] = expected placebo arm time-to-prerandomization for Model 2 patients
+                                    NV_models_1_and_2_expected_placebo_responses[1][2] = expected placebo arm time-to-prerandomization for Model 2 patients
 
         2) NV_models_1_and_2_expected_drug_responses:
 
@@ -1724,8 +1724,7 @@ def main(num_patients_per_model, num_months_per_patient,
          start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
-         placebo_mu, placebo_sigma,  drug_mu, drug_sigma,
-         NV_model_endpoint_statistics_text_file_name, folder):
+         placebo_mu, placebo_sigma,  drug_mu, drug_sigma, folder):
     '''
 
     This function is the main function that should be called in order to fulfill this script's primary purpose,
@@ -1801,14 +1800,8 @@ def main(num_patients_per_model, num_months_per_patient,
         17) drug_sigma:
 
             (float) - the standard deviation of the drug effect
-
-        18) NV_model_endpoint_statistics_text_file_name:
-
-            (string) - the name of the text file which will contain the endpoint statistics for NV 
-                       
-                       model 1 and NV model 2
         
-        19) folder:
+        18) folder:
 
             (string) - the name of folder in which all the intermediate JSON files will be stored
     
@@ -1847,6 +1840,9 @@ def main(num_patients_per_model, num_months_per_patient,
     H_model_1_metadata_file_name              = 'H_model_1_hist_metadata'
     H_model_2_file_name                       = 'H_model_2_hist'
     H_model_2_metadata_file_name              = 'H_model_2_hist_metadata'
+
+    # set the name of text file which will contain the placebo responses for NV model 1 and NV model 2
+    NV_model_endpoint_statistics_text_file_name = 'NV_model_endpoint_statistics'
 
     # set the group-level parameters for NV model 1
     shape_1 = 24.143
@@ -2018,19 +2014,15 @@ if(__name__=='__main__'):
     num_patients_per_model = int(arg_array[15])
     num_months_per_patient = int(arg_array[16])
 
-    # obtain the name of text file which will contain the placebo responses for NV model 1 and NV model 2
-    NV_model_endpoint_statistics_text_file_name = arg_array[17]
-
     # obtain the folder in which the JSON files will be stored
-    folder = arg_array[18]
+    folder = arg_array[17]
 
     # call the main() function
     main(num_patients_per_model, num_months_per_patient,
          start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
-         placebo_mu, placebo_sigma,  drug_mu, drug_sigma,
-         NV_model_endpoint_statistics_text_file_name, folder)
+         placebo_mu, placebo_sigma,  drug_mu, drug_sigma, folder)
     
     stop_time_in_seconds = time.time()
 
