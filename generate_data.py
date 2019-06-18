@@ -1294,8 +1294,9 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
                 
             (2D Numpy array) - a 2D numpy array which contains the time-to-prerandomization type-1 error map
 
-        *****FOLLOWING OUTPUTS ARE DEPRECATED FOR NOW*****
-
+        ******************************************************
+        *****THE FOLLOWING OUTPUTS ARE DEPRECATED FOR NOW*****
+        ******************************************************
 
         13) H_model_1:
             
@@ -1479,8 +1480,6 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
 
 def store_map(data_map, 
               data_map_file_name, data_map_meta_data_file_name,
-              x_axis_start, x_axis_stop, x_axis_step,
-              y_axis_start, y_axis_stop, y_axis_step,
               directory, min_req_base_sz_count, folder):
     '''
 
@@ -1510,6 +1509,10 @@ def store_map(data_map,
             
                        map to be plotted later
         
+        ***********************************************************
+        *************BEGINNING OF DEPRECATED INPUTS****************
+        ***********************************************************
+
         4) x_axis_start:
 
             (float) - the beginning of the x-axis for the data map to be plotted later
@@ -1533,6 +1536,10 @@ def store_map(data_map,
         9) y_axis_step:
 
             (float) - the spaces in between each location on the y-axis for all expected endpoint maps
+
+        ***********************************************************
+        *****************END OF DEPRECATED INPUTS******************
+        ***********************************************************
         
         10) directory:
 
@@ -1557,12 +1564,14 @@ def store_map(data_map,
 
     # get the file path for the JSON file that will store the data map 
     data_map_file_path = folder_path + '/' + data_map_file_name + '.json'
-
+    
+    '''
     # get the file path for the JSON file that will store the data map metadata
     data_map_metadata_file_path = folder_path + '/' + data_map_meta_data_file_name + '.json'
 
     # put all of the metadata into one array
     metadata = np.array([x_axis_start, x_axis_stop, x_axis_step, y_axis_start, y_axis_stop, y_axis_step])
+    '''
 
     # make sure that the specified folder exists if it doesn't already
     if ( not os.path.exists(folder_path) ):
@@ -1575,11 +1584,13 @@ def store_map(data_map,
         # store the data map
         json.dump(data_map.tolist(), map_storage_file)
 
-    # open/create the JSON file that will store the data map 
+    '''
+    # open/create the JSON file that will store the data map metadata
     with open(data_map_metadata_file_path, 'w+') as map_metadata_storage_file:
 
         # store the data map
         json.dump(metadata.tolist(), map_metadata_storage_file)
+    '''
 
 '''
 def save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_responses, NV_models_1_and_2_expected_drug_responses,
@@ -1929,85 +1940,61 @@ def main(num_patients_per_model, num_months_per_patient,
     # store the expected 50% responder rate placebo arm response map
     store_map(expected_placebo_RR50_map, 
               expected_placebo_RR50_file_name, expected_placebo_RR50_metadata_file_name,
-              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
     
     # store the expected median percent change placebo arm response map
     store_map(expected_placebo_MPC_map, 
               expected_placebo_MPC_file_name, expected_placebo_MPC_metadata_file_name,
-              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
 
     # store the expected time-to-prerandomization placebo arm response map
     store_map(expected_placebo_TTP_map, 
               expected_placebo_TTP_file_name, expected_placebo_TTP_metadata_file_name,
-              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
 
     # store the expected 50% responder rate drug arm response map
     store_map(expected_drug_RR50_map, 
               expected_drug_RR50_file_name, expected_drug_RR50_metadata_file_name,
-              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
     
     # store the expected median percent change drug arm response map
     store_map(expected_drug_MPC_map, 
               expected_drug_MPC_file_name, expected_drug_MPC_metadata_file_name,
-              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
 
     # store the expected time-to-prerandomization drug arm response map
     store_map(expected_drug_TTP_map, 
               expected_drug_TTP_file_name, expected_drug_TTP_metadata_file_name,
-              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
 
     # store the 50% responder rate statistical power map
     store_map(RR50_stat_power_map, 
               RR50_stat_power_file_name, RR50_stat_power_metadata_file_name,
-              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
 
     # store the median percent change statistical power map
     store_map(MPC_stat_power_map, 
               MPC_stat_power_file_name, MPC_stat_power_metadata_file_name,
-              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
     
     # store the time-to-prerandomization statistical power map
     store_map(TTP_stat_power_map, 
               TTP_stat_power_file_name, TTP_stat_power_metadata_file_name,
-              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
 
     # store the 50% responder rate type-1 error map
     store_map(RR50_type_1_error_map, 
               RR50_type_1_error_file_name, RR50_type_1_error_metadata_file_name,
-              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
 
     # store the median percent change type-1 error map
     store_map(MPC_type_1_error_map, 
               MPC_type_1_error_file_name, MPC_type_1_error_metadata_file_name,
-              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
     
     # store the time-to-prerandomization type-1 error map
     store_map(TTP_type_1_error_map, 
               TTP_type_1_error_file_name, TTP_type_1_error_metadata_file_name,
-              start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
 
     '''
