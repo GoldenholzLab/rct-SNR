@@ -537,10 +537,10 @@ def calculate_one_trial_quantities(placebo_arm_daily_seizure_diaries, drug_arm_d
     table = np.array([[placebo_50_percent_responders, placebo_50_percent_non_responders],[drug_50_percent_responders, drug_50_percent_non_responders]])
 
     # calculate and store the 50% responder rate, median percent change, and median time-to-prerandomization for both the placebo and drug arm groups
-    placebo_RR50 = placebo_50_percent_responders/num_patients_per_trial_arm
-    drug_RR50 = drug_50_percent_responders/num_patients_per_trial_arm
-    placebo_MPC = np.median(placebo_percent_changes)
-    drug_MPC = np.median(drug_percent_changes)
+    placebo_RR50 = 100*placebo_50_percent_responders/num_patients_per_trial_arm
+    drug_RR50 = 100*drug_50_percent_responders/num_patients_per_trial_arm
+    placebo_MPC = 100*np.median(placebo_percent_changes)
+    drug_MPC = 100*np.median(drug_percent_changes)
     placebo_med_TTP = np.median(placebo_TTP_times)
     drug_med_TTP = np.median(drug_TTP_times)
 
@@ -989,18 +989,18 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
             # prepare a string telling the user where the algorithm is in terms of map generation
             cpu_time_string = 'cpu time (minutes): ' + str( np.round(total_time_in_minutes, 2) )
 
-            expected_placebo_RR50_string = 'expected placebo RR50: ' + str( np.round(float(100*expected_placebo_RR50), 4) ) + ' %'
-            expected_placebo_MPC_string = 'expected placebo MPC: '   + str( np.round(float(100*expected_placebo_MPC), 4) )  + ' %'
+            expected_placebo_RR50_string = 'expected placebo RR50: ' + str( np.round(float(expected_placebo_RR50), 4) ) + ' %'
+            expected_placebo_MPC_string = 'expected placebo MPC: '   + str( np.round(float(expected_placebo_MPC), 4) )  + ' %'
             expected_placebo_TTP_string = 'expected placebo TTP: '   + str( np.round(float(expected_placebo_TTP), 4) )
-            expected_drug_RR50_string = 'expected drug RR50: '       + str( np.round(float(100*expected_drug_RR50), 4) )    + ' %'
-            expected_drug_MPC_string = 'expected drug MPC: '         + str( np.round(float(100*expected_drug_MPC), 4) )     + ' %'
+            expected_drug_RR50_string = 'expected drug RR50: '       + str( np.round(float(expected_drug_RR50), 4) )    + ' %'
+            expected_drug_MPC_string = 'expected drug MPC: '         + str( np.round(float(expected_drug_MPC), 4) )     + ' %'
             expected_drug_TTP_string = 'expected drug TTP: '         + str( np.round(float(expected_drug_TTP), 4) )
-            RR50_stat_power_string = 'RR50 stat power:  '            + str( np.round(float(100*RR50_power), 4) )            + ' %'
-            MPC_stat_power_string = 'MPC stat power:  '              + str( np.round(float(100*MPC_power), 4) )             + ' %'
-            TTP_stat_power_string = 'TTP stat power:  '              + str( np.round(float(100*TTP_power), 4) )             + ' %'
-            RR50_type_1_error_string = 'RR50 type-1 error:  '        + str( np.round(float(100*RR50_type_1_error), 4) )     + ' %'
-            MPC_type_1_error_string = 'MPC type-1 error:  '          + str( np.round(float(100*MPC_type_1_error), 4) )      + ' %'
-            TTP_type_1_error_string = 'TTP type-1 error:  '          + str( np.round(float(100*TTP_type_1_error), 4) )      + ' %'
+            RR50_stat_power_string = 'RR50 stat power:  '            + str( np.round(float(RR50_power), 4) )            + ' %'
+            MPC_stat_power_string = 'MPC stat power:  '              + str( np.round(float(MPC_power), 4) )             + ' %'
+            TTP_stat_power_string = 'TTP stat power:  '              + str( np.round(float(TTP_power), 4) )             + ' %'
+            RR50_type_1_error_string = 'RR50 type-1 error:  '        + str( np.round(float(RR50_type_1_error), 4) )     + ' %'
+            MPC_type_1_error_string = 'MPC type-1 error:  '          + str( np.round(float(MPC_type_1_error), 4) )      + ' %'
+            TTP_type_1_error_string = 'TTP type-1 error:  '          + str( np.round(float(TTP_type_1_error), 4) )      + ' %'
 
             monthly_mean_string = str(np.round(monthly_mean, 2))
             monthly_std_dev_string = str(np.round(monthly_std_dev, 2))
@@ -1472,7 +1472,8 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
 def store_map(data_map, 
               data_map_file_name, data_map_meta_data_file_name,
               x_axis_start, x_axis_stop, x_axis_step,
-              y_axis_start, y_axis_stop, y_axis_step):
+              y_axis_start, y_axis_stop, y_axis_step,
+              folder):
     '''
 
     This function takes a data map as the parameters used to create its axes (referred to as the metadata)
@@ -1530,10 +1531,10 @@ def store_map(data_map,
     '''
 
     # get the file path for the JSON file that will store the data map 
-    data_map_file_path = os.getcwd() + '/' + data_map_file_name + '.json'
+    data_map_file_path = folder + '/' + data_map_file_name + '.json'
 
     # get the file path for the JSON file that will store the data map metadata
-    data_map_metadata_file_path = os.getcwd() + '/' + data_map_meta_data_file_name + '.json'
+    data_map_metadata_file_path = folder + '/' + data_map_meta_data_file_name + '.json'
 
     # put all of the metadata into one array
     metadata = np.array([x_axis_start, x_axis_stop, x_axis_step, y_axis_start, y_axis_stop, y_axis_step])
@@ -1724,7 +1725,7 @@ def main(num_patients_per_model, num_months_per_patient,
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
          placebo_mu, placebo_sigma,  drug_mu, drug_sigma,
-         NV_model_endpoint_statistics_text_file_name):
+         NV_model_endpoint_statistics_text_file_name, folder):
     '''
 
     This function is the main function that should be called in order to fulfill this script's primary purpose,
@@ -1806,6 +1807,10 @@ def main(num_patients_per_model, num_months_per_patient,
             (string) - the name of the text file which will contain the endpoint statistics for NV 
                        
                        model 1 and NV model 2
+        
+        19) folder:
+
+            (string) - the name of folder in which all the intermediate JSON files will be stored
     
     Outputs:
 
@@ -1876,85 +1881,99 @@ def main(num_patients_per_model, num_months_per_patient,
     store_map(expected_placebo_RR50_map, 
               expected_placebo_RR50_file_name, expected_placebo_RR50_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
     
     # store the expected median percent change placebo arm response map
     store_map(expected_placebo_MPC_map, 
               expected_placebo_MPC_file_name, expected_placebo_MPC_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
 
     # store the expected time-to-prerandomization placebo arm response map
     store_map(expected_placebo_TTP_map, 
               expected_placebo_TTP_file_name, expected_placebo_TTP_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
 
     # store the expected 50% responder rate drug arm response map
     store_map(expected_drug_RR50_map, 
               expected_drug_RR50_file_name, expected_drug_RR50_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
     
     # store the expected median percent change drug arm response map
     store_map(expected_drug_MPC_map, 
               expected_drug_MPC_file_name, expected_drug_MPC_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
 
     # store the expected time-to-prerandomization drug arm response map
     store_map(expected_drug_TTP_map, 
               expected_drug_TTP_file_name, expected_drug_TTP_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
 
     # store the 50% responder rate statistical power map
     store_map(RR50_stat_power_map, 
               RR50_stat_power_file_name, RR50_stat_power_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
 
     # store the median percent change statistical power map
     store_map(MPC_stat_power_map, 
               MPC_stat_power_file_name, MPC_stat_power_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
     
     # store the time-to-prerandomization statistical power map
     store_map(TTP_stat_power_map, 
               TTP_stat_power_file_name, TTP_stat_power_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
 
     # store the 50% responder rate type-1 error map
     store_map(RR50_type_1_error_map, 
               RR50_type_1_error_file_name, RR50_type_1_error_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
 
     # store the median percent change type-1 error map
     store_map(MPC_type_1_error_map, 
               MPC_type_1_error_file_name, MPC_type_1_error_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
     
     # store the time-to-prerandomization type-1 error map
     store_map(TTP_type_1_error_map, 
               TTP_type_1_error_file_name, TTP_type_1_error_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
 
     # store the histogram of Model 1
     store_map(H_model_1,
               H_model_1_file_name, H_model_1_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
     
     # store the histogram of Model 1
     store_map(H_model_2,
               H_model_2_file_name, H_model_2_metadata_file_name,
               start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev)
+              start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+              folder)
     
     # store the estimated placebo responses for NV model 1 and NV model 2
     save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_responses, NV_models_1_and_2_expected_drug_responses,
@@ -2000,7 +2019,10 @@ if(__name__=='__main__'):
     num_months_per_patient = int(arg_array[16])
 
     # obtain the name of text file which will contain the placebo responses for NV model 1 and NV model 2
-    NV_model_endpoint_statistics_text_file_name = 'NV_model_endpoint_statistics'
+    NV_model_endpoint_statistics_text_file_name = arg_array[17]
+
+    # obtain the folder in which the JSON files will be stored
+    folder = arg_array[18]
 
     # call the main() function
     main(num_patients_per_model, num_months_per_patient,
@@ -2008,7 +2030,7 @@ if(__name__=='__main__'):
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
          placebo_mu, placebo_sigma,  drug_mu, drug_sigma,
-         NV_model_endpoint_statistics_text_file_name)
+         NV_model_endpoint_statistics_text_file_name, folder)
     
     stop_time_in_seconds = time.time()
 

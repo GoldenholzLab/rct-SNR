@@ -302,6 +302,9 @@ def plot_map(data_map_file_name,
     # save the figure as a PNG file in the same folder as this script
     fig.savefig( data_plot_file_path )
 
+    # close the figure
+    plt.close(fig)
+
 
 def plot_histogram(H_model_file_name, 
                    H_model_metadata_file_name, H_model_plot_file_name, 
@@ -387,6 +390,9 @@ def plot_histogram(H_model_file_name,
 
     # save the histogram as a PNG file in the same folder as this script
     fig.savefig( H_model_plot_file_path )
+
+    # close the figure
+    plt.close(fig)
 
 
 def plot_histograms(H_model_1_file_name, H_model_1_metadata_file_name, H_model_1_plot_file_name, H_model_1_plot_title,

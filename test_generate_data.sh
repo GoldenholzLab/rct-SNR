@@ -26,4 +26,10 @@ inputs[14]=0.05
 inputs[15]=10000
 inputs[16]=24
 
+# set the name of text file which will contain the placebo responses for NV model 1 and NV model 2
+inputs[17]='NV_model_endpoint_statistics'
+
+# give the location of the folder in which all the intermediate JSON files for this specific map will be stored
+inputs[18]='/Users/juanromero/Documents/GitHub/rct-SNR'
+
 python generate_data.py ${inputs[@]}
