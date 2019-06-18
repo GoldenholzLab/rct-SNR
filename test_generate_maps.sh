@@ -28,9 +28,9 @@ num_months_per_NV_model_patient=24
 # The location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
 directory='/Users/juanromero/Documents/GitHub/rct-SNR'
 
-for ((folder=1; folder<6; folder=folder+1));
+for ((num_req_baseline_sz=0; num_req_baseline_sz<5; num_req_baseline_sz=num_req_baseline_sz+1));
     do
-        for ((num_req_baseline_sz=0; num_req_baseline_sz<5; num_req_baseline_sz=num_req_baseline_sz+1));
+        for ((folder=1; folder<6; folder=folder+1));
             do
                 inputs[0]=$mu_start
                 inputs[1]=$mu_stop
