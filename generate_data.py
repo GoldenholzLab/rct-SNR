@@ -1022,9 +1022,8 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
             RR50_stat_power_map,       MPC_stat_power_map,       TTP_stat_power_map,
             RR50_type_1_error_map,     MPC_type_1_error_map,     TTP_type_1_error_map]
 
-
+'''
 def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_model, num_months_per_patient):
-    '''
 
     This function generates monthly seizure diaries which are all of equal length. The monthly seizure
 
@@ -1070,7 +1069,6 @@ def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_mode
 
             (1D Numpy array) - the standard deviations of each generated seizure diary
 
-    '''
     
     # initialize array of monthly counts
     monthly_counts = np.zeros((num_patients_per_model, num_months_per_patient))
@@ -1117,7 +1115,7 @@ def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_mode
         model_monthly_count_standard_deviations[patient_index] = monthly_count_std_dev
 
     return [model_monthly_count_averages, model_monthly_count_standard_deviations]
-
+'''
 
 def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, 
                       shape_2, scale_2, alpha_2, beta_2, 
@@ -1295,7 +1293,10 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
         12) TTP_type_1_error_map:
                 
             (2D Numpy array) - a 2D numpy array which contains the time-to-prerandomization type-1 error map
-        
+
+        *****FOLLOWING OUTPUTS ARE DEPRECATED FOR NOW*****
+
+
         13) H_model_1:
             
             (2D Numpy array) - histogram of model 1 patients with the same dimensions and bins as the expected placebo response maps
@@ -1388,7 +1389,8 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
                                          num_baseline_months,        num_testing_months,   min_req_base_sz_count, 
                                          num_patients_per_trial_arm, num_trials,
                                          placebo_mu, placebo_sigma,  drug_mu, drug_sigma)
-
+    
+    '''
     # generate Model 1 patients
     [model_1_monthly_count_averages, model_1_monthly_count_standard_deviations] = \
                                         generate_model_patient_data(shape_1, scale_1, alpha_1, beta_1,
@@ -1467,6 +1469,12 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
             H_model_1,                                    H_model_2,
             NV_models_1_and_2_expected_placebo_responses, NV_models_1_and_2_expected_drug_responses,
             NV_models_1_and_2_statistical_powers,         NV_models_1_and_2_type_1_errors]
+    '''
+
+    return [expected_placebo_RR50_map,     expected_placebo_MPC_map,     expected_placebo_TTP_map,
+            expected_drug_RR50_map,        expected_drug_MPC_map,        expected_drug_TTP_map,
+            RR50_stat_power_map,           MPC_stat_power_map,           TTP_stat_power_map,
+            RR50_type_1_error_map,         MPC_type_1_error_map,         TTP_type_1_error_map,]
 
 
 def store_map(data_map, 
@@ -1573,11 +1581,10 @@ def store_map(data_map,
         # store the data map
         json.dump(metadata.tolist(), map_metadata_storage_file)
 
-
+'''
 def save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_responses, NV_models_1_and_2_expected_drug_responses,
                                       NV_models_1_and_2_statistical_powers,         NV_models_1_and_2_type_1_errors,
                                       NV_model_endpoint_statistics_text_file_name):
-    '''
 
     This function stores the expected placebo responses for NV model 1 ande NV model 2 as predicted by the multiplication of the 
     
@@ -1666,7 +1673,6 @@ def save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_respons
 
         Technically None
 
-    '''
 
     # extract the placebo responses over all endpoints for both NV models
     Model_1_expected_placebo_RR50 = NV_models_1_and_2_expected_placebo_responses[0][0]
@@ -1740,7 +1746,7 @@ def save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_respons
 
         # write the string full of data to the designated text file
         text_file.write(data)
-
+'''
 
 def main(num_patients_per_model, num_months_per_patient,
          start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
@@ -1869,8 +1875,10 @@ def main(num_patients_per_model, num_months_per_patient,
     H_model_2_file_name                       = 'H_model_2_hist'
     H_model_2_metadata_file_name              = 'H_model_2_hist_metadata'
 
+    '''
     # set the name of text file which will contain the placebo responses for NV model 1 and NV model 2
     NV_model_endpoint_statistics_text_file_name = 'NV_model_endpoint_statistics'
+    '''
 
     # set the group-level parameters for NV model 1
     shape_1 = 24.143
@@ -1884,6 +1892,7 @@ def main(num_patients_per_model, num_months_per_patient,
     alpha_2 = 296.339
     beta_2 = 243.719
 
+    '''
     # generate all of the endpoint statistic maps as well as the endpoint statistics of NV models 1 and 2
     [expected_placebo_RR50_map,     expected_placebo_MPC_map,     expected_placebo_TTP_map,
      expected_drug_RR50_map,        expected_drug_MPC_map,        expected_drug_TTP_map,
@@ -1892,6 +1901,19 @@ def main(num_patients_per_model, num_months_per_patient,
      H_model_1,                                    H_model_2,
      NV_models_1_and_2_expected_placebo_responses, NV_models_1_and_2_expected_drug_responses,
      NV_models_1_and_2_statistical_powers,         NV_models_1_and_2_type_1_errors              ] = \
+        generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, 
+                          shape_2, scale_2, alpha_2, beta_2, 
+                          num_patients_per_model, num_months_per_patient,
+                          start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
+                          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+                          num_patients_per_trial_arm, num_trials,
+                          num_baseline_months, num_testing_months, min_req_base_sz_count,
+                          placebo_mu, placebo_sigma,  drug_mu, drug_sigma)
+    '''
+    [expected_placebo_RR50_map,     expected_placebo_MPC_map,     expected_placebo_TTP_map,
+     expected_drug_RR50_map,        expected_drug_MPC_map,        expected_drug_TTP_map,
+     RR50_stat_power_map,           MPC_stat_power_map,           TTP_stat_power_map,
+     RR50_type_1_error_map,         MPC_type_1_error_map,         TTP_type_1_error_map      ] = \
         generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, 
                           shape_2, scale_2, alpha_2, beta_2, 
                           num_patients_per_model, num_months_per_patient,
@@ -1985,6 +2007,7 @@ def main(num_patients_per_model, num_months_per_patient,
               start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
               directory, min_req_base_sz_count, folder)
 
+    '''
     # store the histogram of Model 1
     store_map(H_model_1,
               H_model_1_file_name, H_model_1_metadata_file_name,
@@ -2003,6 +2026,7 @@ def main(num_patients_per_model, num_months_per_patient,
     save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_responses, NV_models_1_and_2_expected_drug_responses,
                                       NV_models_1_and_2_statistical_powers,         NV_models_1_and_2_type_1_errors,
                                       NV_model_endpoint_statistics_text_file_name)
+    '''
 
 
 if(__name__=='__main__'):
