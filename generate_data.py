@@ -1870,10 +1870,13 @@ def main(num_patients_per_model, num_months_per_patient,
     MPC_type_1_error_metadata_file_name       = 'MPC_type_1_error_map_metadata'
     TTP_type_1_error_file_name                = 'TTP_type_1_error_map'
     TTP_type_1_error_metadata_file_name       = 'TTP_type_1_error_map_metadata'
+
+    '''
     H_model_1_file_name                       = 'H_model_1_hist'
     H_model_1_metadata_file_name              = 'H_model_1_hist_metadata'
     H_model_2_file_name                       = 'H_model_2_hist'
     H_model_2_metadata_file_name              = 'H_model_2_hist_metadata'
+    '''
 
     '''
     # set the name of text file which will contain the placebo responses for NV model 1 and NV model 2
