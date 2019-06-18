@@ -26,7 +26,10 @@ inputs[14]=0.05
 inputs[15]=10000
 inputs[16]=24
 
-# set the location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
+# Set the location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
 inputs[17]='/Users/juanromero/Documents/GitHub/rct-SNR'
+
+# Set the name of the folder in which all the intermediate JSON files for this specific map will be stored
+inputs[18]=$1
 
 python generate_data.py ${inputs[@]}
