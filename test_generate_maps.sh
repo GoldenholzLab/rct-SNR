@@ -27,12 +27,24 @@ drug_sigma=0.05
 num_patients_per_NV_model=10000
 num_months_per_NV_model_patient=24
 
+# set the number of maps to average over
+num_maps=6
+
 # The location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
 directory='/Users/juanromero/Documents/GitHub/rct-SNR'
 
+touch meta_data.txt
+echo $mu_start >> meta_data.txt
+echo $mu_stop >> meta_data.txt
+echo $mu_step >> meta_data.txt
+echo $sigma_start >> meta_data.txt
+echo $sigma_stop >> meta_data.txt
+echo $sigma_step >> meta_data.txt
+echo $num_maps >> meta_data.txt
+
 for ((num_req_baseline_sz=0; num_req_baseline_sz<5; num_req_baseline_sz=num_req_baseline_sz+1));
     do
-        for ((folder_num=1; folder_num<6; folder_num=folder_num+1));
+        for ((folder_num=1; folder_num<$num_maps; folder_num=folder_num+1));
             do
                 inputs[0]=$mu_start
                 inputs[1]=$mu_stop
