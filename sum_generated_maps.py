@@ -3,17 +3,61 @@ import numpy as np
 import os
 
 
-def average_map_type(directory,         min_req_base_sz_count, endpoint_statistic_map_file_name, 
-                     num_monthly_means, num_monthly_std_devs,  num_maps):
+def calculate_average_endpoint_statistic_map(directory,         min_req_base_sz_count, endpoint_statistic_map_file_name, 
+                                             num_monthly_means, num_monthly_std_devs,  num_maps):
     '''
 
-    This function retrieves multiple data maps (2D Numpy array), all of the same endpoint statistic, from 
+    This function retrieves multiple undersampled data maps (2D Numpy arrays), all of the same endpoint statistic, from 
     
-    intermediate JSON files. Each point on one data map is calculated from a few simulated trials. After collecting 
+    intermediate JSON files. Every point on one endpoint statistic map is calculated from a few simulated trials (thus the 
     
-    these undersampled maps, this function takes the average of the maps in order to create one map where each
+    undersampling). Each undersampled endpoint statistic map is spread across a specific file tree structure, of which a 
     
-    point is properly sampled by a large number of trials.
+    simplified version is shown below:
+
+
+                            directory
+                            |
+                            +---min_req_base_sz_count (e.g., 1)
+                            |   |
+                            |   +---folder_num (# 1)
+                            |   |   |
+                            |   |   +---endpoint_statistic_map_file_name.json (e.g., expected median percent change placebo response)
+                            |   |   |
+                            |   |   \---endpoint_statistic_map_file_name.json (e.g., 50% responder rate statistical power)
+                            |   |
+                            |   \---folder_num (# 2)
+                            |       |
+                            |       +---endpoint_statistic_map_file_name.json (e.g., expected median percent change placebo response)
+                            |       |
+                            |       \---endpoint_statistic_map_file_name.json (e.g., 50% responder rate statistical power)
+                            |
+                            \---min_req_base_sz_count (e.g., 2)
+                                |
+                                +---folder_num (# 1)
+                                |   |
+                                |   +---endpoint_statistic_map_file_name.json (e.g., expected median percent change placebo response)
+                                |   |
+                                |   \---endpoint_statistic_map_file_name.json (e.g., 50% responder rate statistical power)
+                                |
+                                \---folder_num (# 2)
+                                    |
+                                    +---endpoint_statistic_map_file_name.json (e.g., expected median percent change placebo response)
+                                    |
+                                    \---endpoint_statistic_map_file_name.json (e.g., 50% responder rate statistical power)
+    
+
+    After collecting these undersampled maps, the average of the maps is calculated in order to create one endpoint 
+    
+    statistic map where each point is properly sampled by a large number of trials. Finally, the average map for the 
+    
+    endpoint statistic is stored in a folder called 'final' on the branch as 'folder_num'. The average endpoint statistic map
+    
+    map is not calculated across the min_req_base_sz_count parameter: for each different value of min_req_base_sz_count,
+
+    there is a different average endpoint statistic map (and accordingly, a different 'final' folder for each min_req_base_sz_count
+    
+    as well).
 
     Inputs:
 
@@ -29,7 +73,7 @@ def average_map_type(directory,         min_req_base_sz_count, endpoint_statisti
 
         3) endpoint_statistic_map_file_name:
 
-            (string) - the name of the JSON file containing an undersampled endpoint statistic map
+            (string) - the typical name of the JSON file containing an undersampled endpoint statistic map
 
         4) num_monthly_means:
         
@@ -45,11 +89,7 @@ def average_map_type(directory,         min_req_base_sz_count, endpoint_statisti
 
     Outputs:
 
-        1) average_endpoint_statistic_map:
-
-            (2D Numpy array) - a properly sampled endpoint statistic map, calculated from an average
-                               
-                               of undersampled endpoint statistic maps
+        Technically None
 
     '''
 
@@ -60,10 +100,10 @@ def average_map_type(directory,         min_req_base_sz_count, endpoint_statisti
     for folder_num in range(1, num_maps):
         
         # locate the path of the folder in which the JSON file of the map is stored
-        folder_path = directory + '/' + str(min_req_base_sz_count) + '/' + str(folder_num)
+        folder_num_path = directory + '/' + str(min_req_base_sz_count) + '/' + str(folder_num)
 
         # locate the actual file path of the JSON file based on the folder path and the file name
-        endpoint_statistic_map_file_path = folder_path + '/' + endpoint_statistic_map_file_name + '.json'
+        endpoint_statistic_map_file_path = folder_num_path + '/' + endpoint_statistic_map_file_name + '.json'
 
         # open the JSON file
         with open(endpoint_statistic_map_file_path, 'r') as endpoint_statistic_map_json_file:
@@ -77,7 +117,19 @@ def average_map_type(directory,         min_req_base_sz_count, endpoint_statisti
     # average the endpoint statistic map
     average_endpoint_statistic_map = average_endpoint_statistic_map/len(range(1, num_maps))
 
-    return average_endpoint_statistic_map
+    # create the file path of the folder that the average endpoint statistic map will be stored, as well as the file path for that same map
+    average_map_folder_path = directory + '/final'
+    average_endpoint_statistic_map_file_path = average_map_folder_path + '/' + endpoint_statistic_map_file_name + '.json'
+
+    # if the final folder for the average map doesn't exist, create it
+    if( os.path.exists(average_map_folder_path) ):
+
+        os.makedirs(average_map_folder_path)
+
+    # store the average endpoint statistic map into a JSON file.
+    with open(average_endpoint_statistic_map_file_path, 'w+') as json_file:
+
+        json.dump(average_endpoint_statistic_map.tolist(), json_file)
 
 
 
@@ -110,20 +162,9 @@ if (__name__=='__main__'):
     num_monthly_means = int( (stop_monthly_mean - start_monthly_mean)/step_monthly_mean ) + 1
     num_monthly_std_devs = int( (stop_monthly_std_dev - start_monthly_std_dev)/step_monthly_std_dev ) + 1
 
-    average_endpoint_statistic_map = \
-        average_map_type(directory,         min_req_base_sz_count, endpoint_statistic_map_file_name, 
-                         num_monthly_means, num_monthly_std_devs,  num_maps)
+    calculate_average_endpoint_statistic_map(directory,         min_req_base_sz_count, endpoint_statistic_map_file_name, 
+                                             num_monthly_means, num_monthly_std_devs,  num_maps)
 
-    folder_path = directory + '/final'
-    average_endpoint_statistic_file_path = folder_path + '/' + endpoint_statistic_map_file_name + '.json'
-
-    if( not os.path.exists(folder_path) ):
-
-        os.makedirs(folder_path)
-    
-    with open(average_endpoint_statistic_file_path, 'w+') as json_file:
-
-        json.dump(average_endpoint_statistic_map.tolist(), average_endpoint_statistic_file_path)    
 
 
     
