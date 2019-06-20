@@ -118,11 +118,11 @@ def calculate_average_endpoint_statistic_map(directory,         min_req_base_sz_
     average_endpoint_statistic_map = average_endpoint_statistic_map/len(range(1, num_maps))
 
     # create the file path of the folder that the average endpoint statistic map will be stored, as well as the file path for that same map
-    average_map_folder_path = directory + '/final'
+    average_map_folder_path = directory + '/' + str(min_req_base_sz_count) + '/final'
     average_endpoint_statistic_map_file_path = average_map_folder_path + '/' + endpoint_statistic_map_file_name + '.json'
 
     # if the final folder for the average map doesn't exist, create it
-    if( os.path.exists(average_map_folder_path) ):
+    if( not os.path.exists(average_map_folder_path) ):
 
         os.makedirs(average_map_folder_path)
 
