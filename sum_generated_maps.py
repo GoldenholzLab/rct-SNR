@@ -1,66 +1,98 @@
 import json
 import numpy as np
-import pandas as pd
+import os
 
-def retrieve_individual_map(directory, min_req_base_sz_count, folder, data_map_file_name):
+
+def average_map_type(directory,         min_req_base_sz_count, endpoint_statistic_map_file_name, 
+                     num_monthly_means, num_monthly_std_devs,  num_maps):
     '''
 
-    This function retrieves one data map as it was stored in an intermediate JSON
-
-    file.
+    This function retrieves multiple data maps (2D Numpy array), all of the same endpoint statistic, from 
+    
+    intermediate JSON files. Each point on one data map is calculated from a few simulated trials. After collecting 
+    
+    these undersampled maps, this function takes the average of the maps in order to create one map where each
+    
+    point is properly sampled by a large number of trials.
 
     Inputs:
 
         1) directory:
 
-            (string) - the name of the directory which contains the folder in which 
+            (string) - the name of the directory which contains the folder in which the 
                        
-                       the map is stored as a JSON file
-
+                       intermediate JSON files are stored
+        
         2) min_req_base_sz_count:
-
+        
             (int) - the minimum number of required baseline seizure counts
-        
-        3) folder:
 
-            (string) - the name of the actual folder in which all the intermediate JSON files 
-                       
-                       will be stored
-        
-        4) data_map_file_name:
+        3) endpoint_statistic_map_file_name:
 
-            (string) - the file name of the JSON file in which the map is stored as an intermediate
-                       
-                       JSON file
+            (string) - the name of the JSON file containing an undersampled endpoint statistic map
+
+        4) num_monthly_means:
+        
+            (int) - the number of ticks on the monthly seizure count mean axis
+
+        5) num_monthly_std_devs:
+
+            (int) - the number of ticks on the monthly seizure count standard deviation axis
+        
+        6) num_maps:
+
+            (int) - the number of undersampled maps to average over
 
     Outputs:
 
-        1) data_map:
+        1) average_endpoint_statistic_map:
 
-            (2D Numpy array) - the actual map which was stored in the JSON file
+            (2D Numpy array) - a properly sampled endpoint statistic map, calculated from an average
+                               
+                               of undersampled endpoint statistic maps
 
     '''
 
-    # locate the path of the folder in which the JSON file is stored
-    folder_path = directory + '/' + str(min_req_base_sz_count) + '/' + folder
+    # initialize the 2D Numpy array which will contain the average endpoint statistic map
+    average_endpoint_statistic_map = np.zeros((num_monthly_std_devs, num_monthly_means))
 
-    # locate the actual file path of the JSON file based on the folder path and the file name
-    data_map_file_path = folder_path + '/' + data_map_file_name + '.json'
+    # for each folder containing an undersampled endpoint statistic map
+    for folder_num in range(1, num_maps):
+        
+        # locate the path of the folder in which the JSON file of the map is stored
+        folder_path = directory + '/' + str(min_req_base_sz_count) + '/' + str(folder_num)
 
-    # open the JSON file
-    with open(data_map_file_path, 'r') as data_map_json_file:
+        # locate the actual file path of the JSON file based on the folder path and the file name
+        endpoint_statistic_map_file_path = folder_path + '/' + endpoint_statistic_map_file_name + '.json'
 
-        # convert it to a 2D Numpy array
-        data_map = np.array(json.load(data_map_json_file))
+        # open the JSON file
+        with open(endpoint_statistic_map_file_path, 'r') as endpoint_statistic_map_json_file:
 
-    return data_map
+            # convert it to a 2D Numpy array
+            endpoint_statistic_map = np.array(json.load(endpoint_statistic_map_json_file))
+
+        # add the current map to the final average map
+        average_endpoint_statistic_map = average_endpoint_statistic_map + endpoint_statistic_map
+
+    # average the endpoint statistic map
+    average_endpoint_statistic_map = average_endpoint_statistic_map/len(range(1, num_maps))
+
+    return average_endpoint_statistic_map
+
 
 
 if (__name__=='__main__'):
 
     directory = '/Users/juanromero/Documents/GitHub/rct-SNR'
     min_req_base_sz_count = 0
-    data_map_file_name = 'MPC_stat_power_map'
+    endpoint_statistic_map_file_name = 'TTP_type_1_error_map'
+
+    '''
+    data_map_file_names = ['expected_placebo_RR50_map', 'expected_placebo_MPC_map', 'expected_placebo_TTP_map',
+                           'expected_drug_RR50_map',    'expected_drug_MPC_map',    'expected_drug_TTP_map',
+                           'RR50_stat_power_map',       'MPC_stat_power_map',       'TTP_stat_power_map',
+                           'RR50_type_1_error_map',     'MPC_type_1_error_map',     'TTP_type_1_error_map']
+    '''
 
     meta_data_file_name = 'meta_data.txt'
     meta_data_file_path = directory + '/' + meta_data_file_name
@@ -78,19 +110,20 @@ if (__name__=='__main__'):
     num_monthly_means = int( (stop_monthly_mean - start_monthly_mean)/step_monthly_mean ) + 1
     num_monthly_std_devs = int( (stop_monthly_std_dev - start_monthly_std_dev)/step_monthly_std_dev ) + 1
 
-    final_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    average_endpoint_statistic_map = \
+        average_map_type(directory,         min_req_base_sz_count, endpoint_statistic_map_file_name, 
+                         num_monthly_means, num_monthly_std_devs,  num_maps)
 
-    for folder_num in range(1, num_maps):
-        
-        data_map = retrieve_individual_map(directory, min_req_base_sz_count, str(folder_num), data_map_file_name)
+    folder_path = directory + '/final'
+    average_endpoint_statistic_file_path = folder_path + '/' + endpoint_statistic_map_file_name + '.json'
 
-        final_map = final_map + data_map
+    if( not os.path.exists(folder_path) ):
 
-        print( pd.DataFrame( final_map ).to_string() + '\n\n' )
+        os.makedirs(folder_path)
     
-    final_map = final_map/len(range(1, num_maps))
+    with open(average_endpoint_statistic_file_path, 'w+') as json_file:
 
-    print( pd.DataFrame( final_map ).to_string() + '\n\n' )
+        json.dump(average_endpoint_statistic_map.tolist(), average_endpoint_statistic_file_path)    
 
-    
+
     
