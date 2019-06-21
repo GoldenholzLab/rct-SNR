@@ -7,13 +7,15 @@ def calculate_average_endpoint_statistic_map(directory, min_req_base_sz_count, e
                                              num_monthly_means, num_monthly_std_devs,  num_maps):
     '''
 
-    This function retrieves multiple undersampled data maps (2D Numpy arrays), all of the same endpoint statistic, from 
+    Purpose:
+
+        This function retrieves multiple undersampled data maps (2D Numpy arrays), all of the same endpoint statistic, from 
     
-    intermediate JSON files. Every point on one endpoint statistic map is calculated from a few simulated trials (thus the 
+        intermediate JSON files. Every point on one endpoint statistic map is calculated from a few simulated trials (thus the 
     
-    undersampling). Each undersampled endpoint statistic map is spread across a specific file tree structure, of which a 
+        undersampling). Each undersampled endpoint statistic map is spread across a specific file tree structure, of which a 
     
-    simplified version is shown below:
+        simplified version is shown below:
 
 
                             directory
@@ -47,17 +49,17 @@ def calculate_average_endpoint_statistic_map(directory, min_req_base_sz_count, e
                                     \---endpoint_statistic_map_file_name.json (e.g., 50% responder rate statistical power)
     
 
-    After collecting these undersampled maps, the average of the maps is calculated in order to create one endpoint 
+        After collecting these undersampled maps, the average of the maps is calculated in order to create one endpoint 
     
-    statistic map where each point is properly sampled by a large number of trials. Finally, the average map for the 
+        statistic map where each point is properly sampled by a large number of trials. Finally, the average map for the 
     
-    endpoint statistic is stored in a folder called 'final' on the branch as 'folder_num'. The average endpoint statistic map
+        endpoint statistic is stored in a folder called 'final' on the branch as 'folder_num'. The average endpoint statistic map
     
-    map is not calculated across the min_req_base_sz_count parameter: for each different value of min_req_base_sz_count,
+        map is not calculated across the min_req_base_sz_count parameter: for each different value of min_req_base_sz_count,
 
-    there is a different average endpoint statistic map (and accordingly, a different 'final' folder for each min_req_base_sz_count
+        there is a different average endpoint statistic map (and accordingly, a different 'final' folder for each min_req_base_sz_count
     
-    as well).
+        as well).
 
     Inputs:
 
@@ -133,13 +135,15 @@ def calculate_average_endpoint_statistic_map(directory, min_req_base_sz_count, e
 def calculate_average_endpoint_statistic_maps(directory):
     '''
 
-    This function interates overll the folders in the given directory
+    Purpose:
 
-    which pertain to a minimum required number of seizures in the baseline
+        This function interates overll the folders in the given directory
 
-    period, and calculates a set of endpoint statistics maps for each endpoint
+        which pertain to a minimum required number of seizures in the baseline
 
-    to be store in a 'final folder'.
+        period, and calculates a set of endpoint statistics maps for each endpoint
+
+        to be store in a 'final folder'.
 
     Inputs:
 

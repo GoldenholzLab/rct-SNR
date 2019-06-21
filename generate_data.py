@@ -13,14 +13,15 @@ def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients,
                                    min_req_base_sz_count):
     '''
 
-    This function generates an array of equal-length daily seizure diaries, where the mean and standard deviation of the daily seizure 
-    
-    counts for each individual seizure diary are the same across all seizure diaries. Furthermore, the seizure diaries are designed to 
-    
-    be split up into a baseline and testing period, and are generated such that the number of baseline seizure counts each patient has 
-    
-    will not be below an integer specififed by the user, in order to enforce eligibility criteria. 
+    Purpose:
 
+        This function generates an array of equal-length daily seizure diaries, where the mean and standard deviation of the daily seizure 
+    
+        counts for each individual seizure diary are the same across all seizure diaries. Furthermore, the seizure diaries are designed to 
+    
+        be split up into a baseline and testing period, and are generated such that the number of baseline seizure counts each patient has 
+    
+        will not be below an integer specififed by the user, in order to enforce eligibility criteria. 
 
     Inputs:
 
@@ -105,11 +106,13 @@ def apply_effect(effect_mu, effect_sigma, daily_seizure_diaries,
                  num_patients, num_baseline_days, num_testing_days):
     '''
 
-    This function modifies the seziure counts in the testing period of one patient's daily seizure diary 
+    Purpose:
 
-    according to a randomly generated effect size (generated via Normal distribution). If the effect is
+        This function modifies the seziure counts in the testing period of one patient's daily seizure diary 
 
-    postive, it removes seizures. If it is negative, it adds them.
+        according to a randomly generated effect size (generated via Normal distribution). If the effect is
+
+        postive, it removes seizures. If it is negative, it adds them.
 
     Inputs:
 
@@ -188,9 +191,11 @@ def apply_effect(effect_mu, effect_sigma, daily_seizure_diaries,
 def calculate_percent_changes(daily_seizure_diaries, num_baseline_days, num_patients):
     '''
 
-    This function calculates the percent change per patient given a set of equal-length daily
+    Purpose:
 
-    seizure diaries.
+        This function calculates the percent change per patient given a set of equal-length daily
+
+        seizure diaries.
 
     Inputs:
 
@@ -248,7 +253,9 @@ def calculate_percent_changes(daily_seizure_diaries, num_baseline_days, num_pati
 def calculate_times_to_prerandomization(daily_seizure_diaries, num_months_baseline, num_testing_days, num_patients):
     '''
 
-    This function calculates the time-to-prerandomization endpoint for each patient' daily seizure diary.
+    Purpose:
+
+        This function calculates the time-to-prerandomization endpoint for each patient's daily seizure diary.
 
     Inputs:
 
@@ -351,11 +358,13 @@ def generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_tr
                                   placebo_mu, placebo_sigma, drug_mu, drug_sigma):
     '''
 
-    This function generates the patient diaries needed for one trial which is assumed to have a
+    Purpose:
 
-    drug arm and a placebo arm. The patient populations of both the drug arm and the placebo arm
+        This function generates the patient diaries needed for one trial which is assumed to have a
 
-    both have the same number of patients.
+        drug arm and a placebo arm. The patient populations of both the drug arm and the placebo arm
+
+        both have the same number of patients.
 
     Inputs:
 
@@ -445,13 +454,15 @@ def calculate_one_trial_quantities(placebo_arm_daily_seizure_diaries, drug_arm_d
                                    num_baseline_months, num_testing_months):
     '''
 
-    This function calculates the endpoint responses (50% responder rate, median percent change, 
+    Purpose:
+
+        This function calculates the endpoint responses (50% responder rate, median percent change, 
     
-    time-to-prerandomization) as well as the corresponding p-values for one trial with a placebo arm
+        time-to-prerandomization) as well as the corresponding p-values for one trial with a placebo arm
 
-    and a drug arm. This function has to be given two sets of seizure diaries, with each set coming from
+        and a drug arm. This function has to be given two sets of seizure diaries, with each set coming from
 
-    the different arms.
+        the different arms.
 
     Inputs:
 
@@ -565,17 +576,19 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev,
                                  placebo_mu, placebo_sigma, drug_mu, drug_sigma):
     '''
 
-    This function estimates what the expected placebo arm response, the expected drug arm response, 
+    Purpose:
+
+        This function estimates what the expected placebo arm response, the expected drug arm response, 
     
-    the statistical power, and the type-1 error should be for a patient over all endpoints (50% responder rate,
+        the statistical power, and the type-1 error should be for a patient over all endpoints (50% responder rate,
     
-    median percent change, time-to-prerandomization) with a monthly mean and monthly standard deviation as 
+        median percent change, time-to-prerandomization) with a monthly mean and monthly standard deviation as 
     
-    specified by the input parameters. This function will just return NaN if the standard deviation is less than 
+        specified by the input parameters. This function will just return NaN if the standard deviation is less than 
     
-    the square root of the mean due to mathematical restrictions on the negative binomial distribution which is 
+        the square root of the mean due to mathematical restrictions on the negative binomial distribution which is 
     
-    generating all these seizure counts. This function will also return NaN if the given monthly mean is just zero.
+        generating all these seizure counts. This function will also return NaN if the given monthly mean is just zero.
 
     Inputs:
 
@@ -829,10 +842,11 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
                                     placebo_mu, placebo_sigma,  drug_mu, drug_sigma):
     '''
 
-    This function generates all of the 2D endpoint statistic arrays (i.e., expected placebo arm response, expected drug 
-    
-    response, statistical power, type-1 error) to be stored for later plotting.
+    Purpose:
 
+        This function generates all of the 2D endpoint statistic arrays (i.e., expected placebo arm response, expected drug 
+    
+        response, statistical power, type-1 error) to be stored for later plotting.
 
     Inputs:
 
@@ -1025,13 +1039,15 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
 '''
 def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_model, num_months_per_patient):
 
-    This function generates monthly seizure diaries which are all of equal length. The monthly seizure
-
-    counts are generated by a negative binomial distribution with priors on both input parameters to the 
+    Purpose:
     
-    negative binomial, resulting in four parameters as inputs to what is referred to as the NV model. The
+        This function generates monthly seizure diaries which are all of equal length. The monthly seizure
 
-    priors introduce heterogeneity between patients. 
+        counts are generated by a negative binomial distribution with priors on both input parameters to the 
+    
+        negative binomial, resulting in four parameters as inputs to what is referred to as the NV model. The
+
+        priors introduce heterogeneity between patients. 
 
     Inputs:
 
@@ -1128,15 +1144,17 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
 
     '''
 
-    This function generates several things: first of all, it generates the statistical power maps for the 50% 
+    Purpose:
+
+        This function generates several things: first of all, it generates the statistical power maps for the 50% 
     
-    responder rate and the median percent change. Second of all, it generates histograms of all the patients generated by 
+        responder rate and the median percent change. Second of all, it generates histograms of all the patients generated by 
+
+        NV model 1 and NV model 2. Third of all, it generates the collective placebo response of all the patients generated from 
     
-    NV model 1 and NV model 2. Third of all, it generates the collective placebo response of all the patients generated from 
+        NV model 1 and NV model 2, which is calculated by summing over the multiplication of the expected endpoint placebo response 
     
-    NV model 1 and NV model 2, which is calculated by summing over the multiplication of the expected endpoint placebo response 
-    
-    maps and the model 1 and model 2 histograms.
+        maps and the model 1 and model 2 histograms.
 
     Inputs:
 
@@ -1482,11 +1500,13 @@ def store_map(data_map, data_map_file_name,
               directory, min_req_base_sz_count, folder):
     '''
 
-    This function takes a data map as the parameters used to create its axes (referred to as the metadata)
+    Purpose:
 
-    and puts all the information into intermediate JSON files which are located in a folder specified by 
+        This function takes a data map as the parameters used to create its axes (referred to as the metadata)
+
+        and puts all the information into intermediate JSON files which are located in a folder specified by 
     
-    the end user.
+        the end user.
 
     Inputs:
 
@@ -1765,11 +1785,13 @@ def main(num_patients_per_model, num_months_per_patient,
          placebo_mu, placebo_sigma,  drug_mu, drug_sigma, directory, folder):
     '''
 
-    This function is the main function that should be called in order to fulfill this script's primary purpose,
+    Purpose:
 
-    which is generating and storing the data needed to plot the endpoint statistic maps to be plotted later. This data
+        This function is the main function that should be called in order to fulfill this script's primary purpose,
 
-    is stored as intermediate JSON files in a folder specified by the end user.
+        which is generating and storing the data needed to plot the endpoint statistic maps to be plotted later. This data
+
+        is stored as intermediate JSON files in a folder specified by the end user.
 
     Inputs:
 
