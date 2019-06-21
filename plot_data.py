@@ -9,11 +9,13 @@ import argparse
 def retrieve_map(data_map_file_name, data_map_metadata_file_name):
     '''
 
-    This function retrives a specified data map from the file system along with
+    Purpose:
 
-    the metadata needed to help plot that data map, both of which are assumed to
+        This function retrives a specified data map from the file system along with
 
-    be stored in JSON files located in the same folder as this python script.
+        the metadata needed to help plot that data map, both of which are assumed to
+
+        be stored in JSON files located in the same folder as this python script.
 
     Inputs:
 
@@ -94,7 +96,9 @@ def plot_power_law_curves(ax, min_power_law_slope, max_power_law_slope, power_la
                           legend_decimal_round):
     '''
 
-    This function plots the power law curves onto a heatmap which has already been plotted.
+    Purpose:
+
+        This function plots the power law curves onto a heatmap which has already been plotted.
 
     Inputs:
 
@@ -191,7 +195,9 @@ def plot_map(data_map_file_name,
              map_title, legend_decimal_round):
     '''
 
-    This function plots one statistical power map with the given input parameters.
+    Purpose:
+
+        This function plots one statistical power map with the given input parameters.
 
     Inputs:
     
@@ -311,7 +317,9 @@ def plot_histogram(H_model_file_name,
                    x_tick_spacing, y_tick_spacing, H_model_plot_title):
     '''
 
-    This function plots one histogram of all the patients generated from one NV model.
+    Purpose:
+
+        This function plots one histogram of all the patients generated from one NV model.
 
     Inputs:
 
@@ -400,7 +408,9 @@ def plot_histograms(H_model_1_file_name, H_model_1_metadata_file_name, H_model_1
                     x_tick_spacing, y_tick_spacing):
     '''
 
-    This function plots the histograms of NV models 1 and 2.
+    Purpose:
+
+        This function plots the histograms of NV models 1 and 2.
 
     Inputs:
 
@@ -474,13 +484,15 @@ def plot_set_of_maps(RR50_file_name,                        RR50_metadata_file_n
                      x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round):
     '''
 
-    This function plots a set of maps: the 50% responder data map, the 50% responder data map with power law curves, the median percent change map,
+    Purpose:
+
+        This function plots a set of maps: the 50% responder data map, the 50% responder data map with power law curves, the median percent change map,
     
-    the median percent change data map with power law curves, the time-to-prerandomization data map, and the time-to-prerandomization data map with 
+        the median percent change data map with power law curves, the time-to-prerandomization data map, and the time-to-prerandomization data map with 
 
-    power law curves. The phrase 'data map' refers to one of four types of data: expected placebo arm response, expected drug arm response, statistical
+        power law curves. The phrase 'data map' refers to one of four types of data: expected placebo arm response, expected drug arm response, statistical
 
-    power, and type-1 error.
+        power, and type-1 error.
 
     Inputs:
 
@@ -593,8 +605,7 @@ def plot_set_of_maps(RR50_file_name,                        RR50_metadata_file_n
             (int) - the decimal place to which the power law slopes should be rounded to
                     
                     within the legends of power law slopes
-
-        
+   
     Outputs:
 
         Technically None
@@ -642,9 +653,13 @@ def main(x_tick_spacing, y_tick_spacing,
          min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round):
     '''
 
-    This function is the main function is the main function which coordinates all of the other functions in this script. It generates the statistical
+    Purpose:
 
-    power maps as well as the histograms of model 1 and model 2.
+        This function is the main function is the main function which coordinates all of the other 
+    
+        functions in this script. It generates the statistical power maps as well as the histograms of 
+    
+        model 1 and model 2.
 
     Inputs:
 
