@@ -1616,9 +1616,11 @@ def save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_respons
                                       NV_models_1_and_2_statistical_powers,         NV_models_1_and_2_type_1_errors,
                                       NV_model_endpoint_statistics_text_file_name):
 
-    This function stores the expected placebo responses for NV model 1 ande NV model 2 as predicted by the multiplication of the 
+    Purpose:
+
+        This function stores the expected placebo responses for NV model 1 ande NV model 2 as predicted by the multiplication of the 
     
-    SNR maps and the histograms for both NV models into a text file. 
+        SNR maps and the histograms for both NV models into a text file. 
 
     Inputs:
 
@@ -2028,7 +2030,15 @@ def main(num_patients_per_model, num_months_per_patient,
 
 
 if(__name__=='__main__'):
+    '''
 
+        The purpose of this if-statement is to act as the main interface between this python
+
+        script and its wrapper shell script (which passes on all the variables specified by
+        
+        the user). The main() function handles the rest of the algorithm implemented by this script.
+
+    '''
     start_time_in_seconds = time.time()
 
     # take in the command-line arguments
