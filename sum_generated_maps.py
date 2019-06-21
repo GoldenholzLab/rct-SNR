@@ -63,9 +63,7 @@ def calculate_average_endpoint_statistic_map(directory, min_req_base_sz_count, e
 
         1) directory:
 
-            (string) - the name of the directory which contains the folder in which the 
-                       
-                       intermediate JSON files are stored
+            (string) - the name of the directory which contains the folders in which the intermediate JSON files are stored
         
         2) min_req_base_sz_count:
         
@@ -132,11 +130,30 @@ def calculate_average_endpoint_statistic_map(directory, min_req_base_sz_count, e
         json.dump(average_endpoint_statistic_map.tolist(), json_file)
 
 
+def calculate_average_endpoint_statistic_maps(directory):
+    '''
 
-if (__name__=='__main__'):
+    This function interates overll the folders in the given directory
 
-    directory = '/Users/juanromero/Documents/GitHub/rct-SNR'
+    which pertain to a minimum required number of seizures in the baseline
 
+    period, and calculates a set of endpoint statistics maps for each endpoint
+
+    to be store in a 'final folder'.
+
+    Inputs:
+
+        1) directory:
+
+            (string) - the name of the directory which contains the folders 
+                       
+                       in which the intermediate JSON files are stored
+
+    Outputs:
+
+        Technically None
+
+    '''
     # set the array of endpoint statistic types, which is hardcoded into the software
     endpoint_statistic_map_file_names = ['expected_placebo_RR50_map', 'expected_placebo_MPC_map', 'expected_placebo_TTP_map',
                                          'expected_drug_RR50_map',    'expected_drug_MPC_map',    'expected_drug_TTP_map',
@@ -181,5 +198,9 @@ if (__name__=='__main__'):
                                                      num_monthly_means, num_monthly_std_devs,  num_maps)
 
 
+if (__name__=='__main__'):
 
+    directory = '/Users/juanromero/Documents/GitHub/rct-SNR'
+
+    calculate_average_endpoint_statistic_maps(directory)
     

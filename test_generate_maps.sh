@@ -55,7 +55,7 @@ echo $max_num_req_baseline_sz >> meta_data.txt
 
 
 # loop over all the minimum required numbers of seizures in the baseline period, from 0 all the way up to the maximum
-for ((num_req_baseline_sz=0; num_req_baseline_sz<=5; num_req_baseline_sz=num_req_baseline_sz+1));
+for ((num_req_baseline_sz=0; num_req_baseline_sz<=$max_num_req_baseline_sz; num_req_baseline_sz=num_req_baseline_sz+1));
     do
         # loop over all the undersampled map folders to take the average over
         for ((folder_num=1; folder_num<=$num_maps; folder_num=folder_num+1));
