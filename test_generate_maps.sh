@@ -60,25 +60,37 @@ for ((num_req_baseline_sz=0; num_req_baseline_sz<=5; num_req_baseline_sz=num_req
         # loop over all the undersampled map folders to take the average over
         for ((folder_num=1; folder_num<=$num_maps; folder_num=folder_num+1));
             do
-                # store all relevant inputs in and pass on the array
+                # store the information needed for the x-axis of the endpoint statistic maps
                 inputs[0]=$mu_start
                 inputs[1]=$mu_stop
                 inputs[2]=$mu_step
+
+                # store the information needed for the y-axis of the endpoint statistic maps
                 inputs[3]=$sigma_start
                 inputs[4]=$mu_stop
                 inputs[5]=$mu_step
+
+                # store the parameters for estimating the value at each point on the endpoint statistic maps
                 inputs[6]=$num_baseline_months
                 inputs[7]=$num_testing_months
                 inputs[8]=$num_req_baseline_sz
                 inputs[9]=$num_patients_per_arm
                 inputs[10]=$num_trials_per_map_point
+
+                # store the parameters for generating the placebo and drug effects
                 inputs[11]=$placebo_mean
                 inputs[12]=$placebo_sigma
                 inputs[13]=$drug_mean
                 inputs[14]=$drug_sigma
+
+                # store the parameters needed for generating the histograms of the model 1 and model 2 patients
                 inputs[15]=$num_patients_per_NV_model
                 inputs[16]=$num_months_per_NV_model_patient
+                
+                # store the location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
                 inputs[17]=$directory
+
+                # store the name of the folder in which all the intermediate JSON files for this specific map will be stored
                 inputs[18]=$folder_num
 
                 python generate_data.py ${inputs[@]}
