@@ -14,6 +14,7 @@ sigma_step=1
 # The parameters for estimating the value at each point on the endpoint statistic maps
 num_baseline_months=2
 num_testing_months=3
+max_num_req_baseline_sz=4
 num_patients_per_arm=20
 num_trials_per_map_point=2
 
@@ -28,24 +29,38 @@ num_patients_per_NV_model=10000
 num_months_per_NV_model_patient=24
 
 # set the number of maps to average over
-num_maps=6
+num_maps=5
 
 # The location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
 directory='/Users/juanromero/Documents/GitHub/rct-SNR'
 
+# create a new meta-data text file
 touch meta_data.txt
+
+# write information about the monthly seizure count mean axis into the text file
 echo $mu_start >> meta_data.txt
 echo $mu_stop >> meta_data.txt
 echo $mu_step >> meta_data.txt
+
+# write information about the monthly seizure count standard deviation axis into the text file
 echo $sigma_start >> meta_data.txt
 echo $sigma_stop >> meta_data.txt
 echo $sigma_step >> meta_data.txt
+
+# write information about the number of maps to average over into the text file
 echo $num_maps >> meta_data.txt
 
-for ((num_req_baseline_sz=0; num_req_baseline_sz<5; num_req_baseline_sz=num_req_baseline_sz+1));
+# write information about the maximum of the minimum required number of seizures in the baseline period
+echo $max_num_req_baseline_sz >> meta_data.txt
+
+
+# loop over all the minimum required numbers of seizures in the baseline period, from 0 all the way up to the maximum
+for ((num_req_baseline_sz=0; num_req_baseline_sz<=5; num_req_baseline_sz=num_req_baseline_sz+1));
     do
-        for ((folder_num=1; folder_num<$num_maps; folder_num=folder_num+1));
+        # loop over all the undersampled map folders to take the average over
+        for ((folder_num=1; folder_num<=$num_maps; folder_num=folder_num+1));
             do
+                # store all relevant inputs in and pass on the array
                 inputs[0]=$mu_start
                 inputs[1]=$mu_stop
                 inputs[2]=$mu_step
@@ -66,6 +81,6 @@ for ((num_req_baseline_sz=0; num_req_baseline_sz<5; num_req_baseline_sz=num_req_
                 inputs[17]=$directory
                 inputs[18]=$folder_num
 
-                bash test_generate_map.sh ${inputs[@]}
+                python generate_data.py ${inputs[@]}
         done
 done

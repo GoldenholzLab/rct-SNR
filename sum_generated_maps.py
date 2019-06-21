@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 
-def calculate_average_endpoint_statistic_map(directory,         min_req_base_sz_count, endpoint_statistic_map_file_name, 
+def calculate_average_endpoint_statistic_map(directory, min_req_base_sz_count, endpoint_statistic_map_file_name, 
                                              num_monthly_means, num_monthly_std_devs,  num_maps):
     '''
 
@@ -97,7 +97,7 @@ def calculate_average_endpoint_statistic_map(directory,         min_req_base_sz_
     average_endpoint_statistic_map = np.zeros((num_monthly_std_devs, num_monthly_means))
 
     # for each folder containing an undersampled endpoint statistic map
-    for folder_num in range(1, num_maps):
+    for folder_num in range(1, num_maps + 1):
         
         # locate the path of the folder in which the JSON file of the map is stored
         folder_num_path = directory + '/' + str(min_req_base_sz_count) + '/' + str(folder_num)
@@ -136,34 +136,49 @@ def calculate_average_endpoint_statistic_map(directory,         min_req_base_sz_
 if (__name__=='__main__'):
 
     directory = '/Users/juanromero/Documents/GitHub/rct-SNR'
-    min_req_base_sz_count = 0
-    endpoint_statistic_map_file_name = 'TTP_type_1_error_map'
 
-    '''
-    data_map_file_names = ['expected_placebo_RR50_map', 'expected_placebo_MPC_map', 'expected_placebo_TTP_map',
-                           'expected_drug_RR50_map',    'expected_drug_MPC_map',    'expected_drug_TTP_map',
-                           'RR50_stat_power_map',       'MPC_stat_power_map',       'TTP_stat_power_map',
-                           'RR50_type_1_error_map',     'MPC_type_1_error_map',     'TTP_type_1_error_map']
-    '''
+    # set the array of endpoint statistic types, which is hardcoded into the software
+    endpoint_statistic_map_file_names = ['expected_placebo_RR50_map', 'expected_placebo_MPC_map', 'expected_placebo_TTP_map',
+                                         'expected_drug_RR50_map',    'expected_drug_MPC_map',    'expected_drug_TTP_map',
+                                         'RR50_stat_power_map',       'MPC_stat_power_map',       'TTP_stat_power_map',
+                                         'RR50_type_1_error_map',     'MPC_type_1_error_map',     'TTP_type_1_error_map']
 
+    # set the file name of the meta-data text file, which is hardcoded into the software, along with its absolute file path
     meta_data_file_name = 'meta_data.txt'
     meta_data_file_path = directory + '/' + meta_data_file_name
 
+    # read the relevant information from the meta-data text file
     with open( meta_data_file_path, 'r' ) as meta_data_text_file:
 
+        # read information about the monthly seizure count mean axis
         start_monthly_mean = int( meta_data_text_file.readline() )
         stop_monthly_mean = int( meta_data_text_file.readline() )
         step_monthly_mean = int( meta_data_text_file.readline() )
+
+        # read information about the monthly seizure count standard deviation axis
         start_monthly_std_dev = int( meta_data_text_file.readline() )
         stop_monthly_std_dev = int( meta_data_text_file.readline() )
         step_monthly_std_dev = int( meta_data_text_file.readline() )
-        num_maps = int( meta_data_text_file.readline() )
 
+        # read information about the number of maps to average over
+        num_maps = int( meta_data_text_file.readline() )
+        
+        # read information about the maximum of the minimum required number of seizures in the baseline period
+        max_min_req_base_sz_count = int( meta_data_text_file.readline() )
+
+    # calculate the number of ticks on both axes
     num_monthly_means = int( (stop_monthly_mean - start_monthly_mean)/step_monthly_mean ) + 1
     num_monthly_std_devs = int( (stop_monthly_std_dev - start_monthly_std_dev)/step_monthly_std_dev ) + 1
 
-    calculate_average_endpoint_statistic_map(directory,         min_req_base_sz_count, endpoint_statistic_map_file_name, 
-                                             num_monthly_means, num_monthly_std_devs,  num_maps)
+    # iterate over all the minimum required numbers of seziures in the baseline period, from 0 all the way up to the maximum
+    for min_req_base_sz_count in range(max_min_req_base_sz_count + 1):
+    
+        # iterate over all the endpoint statistic types
+        for endpoint_statistic_index in range(len(endpoint_statistic_map_file_names)):
+
+            # calculate and store the avaerage endpoint statistic map for a given minimum required number of baseline seizures and a given endpoint statistic type
+            calculate_average_endpoint_statistic_map(directory, min_req_base_sz_count, endpoint_statistic_map_file_names[endpoint_statistic_index], 
+                                                     num_monthly_means, num_monthly_std_devs,  num_maps)
 
 
 
