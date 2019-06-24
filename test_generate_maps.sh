@@ -31,7 +31,7 @@ num_maps=5
 directory='/Users/juanromero/Documents/Python_3_Files/test'
 
 # create a new meta-data text file
-touch meta_data.txt
+touch $directory/meta_data.txt
 
 # write information about the monthly seizure count mean axis into the text file
 echo $mu_start >> $directory/meta_data.txt

@@ -11,7 +11,7 @@
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
 # set the directory for the stored maps 
-directory='/Users/juanromero/Documents/Python_3_Files/test'
+directory='/n/scratch2/jmr95/test_maps'
 
 # The spacing in between each of the labelled x-axis and y-axis ticks
 x_tick_spacing=2
