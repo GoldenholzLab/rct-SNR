@@ -1,6 +1,7 @@
 import json
 import numpy as np
 import os
+import argparse
 
 
 def calculate_average_endpoint_statistic_map(directory, min_req_base_sz_count, endpoint_statistic_map_file_name, 
@@ -143,7 +144,11 @@ def calculate_average_endpoint_statistic_maps(directory):
 
         period, and calculates a set of endpoint statistics maps for each endpoint
 
-        to be store in a 'final folder'.
+        to be store in a 'final folder'. This function assumes that a text file called
+
+        'meta_data.txt' which contains relevant information about the endpoint statistic
+        
+        maps is located in the same folder as this script.
 
     Inputs:
 
@@ -203,8 +208,25 @@ def calculate_average_endpoint_statistic_maps(directory):
 
 
 if (__name__=='__main__'):
+    '''
 
-    directory = '/Users/juanromero/Documents/GitHub/rct-SNR'
+        The purpose of this if statement is two-folder: 1) to act as the
 
+        go-between for this python script and its wrapper shell script, and
+
+        2) to act as the main point of coordination for this relatively
+
+        uncomplicated python script.
+
+    '''
+    parser = argparse.ArgumentParser()
+    parser.add_argument('array', nargs='+')
+    args = parser.parse_args()
+    arg_array = args.array
+
+    # take in the directory containing all the JSON files from the user
+    directory = arg_array[0]
+
+    # run the main of this script
     calculate_average_endpoint_statistic_maps(directory)
     
