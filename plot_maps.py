@@ -248,8 +248,16 @@ def plot_map(data_map_file_name, data_plot_file_name,
         # load the data map into memory
         data_map = np.array(json.load(map_storage_file))
 
+    # figure out the folder in which the plot of the map will be stored
+    data_plot_folder = directory + '/' + str(min_req_base_sz_count) + '/maps'
+
+    # if the folder does not already exist, then make it
+    if ( not os.path.exists(data_plot_folder) ):
+
+        os.makedirs( data_plot_folder )
+
     # figure out the file path of the PNG picture of the data to be plotted
-    data_plot_file_path = data_map_folder + '/' + data_plot_file_name + '.png'
+    data_plot_file_path = data_plot_folder + '/' + data_plot_file_name + '.png'
 
     # figure out the spacing of the tick labels for both axes
     x_tick_labels = np.arange(x_axis_start, x_axis_stop + x_tick_spacing, x_tick_spacing)
