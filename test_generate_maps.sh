@@ -24,10 +24,6 @@ placebo_sigma=0.05
 drug_mean=0.2
 drug_sigma=0.05
 
-# The parameters needed for generating the histograms of the model 1 and model 2 patients
-num_patients_per_NV_model=10000
-num_months_per_NV_model_patient=24
-
 # set the number of maps to average over
 num_maps=5
 
