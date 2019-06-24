@@ -1,5 +1,5 @@
 
-directory='/Users/juanromero/Documents/GitHub/rct-SNR'
+directory='/Users/juanromero/Documents/Python_3_Files/test'
 
 # The spacing in between each of the labelled x-axis and y-axis ticks
 x_tick_spacing=2
@@ -22,4 +22,4 @@ inputs[4]=$max_power_law_slope
 inputs[5]=$power_law_slope_spacing
 inputs[6]=$legend_decimal_round
 
-python plot_data.py ${inputs[@]}
+python plot_maps.py ${inputs[@]}

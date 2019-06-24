@@ -28,7 +28,7 @@ drug_sigma=0.05
 num_maps=5
 
 # The location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
-directory='/Users/juanromero/Documents/GitHub/rct-SNR'
+directory='/Users/juanromero/Documents/Python_3_Files/test'
 
 # create a new meta-data text file
 touch meta_data.txt
@@ -85,6 +85,6 @@ for ((num_req_baseline_sz=0; num_req_baseline_sz<=$max_num_req_baseline_sz; num_
                 # store the name of the folder in which all the intermediate JSON files for this specific map will be stored
                 inputs[16]=$folder_num
 
-                python generate_data.py ${inputs[@]}
+                python generate_maps.py ${inputs[@]}
         done
 done
