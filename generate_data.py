@@ -844,7 +844,7 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
 
     Purpose:
 
-        This function generates all of the 2D endpoint statistic arrays (i.e., expected placebo arm response, expected drug 
+        This function generates all of the endpoint statistic maps (i.e., expected placebo arm response, expected drug 
     
         response, statistical power, type-1 error) to be stored for later plotting.
 
