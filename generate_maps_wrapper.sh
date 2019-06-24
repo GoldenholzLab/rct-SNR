@@ -102,6 +102,6 @@ for ((num_req_baseline_sz=0; num_req_baseline_sz<=$max_num_req_baseline_sz; num_
                 # store the name of the folder in which all the intermediate JSON files for this specific map will be stored
                 inputs[16]=$folder_num
 
-                srun -c 1 python generate_maps.py ${inputs[@]}
+                sbatch generate_one_set_of_maps_wrapper.sh ${inputs[@]}
         done
 done
