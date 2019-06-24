@@ -250,7 +250,7 @@ def plot_map(data_map_file_name, data_plot_file_name,
         data_map = np.array(json.load(map_storage_file))
 
     # figure out the file path of the PNG picture of the data to be plotted
-    data_plot_file_path = os.getcwd() + '/' + data_plot_file_name + '.png'
+    data_plot_file_path = data_map_folder + '/' + data_plot_file_name + '.png'
 
     # figure out the spacing of the tick labels for both axes
     x_tick_labels = np.arange(x_axis_start, x_axis_stop + x_tick_spacing, x_tick_spacing)
@@ -872,14 +872,14 @@ if(__name__=='__main__'):
     directory = arg_array[0]
 
     # obtain the spacing in between each of the labelled x-axis and y-axis ticks for all maps and histograms
-    x_tick_spacing = float(arg_array[2])
-    y_tick_spacing = float(arg_array[3])
+    x_tick_spacing = float(arg_array[1])
+    y_tick_spacing = float(arg_array[2])
 
     # obtain the slopes of the power law curves to be plotted
-    min_power_law_slope = float(arg_array[4])
-    max_power_law_slope = float(arg_array[5])
-    power_law_slope_spacing = float(arg_array[6])
-    legend_decimal_round = int(arg_array[7])
+    min_power_law_slope = float(arg_array[3])
+    max_power_law_slope = float(arg_array[4])
+    power_law_slope_spacing = float(arg_array[5])
+    legend_decimal_round = int(arg_array[6])
 
     # run the main function
     main(directory, x_tick_spacing, y_tick_spacing, 
