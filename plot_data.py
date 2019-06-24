@@ -384,9 +384,8 @@ def plot_histogram(H_model_file_name, H_model_plot_file_name,
 
     # close the figure
     plt.close(fig)
-'''
 
-'''
+
 def plot_histograms(H_model_1_file_name, H_model_1_metadata_file_name, H_model_1_plot_file_name, H_model_1_plot_title,
                     H_model_2_file_name, H_model_2_metadata_file_name, H_model_2_plot_file_name, H_model_2_plot_title,
                     x_tick_spacing, y_tick_spacing):
@@ -456,7 +455,6 @@ def plot_histograms(H_model_1_file_name, H_model_1_metadata_file_name, H_model_1
                    H_model_2_metadata_file_name, H_model_2_plot_file_name, 
                    x_tick_spacing, y_tick_spacing, H_model_2_plot_title)
 '''
-
 
 def plot_set_of_maps(RR50_file_name, RR50_plot_file_name, RR50_plot_with_power_curves_file_name, RR50_plot_title, RR50_plot_with_power_curves_title,
                      MPC_file_name,  MPC_plot_file_name,  MPC_plot_with_power_curves_file_name,  MPC_plot_title,  MPC_plot_with_power_curves_title,
