@@ -1,16 +1,25 @@
 
-inputs[0]='/Users/juanromero/Documents/GitHub/rct-SNR'
+directory='/Users/juanromero/Documents/GitHub/rct-SNR'
 
 # The spacing in between each of the labelled x-axis and y-axis ticks
-inputs[1]=2
-inputs[2]=2
+x_tick_spacing=2
+y_tick_spacing=2
 
 # The slopes of the power law curves to be plotted
-inputs[3]=0.5
-inputs[4]=1.4
-inputs[5]=0.1
+min_power_law_slope=0.5
+max_power_law_slope=1.4
+power_law_slope_spacing=0.1
 
 # the decimal place to which all power law slopes should be rounded to on legends
-inputs[6]=1
+legend_decimal_round=1
+
+# store all inputs into an array
+inputs[0]=$directory
+inputs[1]=$x_tick_spacing
+inputs[2]=$y_tick_spacing
+inputs[3]=$min_power_law_slope
+inputs[4]=$max_power_law_slope
+inputs[5]=$power_law_slope_spacing
+inputs[6]=$legend_decimal_round
 
 python plot_data.py ${inputs[@]}
