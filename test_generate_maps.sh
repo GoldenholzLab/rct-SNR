@@ -82,16 +82,12 @@ for ((num_req_baseline_sz=0; num_req_baseline_sz<=$max_num_req_baseline_sz; num_
                 inputs[12]=$placebo_sigma
                 inputs[13]=$drug_mean
                 inputs[14]=$drug_sigma
-
-                # store the parameters needed for generating the histograms of the model 1 and model 2 patients
-                inputs[15]=$num_patients_per_NV_model
-                inputs[16]=$num_months_per_NV_model_patient
                 
                 # store the location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
-                inputs[17]=$directory
+                inputs[15]=$directory
 
                 # store the name of the folder in which all the intermediate JSON files for this specific map will be stored
-                inputs[18]=$folder_num
+                inputs[16]=$folder_num
 
                 python generate_data.py ${inputs[@]}
         done

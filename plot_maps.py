@@ -67,7 +67,6 @@ def retrieve_map(data_map_file_name):
     return [data_map]
 '''
 
-
 def plot_power_law_curves(ax, min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
                           x_axis_start, x_axis_stop, x_axis_step, 
                           y_axis_start, y_axis_stop, y_axis_step,

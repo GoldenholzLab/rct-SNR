@@ -1134,8 +1134,7 @@ def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_mode
 '''
 
 def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, 
-                      shape_2, scale_2, alpha_2, beta_2, 
-                      num_patients_per_model, num_months_per_patient,
+                      shape_2, scale_2, alpha_2, beta_2,
                       start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
                       start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
                       num_patients_per_trial_arm, num_trials,
@@ -1780,8 +1779,7 @@ def save_NV_model_endpoint_statistics(NV_models_1_and_2_expected_placebo_respons
         text_file.write(data)
 '''
 
-def main(num_patients_per_model, num_months_per_patient,
-         start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
+def main(start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
          placebo_mu, placebo_sigma,  drug_mu, drug_sigma, directory, folder):
@@ -1951,8 +1949,7 @@ def main(num_patients_per_model, num_months_per_patient,
      RR50_stat_power_map,           MPC_stat_power_map,           TTP_stat_power_map,
      RR50_type_1_error_map,         MPC_type_1_error_map,         TTP_type_1_error_map      ] = \
         generate_SNR_data(shape_1, scale_1, alpha_1, beta_1, 
-                          shape_2, scale_2, alpha_2, beta_2, 
-                          num_patients_per_model, num_months_per_patient,
+                          shape_2, scale_2, alpha_2, beta_2,
                           start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
                           start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
                           num_patients_per_trial_arm, num_trials,
@@ -2070,19 +2067,20 @@ if(__name__=='__main__'):
     drug_mu = float(arg_array[13])
     drug_sigma = float(arg_array[14])
 
+    '''
     # obtain the parameters needed for generating the histograms of the model 1 and model 2 patients
     num_patients_per_model = int(arg_array[15])
     num_months_per_patient = int(arg_array[16])
+    '''
 
     # obtain the location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
-    directory = arg_array[17]
+    directory = arg_array[15]
 
     # obtain the name of the actual folder in which all the intermediate JSON files for this specific map will be stored
-    folder = arg_array[18]
+    folder = arg_array[16]
 
     # call the main() function
-    main(num_patients_per_model, num_months_per_patient,
-         start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
+    main(start_monthly_mean, stop_monthly_mean, step_monthly_mean, 
          start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
          num_baseline_months, num_testing_months, min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
          placebo_mu, placebo_sigma,  drug_mu, drug_sigma, directory, folder)
