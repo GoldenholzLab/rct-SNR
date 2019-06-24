@@ -186,11 +186,11 @@ def calculate_average_endpoint_statistic_maps(directory):
         stop_monthly_std_dev = int( meta_data_text_file.readline() )
         step_monthly_std_dev = int( meta_data_text_file.readline() )
 
-        # read information about the number of maps to average over
-        num_maps = int( meta_data_text_file.readline() )
-        
         # read information about the maximum of the minimum required number of seizures in the baseline period
         max_min_req_base_sz_count = int( meta_data_text_file.readline() )
+
+        # read information about the number of maps to average over
+        num_maps = int( meta_data_text_file.readline() )
 
     # calculate the number of ticks on both axes
     num_monthly_means = int( (stop_monthly_mean - start_monthly_mean)/step_monthly_mean ) + 1

@@ -47,11 +47,11 @@ echo $sigma_start >> meta_data.txt
 echo $sigma_stop >> meta_data.txt
 echo $sigma_step >> meta_data.txt
 
-# write information about the number of maps to average over into the text file
-echo $num_maps >> meta_data.txt
-
 # write information about the maximum of the minimum required number of seizures in the baseline period
 echo $max_num_req_baseline_sz >> meta_data.txt
+
+# write information about the number of maps to average over into the text file
+echo $num_maps >> meta_data.txt
 
 
 # loop over all the minimum required numbers of seizures in the baseline period, from 0 all the way up to the maximum

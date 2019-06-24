@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import argparse
 
+'''
+def retrieve_map(data_map_file_name):
 
-def retrieve_map(data_map_file_name, data_map_metadata_file_name):
-    '''
 
     Purpose:
 
@@ -22,12 +22,6 @@ def retrieve_map(data_map_file_name, data_map_metadata_file_name):
         1) data_map_file_name:
 
             (string) - the name of the JSON file containing the actual data map
-        
-        2) data_map_metadata_file_name:
-
-            (string) - the name of the JSON file containing the metadata needed to 
-                       
-                       plot the actual data map
         
     Outputs:
 
@@ -59,35 +53,19 @@ def retrieve_map(data_map_file_name, data_map_metadata_file_name):
 
             (float) - the size of the spaces in between each y-axis value
 
-    '''
+
 
     # create the string representation of the file path for the data map
     data_map_file_path = os.getcwd() + '/' + data_map_file_name + '.json'
-
-    # create the string representation of the file path for the data map metadata
-    data_map_metadata_file_path = os.getcwd() + '/' + data_map_metadata_file_name + '.json'
 
     # open the data map file
     with open(data_map_file_path, 'r') as map_storage_file:
 
         # load the data map into memory
         data_map = np.array(json.load(map_storage_file))
-
-    # open the data map metadata file
-    with open(data_map_metadata_file_path, 'r') as map_metadata_storage_file:
-
-        # load the data map metadata file into memory
-        metadata = np.array(json.load(map_metadata_storage_file))
     
-    # access all the pieces of metadata from the metadata file
-    x_axis_start = metadata[0]
-    x_axis_stop = metadata[1]
-    x_axis_step = metadata[2]
-    y_axis_start = metadata[3]
-    y_axis_stop = metadata[4]
-    y_axis_step = metadata[5]
-    
-    return [data_map, x_axis_start, x_axis_stop, x_axis_step, y_axis_start, y_axis_stop, y_axis_step]
+    return [data_map]
+'''
 
 
 def plot_power_law_curves(ax, min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
@@ -188,8 +166,10 @@ def plot_power_law_curves(ax, min_power_law_slope, max_power_law_slope, power_la
     return ax
 
 
-def plot_map(data_map_file_name, 
-             data_map_metadata_file_name, data_plot_file_name, 
+def plot_map(data_map_file_name, data_plot_file_name,
+             directory, min_req_base_sz_count,
+             x_axis_start, x_axis_stop, x_axis_step,
+             y_axis_start, y_axis_stop, y_axis_step,
              x_tick_spacing, y_tick_spacing, plot_curves,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              map_title, legend_decimal_round):
@@ -257,9 +237,17 @@ def plot_map(data_map_file_name,
 
     '''
 
-    # retrieve the map and the map metadata
-    [data_map, x_axis_start, x_axis_stop, x_axis_step, y_axis_start, y_axis_stop, y_axis_step] = \
-        retrieve_map(data_map_file_name, data_map_metadata_file_name)
+    # create the string representation of the folder in which the data map is stored
+    data_map_folder = directory + '/' + str(min_req_base_sz_count) + '/final'
+
+     # create the string representation of the file path for the data map
+    data_map_file_path = data_map_folder + '/' + data_map_file_name + '.json'
+
+    # open the data map file
+    with open(data_map_file_path, 'r') as map_storage_file:
+
+        # load the data map into memory
+        data_map = np.array(json.load(map_storage_file))
 
     # figure out the file path of the PNG picture of the data to be plotted
     data_plot_file_path = os.getcwd() + '/' + data_plot_file_name + '.png'
@@ -311,11 +299,9 @@ def plot_map(data_map_file_name,
     # close the figure
     plt.close(fig)
 
-
-def plot_histogram(H_model_file_name, 
-                   H_model_metadata_file_name, H_model_plot_file_name, 
+'''
+def plot_histogram(H_model_file_name, H_model_plot_file_name, 
                    x_tick_spacing, y_tick_spacing, H_model_plot_title):
-    '''
 
     Purpose:
 
@@ -353,13 +339,10 @@ def plot_histogram(H_model_file_name,
 
         Technically None
 
-    '''
 
     # retrieve the histogram of the NV model and its corresponding metadata
-    [H_model, 
-     x_axis_start, x_axis_stop, x_axis_step, 
-     y_axis_start, y_axis_stop, y_axis_step] = \
-        retrieve_map(H_model_file_name, H_model_metadata_file_name)
+    [H_model] = \
+        retrieve_map(H_model_file_name)
     
     # figure out the file path of the PNG picture of the histogram to be plotted
     H_model_plot_file_path = os.getcwd() + '/' + H_model_plot_file_name + '.png'
@@ -401,12 +384,13 @@ def plot_histogram(H_model_file_name,
 
     # close the figure
     plt.close(fig)
+'''
 
-
+'''
 def plot_histograms(H_model_1_file_name, H_model_1_metadata_file_name, H_model_1_plot_file_name, H_model_1_plot_title,
                     H_model_2_file_name, H_model_2_metadata_file_name, H_model_2_plot_file_name, H_model_2_plot_title,
                     x_tick_spacing, y_tick_spacing):
-    '''
+
 
     Purpose:
 
@@ -462,8 +446,6 @@ def plot_histograms(H_model_1_file_name, H_model_1_metadata_file_name, H_model_1
 
         Technically None
 
-    '''
-
     # plot the histogram of all the NV model 1 patients
     plot_histogram(H_model_1_file_name, 
                    H_model_1_metadata_file_name, H_model_1_plot_file_name, 
@@ -473,14 +455,13 @@ def plot_histograms(H_model_1_file_name, H_model_1_metadata_file_name, H_model_1
     plot_histogram(H_model_2_file_name, 
                    H_model_2_metadata_file_name, H_model_2_plot_file_name, 
                    x_tick_spacing, y_tick_spacing, H_model_2_plot_title)
+'''
 
 
-def plot_set_of_maps(RR50_file_name,                        RR50_metadata_file_name, RR50_plot_file_name, 
-                     RR50_plot_with_power_curves_file_name, RR50_plot_title,         RR50_plot_with_power_curves_title,
-                     MPC_file_name,                         MPC_metadata_file_name,  MPC_plot_file_name, 
-                     MPC_plot_with_power_curves_file_name,  MPC_plot_title,          MPC_plot_with_power_curves_title,
-                     TTP_file_name,                         TTP_metadata_file_name,  TTP_plot_file_name, 
-                     TTP_plot_with_power_curves_file_name,  TTP_plot_title,          TTP_plot_with_power_curves_title,
+def plot_set_of_maps(RR50_file_name, RR50_plot_file_name, RR50_plot_with_power_curves_file_name, RR50_plot_title, RR50_plot_with_power_curves_title,
+                     MPC_file_name,  MPC_plot_file_name,  MPC_plot_with_power_curves_file_name,  MPC_plot_title,  MPC_plot_with_power_curves_title,
+                     TTP_file_name,  TTP_plot_file_name,  TTP_plot_with_power_curves_file_name,  TTP_plot_title,  TTP_plot_with_power_curves_title,
+                     directory, min_req_base_sz_count, x_axis_start, x_axis_stop, x_axis_step, y_axis_start, y_axis_stop, y_axis_step,
                      x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round):
     '''
 
@@ -613,43 +594,60 @@ def plot_set_of_maps(RR50_file_name,                        RR50_metadata_file_n
     '''
 
     # plot the 50% responder rate data map
-    plot_map(RR50_file_name, RR50_metadata_file_name, RR50_plot_file_name, 
+    plot_map(RR50_file_name, RR50_plot_file_name,
+             directory, min_req_base_sz_count,
+             x_axis_start, x_axis_stop, x_axis_step,
+             y_axis_start, y_axis_stop, y_axis_step,
              x_tick_spacing, y_tick_spacing, False,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              RR50_plot_title, legend_decimal_round)
 
     # plot the 50% responder rate data map with power law curves
-    plot_map(RR50_file_name, RR50_metadata_file_name, RR50_plot_with_power_curves_file_name, 
+    plot_map(RR50_file_name, RR50_plot_with_power_curves_file_name,
+             directory, min_req_base_sz_count,
+             x_axis_start, x_axis_stop, x_axis_step,
+             y_axis_start, y_axis_stop, y_axis_step,
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              RR50_plot_with_power_curves_title, legend_decimal_round)
     
     # plot the median percent change data map
-    plot_map(MPC_file_name, MPC_metadata_file_name, MPC_plot_file_name, 
+    plot_map(MPC_file_name, MPC_plot_file_name,
+             directory, min_req_base_sz_count,
+             x_axis_start, x_axis_stop, x_axis_step,
+             y_axis_start, y_axis_stop, y_axis_step,
              x_tick_spacing, y_tick_spacing, False,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              MPC_plot_title, legend_decimal_round)
 
     # plot the median percent change data map with power law curves
-    plot_map(MPC_file_name, MPC_metadata_file_name, MPC_plot_with_power_curves_file_name, 
+    plot_map(MPC_file_name, MPC_plot_with_power_curves_file_name,
+             directory, min_req_base_sz_count,
+             x_axis_start, x_axis_stop, x_axis_step,
+             y_axis_start, y_axis_stop, y_axis_step,
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              MPC_plot_with_power_curves_title, legend_decimal_round)
     
     # plot the time-to-prerandomization data map
-    plot_map(TTP_file_name, TTP_metadata_file_name, TTP_plot_file_name, 
+    plot_map(TTP_file_name, TTP_plot_file_name, 
+             x_axis_start, x_axis_stop, x_axis_step,
+             y_axis_start, y_axis_stop, y_axis_step,
              x_tick_spacing, y_tick_spacing, False,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              TTP_plot_title, legend_decimal_round)
 
     # plot the time-to-prerandomization data map with power law curves
-    plot_map(TTP_file_name, TTP_metadata_file_name, TTP_plot_with_power_curves_file_name, 
+    plot_map(TTP_file_name, TTP_plot_with_power_curves_file_name, 
+             directory, min_req_base_sz_count,
+             x_axis_start, x_axis_stop, x_axis_step,
+             y_axis_start, y_axis_stop, y_axis_step,
              x_tick_spacing, y_tick_spacing, True,
              min_power_law_slope, max_power_law_slope, power_law_slope_spacing,
              TTP_plot_with_power_curves_title, legend_decimal_round)
 
 
-def main(x_tick_spacing, y_tick_spacing, 
+def main(directory, x_tick_spacing, y_tick_spacing, 
          min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round):
     '''
 
@@ -657,7 +655,7 @@ def main(x_tick_spacing, y_tick_spacing,
 
         This function is the main function is the main function which coordinates all of the other 
     
-        functions in this script. It generates the statistical power maps as well as the histograms of 
+        functions in this script. It generates the endpoint statistic maps as well as the histograms of 
     
         model 1 and model 2.
 
@@ -700,60 +698,48 @@ def main(x_tick_spacing, y_tick_spacing,
     # set the names of the files associated/to-be-associated with the 50% responder rate expected placebo response map, median percent change expected placebo 
     # response map, and time-to-prerandomization expected placebo response map
     expected_placebo_RR50_file_name                        = 'expected_placebo_RR50_map'
-    expected_placebo_RR50_metadata_file_name               = 'expected_placebo_RR50_map_metadata'
     expected_placebo_RR50_plot_file_name                   = 'expected_placebo_RR50_plot'
     expected_placebo_RR50_plot_with_power_curves_file_name = 'expected_placebo_RR50_plot_with_power_curves'
     expected_placebo_MPC_file_name                         = 'expected_placebo_MPC_map'
-    expected_placebo_MPC_metadata_file_name                = 'expected_placebo_MPC_map_metadata'
     expected_placebo_MPC_plot_file_name                    = 'expected_placebo_MPC_plot'
     expected_placebo_MPC_plot_with_power_curves_file_name  = 'expected_placebo_MPC_plot_with_power_curves'
     expected_placebo_TTP_file_name                         = 'expected_placebo_TTP_map'
-    expected_placebo_TTP_metadata_file_name                = 'expected_placebo_TTP_map_metadata'
     expected_placebo_TTP_plot_file_name                    = 'expected_placebo_TTP_plot'
     expected_placebo_TTP_plot_with_power_curves_file_name  = 'expected_placebo_TTP_with_power_curves'
 
     # set the names of the files associated/to-be-associated with the 50% responder rate expected drug response map, median percent change expected drug 
     # response map, and time-to-prerandomization expected drug response map
     expected_drug_RR50_file_name                        = 'expected_drug_RR50_map'
-    expected_drug_RR50_metadata_file_name               = 'expected_drug_RR50_map_metadata'
     expected_drug_RR50_plot_file_name                   = 'expected_drug_RR50_plot'
     expected_drug_RR50_plot_with_power_curves_file_name = 'expected_drug_RR50_plot_with_power_curves'
     expected_drug_MPC_file_name                         = 'expected_drug_MPC_map'
-    expected_drug_MPC_metadata_file_name                = 'expected_drug_MPC_map_metadata'
     expected_drug_MPC_plot_file_name                    = 'expected_drug_MPC_plot'
     expected_drug_MPC_plot_with_power_curves_file_name  = 'expected_drug_MPC_plot_with_power_curves'
     expected_drug_TTP_file_name                         = 'expected_drug_TTP_map'
-    expected_drug_TTP_metadata_file_name                = 'expected_drug_TTP_map_metadata'
     expected_drug_TTP_plot_file_name                    = 'expected_drug_TTP_plot'
     expected_drug_TTP_plot_with_power_curves_file_name  = 'expected_drug_TTP_with_power_curves'
 
     # set the names of the files associated/to-be-associated with the 50% responder rate statistical power map, median percent change statistical power map, 
     # and time-to-prerandomization statistical power map
     RR50_stat_power_file_name                        = 'RR50_stat_power_map'
-    RR50_stat_power_metadata_file_name               = 'RR50_stat_power_map_metadata'
     RR50_stat_power_plot_file_name                   = 'RR50_stat_power_plot'
     RR50_stat_power_plot_with_power_curves_file_name = 'RR50_stat_power_plot_with_power_curves'
     MPC_stat_power_file_name                         = 'MPC_stat_power_map'
-    MPC_stat_power_metadata_file_name                = 'MPC_stat_power_map_metadata'
     MPC_stat_power_plot_file_name                    = 'MPC_stat_power_plot'
     MPC_stat_power_plot_with_power_curves_file_name  = 'MPC_stat_power_plot_with_power_curves'
     TTP_stat_power_file_name                         = 'TTP_stat_power_map'
-    TTP_stat_power_metadata_file_name                = 'TTP_stat_power_map_metadata'
     TTP_stat_power_plot_file_name                    = 'TTP_stat_power_plot'
     TTP_stat_power_plot_with_power_curves_file_name  = 'TTP_stat_power_plot_with_power_curves'
 
     # set the names of the files associated/to-be-associated with the 50% responder rate type-1 error map, median percent change type-1 error map, 
     # and time-to-prerandomization type-1 error map
     RR50_type_1_error_file_name                        = 'RR50_type_1_error_map'
-    RR50_type_1_error_metadata_file_name               = 'RR50_type_1_error_map_metadata'
     RR50_type_1_error_plot_file_name                   = 'RR50_type_1_error_plot'
     RR50_type_1_error_plot_with_power_curves_file_name = 'RR50_type_1_error_plot_with_power_curves'
     MPC_type_1_error_file_name                         = 'MPC_type_1_error_map'
-    MPC_type_1_error_metadata_file_name                = 'MPC_type_1_error_map_metadata'
     MPC_type_1_error_plot_file_name                    = 'MPC_type_1_error_plot'
     MPC_type_1_error_plot_with_power_curves_file_name  = 'MPC_type_1_error_plot_with_power_curves'
     TTP_type_1_error_file_name                         = 'TTP_type_1_error_map'
-    TTP_type_1_error_metadata_file_name                = 'TTP_type_1_error_map_metadata'
     TTP_type_1_error_plot_file_name                    = 'TTP_type_1_error_plot'
     TTP_type_1_error_plot_with_power_curves_file_name  = 'TTP_type_1_error_plot_with_power_curves'
 
@@ -789,6 +775,7 @@ def main(x_tick_spacing, y_tick_spacing,
     TTP_type_1_error_plot_title                    = "Time-to-prerandomization type-1 error"
     TTP_type_1_error_plot_with_power_curves_title  = "Time-to-prerandomization type-1 error with power law curves"
 
+    '''
     # set the names of the files associated with the NV model 1 histogram
     H_model_1_file_name          = 'H_model_1_hist' 
     H_model_1_metadata_file_name = 'H_model_1_hist_metadata'
@@ -802,47 +789,76 @@ def main(x_tick_spacing, y_tick_spacing,
     # set the titles of the histograms for both Model 1 and Model 2
     H_model_1_plot_title = "Model 1 patient population"
     H_model_2_plot_title = "Model 2 patient population"
+    '''
 
-    # plot all of the endpoint statistic maps having to do with the expected placebo response
-    plot_set_of_maps(expected_placebo_RR50_file_name,                        expected_placebo_RR50_metadata_file_name, expected_placebo_RR50_plot_file_name, 
-                     expected_placebo_RR50_plot_with_power_curves_file_name, expected_placebo_RR50_plot_title,         expected_placebo_RR50_plot_with_power_curves_title,
-                     expected_placebo_MPC_file_name,                         expected_placebo_MPC_metadata_file_name,  expected_placebo_MPC_plot_file_name, 
-                     expected_placebo_MPC_plot_with_power_curves_file_name,  expected_placebo_MPC_plot_title,          expected_placebo_MPC_plot_with_power_curves_title,
-                     expected_placebo_TTP_file_name,                         expected_placebo_TTP_metadata_file_name,  expected_placebo_TTP_plot_file_name, 
-                     expected_placebo_TTP_plot_with_power_curves_file_name,  expected_placebo_TTP_plot_title,          expected_placebo_TTP_plot_with_power_curves_title,
-                     x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
+    # set the file name of the meta-data text file, which is hardcoded into the software, along with its absolute file path
+    meta_data_file_name = 'meta_data.txt'
+    meta_data_file_path = directory + '/' + meta_data_file_name
+
+    # read the relevant information from the meta-data text file
+    with open( meta_data_file_path, 'r' ) as meta_data_text_file:
+
+        # read information about the monthly seizure count mean axis
+        x_axis_start = int( meta_data_text_file.readline() )
+        x_axis_stop = int( meta_data_text_file.readline() )
+        x_axis_step = int( meta_data_text_file.readline() )
+
+        # read information about the monthly seizure count standard deviation axis
+        y_axis_start = int( meta_data_text_file.readline() )
+        y_axis_stop = int( meta_data_text_file.readline() )
+        y_axis_step = int( meta_data_text_file.readline() )
+
+        # read information about the maximum of the minimum required number of seizures in the baseline period
+        max_min_req_base_sz_count = int( meta_data_text_file.readline() )
+
+    for min_req_base_sz_count in range(max_min_req_base_sz_count + 1):
+
+        # plot all of the endpoint statistic maps having to do with the expected placebo response
+        plot_set_of_maps(expected_placebo_RR50_file_name,  expected_placebo_RR50_plot_file_name, expected_placebo_RR50_plot_with_power_curves_file_name, 
+                         expected_placebo_RR50_plot_title, expected_placebo_RR50_plot_with_power_curves_title,
+                         expected_placebo_MPC_file_name,   expected_placebo_MPC_plot_file_name,  expected_placebo_MPC_plot_with_power_curves_file_name,  
+                         expected_placebo_MPC_plot_title,  expected_placebo_MPC_plot_with_power_curves_title,
+                         expected_placebo_TTP_file_name,   expected_placebo_TTP_plot_file_name,  expected_placebo_TTP_plot_with_power_curves_file_name,  
+                         expected_placebo_TTP_plot_title,  expected_placebo_TTP_plot_with_power_curves_title,
+                         directory, min_req_base_sz_count, x_axis_start, x_axis_stop, x_axis_step, y_axis_start, y_axis_stop, y_axis_step,
+                         x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
     
-    # plot all of the endpoint statistic maps having to do with the expected drug response
-    plot_set_of_maps(expected_drug_RR50_file_name,                        expected_drug_RR50_metadata_file_name, expected_drug_RR50_plot_file_name, 
-                     expected_drug_RR50_plot_with_power_curves_file_name, expected_drug_RR50_plot_title,         expected_drug_RR50_plot_with_power_curves_title,
-                     expected_drug_MPC_file_name,                         expected_drug_MPC_metadata_file_name,  expected_drug_MPC_plot_file_name, 
-                     expected_drug_MPC_plot_with_power_curves_file_name,  expected_drug_MPC_plot_title,          expected_drug_MPC_plot_with_power_curves_title,
-                     expected_drug_TTP_file_name,                         expected_drug_TTP_metadata_file_name,  expected_drug_TTP_plot_file_name, 
-                     expected_drug_TTP_plot_with_power_curves_file_name,  expected_drug_TTP_plot_title,          expected_drug_TTP_plot_with_power_curves_title,
-                     x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
+        # plot all of the endpoint statistic maps having to do with the expected drug response
+        plot_set_of_maps(expected_drug_RR50_file_name,  expected_drug_RR50_plot_file_name, expected_drug_RR50_plot_with_power_curves_file_name, 
+                         expected_drug_RR50_plot_title, expected_drug_RR50_plot_with_power_curves_title,
+                         expected_drug_MPC_file_name,   expected_drug_MPC_plot_file_name, expected_drug_MPC_plot_with_power_curves_file_name,  
+                         expected_drug_MPC_plot_title,  expected_drug_MPC_plot_with_power_curves_title,
+                         expected_drug_TTP_file_name,   expected_drug_TTP_plot_file_name, expected_drug_TTP_plot_with_power_curves_file_name,
+                         expected_drug_TTP_plot_title,  expected_drug_TTP_plot_with_power_curves_title,
+                         directory, min_req_base_sz_count, x_axis_start, x_axis_stop, x_axis_step, y_axis_start, y_axis_stop, y_axis_step,
+                         x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
     
-    # plot all of the endpoint statistic maps having to do with the statistical power
-    plot_set_of_maps(RR50_stat_power_file_name,                        RR50_stat_power_metadata_file_name, RR50_stat_power_plot_file_name, 
-                     RR50_stat_power_plot_with_power_curves_file_name, RR50_stat_power_plot_title,         RR50_stat_power_plot_with_power_curves_title,
-                     MPC_stat_power_file_name,                         MPC_stat_power_metadata_file_name,  MPC_stat_power_plot_file_name, 
-                     MPC_stat_power_plot_with_power_curves_file_name,  MPC_stat_power_plot_title,          MPC_stat_power_plot_with_power_curves_title,
-                     TTP_stat_power_file_name,                         TTP_stat_power_metadata_file_name,  TTP_stat_power_plot_file_name, 
-                     TTP_stat_power_plot_with_power_curves_file_name,  TTP_stat_power_plot_title,          TTP_stat_power_plot_with_power_curves_title,
-                     x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
+        # plot all of the endpoint statistic maps having to do with the statistical power
+        plot_set_of_maps(RR50_stat_power_file_name,  RR50_stat_power_plot_file_name, RR50_stat_power_plot_with_power_curves_file_name, 
+                         RR50_stat_power_plot_title, RR50_stat_power_plot_with_power_curves_title,
+                         MPC_stat_power_file_name,   MPC_stat_power_plot_file_name, MPC_stat_power_plot_with_power_curves_file_name,
+                         MPC_stat_power_plot_title,  MPC_stat_power_plot_with_power_curves_title,
+                         TTP_stat_power_file_name,   TTP_stat_power_plot_file_name, TTP_stat_power_plot_with_power_curves_file_name, 
+                         TTP_stat_power_plot_title,  TTP_stat_power_plot_with_power_curves_title,
+                         directory, min_req_base_sz_count, x_axis_start, x_axis_stop, x_axis_step, y_axis_start, y_axis_stop, y_axis_step,
+                         x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
     
-    # plot all of the endpoint statistic maps having to do with the type_1 error
-    plot_set_of_maps(RR50_type_1_error_file_name,                        RR50_type_1_error_metadata_file_name, RR50_type_1_error_plot_file_name, 
-                     RR50_type_1_error_plot_with_power_curves_file_name, RR50_type_1_error_plot_title,         RR50_type_1_error_plot_with_power_curves_title,
-                     MPC_type_1_error_file_name,                         MPC_type_1_error_metadata_file_name,  MPC_type_1_error_plot_file_name, 
-                     MPC_type_1_error_plot_with_power_curves_file_name,  MPC_type_1_error_plot_title,          MPC_type_1_error_plot_with_power_curves_title,
-                     TTP_type_1_error_file_name,                         TTP_type_1_error_metadata_file_name,  TTP_type_1_error_plot_file_name, 
-                     TTP_type_1_error_plot_with_power_curves_file_name,  TTP_type_1_error_plot_title,          TTP_type_1_error_plot_with_power_curves_title,
-                     x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
+        # plot all of the endpoint statistic maps having to do with the type_1 error
+        plot_set_of_maps(RR50_type_1_error_file_name,  RR50_type_1_error_plot_file_name, RR50_type_1_error_plot_with_power_curves_file_name, 
+                         RR50_type_1_error_plot_title, RR50_type_1_error_plot_with_power_curves_title,
+                         MPC_type_1_error_file_name,   MPC_type_1_error_plot_file_name, MPC_type_1_error_plot_with_power_curves_file_name,  
+                         MPC_type_1_error_plot_title,  MPC_type_1_error_plot_with_power_curves_title,
+                         TTP_type_1_error_file_name,   TTP_type_1_error_plot_file_name, TTP_type_1_error_plot_with_power_curves_file_name,  
+                         TTP_type_1_error_plot_title,  TTP_type_1_error_plot_with_power_curves_title,
+                         directory, min_req_base_sz_count, x_axis_start, x_axis_stop, x_axis_step, y_axis_start, y_axis_stop, y_axis_step,
+                         x_tick_spacing, y_tick_spacing, min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
     
+    '''
     # plot the histograms of NV models 1 and 2
     plot_histograms(H_model_1_file_name, H_model_1_metadata_file_name, H_model_1_plot_file_name, H_model_1_plot_title,
                     H_model_2_file_name, H_model_2_metadata_file_name, H_model_2_plot_file_name, H_model_2_plot_title,
                     x_tick_spacing, y_tick_spacing)
+    '''
 
 
 if(__name__=='__main__'):
@@ -853,16 +869,19 @@ if(__name__=='__main__'):
     args = parser.parse_args()
     arg_array = args.array
 
+    # take in the directory containing all the JSON files from the user
+    directory = arg_array[0]
+
     # obtain the spacing in between each of the labelled x-axis and y-axis ticks for all maps and histograms
-    x_tick_spacing = float(arg_array[0])
-    y_tick_spacing = float(arg_array[1])
+    x_tick_spacing = float(arg_array[2])
+    y_tick_spacing = float(arg_array[3])
 
     # obtain the slopes of the power law curves to be plotted
-    min_power_law_slope = float(arg_array[2])
-    max_power_law_slope = float(arg_array[3])
-    power_law_slope_spacing = float(arg_array[4])
-    legend_decimal_round = int(arg_array[5])
+    min_power_law_slope = float(arg_array[4])
+    max_power_law_slope = float(arg_array[5])
+    power_law_slope_spacing = float(arg_array[6])
+    legend_decimal_round = int(arg_array[7])
 
     # run the main function
-    main(x_tick_spacing, y_tick_spacing, 
+    main(directory, x_tick_spacing, y_tick_spacing, 
          min_power_law_slope, max_power_law_slope, power_law_slope_spacing, legend_decimal_round)
