@@ -631,6 +631,7 @@ def plot_set_of_maps(RR50_file_name, RR50_plot_file_name, RR50_plot_with_power_c
     
     # plot the time-to-prerandomization data map
     plot_map(TTP_file_name, TTP_plot_file_name, 
+             directory, min_req_base_sz_count,
              x_axis_start, x_axis_stop, x_axis_step,
              y_axis_start, y_axis_stop, y_axis_step,
              x_tick_spacing, y_tick_spacing, False,
