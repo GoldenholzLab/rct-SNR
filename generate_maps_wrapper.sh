@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-#SBATCH -p medium
+#SBATCH -p short
 #SBATCH --mem=10G
 #SBATCH -t 0-00:10
 #SBATCH -n 1
