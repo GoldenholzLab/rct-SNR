@@ -249,7 +249,7 @@ def plot_map(data_map_file_name, data_plot_file_name,
         data_map = np.array(json.load(map_storage_file))
 
     # figure out the folder in which the plot of the map will be stored
-    data_plot_folder = directory + '/' + str(min_req_base_sz_count) + '/maps'
+    data_plot_folder = directory + '/maps/maps_' + str(min_req_base_sz_count) 
 
     # if the folder does not already exist, then make it
     if ( not os.path.exists(data_plot_folder) ):
