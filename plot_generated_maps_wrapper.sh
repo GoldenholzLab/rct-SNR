@@ -10,6 +10,11 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
+module load gcc/6.2.0
+module load conda2/4.2.13
+module load python/3.6.0
+source activate main_env
+
 # set the directory for the stored maps 
 directory='/n/scratch2/jmr95/test_maps'
 
