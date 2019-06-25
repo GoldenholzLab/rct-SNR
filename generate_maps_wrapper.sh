@@ -10,12 +10,6 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
-module load gcc/6.2.0
-module load conda2/4.2.13
-module load python/3.6.0
-source activate main_env
-
-
 # The information needed for the monthly seizure frequency axis of the endpoint statistic maps
 # These parameters need to be passed off as metadata to plotting scripts
 mu_start=0
