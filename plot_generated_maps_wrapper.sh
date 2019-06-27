@@ -16,7 +16,7 @@ module load python/3.6.0
 source activate main_env
 
 # set the directory for the stored maps 
-directory='/n/scratch2/jmr95/test_maps'
+directory='/n/scratch2/jmr95/test_map_2'
 
 # The spacing in between each of the labelled x-axis and y-axis ticks
 x_tick_spacing=2

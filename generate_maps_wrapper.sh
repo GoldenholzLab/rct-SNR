@@ -39,7 +39,7 @@ drug_sigma=0.05
 num_maps=10
 
 # The location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
-directory='/n/scratch2/jmr95/test_maps'
+directory='/n/scratch2/jmr95/test_maps_2'
 
 # create a new meta-data text file
 touch $directory/meta_data.txt

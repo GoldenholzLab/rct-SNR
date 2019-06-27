@@ -15,6 +15,6 @@ module load conda2/4.2.13
 module load python/3.6.0
 source activate main_env
 
-directory='/n/scratch2/jmr95/test_maps'
+directory='/n/scratch2/jmr95/test_maps_2'
 
 srun -c 1 python sum_generated_maps.py $directory
