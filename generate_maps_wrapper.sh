@@ -27,7 +27,7 @@ num_baseline_months=2
 num_testing_months=3
 max_num_req_baseline_sz=4
 num_patients_per_arm=153
-num_trials_per_map_point=100
+num_trials_per_map_point=5
 
 # The parameters for generating the placebo and drug effects
 placebo_mean=0
@@ -36,7 +36,7 @@ drug_mean=0.2
 drug_sigma=0.05
 
 # set the number of maps to average over
-num_maps=10
+num_maps=200
 
 # The location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
 directory='/n/scratch2/jmr95/test_maps_2'
