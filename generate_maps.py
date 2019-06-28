@@ -912,23 +912,83 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
     
     Outputs:
 
-        1) RR50_stat_power_map:
+        1) expected_placebo_RR50_map:
 
-            (2D Numpy array) - a 2D numpy array which contains the RR50 statistical power map for many different patients with 
+            (2D Numpy array) - a 2D numpy array which contains the expected 50% responder rate placebo response 
+                               
+                               for many different patients with a given monthly seizure mean and monthly seizure 
+                               
+                               count standard deviation
+
+        2) expected_placebo_MPC_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the expected median percent change placebo response 
+                              
+                               for many different patients with a given monthly seizure mean and monthly seizure 
+                               
+                               count standard deviation
+
+        3) expected_placebo_TTP_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the expected time-to-prerandomization placebo response 
             
-                               a given monthly seizure mean and monthly seizure count standard deviation
+                               for many different patients with a given monthly seizure mean and monthly seizure count 
+                               
+                               standard deviation
+        
+        4) expected_drug_RR50_map:
 
-        2) MPC_stat_power_map:
-
-            (2D Numpy array) - a 2D numpy array which contains the MPC statistical power map for many different patients with 
+            (2D Numpy array) - a 2D numpy array which contains the expected 50% responder rate drug response for many 
             
-                               a given monthly seizure mean and monthly seizure count standard deviation
+                               different patients with a given monthly seizure mean and monthly seizure count standard deviation
 
-        3) TTP_stat_power_map:
+        5) expected_drug_MPC_map:
 
-            (2D Numpy array) - a 2D numpy array which contains the TTP statistical power map for many different patients with 
+            (2D Numpy array) - a 2D numpy array which contains the expected median percent change drug response for many 
             
-                               a given monthly seizure mean and monthly seizure count standard deviation
+                               different patients with a given monthly seizure mean and monthly seizure count standard deviation
+
+        6) expected_drug_TTP_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the expected time-to-prerandomization drug response for many 
+                               
+                               different patients with a given monthly seizure mean and monthly seizure count standard deviation
+
+        7) RR50_stat_power_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the statistical power of the 50% responder rate for many different 
+                               
+                               patients with a given monthly seizure mean and monthly seizure count standard deviation
+
+        8) MPC_stat_power_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the statistical power of the median percent change for many 
+                               
+                               different patients with a given monthly seizure mean and monthly seizure count standard deviation
+
+        9) TTP_stat_power_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the statistical power of the time-to-prerandomization for many 
+                               
+                               different patients with a given monthly seizure mean and monthly seizure count standard deviation
+        
+        10) RR50_type_1_error_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the type-1 error of the 50% responder rate for many different 
+                               
+                               patients with a given monthly seizure mean and monthly seizure count standard deviation
+
+        11) MPC_type_1_error_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the type-1 error of the median percent change for many different 
+                               
+                               patients with a given monthly seizure mean and monthly seizure count standard deviation
+
+        12) TTP_type_1_error_map:
+
+            (2D Numpy array) - a 2D numpy array which contains the type-1 error of the time-to-prerandomization for many different 
+                               
+                               patients with a given monthly seizure mean and monthly seizure count standard deviation
 
     '''
 
@@ -1264,52 +1324,82 @@ def generate_SNR_data(shape_1, scale_1, alpha_1, beta_1,
     Outputs:
 
         1) expected_placebo_RR50_map:
-        
-            (2D Numpy array) - a 2D numpy array which contains the expected endpoint 50% responder rate placebo response map
-        
+
+            (2D Numpy array) - a 2D numpy array which contains the expected 50% responder rate placebo response 
+                               
+                               for many different patients with a given monthly seizure mean and monthly seizure 
+                               
+                               count standard deviation
+
         2) expected_placebo_MPC_map:
-                
-            (2D Numpy array) - a 2D numpy array which contains the expected endpoint median percent change placebo response map
-        
+
+            (2D Numpy array) - a 2D numpy array which contains the expected median percent change placebo response 
+                              
+                               for many different patients with a given monthly seizure mean and monthly seizure 
+                               
+                               count standard deviation
+
         3) expected_placebo_TTP_map:
-                
-            (2D Numpy array) - a 2D numpy array which contains the expected endpoint time-to-prerandomization placebo response map
+
+            (2D Numpy array) - a 2D numpy array which contains the expected time-to-prerandomization placebo response 
+            
+                               for many different patients with a given monthly seizure mean and monthly seizure count 
+                               
+                               standard deviation
         
         4) expected_drug_RR50_map:
-                
-            (2D Numpy array) - a 2D numpy array which contains the expected endpoint 50% responder rate drug response map
-        
+
+            (2D Numpy array) - a 2D numpy array which contains the expected 50% responder rate drug response for many 
+            
+                               different patients with a given monthly seizure mean and monthly seizure count standard deviation
+
         5) expected_drug_MPC_map:
-                        
-            (2D Numpy array) - a 2D numpy array which contains the expected endpoint median percent change drug response map
-        
+
+            (2D Numpy array) - a 2D numpy array which contains the expected median percent change drug response for many 
+            
+                               different patients with a given monthly seizure mean and monthly seizure count standard deviation
+
         6) expected_drug_TTP_map:
-                                
-            (2D Numpy array) - a 2D numpy array which contains the expected endpoint time-to-prerandomization drug response map
-        
+
+            (2D Numpy array) - a 2D numpy array which contains the expected time-to-prerandomization drug response for many 
+                               
+                               different patients with a given monthly seizure mean and monthly seizure count standard deviation
+
         7) RR50_stat_power_map:
 
-            (2D Numpy array) - a 2D numpy array which contains the 50% responder rate statistical power map
-        
+            (2D Numpy array) - a 2D numpy array which contains the statistical power of the 50% responder rate for many different 
+                               
+                               patients with a given monthly seizure mean and monthly seizure count standard deviation
+
         8) MPC_stat_power_map:
 
-            (2D Numpy array) - a 2D numpy array which contains the median percent change statistical power map
-        
+            (2D Numpy array) - a 2D numpy array which contains the statistical power of the median percent change for many 
+                               
+                               different patients with a given monthly seizure mean and monthly seizure count standard deviation
+
         9) TTP_stat_power_map:
 
-            (2D Numpy array) - a 2D numpy array which contains the time-to-prerandomization statistical power map
+            (2D Numpy array) - a 2D numpy array which contains the statistical power of the time-to-prerandomization for many 
+                               
+                               different patients with a given monthly seizure mean and monthly seizure count standard deviation
         
         10) RR50_type_1_error_map:
-        
-            (2D Numpy array) - a 2D numpy array which contains the 50% responder rate type-1 error map
-        
+
+            (2D Numpy array) - a 2D numpy array which contains the type-1 error of the 50% responder rate for many different 
+                               
+                               patients with a given monthly seizure mean and monthly seizure count standard deviation
+
         11) MPC_type_1_error_map:
-                
-            (2D Numpy array) - a 2D numpy array which contains the median percent change type-1 error map
-        
+
+            (2D Numpy array) - a 2D numpy array which contains the type-1 error of the median percent change for many different 
+                               
+                               patients with a given monthly seizure mean and monthly seizure count standard deviation
+
         12) TTP_type_1_error_map:
-                
-            (2D Numpy array) - a 2D numpy array which contains the time-to-prerandomization type-1 error map
+
+            (2D Numpy array) - a 2D numpy array which contains the type-1 error of the time-to-prerandomization for many different 
+                               
+                               patients with a given monthly seizure mean and monthly seizure count standard deviation
 
         ******************************************************
         *****THE FOLLOWING OUTPUTS ARE DEPRECATED FOR NOW*****
