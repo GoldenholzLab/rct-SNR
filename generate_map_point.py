@@ -1,6 +1,8 @@
 import numpy as np
 from scipy import stats
 from lifelines.statistics import logrank_test
+import os
+import json
 import sys
 
 def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients, 
@@ -647,22 +649,16 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev, num_trials, rct_
                                     3.a) num_patients_per_trial_arm:
 
                                         (int) - the number of patients generated per trial arm
-        
-                                    3.a) num_trials:
 
-                                        (int) - the number of trials used to estimate the expected endpoints at each point in the expected 
-                    
-                                                placebo response maps
-
-                                    3.a) num_baseline_months:
+                                    3.b) num_baseline_months:
 
                                         (int) - the number of baseline months in each patient's seizure diary
 
-                                    3.a) num_testing_months:
+                                    3.c) num_testing_months:
 
                                         (int) - the number of testing months in each patient's seizure diary
 
-                                    3.a) min_req_base_sz_count:
+                                    3.d) min_req_base_sz_count:
         
                                         (int) - the minimum number of required baseline seizure counts
         
@@ -905,30 +901,141 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev, num_trials, rct_
     return endpoint_statistics
 
 
-def store_endpoint_statistic_map_point(directory, min_req_base_sz_count, map_num, endpoint_statistics):
+def store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev, min_req_base_sz_count, map_num, endpoint_statistics):
+    '''
 
+    Purpose:
+
+        This function stores all the endpoint statistics for one point on several different type os enpdoint statistic maps.
+    
+    Inputs:
+
+        1) directory:
+
+            (str) - 
+
+        2) monthly_mean:
+
+            (float) - 
+        
+       3)  monthly_std_dev:
+
+            (float) - 
+
+        4) min_req_base_sz_count:
+
+            (int) - 
+
+        5) map_num:
+
+            (int) - 
+        
+        6) trial_endpoints:
+
+            (1D Numpy array) - A Numpy array containing the endpoint responses from the placebo and drug arms
+                               
+                               as well as the corresponding p-values. THis array contains the following
+
+                               quantities:
+
+                                    6.a) placebo_RR50:    
+        
+                                        (float) - the 50% responder rate for the placebo arm of the trial
+
+                                    6.b) drug_RR50:    
+        
+                                        (float) - the 50% responder rate for the drug arm of the trial
+
+                                    6.c) RR50_p_value:
+        
+                                        (float) - the p-value for the 50% responder rate
+
+                                    6.d) placebo_MPC:
+
+                                        (float) - the median percent change for the placebo arm of the trial
+
+                                    6.e) drug_MPC:
+        
+                                        (float) - the median percent change for the drug arm of the trial
+
+                                    6.f) MPC_p_value:
+                
+                                        (float) - the p-value for the median percent change
+
+                                    6.g) placebo_med_TTP: 
+                
+                                        (float) - the median time-to-prerandomization for the placebo arm of the trial
+
+                                    6.h) drug_med_TTP: 
+                        
+                                        (float) - the median time-to-prerandomization for the drug arm of the trial
+
+                                    6.i) TTP_p_value:
+                
+                                        (float) - the p-value for the time-to-prerandomization
+
+    Outputs:
+
+        Tecnically, none, but this function generates a JSON file which is sotred in a file tree structure
+
+    '''
+
+    # turn all relevant information into strings
+    monthly_mean_str = str(monthly_mean)
+    monthly_std_dev_str = str(monthly_std_dev)
     min_req_base_sz_count_str = str(min_req_base_sz_count)
     map_num_str = str(map_num)
 
-    
+    # create the file path
+    folder = directory + '/eligibility_criteria__' + min_req_base_sz_count_str + '/map_num__' + map_num_str + 'endpoint_statistics_map_points'
+    file_name = 'mean__' + monthly_mean_str + '_std_dev__' + monthly_std_dev_str + '.json'
+    file_path = folder + '/' + file_name
 
-'''
+    # if the folder which will contain the data does not exist, create it
+    if(not os.path.exists(folder) ):
+
+        os.makedirs(folder)
+    
+    # dump this endpoint statistist map point into a JSON file
+    with open(file_path, 'w+') as json_file:
+
+        json.dump(endpoint_statistics.tolist(), json_file)
+
+
 if(__name__=='__main__'):
 
     # obtain the statistical parameters needed to generate each patient
-    monthly_mean    = float(arg_array[0])
-    monthly_std_dev = float(arg_array[1])
+    monthly_mean    = 4
+    monthly_std_dev = 5
+
+    # obatint he number of trials to estimated the endpoint statistics over
+    num_trials = 10
+
+    # obtain the directoy in which all the files will be stored
+    directory = '/Users/juanromero/Documents/python_3_Files/test'
+
+    # obtain the number of the map the endpoint statistics will be generated for
+    map_num = 4
 
     # obatin the RCT parameters
-    num_patients_per_trial_arm = int(arg_array[2])
-    num_trials                 = int(arg_array[3])
-    num_baseline_months        = int(arg_array[4])
-    num_testing_months         = int(arg_array[5])
-    min_req_base_sz_count      = int(arg_array[6])
+    num_patients_per_trial_arm = 10
+    num_baseline_months        = 2
+    num_testing_months         = 3
+    min_req_base_sz_count      = 4
 
     # obtain the statistical parameters detailing the placebo and drug effects
-    placebo_mu    = float(arg_array[7])
-    placebo_sigma = float(arg_array[8])
-    drug_mu       = float(arg_array[9])
-    drug_sigma    = float(arg_array[10])
-'''
+    placebo_mu    = 0
+    placebo_sigma = 0.05
+    drug_mu       = 0.2
+    drug_sigma    = 0.05
+
+    # store some of the parameters into arrays for the sake of readability
+    rct_params_monthly_scale = np.array([num_patients_per_trial_arm, num_baseline_months, 
+                                         num_testing_months,         min_req_base_sz_count])
+    effect_params = np.array([placebo_mu, placebo_sigma, drug_mu, drug_sigma])
+
+    endpoint_statistics = \
+        estimate_endpoint_statistics(monthly_mean, monthly_std_dev, num_trials, rct_params_monthly_scale, effect_params)
+
+    store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev, min_req_base_sz_count, map_num, endpoint_statistics)
+
