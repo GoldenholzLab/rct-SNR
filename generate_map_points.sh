@@ -22,9 +22,10 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-for map_num in $(seq 1 1 $num_maps);
+
+for min_req_base_sz_count in $(seq 0 1 $max_min_req_base_sz_count);
 do
-    for min_req_base_sz_count in $(seq 0 1 $max_min_req_base_sz_count);
+    for map_num in $(seq 1 1 $num_maps);
     do
         for monthly_mean in $(seq $start_monthly_mean $step_monthly_mean $stop_monthly_mean);
         do
