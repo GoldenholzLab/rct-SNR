@@ -821,6 +821,7 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev, num_trials, rct_
             rct_params_daily_scale[1] = num_baseline_days
             rct_params_daily_scale[2] = num_testing_days
             rct_params_daily_scale[3] = min_req_base_sz_count
+            rct_params_daily_scale = np.int_(rct_params_daily_scale)
 
             # for every trial:
             for trial_index in range(num_trials):
@@ -987,7 +988,7 @@ def store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev,
     map_num_str = str(map_num)
 
     # create the file path
-    folder = directory + '/eligibility_criteria__' + min_req_base_sz_count_str + '/map_num__' + map_num_str + 'endpoint_statistics_map_points'
+    folder = directory + '/eligibility_criteria__' + min_req_base_sz_count_str + '/map_num__' + map_num_str + '/endpoint_statistics_map_points'
     file_name = 'mean__' + monthly_mean_str + '_std_dev__' + monthly_std_dev_str + '.json'
     file_path = folder + '/' + file_name
 
@@ -1017,7 +1018,7 @@ if(__name__=='__main__'):
     # obtain the number of the map the endpoint statistics will be generated for
     map_num = 4
 
-    # obatin the RCT parameters
+    # obtain the RCT design parameters
     num_patients_per_trial_arm = 10
     num_baseline_months        = 2
     num_testing_months         = 3
@@ -1034,8 +1035,10 @@ if(__name__=='__main__'):
                                          num_testing_months,         min_req_base_sz_count])
     effect_params = np.array([placebo_mu, placebo_sigma, drug_mu, drug_sigma])
 
+    # generate the actual ednpoint statistics
     endpoint_statistics = \
         estimate_endpoint_statistics(monthly_mean, monthly_std_dev, num_trials, rct_params_monthly_scale, effect_params)
 
+    # store the endpoint statistics
     store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev, min_req_base_sz_count, map_num, endpoint_statistics)
 
