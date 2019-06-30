@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import stats
 from lifelines.statistics import logrank_test
-import argparse
+import sys
 
 def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients, 
                                    num_baseline_days, num_testing_days, 
@@ -831,12 +831,6 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev,
 
 
 if(__name__=='__main__'):
-
-    # take in the command-line arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument('array', nargs='+')
-    args = parser.parse_args()
-    arg_array = args.array
 
     # obtain the statistical parameters needed to generate each patient
     monthly_mean    = float(arg_array[0])
