@@ -4,6 +4,9 @@ from lifelines.statistics import logrank_test
 import os
 import json
 import sys
+import time
+import psutil
+
 
 def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients, 
                                    num_baseline_days, num_testing_days, 
@@ -988,8 +991,8 @@ def store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev,
     map_num_str = str(map_num)
 
     # create the file path
-    folder = directory + '/eligibility_criteria__' + min_req_base_sz_count_str + '/map_num__' + map_num_str + '/endpoint_statistics_map_points'
-    file_name = 'mean__' + monthly_mean_str + '_std_dev__' + monthly_std_dev_str + '.json'
+    folder = directory + '/eligibility_criteria__' + min_req_base_sz_count_str + '/map_num__' + map_num_str + '/mean__'  + monthly_mean_str
+    file_name = 'std_dev__' + monthly_std_dev_str + '.json'
     file_path = folder + '/' + file_name
 
     # if the folder which will contain the data does not exist, create it
@@ -1005,30 +1008,32 @@ def store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev,
 
 if(__name__=='__main__'):
 
-    # obtain the statistical parameters needed to generate each patient
-    monthly_mean    = 4
-    monthly_std_dev = 5
+    start_time_in_second = time.time()
 
-    # obatint he number of trials to estimated the endpoint statistics over
-    num_trials = 10
+    # obtain the statistical parameters needed to generate each patient
+    monthly_mean    = float(sys.argv[1])
+    monthly_std_dev = float(sys.argv[2])
+
+    # obtain the number of trials to estimated the endpoint statistics over
+    num_trials = int(sys.argv[3])
 
     # obtain the directoy in which all the files will be stored
-    directory = '/Users/juanromero/Documents/python_3_Files/test'
+    directory = sys.argv[4]
 
     # obtain the number of the map the endpoint statistics will be generated for
-    map_num = 4
+    map_num = int(sys.argv[5])
 
     # obtain the RCT design parameters
-    num_patients_per_trial_arm = 10
-    num_baseline_months        = 2
-    num_testing_months         = 3
-    min_req_base_sz_count      = 4
+    num_patients_per_trial_arm = int(sys.argv[6])
+    num_baseline_months        = int(sys.argv[7])
+    num_testing_months         = int(sys.argv[8])
+    min_req_base_sz_count      = int(sys.argv[9])
 
     # obtain the statistical parameters detailing the placebo and drug effects
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
+    placebo_mu    = float(sys.argv[10])
+    placebo_sigma = float(sys.argv[11])
+    drug_mu       = float(sys.argv[12])
+    drug_sigma    = float(sys.argv[13])
 
     # store some of the parameters into arrays for the sake of readability
     rct_params_monthly_scale = np.array([num_patients_per_trial_arm, num_baseline_months, 
@@ -1041,4 +1046,20 @@ if(__name__=='__main__'):
 
     # store the endpoint statistics
     store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev, min_req_base_sz_count, map_num, endpoint_statistics)
+
+    stop_time_in_seconds = time.time()
+    run_time_in_minutes = (stop_time_in_seconds - start_time_in_second)/60
+
+    svem = psutil.virtual_memory()
+    total_mem_in_bytes = svem.total
+    available_mem_in_bytes = svem.available
+    used_mem_in_bytes = total_mem_in_bytes - available_mem_in_bytes
+    used_mem_in_gigabytes = used_mem_in_bytes/np.power(1024, 3)
+
+    print('\n\nmonthly mean: '                                    + str(np.round(monthly_mean, 3)) + 
+            '\nmonthly standard deviation: '                      + str(np.round(monthly_std_dev, 3)) +
+            '\nminimum required number of seizures in baseline: ' + str(np.round(min_req_base_sz_count, 3)) + 
+            '\nmap number: '                                      + str(np.round(map_num, 3)) + 
+            '\ncpu time in minutes: '                             + str(np.round(run_time_in_minutes, 3)) + 
+            '\nmemory usage in GB: '                              + str(np.round(used_mem_in_gigabytes, 3)) )
 
