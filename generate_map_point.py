@@ -348,9 +348,7 @@ def calculate_times_to_prerandomization(daily_seizure_diaries, num_months_baseli
     return TTP_times
 
 
-def generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_trial_arm,
-                                  num_baseline_days, num_testing_days, min_req_base_sz_count,
-                                  placebo_mu, placebo_sigma, drug_mu, drug_sigma):
+def generate_one_trial_population(daily_mean, daily_std_dev, rct_params_daily_scale, effect_params):
     '''
 
     Purpose:
@@ -370,38 +368,52 @@ def generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_tr
         2) daily_std_dev:
 
             (float) - the standard deviation of the daily seizure counts in each patient's seizure diary
-
-        3) num_patients_per_trial_arm:
-
-            (int) - the number of patients generated per trial arm
-
-        4) num_baseline_days:
-
-            (int) - the number of baseline days in each patient's seizure diary
-
-        5) num_testing_days:
-
-            (int) - the number of testing days in each patient's seizure diary
-
-        6) min_req_base_sz_count:
         
-            (int) - the minimum number of required baseline seizure counts
+        3) rct_params_daily_scale:
 
-        7) placebo_mu:
+            (1D Numpy array) - a numpy array containing the RCT design parameters for the trial to be generated
 
-            (float) - the mean of the placebo effect
+                               on a daily time scale. This Numpy array contains the folllowing quantities:
 
-        8) placebo_sigma:
+                                    3.a) num_patients_per_trial_arm:
+
+                                        (int) - the number of patients generated per trial arm
+
+                                    3.b) num_baseline_days:
+
+                                        (int) - the number of baseline days in each patient's seizure diary
+
+                                    3.c) num_testing_days:
+
+                                        (int) - the number of testing days in each patient's seizure diary
+
+                                    3.d) min_req_base_sz_count:
         
-            (float) - the standard deviation of the placebo effect
+                                        (int) - the minimum number of required baseline seizure counts
 
-        9) drug_mu:
+        4) effect_params:
 
-            (float) - the mean of the drug effect
+            (1D Numpy array) - a numpy array containing the statistical parameters needed to generate the placebo
+                               
+                               and drug effects according to the implemented algorithms. Ths numpy array contains
 
-        10) drug_sigma:
+                               the following quantities:
 
-            (float) - the standard deviation of the drug effect
+                                    4.a) placebo_mu:
+
+                                        (float) - the mean of the placebo effect
+
+                                    4.b) placebo_sigma:
+        
+                                        (float) - the standard deviation of the placebo effect
+
+                                    4.c) drug_mu:
+
+                                        (float) - the mean of the drug effect
+
+                                    4.d) drug_sigma:
+
+                                        (float) - the standard deviation of the drug effect
 
     Outputs:
 
@@ -414,6 +426,18 @@ def generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_tr
             (2D Numpy array) - an array of the patient diaries from the drug arm of one trial
 
     '''
+
+    # extract the RCT design parameters
+    num_patients_per_trial_arm = rct_params_daily_scale[0]
+    num_baseline_days          = rct_params_daily_scale[1]
+    num_testing_days           = rct_params_daily_scale[2]
+    min_req_base_sz_count      = rct_params_daily_scale[3]
+
+    # extract the statistical parameters for the drug and placebo effect
+    placebo_mu    = effect_params[0]
+    placebo_sigma = effect_params[1]
+    drug_mu       = effect_params[2]
+    drug_sigma    = effect_params[3]
     
     # generate all the seizure diaries for the placebo arm
     placebo_arm_daily_seizure_diaries = \
@@ -445,8 +469,8 @@ def generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_tr
     return [placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries]
 
 
-def calculate_one_trial_quantities(placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries,
-                                   num_baseline_months, num_testing_months):
+def calculate_trial_endpoints(placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries,
+                              num_patients_per_trial_arm, num_baseline_months, num_testing_months):
     '''
 
     Purpose:
@@ -487,41 +511,49 @@ def calculate_one_trial_quantities(placebo_arm_daily_seizure_diaries, drug_arm_d
 
     Outputs:
 
-        1) placebo_RR50:    
+        1) trial_endpoints:
+
+            (1D Numpy array) - A Numpy array containing the endpoint responses from the placebo and drug arms
+                               
+                               as well as the corresponding p-values. THis array contains the following
+
+                               quantities:
+
+                                    1.a) placebo_RR50:    
         
-            (float) - the 50% responder rate for the placebo arm of the trial
+                                        (float) - the 50% responder rate for the placebo arm of the trial
 
-        2) drug_RR50:    
+                                    1.b) drug_RR50:    
         
-            (float) - the 50% responder rate for the drug arm of the trial
+                                        (float) - the 50% responder rate for the drug arm of the trial
 
-        3) RR50_p_value:
+                                    1.c) RR50_p_value:
         
-            (float) - the p-value for the 50% responder rate
+                                        (float) - the p-value for the 50% responder rate
 
-        4) placebo_MPC:
+                                    1.d) placebo_MPC:
 
-            (float) - the median percent change for the placebo arm of the trial
+                                        (float) - the median percent change for the placebo arm of the trial
 
-        5) drug_MPC:
+                                    1.e) drug_MPC:
         
-            (float) - the median percent change for the drug arm of the trial
+                                        (float) - the median percent change for the drug arm of the trial
 
-        6) MPC_p_value:
+                                    1.f) MPC_p_value:
                 
-            (float) - the p-value for the median percent change
+                                        (float) - the p-value for the median percent change
 
-        7) placebo_med_TTP: 
+                                    1.g) placebo_med_TTP: 
                 
-            (float) - the median time-to-prerandomization for the placebo arm of the trial
+                                        (float) - the median time-to-prerandomization for the placebo arm of the trial
 
-        8) drug_med_TTP: 
+                                    1.h) drug_med_TTP: 
                         
-            (float) - the median time-to-prerandomization for the drug arm of the trial
+                                        (float) - the median time-to-prerandomization for the drug arm of the trial
 
-        9) TTP_p_value:
+                                    1.i) TTP_p_value:
                 
-            (float) - the p-value for the time-to-prerandomization
+                                        (float) - the p-value for the time-to-prerandomization
 
     '''
 
@@ -560,15 +592,14 @@ def calculate_one_trial_quantities(placebo_arm_daily_seizure_diaries, drug_arm_d
     [_, MPC_p_value] = stats.ranksums(placebo_percent_changes, drug_percent_changes)
     TTP_p_value = TTP_results.p_value
 
-    return [placebo_RR50,    drug_RR50,    RR50_p_value,
-            placebo_MPC,     drug_MPC,     MPC_p_value,
-            placebo_med_TTP, drug_med_TTP, TTP_p_value]
+    trial_endpoints = np.array([placebo_RR50,    drug_RR50,    RR50_p_value,
+                                placebo_MPC,     drug_MPC,     MPC_p_value,
+                                placebo_med_TTP, drug_med_TTP, TTP_p_value])
+
+    return trial_endpoints
 
 
-def estimate_endpoint_statistics(monthly_mean, monthly_std_dev,
-                                 num_patients_per_trial_arm, num_trials,
-                                 num_baseline_months, num_testing_months, min_req_base_sz_count,
-                                 placebo_mu, placebo_sigma, drug_mu, drug_sigma):
+def estimate_endpoint_statistics(monthly_mean, monthly_std_dev, num_trials, rct_params_monthly_scale, effect_params):
     '''
 
     Purpose:
@@ -579,11 +610,15 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev,
     
         median percent change, time-to-prerandomization) with a monthly mean and monthly standard deviation as 
     
-        specified by the input parameters. This function will just return NaN if the standard deviation is less than 
-    
-        the square root of the mean due to mathematical restrictions on the negative binomial distribution which is 
-    
-        generating all these seizure counts. This function will also return NaN if the given monthly mean is just zero.
+        specified by the input parameters. These endpoint statistics are esimated and averaged from a set of simulated trials,
+        
+        the size of which is specified by the user. This function will just return NaN for all endpoint statistics if the
+        
+        standard deviation is less than the square root of the mean due to mathematical restrictions on the negative binomial 
+        
+        distribution which is generating all these seizure counts. This function will also return NaN if the given monthly mean 
+        
+        is just zero.
 
     Inputs:
 
@@ -594,121 +629,165 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev,
         2) monthly_std_dev:
 
             (float) - the standard deviation of the monthly seizure counts in each patient's seizure diary
-
-        3) num_patients_per_trial_arm:
-
-            (int) - the number of patients generated per trial arm
-        
-        4) num_trials:
+    
+        3) num_trials:
 
             (int) - the number of trials used to estimate the expected endpoints at each point in the expected 
                     
                     placebo response maps
-
-        5) num_baseline_months:
-
-            (int) - the number of baseline months in each patient's seizure diary
-
-        6) num_testing_months:
-
-            (int) - the number of testing months in each patient's seizure diary
-
-        7) min_req_base_sz_count:
         
-            (int) - the minimum number of required baseline seizure counts
+        3) rct_params_monthly_scale:
 
-        8) placebo_mu:
+            (1D Numpy Array) - A Numpy array containing the RCT design parameters (on a monthly time scale) for
+                               
+                               for all the trials that the endpoint statistics will be estimated over. This array
 
-            (float) - the mean of the placebo effect
+                               contains the following quantities:
 
-        9) placebo_sigma:
+                                    3.a) num_patients_per_trial_arm:
+
+                                        (int) - the number of patients generated per trial arm
         
-            (float) - the standard deviation of the placebo effect
+                                    3.a) num_trials:
 
-        10) drug_mu:
+                                        (int) - the number of trials used to estimate the expected endpoints at each point in the expected 
+                    
+                                                placebo response maps
 
-            (float) - the mean of the drug effect
+                                    3.a) num_baseline_months:
 
-        11) drug_sigma:
+                                        (int) - the number of baseline months in each patient's seizure diary
 
-            (float) - the standard deviation of the drug effect
+                                    3.a) num_testing_months:
+
+                                        (int) - the number of testing months in each patient's seizure diary
+
+                                    3.a) min_req_base_sz_count:
+        
+                                        (int) - the minimum number of required baseline seizure counts
+        
+        4) effect_params:
+
+            (1D Numpy array) - a numpy array containing the statistical parameters needed to generate the placebo
+                               
+                               and drug effects according to the implemented algorithms. Ths numpy array contains
+
+                               the following quantities:
+
+                                    4.a) placebo_mu:
+
+                                        (float) - the mean of the placebo effect
+
+                                    4.b) placebo_sigma:
+        
+                                        (float) - the standard deviation of the placebo effect
+
+                                    4.c) drug_mu:
+
+                                        (float) - the mean of the drug effect
+
+                                    4.d) drug_sigma:
+
+                                        (float) - the standard deviation of the drug effect
 
     Outputs:
 
-        1) expected_placebo_RR50:
+        1) endpoint_statistics:
 
-            (float) - the 50% responder rate which is expected from an individual in the placebo arm with this 
+            (1D Numpy array) - A Numpy array which contains the endpoint statistics for one point on all corresponding
+                               
+                               endpoint statistic maps, estimated over multiple trials. This array contains the following
+
+                               quantities:
+
+                                    1.a) expected_placebo_RR50:
+
+                                        (float) - the 50% responder rate which is expected from an individual in the placebo arm with this 
             
-                      specific monthly mean and monthly standard deviation
+                                                  specific monthly mean and monthly standard deviation
 
-        2) expected_placebo_MPC:
+                                    1.b) expected_placebo_MPC:
 
-            (float) - the median percent change which is expected from an individual in the placebo arm with this 
+                                        (float) - the median percent change which is expected from an individual in the placebo arm with this 
             
-                      specific monthly mean and monthly standard deviation
+                                                  specific monthly mean and monthly standard deviation
 
-        3) expected_placebo_TTP: 
+                                    1.c) expected_placebo_TTP: 
 
-            (float) - the time-to-prerandomization which is expected from an individual in the placebo arm with this 
+                                        (float) - the time-to-prerandomization which is expected from an individual in the placebo arm with this 
             
-                      specific monthly mean and monthly standard deviation
+                                                  specific monthly mean and monthly standard deviation
 
-        4) expected_drug_RR50:
+                                    1.d) expected_drug_RR50:
 
-            (float) - the 50% responder rate which is expected from an individual in the drug arm with this 
+                                        (float) - the 50% responder rate which is expected from an individual in the drug arm with this 
             
-                      specific monthly mean and monthly standard deviation
+                                                  specific monthly mean and monthly standard deviation
 
-        5) expected_drug_MPC:
+                                    1.e) expected_drug_MPC:
 
-            (float) - the median percent change which is expected from an individual in the drug arm with this 
+                                        (float) - the median percent change which is expected from an individual in the drug arm with this 
             
-                      specific monthly mean and monthly standard deviation
+                                                  specific monthly mean and monthly standard deviation
 
-        6) expected_drug_TTP:
+                                    1.f) expected_drug_TTP:
 
-            (float) - the time-to-prerandomization which is expected from an individual in the drug arm with this 
+                                        (float) - the time-to-prerandomization which is expected from an individual in the drug arm with this 
             
-                      specific monthly mean and monthly standard deviation
+                                                  specific monthly mean and monthly standard deviation
 
-        7) RR50_power:
+                                    1.g) RR50_power:
 
-            (float) - the statistical power of the 50% responder rate endpoint for a given monthly seizure frequency 
+                                        (float) - the statistical power of the 50% responder rate endpoint for a given monthly seizure frequency 
                       
-                      and monthly standard deviation
+                                                  and monthly standard deviation
 
-        8) MPC_power:
+                                    1.h) MPC_power:
 
-            (float) - the statistical power of the median percent change endpoint for a given monthly seizure 
+                                        (float) - the statistical power of the median percent change endpoint for a given monthly seizure 
             
-                      frequency and monthly standard deviation
+                                                  frequency and monthly standard deviation
 
-        9) TTP_power:
+                                    1.i) TTP_power:
 
-            (float) - the statistical power of the time-to-prerandomization endpoint for a given monthly seizure 
+                                        (float) - the statistical power of the time-to-prerandomization endpoint for a given monthly seizure 
             
-                      frequency and monthly standard deviation
+                                                  frequency and monthly standard deviation
 
-        10) RR50_type_1_error:
+                                    1.j) RR50_type_1_error:
 
-            (float) - the type-1 error of the 50% responder rate endpoint for a given monthly seizure frequency and 
+                                        (float) - the type-1 error of the 50% responder rate endpoint for a given monthly seizure frequency and 
             
-                      monthly standard deviation
+                                                  monthly standard deviation
 
-        11) MPC_type_1_error:
+                                    1.k) MPC_type_1_error:
 
-            (float) - the type-1 error of the median percent change endpoint for a given monthly seizure frequency 
+                                        (float) - the type-1 error of the median percent change endpoint for a given monthly seizure frequency 
                       
-                      and monthly standard deviation
+                                                  and monthly standard deviation
 
-        12) TTP_type_1_error:
+                                    1.l) TTP_type_1_error:
 
-            (float) - the statistical power of the time-to-prerandomization endpoint for a given monthly seizure 
+                                        (float) - the statistical power of the time-to-prerandomization endpoint for a given monthly seizure 
                       
-                      frequency and monthly standard deviation
+                                                  frequency and monthly standard deviation
 
     '''
 
+    # extract the RCT design parameters
+    num_patients_per_trial_arm = rct_params_monthly_scale[0] 
+    num_baseline_months        = rct_params_monthly_scale[1] 
+    num_testing_months         = rct_params_monthly_scale[2] 
+    min_req_base_sz_count      = rct_params_monthly_scale[3]
+
+    # do a deep copy of the effect_params array that will be used to generate trials with an actual drug effect
+    effect_params_placebo_vs_drug = effect_params.copy()
+
+    # create another array of drug and placebo effect parameters, expect the drug effect parameters will be zero,
+    # turning the drug arm into another placebo arm
+    effect_params_placebo_vs_placebo = np.zeros(4)
+    effect_params_placebo_vs_placebo[0] = effect_params[0]
+    effect_params_placebo_vs_placebo[1] = effect_params[1]
 
     # make sure that the patient does not have a true mean seizure count of 0
     if(monthly_mean != 0):
@@ -716,16 +795,13 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev,
         # make sure that the patient is supposed to have overdispersed data
         if(monthly_std_dev > np.sqrt(monthly_mean)):
 
-            # hard-code the number of days in one month into this program
-            num_days_in_one_month = 28
-
             # convert the monthly mean and monthly standard deviation into a daily mean and daily standard deviation
-            daily_mean = monthly_mean/num_days_in_one_month
-            daily_std_dev = monthly_std_dev/(num_days_in_one_month**0.5)
+            daily_mean = monthly_mean/28
+            daily_std_dev = monthly_std_dev/(28**0.5)
     
             # convert the the number of baseline months and testing months into baseline days and testing days
-            num_baseline_days = num_days_in_one_month*num_baseline_months
-            num_testing_days = num_days_in_one_month*num_testing_months
+            num_baseline_days = 28*num_baseline_months
+            num_testing_days = 28*num_testing_months
 
             # initialize the arrays that will contain the endpoint responses (50% responder rate, median percent change, time-to-prerandomization) for both the placebo and drug arms
             placebo_RR50_array = np.zeros(num_trials)
@@ -743,50 +819,47 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev,
             pvp_MPC_p_value_array = np.zeros(num_trials)
             pvp_TTP_p_value_array = np.zeros(num_trials)
 
+            # set the array that will store the RCT design parameters on the daily time scales
+            rct_params_daily_scale = np.zeros(4)
+            rct_params_daily_scale[0] = num_patients_per_trial_arm
+            rct_params_daily_scale[1] = num_baseline_days
+            rct_params_daily_scale[2] = num_testing_days
+            rct_params_daily_scale[3] = min_req_base_sz_count
+
             # for every trial:
             for trial_index in range(num_trials):
 
                 # generate one set of daily seizure diaries for each placebo arm and drug arm of a trial (two sets in total)
                 [placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries] = \
-                    generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_trial_arm,
-                                                  num_baseline_days, num_testing_days, min_req_base_sz_count,
-                                                  placebo_mu, placebo_sigma, drug_mu, drug_sigma)
+                    generate_one_trial_population(daily_mean, daily_std_dev, rct_params_daily_scale, effect_params_placebo_vs_drug)
                 
                 # generate two sets of daily seizure diaries, both from a placebo arm (meant for calculating type 1 Error)
                 [first_type_1_arm_daily_seizure_diaries, second_type_1_arm_daily_seizure_diaries] = \
-                    generate_one_trial_population(daily_mean, daily_std_dev, num_patients_per_trial_arm,
-                                                  num_baseline_days, num_testing_days, min_req_base_sz_count,
-                                                  placebo_mu, placebo_sigma, 0, 0)
+                    generate_one_trial_population(daily_mean, daily_std_dev, rct_params_daily_scale, effect_params_placebo_vs_placebo)
 
                 # calculate the 50% responder rate, median percent change, and median time-to-prerandomization for both the placebo and drug arm groups
-                [placebo_RR50,    drug_RR50,    RR50_p_value,
-                 placebo_MPC,     drug_MPC,     MPC_p_value,
-                 placebo_med_TTP, drug_med_TTP, TTP_p_value] = \
-                     calculate_one_trial_quantities(placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries,
-                                                   num_baseline_months, num_testing_months)
+                trial_endpoints = calculate_trial_endpoints(placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries,
+                                                            num_patients_per_trial_arm, num_baseline_months, num_testing_months)
 
                 # store the 50% responder rate, median percent change, and median time-to-prerandomization for both the placebo and drug arm groups as well as the corresponding p-values
-                placebo_RR50_array[trial_index] = placebo_RR50
-                drug_RR50_array[trial_index] = drug_RR50
-                RR50_p_value_array[trial_index] = RR50_p_value
-                placebo_MPC_array[trial_index] = placebo_MPC
-                drug_MPC_array[trial_index] = drug_MPC
-                MPC_p_value_array[trial_index] = MPC_p_value
-                placebo_med_TTP_array[trial_index] = placebo_med_TTP
-                drug_med_TTP_array[trial_index] = drug_med_TTP
-                TTP_p_value_array[trial_index] = TTP_p_value
+                placebo_RR50_array[trial_index]    = trial_endpoints[0]
+                drug_RR50_array[trial_index]       = trial_endpoints[1]
+                RR50_p_value_array[trial_index]    = trial_endpoints[2]
+                placebo_MPC_array[trial_index]     = trial_endpoints[3]
+                drug_MPC_array[trial_index]        = trial_endpoints[4]
+                MPC_p_value_array[trial_index]     = trial_endpoints[5]
+                placebo_med_TTP_array[trial_index] = trial_endpoints[6]
+                drug_med_TTP_array[trial_index]    = trial_endpoints[7]
+                TTP_p_value_array[trial_index]     = trial_endpoints[8]
 
                 # calculate the p-values of the endpoints when two placebo arms are compared against each other
-                [_,    _,    pvp_RR50_p_value,
-                 _,    _,    pvp_MPC_p_value,
-                 _,    _,    pvp_TTP_p_value] = \
-                     calculate_one_trial_quantities(first_type_1_arm_daily_seizure_diaries, second_type_1_arm_daily_seizure_diaries,
-                                                   num_baseline_months, num_testing_months)
+                pvp_trial_endpoints = calculate_trial_endpoints(first_type_1_arm_daily_seizure_diaries, second_type_1_arm_daily_seizure_diaries,
+                                                                num_patients_per_trial_arm, num_baseline_months, num_testing_months)
 
                 # store the p-values of the comparison between two placebo arms
-                pvp_RR50_p_value_array[trial_index] = pvp_RR50_p_value
-                pvp_MPC_p_value_array[trial_index] = pvp_MPC_p_value
-                pvp_TTP_p_value_array[trial_index] = pvp_TTP_p_value
+                pvp_RR50_p_value_array[trial_index] = pvp_trial_endpoints[2]
+                pvp_MPC_p_value_array[trial_index]  = pvp_trial_endpoints[5]
+                pvp_TTP_p_value_array[trial_index]  = pvp_trial_endpoints[8]
             
             # calculate the expected endpoint response for both the placebo and drug arms
             expected_placebo_RR50 = np.mean(placebo_RR50_array)
@@ -806,30 +879,40 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev,
             MPC_type_1_error = np.sum(pvp_MPC_p_value_array < 0.05)/num_trials
             TTP_type_1_error = np.sum(pvp_TTP_p_value_array < 0.05)/num_trials
 
-            return [expected_placebo_RR50, expected_placebo_MPC, expected_placebo_TTP, 
-                    expected_drug_RR50,    expected_drug_MPC,    expected_drug_TTP,
-                    RR50_power,            MPC_power,            TTP_power, 
-                    RR50_type_1_error,     MPC_type_1_error,     TTP_type_1_error]
+            endpoint_statistics = np.array([expected_placebo_RR50, expected_placebo_MPC, expected_placebo_TTP, 
+                                            expected_drug_RR50,    expected_drug_MPC,    expected_drug_TTP,
+                                            RR50_power,            MPC_power,            TTP_power, 
+                                            RR50_type_1_error,     MPC_type_1_error,     TTP_type_1_error])
         
         # if the patient does not have overdispersed data:
         else:
 
             # say that calculating their placebo response is impossible
-            return [np.nan, np.nan, np.nan,
-                    np.nan, np.nan, np.nan,
-                    np.nan, np.nan, np.nan,
-                    np.nan, np.nan, np.nan]
+            endpoint_statistics = np.array([np.nan, np.nan, np.nan,
+                                            np.nan, np.nan, np.nan,
+                                            np.nan, np.nan, np.nan,
+                                            np.nan, np.nan, np.nan])
     
     # if the patient does not have a true mean seizure count of 0, then:
     else:
 
         # say that calculating their placebo response is impossible
-        return [np.nan, np.nan, np.nan,
-                np.nan, np.nan, np.nan,
-                np.nan, np.nan, np.nan,
-                np.nan, np.nan, np.nan]
+        endpoint_statistics = np.array([np.nan, np.nan, np.nan,
+                                        np.nan, np.nan, np.nan,
+                                        np.nan, np.nan, np.nan,
+                                        np.nan, np.nan, np.nan])
+    
+    return endpoint_statistics
 
 
+def store_endpoint_statistic_map_point(directory, min_req_base_sz_count, map_num, endpoint_statistics):
+
+    min_req_base_sz_count_str = str(min_req_base_sz_count)
+    map_num_str = str(map_num)
+
+    
+
+'''
 if(__name__=='__main__'):
 
     # obtain the statistical parameters needed to generate each patient
@@ -848,3 +931,4 @@ if(__name__=='__main__'):
     placebo_sigma = float(arg_array[8])
     drug_mu       = float(arg_array[9])
     drug_sigma    = float(arg_array[10])
+'''
