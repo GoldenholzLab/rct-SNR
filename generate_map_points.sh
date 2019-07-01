@@ -7,12 +7,12 @@ start_monthly_std_dev=0
 stop_monthly_std_dev=16
 step_monthly_std_dev=1
 
-num_trials=10
+num_trials=100
 
 directory='/Users/juanromero/Documents/python_3_Files/test'
 #num_maps=10
 
-num_patients_per_trial_arm=10
+num_patients_per_trial_arm=153
 num_baseline_months=2
 num_testing_months=3
 max_min_req_base_sz_count=4
