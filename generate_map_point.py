@@ -1052,12 +1052,6 @@ if(__name__=='__main__'):
     used_mem_in_bytes = total_mem_in_bytes - available_mem_in_bytes
     used_mem_in_gigabytes = used_mem_in_bytes/np.power(1024, 3)
 
-    resource_str = '\n\nmonthly mean: '                                  + str(np.round(monthly_mean, 3)) + \
-                   '\nmonthly standard deviation: '                      + str(np.round(monthly_std_dev, 3)) + \
-                   '\nminimum required number of seizures in baseline: ' + str(np.round(min_req_base_sz_count, 3)) + \
-                   '\ncpu time in minutes: '                             + str(np.round(run_time_in_minutes, 3)) + \
-                   '\nmemory usage in GB: '                              + str(np.round(used_mem_in_gigabytes, 3))
-
     resource_usage_file_path = os.getcwd() + '/resource_usage.txt'
     accumulated_time_file_path = os.getcwd() + '/accumulated_time.txt'
 
@@ -1078,6 +1072,13 @@ if(__name__=='__main__'):
     with open(accumulated_time_file_path, 'w+') as text_file:
 
         text_file.write( accumulated_time_in_minutes_str )
+
+    resource_str = '\n\nmonthly mean: '                                  + str(np.round(monthly_mean, 3)) + \
+                   '\nmonthly standard deviation: '                      + str(np.round(monthly_std_dev, 3)) + \
+                   '\nminimum required number of seizures in baseline: ' + str(np.round(min_req_base_sz_count, 3)) + \
+                   '\ncpu time in minutes: '                             + str(np.round(run_time_in_minutes, 3)) + \
+                   '\nmemory usage in GB: '                              + str(np.round(used_mem_in_gigabytes, 3)) + \
+                   '\naccumulated time in minutes: '                     + accumulated_time_in_minutes_str
 
     with open(resource_usage_file_path, 'a+') as text_file:
 
