@@ -905,7 +905,7 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev, num_trials, rct_
     return endpoint_statistics
 
 
-def store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev, min_req_base_sz_count, map_num, endpoint_statistics):
+def store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev, min_req_base_sz_count, endpoint_statistics):
     '''
 
     Purpose:
@@ -929,12 +929,8 @@ def store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev,
         4) min_req_base_sz_count:
 
             (int) - 
-
-        5) map_num:
-
-            (int) - 
         
-        6) trial_endpoints:
+        5) trial_endpoints:
 
             (1D Numpy array) - A Numpy array containing the endpoint responses from the placebo and drug arms
                                
@@ -942,39 +938,39 @@ def store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev,
 
                                quantities:
 
-                                    6.a) placebo_RR50:    
+                                    5.a) placebo_RR50:    
         
                                         (float) - the 50% responder rate for the placebo arm of the trial
 
-                                    6.b) drug_RR50:    
+                                    5.b) drug_RR50:    
         
                                         (float) - the 50% responder rate for the drug arm of the trial
 
-                                    6.c) RR50_p_value:
+                                    5.c) RR50_p_value:
         
                                         (float) - the p-value for the 50% responder rate
 
-                                    6.d) placebo_MPC:
+                                    5.d) placebo_MPC:
 
                                         (float) - the median percent change for the placebo arm of the trial
 
-                                    6.e) drug_MPC:
+                                    5.e) drug_MPC:
         
                                         (float) - the median percent change for the drug arm of the trial
 
-                                    6.f) MPC_p_value:
+                                    5.f) MPC_p_value:
                 
                                         (float) - the p-value for the median percent change
 
-                                    6.g) placebo_med_TTP: 
+                                    5.g) placebo_med_TTP: 
                 
                                         (float) - the median time-to-prerandomization for the placebo arm of the trial
 
-                                    6.h) drug_med_TTP: 
+                                    5.h) drug_med_TTP: 
                         
                                         (float) - the median time-to-prerandomization for the drug arm of the trial
 
-                                    6.i) TTP_p_value:
+                                    5.i) TTP_p_value:
                 
                                         (float) - the p-value for the time-to-prerandomization
 
@@ -988,10 +984,9 @@ def store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev,
     monthly_mean_str = str(monthly_mean)
     monthly_std_dev_str = str(monthly_std_dev)
     min_req_base_sz_count_str = str(min_req_base_sz_count)
-    map_num_str = str(map_num)
 
     # create the file path
-    folder = directory + '/eligibility_criteria__' + min_req_base_sz_count_str + '/map_num__' + map_num_str + '/mean__'  + monthly_mean_str
+    folder = directory + '/eligibility_criteria__' + min_req_base_sz_count_str + '/mean__'  + monthly_mean_str
     file_name = 'std_dev__' + monthly_std_dev_str + '.json'
     file_path = folder + '/' + file_name
 
@@ -1020,20 +1015,17 @@ if(__name__=='__main__'):
     # obtain the directoy in which all the files will be stored
     directory = sys.argv[4]
 
-    # obtain the number of the map the endpoint statistics will be generated for
-    map_num = int(sys.argv[5])
-
     # obtain the RCT design parameters
-    num_patients_per_trial_arm = int(sys.argv[6])
-    num_baseline_months        = int(sys.argv[7])
-    num_testing_months         = int(sys.argv[8])
-    min_req_base_sz_count      = int(sys.argv[9])
+    num_patients_per_trial_arm = int(sys.argv[5])
+    num_baseline_months        = int(sys.argv[6])
+    num_testing_months         = int(sys.argv[7])
+    min_req_base_sz_count      = int(sys.argv[8])
 
     # obtain the statistical parameters detailing the placebo and drug effects
-    placebo_mu    = float(sys.argv[10])
-    placebo_sigma = float(sys.argv[11])
-    drug_mu       = float(sys.argv[12])
-    drug_sigma    = float(sys.argv[13])
+    placebo_mu    = float(sys.argv[9])
+    placebo_sigma = float(sys.argv[10])
+    drug_mu       = float(sys.argv[11])
+    drug_sigma    = float(sys.argv[12])
 
     # store some of the parameters into arrays for the sake of readability
     rct_params_monthly_scale = np.array([num_patients_per_trial_arm, num_baseline_months, 
@@ -1045,7 +1037,9 @@ if(__name__=='__main__'):
         estimate_endpoint_statistics(monthly_mean, monthly_std_dev, num_trials, rct_params_monthly_scale, effect_params)
 
     # store the endpoint statistics
-    store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev, min_req_base_sz_count, map_num, endpoint_statistics)
+    store_endpoint_statistic_map_point(directory, monthly_mean, monthly_std_dev, min_req_base_sz_count, endpoint_statistics)
+
+    #----------------------------------------------------------------------------------------------------------------#
 
     stop_time_in_seconds = time.time()
     run_time_in_minutes = (stop_time_in_seconds - start_time_in_second)/60
@@ -1056,10 +1050,16 @@ if(__name__=='__main__'):
     used_mem_in_bytes = total_mem_in_bytes - available_mem_in_bytes
     used_mem_in_gigabytes = used_mem_in_bytes/np.power(1024, 3)
 
-    print('\n\nmonthly mean: '                                    + str(np.round(monthly_mean, 3)) + 
-            '\nmonthly standard deviation: '                      + str(np.round(monthly_std_dev, 3)) +
-            '\nminimum required number of seizures in baseline: ' + str(np.round(min_req_base_sz_count, 3)) + 
-            '\nmap number: '                                      + str(np.round(map_num, 3)) + 
-            '\ncpu time in minutes: '                             + str(np.round(run_time_in_minutes, 3)) + 
-            '\nmemory usage in GB: '                              + str(np.round(used_mem_in_gigabytes, 3)) )
+    resource_str = '\n\nmonthly mean: '                                  + str(np.round(monthly_mean, 3)) + \
+                   '\nmonthly standard deviation: '                      + str(np.round(monthly_std_dev, 3)) + \
+                   '\nminimum required number of seizures in baseline: ' + str(np.round(min_req_base_sz_count, 3)) + \
+                   '\ncpu time in minutes: '                             + str(np.round(run_time_in_minutes, 3)) + \
+                   '\nmemory usage in GB: '                              + str(np.round(used_mem_in_gigabytes, 3))
 
+    file_path = os.getcwd() + '/resource_usage.txt'
+
+    with open(file_path, 'a+') as text_file:
+
+        text_file.write(resource_str)
+
+    #----------------------------------------------------------------------------------------------------------------#
