@@ -1058,9 +1058,28 @@ if(__name__=='__main__'):
                    '\ncpu time in minutes: '                             + str(np.round(run_time_in_minutes, 3)) + \
                    '\nmemory usage in GB: '                              + str(np.round(used_mem_in_gigabytes, 3))
 
-    file_path = os.getcwd() + '/resource_usage.txt'
+    resource_usage_file_path = os.getcwd() + '/resource_usage.txt'
+    accumulated_time_file_path = os.getcwd() + '/accumulated_time.txt'
 
-    with open(file_path, 'a+') as text_file:
+    if( os.path.exists(accumulated_time_file_path) ):
+
+        with open(accumulated_time_file_path, 'r') as text_file:
+
+            accumulated_time_in_minutes = np.float64(text_file.read())
+        
+        accumulated_time_in_minutes = accumulated_time_in_minutes + run_time_in_minutes
+    
+    else:
+
+        accumulated_time_in_minutes = run_time_in_minutes
+    
+    accumulated_time_in_minutes_str = str( np.round(accumulated_time_in_minutes, 3) )
+
+    with open(accumulated_time_file_path, 'w+') as text_file:
+
+        text_file.write( accumulated_time_in_minutes_str )
+
+    with open(resource_usage_file_path, 'a+') as text_file:
 
         text_file.write(resource_str)
     
