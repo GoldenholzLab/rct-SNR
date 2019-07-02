@@ -308,7 +308,8 @@ def generate_one_trial_population(monthly_mean, monthly_std_dev, min_req_base_sz
     return [placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries]
 
 
-def generate_one_iteration(monthly_mean, monthly_std_dev, min_req_base_sz_count, rct_constants_monthly_scale, effect_constants):
+def generate_one_iteration(monthly_mean, monthly_std_dev, min_req_base_sz_count, 
+                           rct_constants_monthly_scale, effect_constants):
     
     '''
 
