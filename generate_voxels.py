@@ -783,16 +783,25 @@ if(__name__ == '__main__'):
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
 
     import os
+    import pandas as pd
     runtimes_in_seconds = np.zeros(num_trials)
-    file_path = os.getcwd() + '/runtimes.txt'
 
-    for monthly_mean in np.arange(start_monthly_mean, stop_monthly_mean + step_monthly_mean, step_monthly_mean):
+    for min_req_base_sz_count in range(max_min_req_base_sz_count + 1):
 
-        for monthly_std_dev in np.arange(start_monthly_std_dev, stop_monthly_std_dev + step_monthly_std_dev, step_monthly_std_dev):
+        monthly_mean_axis        = np.arange(start_monthly_mean, stop_monthly_mean + step_monthly_mean, step_monthly_mean)
+        monthly_std_dev_axis     = np.arange(start_monthly_std_dev, stop_monthly_std_dev + step_monthly_std_dev, step_monthly_std_dev)
+        monthly_mean_axis_len    = len(monthly_mean_axis)
+        monthly_std_dev_axis_len = len(monthly_std_dev_axis)
+        runtime_matrix = np.zeros((monthly_std_dev_axis_len, monthly_mean_axis_len))
 
-            for min_req_base_sz_count in range(max_min_req_base_sz_count + 1):
+        for monthly_mean_index in range(monthly_mean_axis_len):
+
+            for monthly_std_dev_index in range(monthly_std_dev_axis_len):
 
                 for trial_num in range(num_trials):
+
+                    monthly_mean = monthly_mean_axis[monthly_mean_index]
+                    monthly_std_dev = monthly_std_dev_axis[monthly_std_dev_index]
 
                     start_time_in_seconds = time.time()
 
@@ -807,7 +816,12 @@ if(__name__ == '__main__'):
 
                     runtimes_in_seconds[trial_num] = runtime_in_seconds
 
-                average_runtime_in_seconds_str = str(np.round(np.mean(runtimes_in_seconds), 3))
+                # would like to see runtimes all in one matrix per eligibility criteria
+                average_runtime_in_seconds = np.round(np.mean(runtimes_in_seconds), 3)
+
+                runtime_matrix[monthly_std_dev_index, monthly_mean_index] = average_runtime_in_seconds
+                
+                '''
                 std_dev_runtime_in_seconds_str = str(np.round(np.std(runtimes_in_seconds), 3))
                 runtime_statistical_summary_in_seconds = average_runtime_in_seconds_str + ' ± ' + std_dev_runtime_in_seconds_str + ' seconds'
                 statistical_summary = '\n\n[monthly_mean, monthly_std_dev, min_req_base_sz_count]: [' \
@@ -819,6 +833,12 @@ if(__name__ == '__main__'):
                     text_file.write(statistical_summary)
 
                 print('\n' + runtime_statistical_summary_in_seconds + '\n\n')
+                '''
+        
+        file_path = os.getcwd() + '/min_req_base_sz_count-' + str(min_req_base_sz_count) + '.txt'
+        with open(file_path, 'a+') as text_file:
+
+            text_file.write(pd.DataFrame(runtime_matrix).to_string())
 
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
