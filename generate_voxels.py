@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import stats
 from lifelines.statistics import logrank_test
+import time
 
 
 def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients, 
@@ -310,7 +311,7 @@ def generate_one_trial_population(monthly_mean, monthly_std_dev, min_req_base_sz
     return [placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries]
 
 
-def generate_trial_populations(monthly_mean, monthly_std_dev, min_req_base_sz_count, 
+def generate_voxel_populations(monthly_mean, monthly_std_dev, min_req_base_sz_count, 
                                rct_params_monthly_scale, effect_params):
     '''
 
@@ -710,11 +711,59 @@ def calculate_trial_endpoints(placebo_arm_daily_seizure_diaries, drug_arm_daily_
     return trial_endpoints
 
 
+def calculate_voxel_endpoints(monthly_mean, monthly_std_dev, min_req_base_sz_count,
+                              rct_params_monthly_scale, effect_params):
+
+    if(monthly_mean != 0):
+
+        if(monthly_std_dev > np.sqrt(monthly_mean)):
+        
+            num_months_baseline = rct_params_monthly_scale[1]
+            num_months_testing  = rct_params_monthly_scale[2]
+
+            [placebo_arm_daily_seizure_diaries,      drug_arm_daily_seizure_diaries,
+             first_type_1_arm_daily_seizure_diaries, second_type_1_arm_daily_seizure_diaries] = \
+                generate_voxel_populations(monthly_mean, monthly_std_dev, min_req_base_sz_count, 
+                                           rct_params_monthly_scale, effect_params)
+
+            trial_endpoints = \
+                calculate_trial_endpoints(placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries,
+                                          num_patients_per_trial_arm, num_months_baseline, num_months_testing)
+
+            pvp_trial_endpoints = \
+                calculate_trial_endpoints(first_type_1_arm_daily_seizure_diaries, second_type_1_arm_daily_seizure_diaries,
+                                          num_patients_per_trial_arm, num_months_baseline, num_months_testing)
+        
+        else:
+
+            trial_endpoints = np.array([np.nan, np.nan, np.nan,
+                                        np.nan, np.nan, np.nan,
+                                        np.nan, np.nan, np.nan]),
+            pvp_trial_endpoints = np.array([np.nan, np.nan, np.nan,
+                                            np.nan, np.nan, np.nan,
+                                            np.nan, np.nan, np.nan])
+    
+    else:
+
+        trial_endpoints = np.array([np.nan, np.nan, np.nan,
+                                        np.nan, np.nan, np.nan,
+                                        np.nan, np.nan, np.nan]),
+        pvp_trial_endpoints = np.array([np.nan, np.nan, np.nan,
+                                        np.nan, np.nan, np.nan,
+                                        np.nan, np.nan, np.nan])
+    
+    return [trial_endpoints, pvp_trial_endpoints]
+
+
 if(__name__ == '__main__'):
 
-    monthly_mean          = 4
-    monthly_std_dev       = 3
-    min_req_base_sz_count = 3
+    start_monthly_mean        = 0
+    stop_monthly_mean         = 4
+    step_monthly_mean         = 0.5
+    start_monthly_std_dev     = 0
+    stop_monthly_std_dev      = 5
+    step_monthly_std_dev      = 0.5
+    max_min_req_base_sz_count = 5
 
     num_patients_per_trial_arm = 153
     num_months_baseline        = 2
@@ -727,25 +776,49 @@ if(__name__ == '__main__'):
     drug_sigma = 0.05
     effect_params = np.array([placebo_mu, placebo_sigma, drug_mu, drug_sigma])
 
+    num_trials = 3
+
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
 
-    num_months_baseline = rct_params_monthly_scale[1]
-    num_months_testing  = rct_params_monthly_scale[2]
+    import os
+    runtimes_in_seconds = np.zeros(num_trials)
+    file_path = os.getcwd() + '/runtimes.txt'
 
-    [placebo_arm_daily_seizure_diaries,      drug_arm_daily_seizure_diaries,
-     first_type_1_arm_daily_seizure_diaries, second_type_1_arm_daily_seizure_diaries] = \
-        generate_trial_populations(monthly_mean, monthly_std_dev, min_req_base_sz_count, 
-                                   rct_params_monthly_scale, effect_params)
+    for monthly_mean in np.arange(start_monthly_mean, stop_monthly_mean + step_monthly_mean, step_monthly_mean):
 
-    trial_endpoints = \
-        calculate_trial_endpoints(placebo_arm_daily_seizure_diaries, drug_arm_daily_seizure_diaries,
-                                  num_patients_per_trial_arm, num_months_baseline, num_months_testing)
+        for monthly_std_dev in np.arange(start_monthly_std_dev, stop_monthly_std_dev + step_monthly_std_dev, step_monthly_std_dev):
 
-    pvp_trial_endpoints = \
-        calculate_trial_endpoints(first_type_1_arm_daily_seizure_diaries, second_type_1_arm_daily_seizure_diaries,
-                                  num_patients_per_trial_arm, num_months_baseline, num_months_testing)
+            for min_req_base_sz_count in range(max_min_req_base_sz_count + 1):
+
+                for trial_num in range(num_trials):
+
+                    start_time_in_seconds = time.time()
+
+                    [trial_endpoints, pvp_trial_endpoints] = \
+                        calculate_voxel_endpoints(monthly_mean, monthly_std_dev, min_req_base_sz_count,
+                                                  rct_params_monthly_scale, effect_params)
+        
+                    stop_time_in_seconds = time.time()
+                    runtime_in_seconds = stop_time_in_seconds - start_time_in_seconds
+
+                    print(str(np.round(runtime_in_seconds, 3)))
+
+                    runtimes_in_seconds[trial_num] = runtime_in_seconds
+
+                average_runtime_in_seconds_str = str(np.round(np.mean(runtimes_in_seconds), 3))
+                std_dev_runtime_in_seconds_str = str(np.round(np.std(runtimes_in_seconds), 3))
+                runtime_statistical_summary_in_seconds = average_runtime_in_seconds_str + ' ± ' + std_dev_runtime_in_seconds_str + ' seconds'
+                statistical_summary = '\n\n[monthly_mean, monthly_std_dev, min_req_base_sz_count]: [' \
+                                        + str(monthly_mean) + ', ' + str(monthly_std_dev) + ', ' + str(min_req_base_sz_count) \
+                                        + ']\n' + runtime_statistical_summary_in_seconds
+    
+                with open(file_path, 'a+') as text_file:
+
+                    text_file.write(statistical_summary)
+
+                print('\n' + runtime_statistical_summary_in_seconds + '\n\n')
 
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
