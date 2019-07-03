@@ -15,4 +15,20 @@ module load conda2/4.2.13
 module load python/3.6.0
 source activate main_env
 
-srun -c 1 python generate_voxels.py
+inputs[0]=0
+inputs[1]=16
+inputs[2]=0.1
+inputs[3]=0
+inputs[4]=16
+inputs[5]=0.1
+inputs[6]=5
+inputs[7]=153
+inputs[8]=2
+inputs[9]=3
+inputs[10]=0
+inputs[11]=0.05
+inputs[12]=0.2
+inputs[13]=0.05
+inputs[14]=3
+
+srun -c 1 python generate_voxels.py ${inputs[@]}
