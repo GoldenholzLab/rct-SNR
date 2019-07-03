@@ -758,26 +758,26 @@ def calculate_voxel_endpoints(monthly_mean, monthly_std_dev, min_req_base_sz_cou
 
 if(__name__ == '__main__'):
 
-    start_monthly_mean        = sys.argv[1]
-    stop_monthly_mean         = sys.argv[2]
-    step_monthly_mean         = sys.argv[3]
-    start_monthly_std_dev     = sys.argv[4]
-    stop_monthly_std_dev      = sys.argv[5]
-    step_monthly_std_dev      = sys.argv[6]
-    max_min_req_base_sz_count = sys.argv[7]
+    start_monthly_mean        = float(sys.argv[1])
+    stop_monthly_mean         = float(sys.argv[2])
+    step_monthly_mean         = float(sys.argv[3])
+    start_monthly_std_dev     = float(sys.argv[4])
+    stop_monthly_std_dev      = float(sys.argv[5])
+    step_monthly_std_dev      = float(sys.argv[6])
+    max_min_req_base_sz_count = int(sys.argv[7])
 
-    num_patients_per_trial_arm = sys.argv[8]
-    num_months_baseline        = sys.argv[9]
-    num_months_testing         = sys.argv[10]
+    num_patients_per_trial_arm = int(sys.argv[8])
+    num_months_baseline        = int(sys.argv[9])
+    num_months_testing         = int(sys.argv[10])
     rct_params_monthly_scale   = np.array([num_patients_per_trial_arm, num_months_baseline, num_months_testing])
 
-    placebo_mu    = sys.argv[11]
-    placebo_sigma = sys.argv[12]
-    drug_mu       = sys.argv[13]
-    drug_sigma    = sys.argv[14]
+    placebo_mu    = float(sys.argv[11])
+    placebo_sigma = float(sys.argv[12])
+    drug_mu       = float(sys.argv[13])
+    drug_sigma    = float(sys.argv[14])
     effect_params = np.array([placebo_mu, placebo_sigma, drug_mu, drug_sigma])
 
-    num_trials = sys.argv[15]
+    num_trials = int(sys.argv[15])
     file_name = sys.argv[16]
 
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
