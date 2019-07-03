@@ -1,6 +1,10 @@
 import numpy as np
 from scipy import stats
 from lifelines.statistics import logrank_test
+import time
+import os
+import json
+import sys
 
 
 def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients, 
@@ -756,34 +760,30 @@ def calculate_voxel_endpoints(monthly_mean, monthly_std_dev, min_req_base_sz_cou
 
 if(__name__ == '__main__'):
 
-    start_monthly_mean    = 0
-    stop_monthly_mean     = 4
-    step_monthly_mean     = 1
-    start_monthly_std_dev = 0
-    stop_monthly_std_dev  = 5
-    step_monthly_std_dev  = 1
-    min_req_base_sz_count = 0
+    start_monthly_mean    = float(sys.argv[1])
+    stop_monthly_mean     = float(sys.argv[2])
+    step_monthly_mean     = float(sys.argv[3])
+    start_monthly_std_dev = float(sys.argv[4])
+    stop_monthly_std_dev  = float(sys.argv[5])
+    step_monthly_std_dev  = float(sys.argv[6])
+    min_req_base_sz_count = int(sys.argv[7])
 
-    num_patients_per_trial_arm = 153
-    num_months_baseline        = 2
-    num_months_testing         = 3
+    num_patients_per_trial_arm = int(sys.argv[8])
+    num_months_baseline        = int(sys.argv[9])
+    num_months_testing         = int(sys.argv[10])
     rct_params_monthly_scale   = np.array([num_patients_per_trial_arm, num_months_baseline, num_months_testing])
 
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
+    placebo_mu    = float(sys.argv[11])
+    placebo_sigma = float(sys.argv[12])
+    drug_mu       = float(sys.argv[13])
+    drug_sigma    = float(sys.argv[14])
     effect_params = np.array([placebo_mu, placebo_sigma, drug_mu, drug_sigma])
 
-    num_trials = 3
+    num_trials = int(sys.argv[15])
 
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
-
-    import time
-    import os
-    import json
 
     runtimes_in_seconds = np.zeros(num_trials)
 
@@ -824,7 +824,14 @@ if(__name__ == '__main__'):
                     str(np.round(monthly_mean, 3)) + ', ' + str(np.round(monthly_std_dev, 3)) + ', ' + str(np.round(min_req_base_sz_count, 3)) + \
                     ']\naverage runtime: ' + str(np.round(average_runtime_in_seconds, 3)) )
 
-    json_file_path = os.getcwd() + '/eligibility_criteria-' + str(min_req_base_sz_count) + '.json'
+    folder = 'eligibility_criteria-' + str(min_req_base_sz_count)
+    monthly_mean_description_str    = 'monthly_mean_start-'    + str(start_monthly_mean)    + '__' + '__monthly_mean_end-'   + str(stop_monthly_mean)
+    monthly_std_dev_description_str = 'monthly_std_dev_start-' + str(start_monthly_std_dev) + '__' + 'monthly_std_dev_stop-' + str(stop_monthly_std_dev)
+    json_file_name = monthly_mean_description_str + '__' + monthly_std_dev_description_str
+    json_file_path = os.getcwd() + '/' + folder + '/' + json_file_name + '.json'
+
+    # put code to check if folder exists or not here
+    with open()
 
     with open(json_file_path, 'w+') as json_file:
 
