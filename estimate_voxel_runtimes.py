@@ -1,8 +1,6 @@
 import numpy as np
 from scipy import stats
 from lifelines.statistics import logrank_test
-import sys
-import time
 
 
 def generate_daily_seizure_diaries(daily_mean, daily_std_dev, num_patients, 
@@ -758,27 +756,27 @@ def calculate_voxel_endpoints(monthly_mean, monthly_std_dev, min_req_base_sz_cou
 
 if(__name__ == '__main__'):
 
-    start_monthly_mean        = float(sys.argv[1])
-    stop_monthly_mean         = float(sys.argv[2])
-    step_monthly_mean         = float(sys.argv[3])
-    start_monthly_std_dev     = float(sys.argv[4])
-    stop_monthly_std_dev      = float(sys.argv[5])
-    step_monthly_std_dev      = float(sys.argv[6])
-    max_min_req_base_sz_count = int(sys.argv[7])
+    start_monthly_mean    = 0
+    stop_monthly_mean     = 4
+    step_monthly_mean     = 1
+    start_monthly_std_dev = 0
+    stop_monthly_std_dev  = 5
+    step_monthly_std_dev  = 1
+    min_req_base_sz_count = 0
 
-    num_patients_per_trial_arm = int(sys.argv[8])
-    num_months_baseline        = int(sys.argv[9])
-    num_months_testing         = int(sys.argv[10])
+    num_patients_per_trial_arm = 153
+    num_months_baseline        = 2
+    num_months_testing         = 3
     rct_params_monthly_scale   = np.array([num_patients_per_trial_arm, num_months_baseline, num_months_testing])
 
-    placebo_mu    = float(sys.argv[11])
-    placebo_sigma = float(sys.argv[12])
-    drug_mu       = float(sys.argv[13])
-    drug_sigma    = float(sys.argv[14])
+    placebo_mu    = 0
+    placebo_sigma = 0.05
+    drug_mu       = 0.2
+    drug_sigma    = 0.05
     effect_params = np.array([placebo_mu, placebo_sigma, drug_mu, drug_sigma])
 
-    num_trials = int(sys.argv[15])
-    file_name = sys.argv[16]
+    num_trials = 3
+    file_name = 'runtime_data'
 
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -786,55 +784,55 @@ if(__name__ == '__main__'):
 
     import os
     import pandas as pd
+    import time
+
     runtimes_in_seconds = np.zeros(num_trials)
 
-    for min_req_base_sz_count in range(max_min_req_base_sz_count + 1):
+    monthly_mean_axis        = np.arange(start_monthly_mean, stop_monthly_mean + step_monthly_mean, step_monthly_mean)
+    monthly_std_dev_axis     = np.arange(start_monthly_std_dev, stop_monthly_std_dev + step_monthly_std_dev, step_monthly_std_dev)
+    monthly_mean_axis_len    = len(monthly_mean_axis)
+    monthly_std_dev_axis_len = len(monthly_std_dev_axis)
+    runtime_matrix = np.zeros((monthly_std_dev_axis_len, monthly_mean_axis_len))
 
-        monthly_mean_axis        = np.arange(start_monthly_mean, stop_monthly_mean + step_monthly_mean, step_monthly_mean)
-        monthly_std_dev_axis     = np.arange(start_monthly_std_dev, stop_monthly_std_dev + step_monthly_std_dev, step_monthly_std_dev)
-        monthly_mean_axis_len    = len(monthly_mean_axis)
-        monthly_std_dev_axis_len = len(monthly_std_dev_axis)
-        runtime_matrix = np.zeros((monthly_std_dev_axis_len, monthly_mean_axis_len))
+    for monthly_mean_index in range(monthly_mean_axis_len):
 
-        for monthly_mean_index in range(monthly_mean_axis_len):
+        for monthly_std_dev_index in range(monthly_std_dev_axis_len):
 
-            for monthly_std_dev_index in range(monthly_std_dev_axis_len):
+            monthly_mean = monthly_mean_axis[monthly_mean_index]
+            monthly_std_dev = monthly_std_dev_axis[monthly_std_dev_index]
+
+            for trial_num in range(num_trials):
 
                 monthly_mean = monthly_mean_axis[monthly_mean_index]
                 monthly_std_dev = monthly_std_dev_axis[monthly_std_dev_index]
 
-                for trial_num in range(num_trials):
+                start_time_in_seconds = time.time()
 
-                    monthly_mean = monthly_mean_axis[monthly_mean_index]
-                    monthly_std_dev = monthly_std_dev_axis[monthly_std_dev_index]
-
-                    start_time_in_seconds = time.time()
-
-                    [trial_endpoints, pvp_trial_endpoints] = \
-                        calculate_voxel_endpoints(monthly_mean, monthly_std_dev, min_req_base_sz_count,
-                                                  rct_params_monthly_scale, effect_params)
+                [trial_endpoints, pvp_trial_endpoints] = \
+                    calculate_voxel_endpoints(monthly_mean, monthly_std_dev, min_req_base_sz_count,
+                                              rct_params_monthly_scale, effect_params)
         
-                    stop_time_in_seconds = time.time()
-                    runtime_in_seconds = stop_time_in_seconds - start_time_in_seconds
+                stop_time_in_seconds = time.time()
+                runtime_in_seconds = stop_time_in_seconds - start_time_in_seconds
 
-                    runtimes_in_seconds[trial_num] = runtime_in_seconds
+                runtimes_in_seconds[trial_num] = runtime_in_seconds
 
-                # would like to see runtimes all in one matrix per eligibility criteria
-                average_runtime_in_seconds = np.mean(runtimes_in_seconds)
+            # would like to see runtimes all in one matrix per eligibility criteria
+            average_runtime_in_seconds = np.mean(runtimes_in_seconds)
 
-                runtime_matrix[monthly_std_dev_index, monthly_mean_index] = average_runtime_in_seconds
+            runtime_matrix[monthly_std_dev_index, monthly_mean_index] = average_runtime_in_seconds
 
-                print( '\n\n[monthly mean, monthly standard deviation, min_req-base_sz_count]: [' + \
-                        str(np.round(monthly_mean, 3)) + ', ' + str(np.round(monthly_std_dev, 3)) + ', ' + str(np.round(min_req_base_sz_count, 3)) + \
-                        ']\naverage runtime: ' + str(np.round(average_runtime_in_seconds, 3)) )
+            print( '\n\n[monthly mean, monthly standard deviation, min_req-base_sz_count]: [' + \
+                    str(np.round(monthly_mean, 3)) + ', ' + str(np.round(monthly_std_dev, 3)) + ', ' + str(np.round(min_req_base_sz_count, 3)) + \
+                    ']\naverage runtime: ' + str(np.round(average_runtime_in_seconds, 3)) )
         
-        presentable_average_runtime_matrix = pd.DataFrame(np.flipud(np.round(runtime_matrix, 3)), index = np.flip(monthly_std_dev_axis, 0), columns = monthly_mean_axis).to_string()
-        average_runtime_text_data = '\n\n\neligibility criteria: ' + str(min_req_base_sz_count) + '\n\n' + presentable_average_runtime_matrix
+    presentable_average_runtime_matrix = pd.DataFrame(np.flipud(np.round(runtime_matrix, 3)), index = np.flip(monthly_std_dev_axis, 0), columns = monthly_mean_axis).to_string()
+    average_runtime_text_data = '\n\n\neligibility criteria: ' + str(min_req_base_sz_count) + '\n\n' + presentable_average_runtime_matrix
 
-        file_path = os.getcwd() + '/' + file_name + '.txt'
-        with open(file_path, 'a+') as text_file:
+    file_path = os.getcwd() + '/' + file_name + '.txt'
+    with open(file_path, 'a+') as text_file:
 
-            text_file.write(average_runtime_text_data)
+        text_file.write(average_runtime_text_data)
 
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
