@@ -759,10 +759,10 @@ if(__name__ == '__main__'):
 
     start_monthly_mean        = 0
     stop_monthly_mean         = 4
-    step_monthly_mean         = 0.5
+    step_monthly_mean         = 0.1
     start_monthly_std_dev     = 0
     stop_monthly_std_dev      = 5
-    step_monthly_std_dev      = 0.5
+    step_monthly_std_dev      = 0.1
     max_min_req_base_sz_count = 5
 
     num_patients_per_trial_arm = 153
@@ -798,6 +798,9 @@ if(__name__ == '__main__'):
 
             for monthly_std_dev_index in range(monthly_std_dev_axis_len):
 
+                monthly_mean = monthly_mean_axis[monthly_mean_index]
+                monthly_std_dev = monthly_std_dev_axis[monthly_std_dev_index]
+
                 for trial_num in range(num_trials):
 
                     monthly_mean = monthly_mean_axis[monthly_mean_index]
@@ -812,14 +815,16 @@ if(__name__ == '__main__'):
                     stop_time_in_seconds = time.time()
                     runtime_in_seconds = stop_time_in_seconds - start_time_in_seconds
 
-                    print(str(np.round(runtime_in_seconds, 3)))
-
                     runtimes_in_seconds[trial_num] = runtime_in_seconds
 
                 # would like to see runtimes all in one matrix per eligibility criteria
-                average_runtime_in_seconds = np.round(np.mean(runtimes_in_seconds), 3)
+                average_runtime_in_seconds = np.mean(runtimes_in_seconds)
 
                 runtime_matrix[monthly_std_dev_index, monthly_mean_index] = average_runtime_in_seconds
+
+                print( '\n\n[monthly mean, monthly standard deviation, min_req-base_sz_count]: [' + \
+                        str(np.round(monthly_mean, 3)) + ', ' + str(np.round(monthly_std_dev, 3)) + ', ' + str(np.round(min_req_base_sz_count, 3)) + \
+                        ']\naverage runtime: ' + str(np.round(average_runtime_in_seconds, 3)) )
                 
                 '''
                 std_dev_runtime_in_seconds_str = str(np.round(np.std(runtimes_in_seconds), 3))
@@ -838,7 +843,7 @@ if(__name__ == '__main__'):
         file_path = os.getcwd() + '/min_req_base_sz_count-' + str(min_req_base_sz_count) + '.txt'
         with open(file_path, 'a+') as text_file:
 
-            text_file.write(pd.DataFrame(runtime_matrix).to_string())
+            text_file.write(pd.DataFrame(np.flipud(np.round(runtime_matrix, 3)), index = np.flip(monthly_std_dev_axis, 0), columns = monthly_mean_axis).to_string())
 
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
