@@ -10,10 +10,10 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
-#module load gcc/6.2.0
-#module load conda2/4.2.13
-#module load python/3.6.0
-#source activate main_env
+module load gcc/6.2.0
+module load conda2/4.2.13
+module load python/3.6.0
+source activate main_env
 
 inputs[0]=0
 inputs[1]=16
