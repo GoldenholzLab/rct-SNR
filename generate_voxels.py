@@ -778,6 +778,7 @@ if(__name__ == '__main__'):
     effect_params = np.array([placebo_mu, placebo_sigma, drug_mu, drug_sigma])
 
     num_trials = sys.argv[15]
+    file_name = sys.argv[16]
 
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -830,7 +831,7 @@ if(__name__ == '__main__'):
         presentable_average_runtime_matrix = pd.DataFrame(np.flipud(np.round(runtime_matrix, 3)), index = np.flip(monthly_std_dev_axis, 0), columns = monthly_mean_axis).to_string()
         average_runtime_text_data = '\n\n\neligibility criteria: ' + str(min_req_base_sz_count) + '\n\n' + presentable_average_runtime_matrix
 
-        file_path = os.getcwd() + '/runtime_data.txt'
+        file_path = os.getcwd() + '/' + file_name + '.txt'
         with open(file_path, 'a+') as text_file:
 
             text_file.write(average_runtime_text_data)
