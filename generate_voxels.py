@@ -825,20 +825,6 @@ if(__name__ == '__main__'):
                 print( '\n\n[monthly mean, monthly standard deviation, min_req-base_sz_count]: [' + \
                         str(np.round(monthly_mean, 3)) + ', ' + str(np.round(monthly_std_dev, 3)) + ', ' + str(np.round(min_req_base_sz_count, 3)) + \
                         ']\naverage runtime: ' + str(np.round(average_runtime_in_seconds, 3)) )
-                
-                '''
-                std_dev_runtime_in_seconds_str = str(np.round(np.std(runtimes_in_seconds), 3))
-                runtime_statistical_summary_in_seconds = average_runtime_in_seconds_str + ' ± ' + std_dev_runtime_in_seconds_str + ' seconds'
-                statistical_summary = '\n\n[monthly_mean, monthly_std_dev, min_req_base_sz_count]: [' \
-                                        + str(monthly_mean) + ', ' + str(monthly_std_dev) + ', ' + str(min_req_base_sz_count) \
-                                        + ']\n' + runtime_statistical_summary_in_seconds
-    
-                with open(file_path, 'a+') as text_file:
-
-                    text_file.write(statistical_summary)
-
-                print('\n' + runtime_statistical_summary_in_seconds + '\n\n')
-                '''
         
         file_path = os.getcwd() + '/min_req_base_sz_count-' + str(min_req_base_sz_count) + '.txt'
         with open(file_path, 'a+') as text_file:
