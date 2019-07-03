@@ -758,11 +758,11 @@ def calculate_voxel_endpoints(monthly_mean, monthly_std_dev, min_req_base_sz_cou
 if(__name__ == '__main__'):
 
     start_monthly_mean        = 0
-    stop_monthly_mean         = 4
-    step_monthly_mean         = 0.1
+    stop_monthly_mean         = 2
+    step_monthly_mean         = 0.5
     start_monthly_std_dev     = 0
-    stop_monthly_std_dev      = 5
-    step_monthly_std_dev      = 0.1
+    stop_monthly_std_dev      = 3
+    step_monthly_std_dev      = 0.5
     max_min_req_base_sz_count = 5
 
     num_patients_per_trial_arm = 153
@@ -826,10 +826,13 @@ if(__name__ == '__main__'):
                         str(np.round(monthly_mean, 3)) + ', ' + str(np.round(monthly_std_dev, 3)) + ', ' + str(np.round(min_req_base_sz_count, 3)) + \
                         ']\naverage runtime: ' + str(np.round(average_runtime_in_seconds, 3)) )
         
-        file_path = os.getcwd() + '/min_req_base_sz_count-' + str(min_req_base_sz_count) + '.txt'
+        presentable_average_runtime_matrix = pd.DataFrame(np.flipud(np.round(runtime_matrix, 3)), index = np.flip(monthly_std_dev_axis, 0), columns = monthly_mean_axis).to_string()
+        average_runtime_text_data = '\n\n\neligibility criteria: ' + str(min_req_base_sz_count) + '\n\n' + presentable_average_runtime_matrix
+
+        file_path = os.getcwd() + '/runtime_data.txt'
         with open(file_path, 'a+') as text_file:
 
-            text_file.write(pd.DataFrame(np.flipud(np.round(runtime_matrix, 3)), index = np.flip(monthly_std_dev_axis, 0), columns = monthly_mean_axis).to_string())
+            text_file.write(average_runtime_text_data)
 
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
