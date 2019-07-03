@@ -758,11 +758,11 @@ def calculate_voxel_endpoints(monthly_mean, monthly_std_dev, min_req_base_sz_cou
 if(__name__ == '__main__'):
 
     start_monthly_mean        = 0
-    stop_monthly_mean         = 2
-    step_monthly_mean         = 0.5
+    stop_monthly_mean         = 16
+    step_monthly_mean         = 0.1
     start_monthly_std_dev     = 0
-    stop_monthly_std_dev      = 3
-    step_monthly_std_dev      = 0.5
+    stop_monthly_std_dev      = 16
+    step_monthly_std_dev      = 0.1
     max_min_req_base_sz_count = 5
 
     num_patients_per_trial_arm = 153
