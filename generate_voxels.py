@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import stats
 from lifelines.statistics import logrank_test
+import sys
 import time
 
 
@@ -757,26 +758,26 @@ def calculate_voxel_endpoints(monthly_mean, monthly_std_dev, min_req_base_sz_cou
 
 if(__name__ == '__main__'):
 
-    start_monthly_mean        = 0
-    stop_monthly_mean         = 16
-    step_monthly_mean         = 0.1
-    start_monthly_std_dev     = 0
-    stop_monthly_std_dev      = 16
-    step_monthly_std_dev      = 0.1
-    max_min_req_base_sz_count = 5
+    start_monthly_mean        = sys.argv[1]
+    stop_monthly_mean         = sys.argv[2]
+    step_monthly_mean         = sys.argv[3]
+    start_monthly_std_dev     = sys.argv[4]
+    stop_monthly_std_dev      = sys.argv[5]
+    step_monthly_std_dev      = sys.argv[6]
+    max_min_req_base_sz_count = sys.argv[7]
 
-    num_patients_per_trial_arm = 153
-    num_months_baseline        = 2
-    num_months_testing         = 3
+    num_patients_per_trial_arm = sys.argv[8]
+    num_months_baseline        = sys.argv[9]
+    num_months_testing         = sys.argv[10]
     rct_params_monthly_scale   = np.array([num_patients_per_trial_arm, num_months_baseline, num_months_testing])
 
-    placebo_mu = 0
-    placebo_sigma = 0.05
-    drug_mu = 0.2
-    drug_sigma = 0.05
+    placebo_mu    = sys.argv[11]
+    placebo_sigma = sys.argv[12]
+    drug_mu       = sys.argv[13]
+    drug_sigma    = sys.argv[14]
     effect_params = np.array([placebo_mu, placebo_sigma, drug_mu, drug_sigma])
 
-    num_trials = 3
+    num_trials = sys.argv[15]
 
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------------------------------------#
