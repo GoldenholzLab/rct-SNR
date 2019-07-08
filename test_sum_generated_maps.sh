@@ -12,13 +12,15 @@ alpha_2=296.339
 beta_2=243.719
 
 inputs[0]=$directory
-inputs[1]=$shape_1
-inputs[3]=$scale_1
-inputs[4]=$alpha_1
-inputs[5]=$beta_1
-inputs[6]=$shape_2
-inputs[7]=$scale_2
-inputs[8]=$alpha_2
-inputs[9]=$beta_2
+inputs[1]=$num_patients_per_model
+inputs[2]=$num_months_per_patient
+inputs[3]=$shape_1
+inputs[4]=$scale_1
+inputs[5]=$alpha_1
+inputs[6]=$beta_1
+inputs[7]=$shape_2
+inputs[8]=$scale_2
+inputs[9]=$alpha_2
+inputs[10]=$beta_2
 
 python sum_generated_maps.py ${inputs[@]}
