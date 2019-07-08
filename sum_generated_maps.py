@@ -420,9 +420,9 @@ def calculate_expected_model_responses(directory, num_patients_per_model, num_mo
             Model_2_endpoint_statistic_response = np.sum(np.nansum(np.multiply(H_model_2, endpoint_statistic_type_map), 0))
 
             # convert the NV model endpoint statistics into a presentable string
-            Model_1_endpoint_statistic_response_str = NV_models_endpoint_statistics[endpoint_statistic_type_index][0] + str(np.round(100*Model_1_endpoint_statistic_response, 3))
-            Model_2_endpoint_statistic_response_str = NV_models_endpoint_statistics[endpoint_statistic_type_index][1] + str(np.round(100*Model_2_endpoint_statistic_response, 3))
-            Model_endpoint_statistic_responses_str = Model_1_endpoint_statistic_response_str + '\n' + Model_2_endpoint_statistic_response_str
+            Model_1_endpoint_statistic_response_str = NV_models_endpoint_statistics[endpoint_statistic_type_index][0] + str(np.round(Model_1_endpoint_statistic_response, 3))
+            Model_2_endpoint_statistic_response_str = NV_models_endpoint_statistics[endpoint_statistic_type_index][1] + str(np.round(Model_2_endpoint_statistic_response, 3))
+            Model_endpoint_statistic_responses_str = '\n\n' + Model_1_endpoint_statistic_response_str + '\n' + Model_2_endpoint_statistic_response_str
 
             with open(NV_model_response_file_path, 'a+') as text_file:
                 text_file.write(Model_endpoint_statistic_responses_str)
