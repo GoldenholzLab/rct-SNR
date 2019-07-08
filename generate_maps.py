@@ -836,10 +836,10 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev,
 
 
 def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_mean,    step_monthly_mean, 
-                                    start_monthly_std_dev,      stop_monthly_std_dev, step_monthly_std_dev,
-                                    num_baseline_months,        num_testing_months,   min_req_base_sz_count, 
-                                    num_patients_per_trial_arm, num_trials,
-                                    placebo_mu, placebo_sigma,  drug_mu, drug_sigma):
+                                     start_monthly_std_dev,      stop_monthly_std_dev, step_monthly_std_dev,
+                                     num_baseline_months,        num_testing_months,   min_req_base_sz_count, 
+                                     num_patients_per_trial_arm, num_trials,
+                                     placebo_mu, placebo_sigma,  drug_mu, drug_sigma):
     '''
 
     Purpose:
@@ -1424,12 +1424,6 @@ if(__name__=='__main__'):
     placebo_sigma = float(arg_array[12])
     drug_mu = float(arg_array[13])
     drug_sigma = float(arg_array[14])
-
-    '''
-    # obtain the parameters needed for generating the histograms of the model 1 and model 2 patients
-    num_patients_per_model = int(arg_array[15])
-    num_months_per_patient = int(arg_array[16])
-    '''
 
     # obtain the location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
     directory = arg_array[15]
