@@ -25,7 +25,7 @@ drug_mean=0.2
 drug_sigma=0.05
 
 # set the number of maps to average over
-num_maps=5
+num_maps=3
 
 # The location of the directory containing the folder in which all the intermediate JSON files for this specific map will be stored
 directory='/Users/juanromero/Documents/Python_3_Files/test'
