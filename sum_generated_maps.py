@@ -400,10 +400,11 @@ def calculate_expected_model_responses(directory, num_patients_per_model, num_mo
     # iterate over all the minimum required numbers of seizures in the baseline period, from 0 all the way up to the maximum
     for min_req_base_sz_count in range(max_min_req_base_sz_count + 1):
     
-        # create the file path for the text file that will contain the NV model endpoint responses for this specific eligbility criteria
-        NV_model_response_file_path = directory + '/maps/NV_model_responses/eligibility_criteria_' + str(min_req_base_sz_count) +'.txt'
-        if ( not os.path.exists(NV_model_response_file_path) ):
-            os.makedirs(NV_model_response_file_path)
+        # create both the folder path and the file path for the text file that will contain the NV model endpoint responses for this specific eligbility criteria
+        NV_model_response_folder_path = directory + '/maps/NV_model_responses'
+        NV_model_response_file_path = NV_model_response_folder_path + '/eligibility_criteria_' + str(min_req_base_sz_count) +'.txt'
+        if ( not os.path.exists(NV_model_response_folder_path) ):
+            os.makedirs(NV_model_response_folder_path)
 
         # iterate over all the endpoint statistic types
         for endpoint_statistic_type_index in range(len(endpoint_statistic_map_file_names)):
