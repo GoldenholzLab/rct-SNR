@@ -1,5 +1,7 @@
 
 directory='/Users/juanromero/Documents/Python_3_Files/test'
+num_patients_per_model=10000
+num_months_per_patient=24
 shape_1=24.143
 scale_1=297.366
 alpha_1=284.024
