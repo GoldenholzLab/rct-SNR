@@ -458,7 +458,7 @@ if (__name__=='__main__'):
     scale_2 = float(sys.argv[9])
     alpha_2 = float(sys.argv[10])
     beta_2  = float(sys.argv[11])
-    NV_model_2_group_parameters = np.array([shape_2, ])
+    NV_model_2_group_parameters = np.array([shape_2, scale_2, alpha_2, beta_2])
 
     # caclulate the average endpoint statistic heatmaps
     calculate_average_endpoint_statistic_maps(directory)
