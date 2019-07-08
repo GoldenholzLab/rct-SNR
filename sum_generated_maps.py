@@ -1,7 +1,7 @@
 import json
 import numpy as np
 import os
-import argparse
+import sys
 
 
 def calculate_average_endpoint_statistic_map(directory, min_req_base_sz_count, endpoint_statistic_map_file_name, 
@@ -177,20 +177,20 @@ def calculate_average_endpoint_statistic_maps(directory):
     with open( meta_data_file_path, 'r' ) as meta_data_text_file:
 
         # read information about the monthly seizure count mean axis
-        start_monthly_mean = int( meta_data_text_file.readline() )
-        stop_monthly_mean = int( meta_data_text_file.readline() )
-        step_monthly_mean = int( meta_data_text_file.readline() )
+        start_monthly_mean = int(meta_data_text_file.readline())
+        stop_monthly_mean  = int(meta_data_text_file.readline())
+        step_monthly_mean  = int(meta_data_text_file.readline())
 
         # read information about the monthly seizure count standard deviation axis
-        start_monthly_std_dev = int( meta_data_text_file.readline() )
-        stop_monthly_std_dev = int( meta_data_text_file.readline() )
-        step_monthly_std_dev = int( meta_data_text_file.readline() )
+        start_monthly_std_dev = int(meta_data_text_file.readline())
+        stop_monthly_std_dev  = int(meta_data_text_file.readline())
+        step_monthly_std_dev  = int(meta_data_text_file.readline())
 
         # read information about the maximum of the minimum required number of seizures in the baseline period
-        max_min_req_base_sz_count = int( meta_data_text_file.readline() )
+        max_min_req_base_sz_count = int(meta_data_text_file.readline())
 
         # read information about the number of maps to average over
-        num_maps = int( meta_data_text_file.readline() )
+        num_maps = int(meta_data_text_file.readline())
 
     # calculate the number of ticks on both axes
     num_monthly_means = int( (stop_monthly_mean - start_monthly_mean)/step_monthly_mean ) + 1
@@ -200,10 +200,10 @@ def calculate_average_endpoint_statistic_maps(directory):
     for min_req_base_sz_count in range(max_min_req_base_sz_count + 1):
     
         # iterate over all the endpoint statistic types
-        for endpoint_statistic_index in range(len(endpoint_statistic_map_file_names)):
+        for endpoint_statistic_type in endpoint_statistic_map_file_names:
 
             # calculate and store the avaerage endpoint statistic map for a given minimum required number of baseline seizures and a given endpoint statistic type
-            calculate_average_endpoint_statistic_map(directory, min_req_base_sz_count, endpoint_statistic_map_file_names[endpoint_statistic_index], 
+            calculate_average_endpoint_statistic_map(directory, min_req_base_sz_count, endpoint_statistic_type, 
                                                      num_monthly_means, num_monthly_std_devs,  num_maps)
 
 
@@ -305,6 +305,128 @@ def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_mode
     return [model_monthly_count_averages, model_monthly_count_standard_deviations]
 
 
+def generate_model_histograms(directory, num_patients_per_model, num_months_per_patient,
+                              NV_model_1_group_parameters, NV_model_2_group_parameters):
+
+    # get the group-level parameters for NV Model 1
+    shape_1 = NV_model_1_group_parameters[0]
+    scale_1 = NV_model_1_group_parameters[1]
+    alpha_1 = NV_model_1_group_parameters[2]
+    beta_1  = NV_model_1_group_parameters[3]
+
+    # get the group-level parameters for NV Model 2
+    shape_2 = NV_model_2_group_parameters[0]
+    scale_2 = NV_model_2_group_parameters[1]
+    alpha_2 = NV_model_2_group_parameters[2]
+    beta_2  = NV_model_2_group_parameters[3]
+
+    # set the file name of the meta-data text file, which is hardcoded into the software, along with its absolute file path
+    meta_data_file_name = 'meta_data.txt'
+    meta_data_file_path = directory + '/' + meta_data_file_name
+
+    # read the relevant information from the meta-data text file
+    with open( meta_data_file_path, 'r' ) as meta_data_text_file:
+
+        # read information about the monthly seizure count mean axis
+        start_monthly_mean = int( meta_data_text_file.readline() )
+        stop_monthly_mean = int( meta_data_text_file.readline() )
+        step_monthly_mean = int( meta_data_text_file.readline() )
+
+        # read information about the monthly seizure count standard deviation axis
+        start_monthly_std_dev = int( meta_data_text_file.readline() )
+        stop_monthly_std_dev = int( meta_data_text_file.readline() )
+        step_monthly_std_dev = int( meta_data_text_file.readline() )
+        
+        # read information about the maximum of the minimum required number of seizures in the baseline period
+        max_min_req_base_sz_count = int( meta_data_text_file.readline() )
+
+    # calculate what the length of the monthly mean and monthly standard deviation axes should be
+    monthly_mean_axis_len = ( (stop_monthly_mean - start_monthly_mean)/step_monthly_mean ) + 1
+    monthly_std_dev_axis_len = ( (stop_monthly_std_dev - start_monthly_std_dev)/step_monthly_std_dev ) + 1
+
+    # generate Model 1 patients
+    [model_1_monthly_count_averages, model_1_monthly_count_standard_deviations] = \
+                                        generate_model_patient_data(shape_1, scale_1, alpha_1, beta_1,
+                                                                    num_patients_per_model, num_months_per_patient)
+    
+    # calculate the histogram of the Model 1 patients
+    [H_model_1, _, _] = np.histogram2d(model_1_monthly_count_averages, model_1_monthly_count_standard_deviations, bins=[monthly_std_dev_axis_len, monthly_mean_axis_len], 
+                                       range=[[start_monthly_mean, stop_monthly_mean], [start_monthly_std_dev, stop_monthly_std_dev]])
+    H_model_1 = np.flipud(np.fliplr(np.transpose(np.flipud(H_model_1))))
+    norm_const_1 = np.sum(np.sum(H_model_1, 0))
+    H_model_1 = H_model_1/norm_const_1
+
+    # generate Model 2 patients
+    [model_2_monthly_count_averages, model_2_monthly_count_standard_deviations] = \
+                                    generate_model_patient_data(shape_2, scale_2, alpha_2, beta_2,
+                                                                num_patients_per_model, num_months_per_patient)
+
+    # calculate the histogram of the Model 2 patients
+    [H_model_2, _, _] = np.histogram2d(model_2_monthly_count_averages, model_2_monthly_count_standard_deviations, bins=[monthly_std_dev_axis_len, monthly_mean_axis_len], 
+                                       range=[[start_monthly_mean, stop_monthly_mean], [start_monthly_std_dev, stop_monthly_std_dev]])
+    H_model_2 = np.flipud(np.fliplr(np.transpose(np.flipud(H_model_2))))
+    norm_const_2 = np.sum(np.sum(H_model_2, 0))
+    H_model_2 = H_model_2/norm_const_2
+
+    return [H_model_1, H_model_2, max_min_req_base_sz_count]
+
+
+def calculate_expected_model_responses(directory, num_patients_per_model, num_months_per_patient,
+                                       NV_model_1_group_parameters, NV_model_2_group_parameters):
+
+    endpoint_statistic_map_file_names = ['expected_placebo_RR50_map', 'expected_placebo_MPC_map', 'expected_placebo_TTP_map',
+                                         'expected_drug_RR50_map',    'expected_drug_MPC_map',    'expected_drug_TTP_map',
+                                         'RR50_stat_power_map',       'MPC_stat_power_map',       'TTP_stat_power_map',
+                                         'RR50_type_1_error_map',     'MPC_type_1_error_map',     'TTP_type_1_error_map']
+    
+    NV_models_endpoint_statistics = [['Model 1 expected placebo RR50:  ', 'Model 2 expected placebo RR50:  '], 
+                                     ['Model 1 expected placebo MPC:   ', 'Model 2 expected placebo MPC:   '], 
+                                     ['Model 1 expected placebo TTP:   ', 'Model 2 expected placebo TTP:   '],
+                                     ['Model 1 expected drug RR50:     ', 'Model 2 expected drug RR50:     '], 
+                                     ['Model 1 expected drug MPC:      ', 'Model 2 expected drug MPC:      '], 
+                                     ['Model 1 expected drug TTP:      ', 'Model 2 expected drug TTP:      '],
+                                     ['Model 1 RR50 statistical power: ', 'Model 2 RR50 statistical power: '],
+                                     ['Model 1 MPC statistical power:  ', 'Model 2 MPC statistical power:  '],
+                                     ['Model 1 TTP statistical power:  ', 'Model 2 TTP statistical power:  '],
+                                     ['Model 1 RR50 type-1 error:      ', 'Model 2 RR50 type-1 error:      '],
+                                     ['Model 1 MPC type-1 error:       ', 'Model 2 MPC type-1 error:       '],
+                                     ['Model 1 TTP type-1 error:       ', 'Model 2 TTP type-1 error:       ']]
+
+    # generate the histogram for NV models 1 and 2, as well as obtaining the maximum value for the eligibility criteria
+    [H_model_1, H_model_2, max_min_req_base_sz_count] = \
+        generate_model_histograms(directory, num_patients_per_model, num_months_per_patient,
+                                  NV_model_1_group_parameters, NV_model_2_group_parameters)
+
+    # iterate over all the minimum required numbers of seizures in the baseline period, from 0 all the way up to the maximum
+    for min_req_base_sz_count in range(max_min_req_base_sz_count + 1):
+    
+        # create the file path for the text file that will contain the NV model endpoint responses for this specific eligbility criteria
+        NV_model_response_file_path = directory + '/maps/NV_model_responses/eligibility_criteria_' + str(min_req_base_sz_count) +'.txt'
+        if ( not os.path.exists(NV_model_response_file_path) ):
+            os.makedirs(NV_model_response_file_path)
+
+        # iterate over all the endpoint statistic types
+        for endpoint_statistic_type_index in range(len(endpoint_statistic_map_file_names)):
+        
+            # locate the json file containing the heatmap of the current endpoint statistic
+            endpoint_statistic_type = endpoint_statistic_map_file_names[endpoint_statistic_type_index]
+            endpoint_statistic_type_map_path = directory + '/' + str(min_req_base_sz_count) + '/final/' + endpoint_statistic_type + '.json'
+            with open(endpoint_statistic_type_map_path, 'r') as json_file:
+                endpoint_statistic_type_map = np.array(json.load(json_file))
+
+            # calculate NV model endpoint statistics via 2D integration over the multiplication of the NV model histograms and endpoint response heatmaps
+            Model_1_endpoint_statistic_response = np.sum(np.nansum(np.multiply(H_model_1, endpoint_statistic_type_map), 0))
+            Model_2_endpoint_statistic_response = np.sum(np.nansum(np.multiply(H_model_2, endpoint_statistic_type_map), 0))
+
+            # convert the NV model endpoint statistics into a presentable string
+            Model_1_endpoint_statistic_response_str = NV_models_endpoint_statistics[endpoint_statistic_type_index][0] + str(np.round(100*Model_1_endpoint_statistic_response, 3))
+            Model_2_endpoint_statistic_response_str = NV_models_endpoint_statistics[endpoint_statistic_type_index][1] + str(np.round(100*Model_2_endpoint_statistic_response, 3))
+            Model_endpoint_statistic_responses_str = Model_1_endpoint_statistic_response_str + '\n' + Model_2_endpoint_statistic_response_str
+
+            with open(NV_model_response_file_path, 'a+') as text_file:
+                text_file.write(Model_endpoint_statistic_responses_str)
+
+
 if (__name__=='__main__'):
     '''
 
@@ -317,14 +439,31 @@ if (__name__=='__main__'):
         uncomplicated python script.
 
     '''
-    parser = argparse.ArgumentParser()
-    parser.add_argument('array', nargs='+')
-    args = parser.parse_args()
-    arg_array = args.array
 
     # take in the directory containing all the JSON files from the user
-    directory = arg_array[0]
+    directory = sys.argv[1]
 
-    # run the main of this script
+    num_patients_per_model = int(sys.argv[2])
+    num_months_per_patient = int(sys.argv[3])
+
+    # get the group-level parameters for NV Model 1
+    shape_1 = float(sys.argv[4])
+    scale_1 = float(sys.argv[5])
+    alpha_1 = float(sys.argv[6])
+    beta_1  = float(sys.argv[7])
+    NV_model_1_group_parameters = np.array([shape_1, scale_1, alpha_1, beta_1])
+
+    # get the group-level parameters for NV Model 2
+    shape_2 = float(sys.argv[8])
+    scale_2 = float(sys.argv[9])
+    alpha_2 = float(sys.argv[10])
+    beta_2  = float(sys.argv[11])
+    NV_model_2_group_parameters = np.array([shape_2, ])
+
+    # caclulate the average endpoint statistic heatmaps
     calculate_average_endpoint_statistic_maps(directory)
+
+    # calculate the predicted endpoint statistics of the NV models 
+    calculate_expected_model_responses(directory, num_patients_per_model, num_months_per_patient,
+                                       NV_model_1_group_parameters, NV_model_2_group_parameters)
     
