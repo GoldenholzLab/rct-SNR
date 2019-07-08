@@ -35,4 +35,4 @@ inputs[7]=$scale_2
 inputs[8]=$alpha_2
 inputs[9]=$beta_2
 
-srun -c 1 python sum_generated_maps.py ${inputs[@]}}
+srun -c 1 python sum_generated_maps.py ${inputs[@]}
