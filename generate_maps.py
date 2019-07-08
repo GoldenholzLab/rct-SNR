@@ -1017,6 +1017,8 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
     MPC_type_1_error_map = np.zeros((num_monthly_std_devs, num_monthly_means))
     TTP_type_1_error_map = np.zeros((num_monthly_std_devs, num_monthly_means))
 
+    print('num_patients_per_trial_arm: ' + str(num_patients_per_trial_arm))
+
     # for every given monthly standard deviation on the y-axis
     for monthly_std_dev_index in range(num_monthly_std_devs):
 
@@ -1329,10 +1331,10 @@ def main(start_monthly_mean, stop_monthly_mean, step_monthly_mean,
      expected_drug_RR50_map,        expected_drug_MPC_map,        expected_drug_TTP_map,
      RR50_stat_power_map,           MPC_stat_power_map,           TTP_stat_power_map,
      RR50_type_1_error_map,         MPC_type_1_error_map,         TTP_type_1_error_map      ] = \
-        generate_endpoint_statistic_maps(start_monthly_mean,    stop_monthly_mean,    step_monthly_mean, 
-                                         start_monthly_std_dev, stop_monthly_std_dev, step_monthly_std_dev,
+        generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_mean,    step_monthly_mean, 
+                                         start_monthly_std_dev,      stop_monthly_std_dev, step_monthly_std_dev,
+                                         num_baseline_months,        num_testing_months,   min_req_base_sz_count, 
                                          num_patients_per_trial_arm, num_trials,
-                                         num_baseline_months, num_testing_months, min_req_base_sz_count,
                                          placebo_mu, placebo_sigma,  drug_mu, drug_sigma)
 
     # store the expected 50% responder rate placebo arm response map
