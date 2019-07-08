@@ -802,14 +802,14 @@ def estimate_endpoint_statistics(monthly_mean, monthly_std_dev,
             expected_drug_TTP = np.mean(drug_med_TTP_array)
     
             # calculate the statistical power of each endpoint from all the different p-values calculated
-            RR50_power = np.sum(RR50_p_value_array < 0.05)/num_trials
-            MPC_power = np.sum(MPC_p_value_array < 0.05)/num_trials
-            TTP_power = np.sum(TTP_p_value_array < 0.05)/num_trials
+            RR50_power = 100*np.sum(RR50_p_value_array < 0.05)/num_trials
+            MPC_power  = 100*np.sum(MPC_p_value_array < 0.05)/num_trials
+            TTP_power  = 100*np.sum(TTP_p_value_array < 0.05)/num_trials
 
             # calculate the type-1 error of each endpoint from all the different p-values calculated of the two placebo groups
-            RR50_type_1_error = np.sum(pvp_RR50_p_value_array < 0.05)/num_trials
-            MPC_type_1_error = np.sum(pvp_MPC_p_value_array < 0.05)/num_trials
-            TTP_type_1_error = np.sum(pvp_TTP_p_value_array < 0.05)/num_trials
+            RR50_type_1_error = 100*np.sum(pvp_RR50_p_value_array < 0.05)/num_trials
+            MPC_type_1_error  = 100*np.sum(pvp_MPC_p_value_array < 0.05)/num_trials
+            TTP_type_1_error  = 100*np.sum(pvp_TTP_p_value_array < 0.05)/num_trials
 
             return [expected_placebo_RR50, expected_placebo_MPC, expected_placebo_TTP, 
                     expected_drug_RR50,    expected_drug_MPC,    expected_drug_TTP,
