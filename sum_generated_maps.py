@@ -209,6 +209,7 @@ def calculate_average_endpoint_statistic_maps(directory):
 
 def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_model, num_months_per_patient):
     '''
+    
     Purpose:
     
         This function generates monthly seizure diaries which are all of equal length. The monthly seizure
@@ -254,6 +255,7 @@ def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_mode
         2) model_standard_deviations:
 
             (1D Numpy array) - the standard deviations of each generated seizure diary
+    
     '''
     
     # initialize array of monthly counts
@@ -301,9 +303,6 @@ def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_mode
         model_monthly_count_standard_deviations[patient_index] = monthly_count_std_dev
 
     return [model_monthly_count_averages, model_monthly_count_standard_deviations]
-
-
-
 
 
 if (__name__=='__main__'):
