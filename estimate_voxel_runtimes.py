@@ -825,8 +825,8 @@ if(__name__ == '__main__'):
                     ']\naverage runtime: ' + str(np.round(average_runtime_in_seconds, 3)) )
 
     folder = 'eligibility_criteria-' + str(min_req_base_sz_count)
-    monthly_mean_description_str    = 'monthly_mean_start-'    + str(start_monthly_mean)    + '__' + '__monthly_mean_end-'   + str(stop_monthly_mean)
-    monthly_std_dev_description_str = 'monthly_std_dev_start-' + str(start_monthly_std_dev) + '__' + 'monthly_std_dev_stop-' + str(stop_monthly_std_dev)
+    monthly_mean_description_str    = 'monthly_mean_start-'    + str(start_monthly_mean)    + '__monthly_mean_end-'     + str(stop_monthly_mean)
+    monthly_std_dev_description_str = 'monthly_std_dev_start-' + str(start_monthly_std_dev) + '__monthly_std_dev_stop-' + str(stop_monthly_std_dev)
     json_file_name = monthly_mean_description_str + '__' + monthly_std_dev_description_str
     json_file_path = os.getcwd() + '/' + folder + '/' + json_file_name + '.json'
 
