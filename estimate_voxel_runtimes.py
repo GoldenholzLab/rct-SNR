@@ -830,8 +830,9 @@ if(__name__ == '__main__'):
     json_file_name = monthly_mean_description_str + '__' + monthly_std_dev_description_str
     json_file_path = os.getcwd() + '/' + folder + '/' + json_file_name + '.json'
 
-    # put code to check if folder exists or not here
-    with open()
+    if ( not os.path.exists(folder) ):
+
+        os.makedirs(folder)
 
     with open(json_file_path, 'w+') as json_file:
 
