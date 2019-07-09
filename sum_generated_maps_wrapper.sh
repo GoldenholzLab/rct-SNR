@@ -15,7 +15,7 @@ module load conda2/4.2.13
 module load python/3.6.0
 source activate main_env
 
-directory='/n/scratch2/jmr95/test_maps_2'
+directory='/n/scratch2/jmr95/rct-SNR_low_res_maps'
 num_patients_per_model=10000
 num_months_per_patient=24
 shape_1=24.143
