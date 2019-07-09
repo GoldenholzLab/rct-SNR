@@ -268,7 +268,7 @@ def generate_model_patient_data(shape, scale, alpha, beta, num_patients_per_mode
     # for each patient to be generated:
     for patient_index in range(num_patients_per_model):
 
-        # set up a boolean flag to determine whether or not the patiet's data seems overdispersed
+        # set up a boolean flag to determine whether or not the patient's data seems overdispersed
         overdispersed = False
 
         # while the currently generated patient has not yet been determined to be overdispersed:
