@@ -1017,8 +1017,6 @@ def generate_endpoint_statistic_maps(start_monthly_mean,         stop_monthly_me
     MPC_type_1_error_map = np.zeros((num_monthly_std_devs, num_monthly_means))
     TTP_type_1_error_map = np.zeros((num_monthly_std_devs, num_monthly_means))
 
-    print('num_patients_per_trial_arm: ' + str(num_patients_per_trial_arm))
-
     # for every given monthly standard deviation on the y-axis
     for monthly_std_dev_index in range(num_monthly_std_devs):
 
