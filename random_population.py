@@ -137,7 +137,7 @@ def apply_effect(daily_patient_diaries,         num_patients_per_trial_arm,
 
             for seizure_index in range(np.int_(current_seizure_count)):
 
-                if(np.random.random() >= np.abs(effect)):
+                if(np.random.random() <= np.abs(effect)):
 
                     num_removed = num_removed + np.sign(effect)
             
@@ -149,6 +149,53 @@ def apply_effect(daily_patient_diaries,         num_patients_per_trial_arm,
     daily_patient_diaries[:, num_days_per_patient_baseline:] = testing_daily_patient_diaries
 
     return daily_patient_diaries
+
+
+def generate_trial_outcomes(patient_pop_placebo_arm_params, patient_pop_drug_arm_params, 
+                            min_req_base_sz_count, num_patients_per_trial_arm,
+                            num_days_per_patient_baseline, num_days_per_patient_testing, num_days_per_patient_total,
+                            placebo_mu, placebo_sigma, drug_mu, drug_sigma):
+
+    placebo_arm_daily_patient_diaries = \
+            generate_daily_patient_diaries(patient_pop_placebo_arm_params, num_patients_per_trial_arm, min_req_base_sz_count,
+                                           num_days_per_patient_baseline, num_days_per_patient_total)
+
+    placebo_arm_daily_patient_diaries = \
+        apply_effect(placebo_arm_daily_patient_diaries, num_patients_per_trial_arm, 
+                     num_days_per_patient_baseline, num_days_per_patient_testing,
+                     placebo_mu, placebo_sigma)
+
+    drug_arm_daily_patient_diaries = \
+        generate_daily_patient_diaries(patient_pop_drug_arm_params, num_patients_per_trial_arm, min_req_base_sz_count,
+                                       num_days_per_patient_baseline, num_days_per_patient_total)
+        
+    drug_arm_daily_patient_diaries = \
+        apply_effect(drug_arm_daily_patient_diaries, num_patients_per_trial_arm, 
+                     num_days_per_patient_baseline, num_days_per_patient_testing,
+                     placebo_mu, placebo_sigma)
+        
+    drug_arm_daily_patient_diaries = \
+        apply_effect(drug_arm_daily_patient_diaries, num_patients_per_trial_arm, 
+                     num_days_per_patient_baseline, num_days_per_patient_testing,
+                     drug_mu, drug_sigma)
+        
+    [placebo_arm_percent_changes, placebo_arm_TTP_times] = \
+        calculate_individual_patient_endpoints(placebo_arm_daily_patient_diaries, num_patients_per_trial_arm, 
+                                               num_days_per_patient_baseline,     num_days_per_patient_testing)
+        
+    [drug_arm_percent_changes, drug_arm_TTP_times] = \
+        calculate_individual_patient_endpoints(drug_arm_daily_patient_diaries, num_patients_per_trial_arm, 
+                                               num_days_per_patient_baseline,     num_days_per_patient_testing)
+
+    placebo_arm_RR50 = 100*np.sum(placebo_arm_percent_changes > 0.5)/num_patients_per_trial_arm
+    placebo_arm_MPC = 100*np.median(placebo_arm_percent_changes)
+    placebo_arm_TTP = np.median(placebo_arm_TTP_times)
+    drug_arm_RR50 = 100*np.sum(drug_arm_percent_changes > 0.5)/num_patients_per_trial_arm
+    drug_arm_MPC = 100*np.median(drug_arm_percent_changes)
+    drug_arm_TTP = np.median(drug_arm_TTP_times)
+
+    return [placebo_arm_RR50, placebo_arm_MPC, placebo_arm_TTP, 
+            drug_arm_RR50,    drug_arm_MPC,    drug_arm_TTP]
 
 
 if(__name__ == '__main__'):
@@ -192,43 +239,12 @@ if(__name__ == '__main__'):
 
     for trial_index in range(num_trials):
 
-        placebo_arm_daily_patient_diaries = \
-            generate_daily_patient_diaries(patient_pop_placebo_arm_params, num_patients_per_trial_arm, min_req_base_sz_count,
-                                           num_days_per_patient_baseline, num_days_per_patient_total)
-
-        placebo_arm_daily_patient_diaries = \
-            apply_effect(placebo_arm_daily_patient_diaries, num_patients_per_trial_arm, 
-                         num_days_per_patient_baseline, num_days_per_patient_testing,
-                         placebo_mu, placebo_sigma)
-
-        drug_arm_daily_patient_diaries = \
-            generate_daily_patient_diaries(patient_pop_drug_arm_params, num_patients_per_trial_arm, min_req_base_sz_count,
-                                           num_days_per_patient_baseline, num_days_per_patient_total)
-        
-        drug_arm_daily_patient_diaries = \
-            apply_effect(drug_arm_daily_patient_diaries, num_patients_per_trial_arm, 
-                         num_days_per_patient_baseline, num_days_per_patient_testing,
-                         placebo_mu, placebo_sigma)
-        
-        drug_arm_daily_patient_diaries = \
-            apply_effect(drug_arm_daily_patient_diaries, num_patients_per_trial_arm, 
-                         num_days_per_patient_baseline, num_days_per_patient_testing,
-                         drug_mu, drug_sigma)
-        
-        [placebo_arm_percent_changes, placebo_arm_TTP_times] = \
-            calculate_individual_patient_endpoints(placebo_arm_daily_patient_diaries, num_patients_per_trial_arm, 
-                                                   num_days_per_patient_baseline,     num_days_per_patient_testing)
-        
-        [drug_arm_percent_changes, drug_arm_TTP_times] = \
-            calculate_individual_patient_endpoints(drug_arm_daily_patient_diaries, num_patients_per_trial_arm, 
-                                                   num_days_per_patient_baseline,     num_days_per_patient_testing)
-
-        placebo_arm_RR50 = 100*np.sum(placebo_arm_percent_changes > 0.5)/num_patients_per_trial_arm
-        placebo_arm_MPC = 100*np.median(placebo_arm_percent_changes)
-        placebo_arm_TTP = np.median(placebo_arm_TTP_times)
-        drug_arm_RR50 = 100*np.sum(drug_arm_percent_changes > 0.5)/num_patients_per_trial_arm
-        drug_arm_MPC = 100*np.median(drug_arm_percent_changes)
-        drug_arm_TTP = np.median(drug_arm_TTP_times)
+        [placebo_arm_RR50, placebo_arm_MPC, placebo_arm_TTP, 
+         drug_arm_RR50,    drug_arm_MPC,    drug_arm_TTP] = \
+            generate_trial_outcomes(patient_pop_placebo_arm_params, patient_pop_drug_arm_params, 
+                                    min_req_base_sz_count, num_patients_per_trial_arm,
+                                    num_days_per_patient_baseline, num_days_per_patient_testing, num_days_per_patient_total,
+                                    placebo_mu, placebo_sigma, drug_mu, drug_sigma)
 
         placebo_arm_RR50_array[trial_index] = placebo_arm_RR50
         placebo_arm_MPC_array[trial_index]  = placebo_arm_MPC
@@ -246,5 +262,6 @@ if(__name__ == '__main__'):
 
     print( np.round( np.array([[expected_placebo_arm_RR50, expected_placebo_arm_MPC, expected_placebo_arm_TTP],
                                [expected_drug_arm_RR50,    expected_drug_arm_MPC,    expected_drug_arm_TTP   ]]), 3))
+
     
 
