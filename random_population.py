@@ -116,8 +116,43 @@ def calculate_individual_patient_endpoints(daily_patient_diaries,         num_pa
     return [percent_changes, TTP_times]
 
 
-if(__name__ == '__main__'):
+def apply_effect(daily_patient_diaries,         num_patients_per_trial_arm, 
+                 num_days_per_patient_baseline, num_days_per_patient_testing, 
+                 effect_mu,                     effect_sigma):
+
+    testing_daily_patient_diaries = daily_patient_diaries[:, num_days_per_patient_baseline:]
+
+    for patient_index in range(num_patients_per_trial_arm):
+
+        effect = np.random.normal(effect_mu, effect_sigma)
+        if(effect > 1):
+            effect = 1
+
+        current_testing_daily_patient_diary = testing_daily_patient_diaries[patient_index, :]
+
+        for day_index in range(num_days_per_patient_testing):
+
+            current_seizure_count = current_testing_daily_patient_diary[day_index]
+            num_removed = 0
+
+            for seizure_index in range(np.int_(current_seizure_count)):
+
+                if(np.random.random() >= np.abs(effect)):
+
+                    num_removed = num_removed + np.sign(effect)
+            
+            current_seizure_count = current_seizure_count - num_removed
+            current_testing_daily_patient_diary[day_index] = current_seizure_count
+
+        testing_daily_patient_diaries[patient_index, :] = current_testing_daily_patient_diary
     
+    daily_patient_diaries[:, num_days_per_patient_baseline:] = testing_daily_patient_diaries
+
+    return daily_patient_diaries
+
+
+if(__name__ == '__main__'):
+
     monthly_mean_min = 1
     monthly_mean_max = 16
     monthly_std_dev_min = 1
@@ -129,6 +164,11 @@ if(__name__ == '__main__'):
     num_months_per_patient_testing = 3
     num_trials = 100
 
+    placebo_mu = 0
+    placebo_sigma  = 0.05
+    drug_mu = 0.2
+    drug_sigma = 0.05
+
     num_days_per_patient_baseline = num_months_per_patient_baseline*28
     num_days_per_patient_testing = num_months_per_patient_testing*28
     num_days_per_patient_total = num_days_per_patient_baseline + num_days_per_patient_testing
@@ -137,32 +177,74 @@ if(__name__ == '__main__'):
         generate_pop_params(monthly_mean_min,    monthly_mean_max, 
                             monthly_std_dev_min, monthly_std_dev_max, 
                             num_patients_per_trial_arm)
+    
+    patient_pop_drug_arm_params = \
+        generate_pop_params(monthly_mean_min,    monthly_mean_max, 
+                            monthly_std_dev_min, monthly_std_dev_max, 
+                            num_patients_per_trial_arm)
 
     placebo_arm_RR50_array = np.zeros(num_trials)
-    placebo_arm_MPC_array = np.zeros(num_trials)
-    placebo_arm_TTP_array = np.zeros(num_trials)
+    placebo_arm_MPC_array  = np.zeros(num_trials)
+    placebo_arm_TTP_array  = np.zeros(num_trials)
+    drug_arm_RR50_array = np.zeros(num_trials)
+    drug_arm_MPC_array  = np.zeros(num_trials)
+    drug_arm_TTP_array  = np.zeros(num_trials)
 
     for trial_index in range(num_trials):
 
         placebo_arm_daily_patient_diaries = \
             generate_daily_patient_diaries(patient_pop_placebo_arm_params, num_patients_per_trial_arm, min_req_base_sz_count,
                                            num_days_per_patient_baseline, num_days_per_patient_total)
+
+        placebo_arm_daily_patient_diaries = \
+            apply_effect(placebo_arm_daily_patient_diaries, num_patients_per_trial_arm, 
+                         num_days_per_patient_baseline, num_days_per_patient_testing,
+                         placebo_mu, placebo_sigma)
+
+        drug_arm_daily_patient_diaries = \
+            generate_daily_patient_diaries(patient_pop_drug_arm_params, num_patients_per_trial_arm, min_req_base_sz_count,
+                                           num_days_per_patient_baseline, num_days_per_patient_total)
+        
+        drug_arm_daily_patient_diaries = \
+            apply_effect(drug_arm_daily_patient_diaries, num_patients_per_trial_arm, 
+                         num_days_per_patient_baseline, num_days_per_patient_testing,
+                         placebo_mu, placebo_sigma)
+        
+        drug_arm_daily_patient_diaries = \
+            apply_effect(drug_arm_daily_patient_diaries, num_patients_per_trial_arm, 
+                         num_days_per_patient_baseline, num_days_per_patient_testing,
+                         drug_mu, drug_sigma)
         
         [placebo_arm_percent_changes, placebo_arm_TTP_times] = \
             calculate_individual_patient_endpoints(placebo_arm_daily_patient_diaries, num_patients_per_trial_arm, 
+                                                   num_days_per_patient_baseline,     num_days_per_patient_testing)
+        
+        [drug_arm_percent_changes, drug_arm_TTP_times] = \
+            calculate_individual_patient_endpoints(drug_arm_daily_patient_diaries, num_patients_per_trial_arm, 
                                                    num_days_per_patient_baseline,     num_days_per_patient_testing)
 
         placebo_arm_RR50 = 100*np.sum(placebo_arm_percent_changes > 0.5)/num_patients_per_trial_arm
         placebo_arm_MPC = 100*np.median(placebo_arm_percent_changes)
         placebo_arm_TTP = np.median(placebo_arm_TTP_times)
+        drug_arm_RR50 = 100*np.sum(drug_arm_percent_changes > 0.5)/num_patients_per_trial_arm
+        drug_arm_MPC = 100*np.median(drug_arm_percent_changes)
+        drug_arm_TTP = np.median(drug_arm_TTP_times)
 
         placebo_arm_RR50_array[trial_index] = placebo_arm_RR50
         placebo_arm_MPC_array[trial_index]  = placebo_arm_MPC
         placebo_arm_TTP_array[trial_index]  = placebo_arm_TTP
+        drug_arm_RR50_array[trial_index]    = drug_arm_RR50
+        drug_arm_MPC_array[trial_index]     = drug_arm_MPC
+        drug_arm_TTP_array[trial_index]     = drug_arm_TTP
 
     expected_placebo_arm_RR50 = np.mean(placebo_arm_RR50_array)
-    expected_placebo_arm_MPC = np.mean(placebo_arm_MPC_array)
-    expected_placebo_arm_TTP = np.mean(placebo_arm_TTP_array)
+    expected_placebo_arm_MPC  = np.mean(placebo_arm_MPC_array)
+    expected_placebo_arm_TTP  = np.mean(placebo_arm_TTP_array)
+    expected_drug_arm_RR50    = np.mean(drug_arm_RR50_array)
+    expected_drug_arm_MPC     = np.mean(drug_arm_MPC_array)
+    expected_drug_arm_TTP     = np.mean(drug_arm_TTP_array)
 
-    print(np.round([expected_placebo_arm_RR50, expected_placebo_arm_MPC, expected_placebo_arm_TTP], 3))
+    print( np.round( np.array([[expected_placebo_arm_RR50, expected_placebo_arm_MPC, expected_placebo_arm_TTP],
+                               [expected_drug_arm_RR50,    expected_drug_arm_MPC,    expected_drug_arm_TTP   ]]), 3))
+    
 
