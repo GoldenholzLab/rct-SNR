@@ -127,7 +127,7 @@ if(__name__ == '__main__'):
     num_patients_per_trial_arm = 153
     num_months_per_patient_baseline = 2
     num_months_per_patient_testing = 3
-    num_trials = 20
+    num_trials = 100
 
     num_days_per_patient_baseline = num_months_per_patient_baseline*28
     num_days_per_patient_testing = num_months_per_patient_testing*28
@@ -138,15 +138,31 @@ if(__name__ == '__main__'):
                             monthly_std_dev_min, monthly_std_dev_max, 
                             num_patients_per_trial_arm)
 
+    placebo_arm_RR50_array = np.zeros(num_trials)
+    placebo_arm_MPC_array = np.zeros(num_trials)
+    placebo_arm_TTP_array = np.zeros(num_trials)
+
     for trial_index in range(num_trials):
 
         placebo_arm_daily_patient_diaries = \
             generate_daily_patient_diaries(patient_pop_placebo_arm_params, num_patients_per_trial_arm, min_req_base_sz_count,
                                            num_days_per_patient_baseline, num_days_per_patient_total)
         
-        [percent_changes, TTP_times] = \
+        [placebo_arm_percent_changes, placebo_arm_TTP_times] = \
             calculate_individual_patient_endpoints(placebo_arm_daily_patient_diaries, num_patients_per_trial_arm, 
                                                    num_days_per_patient_baseline,     num_days_per_patient_testing)
 
-            
+        placebo_arm_RR50 = 100*np.sum(placebo_arm_percent_changes > 0.5)/num_patients_per_trial_arm
+        placebo_arm_MPC = 100*np.median(placebo_arm_percent_changes)
+        placebo_arm_TTP = np.median(placebo_arm_TTP_times)
+
+        placebo_arm_RR50_array[trial_index] = placebo_arm_RR50
+        placebo_arm_MPC_array[trial_index]  = placebo_arm_MPC
+        placebo_arm_TTP_array[trial_index]  = placebo_arm_TTP
+
+    expected_placebo_arm_RR50 = np.mean(placebo_arm_RR50_array)
+    expected_placebo_arm_MPC = np.mean(placebo_arm_MPC_array)
+    expected_placebo_arm_TTP = np.mean(placebo_arm_TTP_array)
+
+    print(np.round([expected_placebo_arm_RR50, expected_placebo_arm_MPC, expected_placebo_arm_TTP], 3))
 
