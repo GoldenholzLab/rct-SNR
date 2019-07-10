@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.stats as stats
 from lifelines.statistics import logrank_test
+import json
 
 
 def generate_pop_params(monthly_mean_min,    monthly_mean_max, 
@@ -216,40 +217,14 @@ def generate_trial_outcomes(patient_pop_placebo_arm_params, patient_pop_drug_arm
             RR50_p_value,     MPC_p_value,     TTP_p_value]
 
 
-
-
-
-if(__name__ == '__main__'):
-
-    monthly_mean_min = 1
-    monthly_mean_max = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
-    min_req_base_sz_count = 4
-
-    num_patients_per_trial_arm = 153
-    num_months_per_patient_baseline = 2
-    num_months_per_patient_testing = 3
-    num_trials = 100
-
-    placebo_mu = 0
-    placebo_sigma  = 0.05
-    drug_mu = 0.2
-    drug_sigma = 0.05
+def estimate_endpoint_statistics(patient_pop_placebo_arm_params, patient_pop_drug_arm_params,
+                                 num_months_per_patient_baseline, num_months_per_patient_testing, 
+                                 min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
+                                 placebo_mu, placebo_sigma, drug_mu, drug_sigma):
 
     num_days_per_patient_baseline = num_months_per_patient_baseline*28
     num_days_per_patient_testing = num_months_per_patient_testing*28
     num_days_per_patient_total = num_days_per_patient_baseline + num_days_per_patient_testing
-
-    patient_pop_placebo_arm_params = \
-        generate_pop_params(monthly_mean_min,    monthly_mean_max, 
-                            monthly_std_dev_min, monthly_std_dev_max, 
-                            num_patients_per_trial_arm)
-    
-    patient_pop_drug_arm_params = \
-        generate_pop_params(monthly_mean_min,    monthly_mean_max, 
-                            monthly_std_dev_min, monthly_std_dev_max, 
-                            num_patients_per_trial_arm)
 
     placebo_arm_RR50_array = np.zeros(num_trials)
     placebo_arm_MPC_array  = np.zeros(num_trials)
@@ -287,9 +262,52 @@ if(__name__ == '__main__'):
     expected_drug_arm_RR50    = np.mean(drug_arm_RR50_array)
     expected_drug_arm_MPC     = np.mean(drug_arm_MPC_array)
     expected_drug_arm_TTP     = np.mean(drug_arm_TTP_array)
-    RR50_stat_power           = np.sum(RR50_p_value_array < 0.05)/num_trials
-    MPC_stat_power            = np.sum(MPC_p_value_array < 0.05)/num_trials
-    TTP_stat_power            = np.sum(TTP_p_value_array < 0.05)/num_trials
+    RR50_stat_power           = 100*np.sum(RR50_p_value_array < 0.05)/num_trials
+    MPC_stat_power            = 100*np.sum(MPC_p_value_array < 0.05)/num_trials
+    TTP_stat_power            = 100*np.sum(TTP_p_value_array < 0.05)/num_trials
+
+    return [expected_placebo_arm_RR50, expected_placebo_arm_MPC, expected_placebo_arm_TTP,
+            expected_drug_arm_RR50,    expected_drug_arm_MPC,    expected_drug_arm_TTP,
+            RR50_stat_power,           MPC_stat_power,           TTP_stat_power]
+
+
+if(__name__ == '__main__'):
+    
+    monthly_mean_min = 1
+    monthly_mean_max = 16
+    monthly_std_dev_min = 1
+    monthly_std_dev_max = 16
+    min_req_base_sz_count = 4
+
+    num_patients_per_trial_arm = 153
+    num_months_per_patient_baseline = 2
+    num_months_per_patient_testing = 3
+    num_trials = 100
+
+    placebo_mu = 0
+    placebo_sigma  = 0.05
+    drug_mu = 0.2
+    drug_sigma = 0.05
+
+    patient_pop_placebo_arm_params = \
+        generate_pop_params(monthly_mean_min,    monthly_mean_max, 
+                            monthly_std_dev_min, monthly_std_dev_max, 
+                            num_patients_per_trial_arm)
+    
+    patient_pop_drug_arm_params = \
+        generate_pop_params(monthly_mean_min,    monthly_mean_max, 
+                            monthly_std_dev_min, monthly_std_dev_max, 
+                            num_patients_per_trial_arm)
+
+    [expected_placebo_arm_RR50, expected_placebo_arm_MPC, expected_placebo_arm_TTP,
+     expected_drug_arm_RR50,    expected_drug_arm_MPC,    expected_drug_arm_TTP,
+     RR50_stat_power,           MPC_stat_power,           TTP_stat_power            ] = \
+         estimate_endpoint_statistics(patient_pop_placebo_arm_params, patient_pop_drug_arm_params,
+                                      num_months_per_patient_baseline, num_months_per_patient_testing, 
+                                      min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
+                                      placebo_mu, placebo_sigma, drug_mu, drug_sigma)
+
+    
 
     print( np.round( np.array([[expected_placebo_arm_RR50, expected_placebo_arm_MPC, expected_placebo_arm_TTP],
                                [expected_drug_arm_RR50,    expected_drug_arm_MPC,    expected_drug_arm_TTP   ],
