@@ -318,15 +318,15 @@ if(__name__ == '__main__'):
     stop_time_in_seconds = time.time()
     total_time_in_minutes_str = 'total runtime: ' + str(np.round((stop_time_in_seconds - start_time_in_seconds)/60, 3)) + ' minutes'
 
-    data_str = 'expected placebo arm 50% responder rate: '              + str(np.round(expected_placebo_arm_RR50, 3)) + '\n' + \
-               'expected drug arm 50% responder rate: '                 + str(np.round(expected_drug_arm_RR50, 3))    + '\n' + \
-               '50% responder rate empirical statistical power: '       + str(np.round(RR50_stat_power, 3))           + '\n' + \
-               'expected placebo arm median percent change: '           + str(np.round(expected_placebo_arm_MPC, 3))  + '\n' + \
-               'expected drug arm median percent change: '              + str(np.round(expected_drug_arm_MPC, 3))     + '\n' + \
-               'median percent change empirical statistical power: '    + str(np.round(MPC_stat_power, 3))            + '\n' + \
-               'expected placebo arm time-to-prerandomization: '        + str(np.round(expected_placebo_arm_TTP, 3))  + '\n' + \
-               'expected drug arm time-to-prerandomization: '           + str(np.round(expected_drug_arm_TTP, 3))     + '\n' + \
-               'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_stat_power, 3))            + '\n\n'
+    data_str = '\n\n' + 'expected placebo arm 50% responder rate:              ' + str(np.round(expected_placebo_arm_RR50, 3)) + ' %\n' + \
+                        'expected drug arm 50% responder rate:                 ' + str(np.round(expected_drug_arm_RR50, 3))    + ' %\n' + \
+                        '50% responder rate empirical statistical power:       ' + str(np.round(RR50_stat_power, 3))           + ' %\n' + \
+                        'expected placebo arm median percent change:           ' + str(np.round(expected_placebo_arm_MPC, 3))  + ' %\n' + \
+                        'expected drug arm median percent change:              ' + str(np.round(expected_drug_arm_MPC, 3))     + ' %\n' + \
+                        'median percent change empirical statistical power:    ' + str(np.round(MPC_stat_power, 3))            + ' %\n' + \
+                        'expected placebo arm time-to-prerandomization:        ' + str(np.round(expected_placebo_arm_TTP, 3))  +   '\n' + \
+                        'expected drug arm time-to-prerandomization:           ' + str(np.round(expected_drug_arm_TTP, 3))     +   '\n' + \
+                        'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_stat_power, 3))            + ' %\n\n'
 
     print( data_str )
     print( total_time_in_minutes_str )
