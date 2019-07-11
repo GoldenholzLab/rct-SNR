@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.stats as stats
 from lifelines.statistics import logrank_test
-import json
+import time
 
 
 def generate_pop_params(monthly_mean_min,    monthly_mean_max, 
@@ -238,6 +238,8 @@ def estimate_endpoint_statistics(patient_pop_placebo_arm_params, patient_pop_dru
 
     for trial_index in range(num_trials):
 
+        trial_start_time_in_seconds = time.time()
+
         [placebo_arm_RR50, placebo_arm_MPC, placebo_arm_TTP, 
          drug_arm_RR50,    drug_arm_MPC,    drug_arm_TTP,
          RR50_p_value,     MPC_p_value,     TTP_p_value  ] = \
@@ -255,6 +257,10 @@ def estimate_endpoint_statistics(patient_pop_placebo_arm_params, patient_pop_dru
         RR50_p_value_array[trial_index]     = RR50_p_value
         MPC_p_value_array[trial_index]      = MPC_p_value
         TTP_p_value_array[trial_index]      = TTP_p_value
+
+        trial_stop_time_in_seconds = time.time()
+        trial_runtime_in_seconds_str = 'trial #' + str(trial_index + 1) + ' runtime: ' + str(np.round(trial_stop_time_in_seconds - trial_start_time_in_seconds, 3)) + ' seconds'
+        print(trial_runtime_in_seconds_str)
 
     expected_placebo_arm_RR50 = np.mean(placebo_arm_RR50_array)
     expected_placebo_arm_MPC  = np.mean(placebo_arm_MPC_array)
@@ -282,12 +288,14 @@ if(__name__ == '__main__'):
     num_patients_per_trial_arm = 153
     num_months_per_patient_baseline = 2
     num_months_per_patient_testing = 3
-    num_trials = 100
+    num_trials = 1000
 
     placebo_mu = 0
     placebo_sigma  = 0.05
     drug_mu = 0.2
     drug_sigma = 0.05
+
+    start_time_in_seconds = time.time()
 
     patient_pop_placebo_arm_params = \
         generate_pop_params(monthly_mean_min,    monthly_mean_max, 
@@ -307,11 +315,21 @@ if(__name__ == '__main__'):
                                       min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
                                       placebo_mu, placebo_sigma, drug_mu, drug_sigma)
 
-    
+    stop_time_in_seconds = time.time()
+    total_time_in_minutes_str = 'total runtime: ' + str(np.round((stop_time_in_seconds - start_time_in_seconds)/60, 3)) + ' minutes'
 
-    print( np.round( np.array([[expected_placebo_arm_RR50, expected_placebo_arm_MPC, expected_placebo_arm_TTP],
-                               [expected_drug_arm_RR50,    expected_drug_arm_MPC,    expected_drug_arm_TTP   ],
-                               [RR50_stat_power,           MPC_stat_power,           TTP_stat_power          ]]), 3) )
+    data_str = 'expected placebo arm 50% responder rate: '              + str(np.round(expected_placebo_arm_RR50, 3)) + '\n' + \
+               'expected drug arm 50% responder rate: '                 + str(np.round(expected_drug_arm_RR50, 3))    + '\n' + \
+               '50% responder rate empirical statistical power: '       + str(np.round(RR50_stat_power, 3))           + '\n' + \
+               'expected placebo arm median percent change: '           + str(np.round(expected_placebo_arm_MPC, 3))  + '\n' + \
+               'expected drug arm median percent change: '              + str(np.round(expected_drug_arm_MPC, 3))     + '\n' + \
+               'median percent change empirical statistical power: '    + str(np.round(MPC_stat_power, 3))            + '\n' + \
+               'expected placebo arm time-to-prerandomization: '        + str(np.round(expected_placebo_arm_TTP, 3))  + '\n' + \
+               'expected drug arm time-to-prerandomization: '           + str(np.round(expected_drug_arm_TTP, 3))     + '\n' + \
+               'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_stat_power, 3))            + '\n\n'
+
+    print( data_str )
+    print( total_time_in_minutes_str )
     
     
 
