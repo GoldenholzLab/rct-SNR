@@ -334,6 +334,8 @@ if(__name__ == '__main__'):
 
     data_file_path = os.getcwd() + '/' + data_file_name + '.txt'
 
+    print(data_str)
+
     with open(data_file_path, 'w+') as text_file:
 
         text_file.write(data_str)
