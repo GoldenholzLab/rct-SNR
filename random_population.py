@@ -2,6 +2,7 @@ import numpy as np
 import scipy.stats as stats
 from lifelines.statistics import logrank_test
 import time
+import os
 
 
 def generate_pop_params(monthly_mean_min,    monthly_mean_max, 
@@ -288,12 +289,14 @@ if(__name__ == '__main__'):
     num_patients_per_trial_arm = 153
     num_months_per_patient_baseline = 2
     num_months_per_patient_testing = 3
-    num_trials = 1000
+    num_trials = 5000
 
     placebo_mu = 0
     placebo_sigma  = 0.05
     drug_mu = 0.2
     drug_sigma = 0.05
+
+    data_file_name = 'random_population_endpoint_statistics'
 
     start_time_in_seconds = time.time()
 
@@ -316,7 +319,7 @@ if(__name__ == '__main__'):
                                       placebo_mu, placebo_sigma, drug_mu, drug_sigma)
 
     stop_time_in_seconds = time.time()
-    total_time_in_minutes_str = 'total runtime: ' + str(np.round((stop_time_in_seconds - start_time_in_seconds)/60, 3)) + ' minutes'
+    total_time_in_minutes = (stop_time_in_seconds - start_time_in_seconds)/60
 
     data_str = '\n\n' + 'expected placebo arm 50% responder rate:              ' + str(np.round(expected_placebo_arm_RR50, 3)) + ' %\n' + \
                         'expected drug arm 50% responder rate:                 ' + str(np.round(expected_drug_arm_RR50, 3))    + ' %\n' + \
@@ -326,10 +329,14 @@ if(__name__ == '__main__'):
                         'median percent change empirical statistical power:    ' + str(np.round(MPC_stat_power, 3))            + ' %\n' + \
                         'expected placebo arm time-to-prerandomization:        ' + str(np.round(expected_placebo_arm_TTP, 3))  +   '\n' + \
                         'expected drug arm time-to-prerandomization:           ' + str(np.round(expected_drug_arm_TTP, 3))     +   '\n' + \
-                        'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_stat_power, 3))            + ' %\n\n'
+                        'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_stat_power, 3))            + ' %\n' + \
+                        'total runtime:                                        ' + str(np.round(total_time_in_minutes, 3))     + ' minutes'
 
-    print( data_str )
-    print( total_time_in_minutes_str )
+    data_file_path = os.getcwd() + '/' + data_file_name + '.txt'
+
+    with open(data_file_path, 'w+') as text_file:
+
+        text_file.write(data_str)
     
     
 
