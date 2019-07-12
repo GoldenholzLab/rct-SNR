@@ -262,7 +262,7 @@ def estimate_endpoint_statistics(patient_pop_placebo_arm_params, patient_pop_dru
 
         trial_stop_time_in_seconds = time.time()
         trial_runtime_in_seconds_str = 'trial #' + str(trial_index + 1) + ' runtime: ' + str(np.round(trial_stop_time_in_seconds - trial_start_time_in_seconds, 3)) + ' seconds'
-        print(trial_runtime_in_seconds_str)
+        print(trial_runtime_in_seconds_str, flush=True)
 
     expected_placebo_arm_RR50 = np.mean(placebo_arm_RR50_array)
     expected_placebo_arm_MPC  = np.mean(placebo_arm_MPC_array)
@@ -297,7 +297,7 @@ if(__name__ == '__main__'):
     drug_mu = 0.2
     drug_sigma = 0.05
 
-    presentable_data_file_name        = 'random_population_rct_endpoint_statistics'
+    presentable_data_file_name        = 'randomized_population_rct_endpoint_statistics'
     endpoint_statistics_file_name     = 'endpoint_statistics'
     patient_placebo_arm_pop_file_name = 'random_placebo_arm_population'
     patient_drug_arm_pop_file_name    = 'random_drug_arm_population'
@@ -325,23 +325,23 @@ if(__name__ == '__main__'):
     stop_time_in_seconds = time.time()
     total_time_in_minutes = (stop_time_in_seconds - start_time_in_seconds)/60
 
-    presentable_data_str = '\n\n' + 'expected placebo arm 50% responder rate:              ' + str(np.round(expected_placebo_arm_RR50, 3)) + ' %\n' + \
-                                    'expected drug arm 50% responder rate:                 ' + str(np.round(expected_drug_arm_RR50, 3))    + ' %\n' + \
-                                    '50% responder rate empirical statistical power:       ' + str(np.round(RR50_stat_power, 3))           + ' %\n' + \
-                                    'expected placebo arm median percent change:           ' + str(np.round(expected_placebo_arm_MPC, 3))  + ' %\n' + \
-                                    'expected drug arm median percent change:              ' + str(np.round(expected_drug_arm_MPC, 3))     + ' %\n' + \
-                                    'median percent change empirical statistical power:    ' + str(np.round(MPC_stat_power, 3))            + ' %\n' + \
-                                    'expected placebo arm time-to-prerandomization:        ' + str(np.round(expected_placebo_arm_TTP, 3))  +   '\n' + \
-                                    'expected drug arm time-to-prerandomization:           ' + str(np.round(expected_drug_arm_TTP, 3))     +   '\n' + \
-                                    'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_stat_power, 3))            + ' %\n' + \
-                                    'total runtime:                                        ' + str(np.round(total_time_in_minutes, 3))     + ' minutes'
+    presentable_data_str = '\n\n' + 'expected placebo arm 50% responder rate:              ' + str(np.round(expected_placebo_arm_RR50, 3)) + ' %\n'      + \
+                                    'expected drug arm 50% responder rate:                 ' + str(np.round(expected_drug_arm_RR50, 3))    + ' %\n'      + \
+                                    '50% responder rate empirical statistical power:       ' + str(np.round(RR50_stat_power, 3))           + ' %\n'      + \
+                                    'expected placebo arm median percent change:           ' + str(np.round(expected_placebo_arm_MPC, 3))  + ' %\n'      + \
+                                    'expected drug arm median percent change:              ' + str(np.round(expected_drug_arm_MPC, 3))     + ' %\n'      + \
+                                    'median percent change empirical statistical power:    ' + str(np.round(MPC_stat_power, 3))            + ' %\n'      + \
+                                    'expected placebo arm time-to-prerandomization:        ' + str(np.round(expected_placebo_arm_TTP, 3))  + ' days\n'   + \
+                                    'expected drug arm time-to-prerandomization:           ' + str(np.round(expected_drug_arm_TTP, 3))     + ' days\n'   + \
+                                    'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_stat_power, 3))            + ' %\n\n'    + \
+                                    'total runtime:                                        ' + str(np.round(total_time_in_minutes, 3))     + ' minutes\n'
 
     presentable_data_file_path        = os.getcwd() + '/' + presentable_data_file_name        + '.txt'
     endpoint_statistics_file_path     = os.getcwd() + '/' + endpoint_statistics_file_name     + '.json'
     patient_placebo_arm_pop_file_path = os.getcwd() + '/' + patient_placebo_arm_pop_file_name + '.json'
     patient_drug_arm_pop_file_path    = os.getcwd() + '/' + patient_drug_arm_pop_file_name    + '.json'
 
-    print(presentable_data_str)
+    print(presentable_data_str, flush=True)
 
     with open(presentable_data_file_path, 'w+') as text_file:
 
