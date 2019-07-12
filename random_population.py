@@ -3,6 +3,7 @@ import scipy.stats as stats
 from lifelines.statistics import logrank_test
 import time
 import os
+import json
 
 
 def generate_pop_params(monthly_mean_min,    monthly_mean_max, 
@@ -296,7 +297,10 @@ if(__name__ == '__main__'):
     drug_mu = 0.2
     drug_sigma = 0.05
 
-    data_file_name = 'random_population_endpoint_statistics'
+    presentable_data_file_name        = 'random_population_rct_endpoint_statistics'
+    endpoint_statistics_file_name     = 'endpoint_statistics'
+    patient_placebo_arm_pop_file_name = 'random_placebo_arm_population'
+    patient_drug_arm_pop_file_name    = 'random_drug_arm_population'
 
     start_time_in_seconds = time.time()
 
@@ -321,24 +325,39 @@ if(__name__ == '__main__'):
     stop_time_in_seconds = time.time()
     total_time_in_minutes = (stop_time_in_seconds - start_time_in_seconds)/60
 
-    data_str = '\n\n' + 'expected placebo arm 50% responder rate:              ' + str(np.round(expected_placebo_arm_RR50, 3)) + ' %\n' + \
-                        'expected drug arm 50% responder rate:                 ' + str(np.round(expected_drug_arm_RR50, 3))    + ' %\n' + \
-                        '50% responder rate empirical statistical power:       ' + str(np.round(RR50_stat_power, 3))           + ' %\n' + \
-                        'expected placebo arm median percent change:           ' + str(np.round(expected_placebo_arm_MPC, 3))  + ' %\n' + \
-                        'expected drug arm median percent change:              ' + str(np.round(expected_drug_arm_MPC, 3))     + ' %\n' + \
-                        'median percent change empirical statistical power:    ' + str(np.round(MPC_stat_power, 3))            + ' %\n' + \
-                        'expected placebo arm time-to-prerandomization:        ' + str(np.round(expected_placebo_arm_TTP, 3))  +   '\n' + \
-                        'expected drug arm time-to-prerandomization:           ' + str(np.round(expected_drug_arm_TTP, 3))     +   '\n' + \
-                        'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_stat_power, 3))            + ' %\n' + \
-                        'total runtime:                                        ' + str(np.round(total_time_in_minutes, 3))     + ' minutes'
+    presentable_data_str = '\n\n' + 'expected placebo arm 50% responder rate:              ' + str(np.round(expected_placebo_arm_RR50, 3)) + ' %\n' + \
+                                    'expected drug arm 50% responder rate:                 ' + str(np.round(expected_drug_arm_RR50, 3))    + ' %\n' + \
+                                    '50% responder rate empirical statistical power:       ' + str(np.round(RR50_stat_power, 3))           + ' %\n' + \
+                                    'expected placebo arm median percent change:           ' + str(np.round(expected_placebo_arm_MPC, 3))  + ' %\n' + \
+                                    'expected drug arm median percent change:              ' + str(np.round(expected_drug_arm_MPC, 3))     + ' %\n' + \
+                                    'median percent change empirical statistical power:    ' + str(np.round(MPC_stat_power, 3))            + ' %\n' + \
+                                    'expected placebo arm time-to-prerandomization:        ' + str(np.round(expected_placebo_arm_TTP, 3))  +   '\n' + \
+                                    'expected drug arm time-to-prerandomization:           ' + str(np.round(expected_drug_arm_TTP, 3))     +   '\n' + \
+                                    'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_stat_power, 3))            + ' %\n' + \
+                                    'total runtime:                                        ' + str(np.round(total_time_in_minutes, 3))     + ' minutes'
 
-    data_file_path = os.getcwd() + '/' + data_file_name + '.txt'
+    presentable_data_file_path        = os.getcwd() + '/' + presentable_data_file_name        + '.txt'
+    endpoint_statistics_file_path     = os.getcwd() + '/' + endpoint_statistics_file_name     + '.json'
+    patient_placebo_arm_pop_file_path = os.getcwd() + '/' + patient_placebo_arm_pop_file_name + '.json'
+    patient_drug_arm_pop_file_path    = os.getcwd() + '/' + patient_drug_arm_pop_file_name    + '.json'
 
-    print(data_str)
+    print(presentable_data_str)
 
-    with open(data_file_path, 'w+') as text_file:
+    with open(presentable_data_file_path, 'w+') as text_file:
 
-        text_file.write(data_str)
+        text_file.write(presentable_data_str)
+
+    with open(endpoint_statistics_file_path, 'w+') as json_file:
+
+        json.dump([expected_placebo_arm_RR50, expected_placebo_arm_MPC, expected_placebo_arm_TTP,
+                   expected_drug_arm_RR50,    expected_drug_arm_MPC,    expected_drug_arm_TTP,
+                   RR50_stat_power,           MPC_stat_power,           TTP_stat_power            ], json_file)
     
+    with open(patient_placebo_arm_pop_file_path, 'w+') as json_file:
+
+        json.dump(patient_pop_placebo_arm_params[:, 0:1].tolist(), json_file)
     
+    with open(patient_drug_arm_pop_file_path, 'w+') as json_file:
+
+        json.dump(patient_pop_drug_arm_params[:, 0:1].tolist(), json_file)
 
