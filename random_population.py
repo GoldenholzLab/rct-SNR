@@ -4,6 +4,7 @@ from lifelines.statistics import logrank_test
 import time
 import os
 import json
+import subprocess
 
 
 def generate_pop_params(monthly_mean_min,    monthly_mean_max, 
@@ -321,6 +322,10 @@ if(__name__ == '__main__'):
                                       num_months_per_patient_baseline, num_months_per_patient_testing, 
                                       min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
                                       placebo_mu, placebo_sigma, drug_mu, drug_sigma)
+    
+    command = ['Rscript', 'Fisher_Exact_Power_Calc.r', str(num_patients_per_trial_arm), str(num_patients_per_trial_arm), str(expected_placebo_arm_RR50), str(expected_drug_arm_RR50)]
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
+    fisher_exact_stat_power = float(process.communicate()[0].decode().split()[1])
 
     stop_time_in_seconds = time.time()
     total_time_in_minutes = (stop_time_in_seconds - start_time_in_seconds)/60
@@ -328,6 +333,7 @@ if(__name__ == '__main__'):
     presentable_data_str = '\n\n' + 'expected placebo arm 50% responder rate:              ' + str(np.round(expected_placebo_arm_RR50, 3)) + ' %\n'      + \
                                     'expected drug arm 50% responder rate:                 ' + str(np.round(expected_drug_arm_RR50, 3))    + ' %\n'      + \
                                     '50% responder rate empirical statistical power:       ' + str(np.round(RR50_stat_power, 3))           + ' %\n'      + \
+                                    '50% responder rate analytical statistical power:      ' + str(np.round(fisher_exact_stat_power, 3))   + ' %\n'      + \
                                     'expected placebo arm median percent change:           ' + str(np.round(expected_placebo_arm_MPC, 3))  + ' %\n'      + \
                                     'expected drug arm median percent change:              ' + str(np.round(expected_drug_arm_MPC, 3))     + ' %\n'      + \
                                     'median percent change empirical statistical power:    ' + str(np.round(MPC_stat_power, 3))            + ' %\n'      + \
@@ -349,9 +355,9 @@ if(__name__ == '__main__'):
 
     with open(endpoint_statistics_file_path, 'w+') as json_file:
 
-        json.dump([expected_placebo_arm_RR50, expected_placebo_arm_MPC, expected_placebo_arm_TTP,
-                   expected_drug_arm_RR50,    expected_drug_arm_MPC,    expected_drug_arm_TTP,
-                   RR50_stat_power,           MPC_stat_power,           TTP_stat_power            ], json_file)
+        json.dump([expected_placebo_arm_RR50, expected_drug_arm_RR50, RR50_stat_power, fisher_exact_stat_power,
+                   expected_drug_arm_RR50,    expected_drug_arm_MPC,  MPC_stat_power,
+                   expected_placebo_arm_TTP,  expected_drug_arm_TTP,  TTP_stat_power                               ], json_file)
     
     with open(patient_placebo_arm_pop_file_path, 'w+') as json_file:
 
