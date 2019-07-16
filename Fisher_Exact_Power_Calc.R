@@ -2,8 +2,8 @@ args = commandArgs(trailingOnly=TRUE)
 
 library(statmod)
 
-expected_placebo_response <- as.double(args[1])
-expected_drug_response <- as.double(args[2])
+expected_placebo_response <- as.double(args[1])/100
+expected_drug_response <- as.double(args[2])/100
 num_placebo <- as.double(args[3])
 num_drug <- as.double(args[4])
 
