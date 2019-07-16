@@ -7,6 +7,21 @@ import json
 import subprocess
 import sys
 
+'''
+
+The purpose of this script was to try and find a way to take the E[RR50_placebo], E[RR50_drug] to anlytically 
+
+calculate the Power_RR50 from the FIsher Exact Test. The same was to be done with MPC and TTP. This was successfully
+
+done with RR50, but MPC and TTP require a different workflow due to the nonparametric nature of their tests. This
+
+script is not obsolete, but it looks like its going to become very specialized and focused on RR50 in the near future.
+
+This script requires Fisher_Exact_Power_Calc.R to calculate the analytical power, and uses test_Fisher_Exact.sh as well
+
+as test_Multiple_Fisher_Exacts.sh for the O2 cluster as of right now.
+
+'''
 
 def generate_pop_params(monthly_mean_min,    monthly_mean_max, 
                         monthly_std_dev_min, monthly_std_dev_max, 
@@ -205,20 +220,14 @@ def generate_trial_outcomes(patient_pop_placebo_arm_params, patient_pop_drug_arm
     TTP_results = logrank_test(placebo_arm_TTP_times, drug_arm_TTP_times, events_observed_placebo, events_observed_drug)
 
     placebo_arm_RR50 = 100*num_placebo_50_percent_responders/num_patients_per_trial_arm
-    placebo_arm_MPC = 100*np.median(placebo_arm_percent_changes)
-    placebo_arm_TTP = np.median(placebo_arm_TTP_times)
-
     drug_arm_RR50 = 100*num_drug_50_percent_responders/num_patients_per_trial_arm
-    drug_arm_MPC = 100*np.median(drug_arm_percent_changes)
-    drug_arm_TTP = np.median(drug_arm_TTP_times)
 
     [_, RR50_p_value] = stats.fisher_exact(table)
     [_, MPC_p_value] = stats.ranksums(placebo_arm_percent_changes, drug_arm_percent_changes)
     TTP_p_value = TTP_results.p_value
 
-    return [placebo_arm_RR50, placebo_arm_MPC, placebo_arm_TTP, 
-            drug_arm_RR50,    drug_arm_MPC,    drug_arm_TTP,
-            RR50_p_value,     MPC_p_value,     TTP_p_value]
+    return [placebo_arm_RR50, drug_arm_RR50, RR50_p_value, 
+            MPC_p_value, TTP_p_value]
 
 
 def estimate_endpoint_statistics(patient_pop_placebo_arm_params, patient_pop_drug_arm_params,
@@ -231,11 +240,7 @@ def estimate_endpoint_statistics(patient_pop_placebo_arm_params, patient_pop_dru
     num_days_per_patient_total = num_days_per_patient_baseline + num_days_per_patient_testing
 
     placebo_arm_RR50_array = np.zeros(num_trials)
-    placebo_arm_MPC_array  = np.zeros(num_trials)
-    placebo_arm_TTP_array  = np.zeros(num_trials)
     drug_arm_RR50_array    = np.zeros(num_trials)
-    drug_arm_MPC_array     = np.zeros(num_trials)
-    drug_arm_TTP_array     = np.zeros(num_trials)
     RR50_p_value_array     = np.zeros(num_trials)
     MPC_p_value_array      = np.zeros(num_trials)
     TTP_p_value_array      = np.zeros(num_trials)
@@ -244,20 +249,15 @@ def estimate_endpoint_statistics(patient_pop_placebo_arm_params, patient_pop_dru
 
         trial_start_time_in_seconds = time.time()
 
-        [placebo_arm_RR50, placebo_arm_MPC, placebo_arm_TTP, 
-         drug_arm_RR50,    drug_arm_MPC,    drug_arm_TTP,
-         RR50_p_value,     MPC_p_value,     TTP_p_value  ] = \
+        [placebo_arm_RR50,  drug_arm_RR50,
+         RR50_p_value, MPC_p_value, TTP_p_value] = \
             generate_trial_outcomes(patient_pop_placebo_arm_params, patient_pop_drug_arm_params, 
                                     min_req_base_sz_count, num_patients_per_trial_arm,
                                     num_days_per_patient_baseline, num_days_per_patient_testing, num_days_per_patient_total,
                                     placebo_mu, placebo_sigma, drug_mu, drug_sigma)
 
         placebo_arm_RR50_array[trial_index] = placebo_arm_RR50
-        placebo_arm_MPC_array[trial_index]  = placebo_arm_MPC
-        placebo_arm_TTP_array[trial_index]  = placebo_arm_TTP
         drug_arm_RR50_array[trial_index]    = drug_arm_RR50
-        drug_arm_MPC_array[trial_index]     = drug_arm_MPC
-        drug_arm_TTP_array[trial_index]     = drug_arm_TTP
         RR50_p_value_array[trial_index]     = RR50_p_value
         MPC_p_value_array[trial_index]      = MPC_p_value
         TTP_p_value_array[trial_index]      = TTP_p_value
@@ -267,26 +267,21 @@ def estimate_endpoint_statistics(patient_pop_placebo_arm_params, patient_pop_dru
         print(trial_runtime_in_seconds_str, flush=True)
 
     expected_placebo_arm_RR50 = np.mean(placebo_arm_RR50_array)
-    expected_placebo_arm_MPC  = np.mean(placebo_arm_MPC_array)
-    expected_placebo_arm_TTP  = np.mean(placebo_arm_TTP_array)
     expected_drug_arm_RR50    = np.mean(drug_arm_RR50_array)
-    expected_drug_arm_MPC     = np.mean(drug_arm_MPC_array)
-    expected_drug_arm_TTP     = np.mean(drug_arm_TTP_array)
     RR50_stat_power           = 100*np.sum(RR50_p_value_array < 0.05)/num_trials
     MPC_stat_power            = 100*np.sum(MPC_p_value_array < 0.05)/num_trials
     TTP_stat_power            = 100*np.sum(TTP_p_value_array < 0.05)/num_trials
 
-    return [expected_placebo_arm_RR50, expected_placebo_arm_MPC, expected_placebo_arm_TTP,
-            expected_drug_arm_RR50,    expected_drug_arm_MPC,    expected_drug_arm_TTP,
-            RR50_stat_power,           MPC_stat_power,           TTP_stat_power]
+    return [expected_placebo_arm_RR50, expected_drug_arm_RR50,
+            RR50_stat_power, MPC_stat_power, TTP_stat_power]
 
 
 if(__name__ == '__main__'):
     
-    monthly_mean_min = 1
+    monthly_mean_min = 4
     monthly_mean_max = 16
     monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
+    monthly_std_dev_max = 8
     min_req_base_sz_count = 4
 
     num_patients_per_trial_arm = 153
@@ -324,9 +319,8 @@ if(__name__ == '__main__'):
                             monthly_std_dev_min, monthly_std_dev_max, 
                             num_patients_per_trial_arm)
 
-    [expected_placebo_arm_RR50, expected_placebo_arm_MPC, expected_placebo_arm_TTP,
-     expected_drug_arm_RR50,    expected_drug_arm_MPC,    expected_drug_arm_TTP,
-     RR50_stat_power,           MPC_stat_power,           TTP_stat_power            ] = \
+    [expected_placebo_arm_RR50, expected_drug_arm_RR50,
+     RR50_stat_power, MPC_stat_power, TTP_stat_power] = \
          estimate_endpoint_statistics(patient_pop_placebo_arm_params, patient_pop_drug_arm_params,
                                       num_months_per_patient_baseline, num_months_per_patient_testing, 
                                       min_req_base_sz_count, num_patients_per_trial_arm, num_trials,
@@ -343,15 +337,9 @@ if(__name__ == '__main__'):
     stop_time_in_seconds = time.time()
     total_time_in_minutes = (stop_time_in_seconds - start_time_in_seconds)/60
 
-    presentable_data_str = '\n\n' + 'expected placebo arm 50% responder rate:              ' + str(np.round(expected_placebo_arm_RR50, 3)) + ' %\n'      + \
-                                    'expected drug arm 50% responder rate:                 ' + str(np.round(expected_drug_arm_RR50, 3))    + ' %\n'      + \
-                                    '50% responder rate empirical statistical power:       ' + str(np.round(RR50_stat_power, 3))           + ' %\n'      + \
+    presentable_data_str = '\n\n' + '50% responder rate empirical statistical power:       ' + str(np.round(RR50_stat_power, 3))           + ' %\n'      + \
                                     '50% responder rate analytical statistical power:      ' + str(np.round(fisher_exact_stat_power, 3))   + ' %\n\n'      + \
-                                    'expected placebo arm median percent change:           ' + str(np.round(expected_placebo_arm_MPC, 3))  + ' %\n'      + \
-                                    'expected drug arm median percent change:              ' + str(np.round(expected_drug_arm_MPC, 3))     + ' %\n'      + \
                                     'median percent change empirical statistical power:    ' + str(np.round(MPC_stat_power, 3))            + ' %\n\n'      + \
-                                    'expected placebo arm time-to-prerandomization:        ' + str(np.round(expected_placebo_arm_TTP, 3))  + ' days\n'   + \
-                                    'expected drug arm time-to-prerandomization:           ' + str(np.round(expected_drug_arm_TTP, 3))     + ' days\n'   + \
                                     'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_stat_power, 3))            + ' %\n\n'    + \
                                     'total runtime:                                        ' + str(np.round(total_time_in_minutes, 3))     + ' minutes\n'
 
