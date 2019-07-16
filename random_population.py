@@ -294,7 +294,7 @@ if(__name__ == '__main__'):
     num_patients_per_trial_arm = 153
     num_months_per_patient_baseline = 2
     num_months_per_patient_testing = 3
-    num_trials = 10
+    num_trials = 5000
 
     placebo_mu = 0
     placebo_sigma  = 0.05
