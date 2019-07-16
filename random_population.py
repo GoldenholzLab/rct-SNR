@@ -242,7 +242,7 @@ def estimate_endpoint_statistics(patient_pop_placebo_arm_params, patient_pop_dru
 
     for trial_index in range(num_trials):
 
-        trial_start_time_in_seconds = time.time()
+        #trial_start_time_in_seconds = time.time()
 
         [placebo_arm_RR50, placebo_arm_MPC, placebo_arm_TTP, 
          drug_arm_RR50,    drug_arm_MPC,    drug_arm_TTP,
@@ -262,9 +262,11 @@ def estimate_endpoint_statistics(patient_pop_placebo_arm_params, patient_pop_dru
         MPC_p_value_array[trial_index]      = MPC_p_value
         TTP_p_value_array[trial_index]      = TTP_p_value
 
+        '''
         trial_stop_time_in_seconds = time.time()
         trial_runtime_in_seconds_str = 'trial #' + str(trial_index + 1) + ' runtime: ' + str(np.round(trial_stop_time_in_seconds - trial_start_time_in_seconds, 3)) + ' seconds'
         print(trial_runtime_in_seconds_str, flush=True)
+        '''
 
     expected_placebo_arm_RR50 = np.mean(placebo_arm_RR50_array)
     expected_placebo_arm_MPC  = np.mean(placebo_arm_MPC_array)
@@ -334,6 +336,13 @@ if(__name__ == '__main__'):
     
     command = ['Rscript', 'Fisher_Exact_Power_Calc.R', str(expected_placebo_arm_RR50), str(expected_drug_arm_RR50), str(num_patients_per_trial_arm), str(num_patients_per_trial_arm)]
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
+
+    print( process.communicate(), flush=True)
+    print( process.communicate()[0], flush=True)
+    print( process.communicate()[0].decode(), flush=True)
+    print( process.communicate()[0].decode().split(), flush=True)
+    print( process.communicate()[0].decode().split()[1], flush=True)
+
     fisher_exact_stat_power = float(process.communicate()[0].decode().split()[1])
 
     #-------------------------------------------------------------------------------------------------------------------------------------#
