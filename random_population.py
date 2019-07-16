@@ -335,22 +335,7 @@ if(__name__ == '__main__'):
                                       placebo_mu, placebo_sigma, drug_mu, drug_sigma)
     
     command = ['Rscript', 'Fisher_Exact_Power_Calc.R', str(expected_placebo_arm_RR50), str(expected_drug_arm_RR50), str(num_patients_per_trial_arm), str(num_patients_per_trial_arm)]
-    
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    print( process.communicate(), flush=True)
-
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    print( process.communicate()[0], flush=True)
-
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    print( process.communicate()[0].decode(), flush=True)
-
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    print( process.communicate()[0].decode().split(), flush=True)
-
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    print( process.communicate()[0].decode().split()[1], flush=True)
-
     fisher_exact_stat_power = float(process.communicate()[0].decode().split()[1])
 
     #-------------------------------------------------------------------------------------------------------------------------------------#
