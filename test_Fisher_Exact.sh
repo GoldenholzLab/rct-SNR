@@ -5,6 +5,7 @@
 #SBATCH -t 0-00:45
 #SBATCH -n 1
 #SBATCH -N 1
+#SBATCH -o jmr95_%j.err
 #SBATCH -e jmr95_%j.err
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
