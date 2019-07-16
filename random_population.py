@@ -5,6 +5,7 @@ import time
 import os
 import json
 import subprocess
+import sys
 
 
 def generate_pop_params(monthly_mean_min,    monthly_mean_max, 
@@ -291,19 +292,27 @@ if(__name__ == '__main__'):
     num_patients_per_trial_arm = 153
     num_months_per_patient_baseline = 2
     num_months_per_patient_testing = 3
-    num_trials = 5000
+    num_trials = 10
 
     placebo_mu = 0
     placebo_sigma  = 0.05
     drug_mu = 0.2
     drug_sigma = 0.05
 
+    '''
     presentable_data_file_name        = 'randomized_population_rct_endpoint_statistics'
     endpoint_statistics_file_name     = 'endpoint_statistics'
     patient_placebo_arm_pop_file_name = 'random_placebo_arm_population'
     patient_drug_arm_pop_file_name    = 'random_drug_arm_population'
+    '''
+
+    presentable_data_file_name = sys.argv[1]
 
     start_time_in_seconds = time.time()
+
+    #-------------------------------------------------------------------------------------------------------------------------------------#
+    #-------------------------------------------------------------------------------------------------------------------------------------#
+    #-------------------------------------------------------------------------------------------------------------------------------------#
 
     patient_pop_placebo_arm_params = \
         generate_pop_params(monthly_mean_min,    monthly_mean_max, 
@@ -327,32 +336,39 @@ if(__name__ == '__main__'):
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
     fisher_exact_stat_power = float(process.communicate()[0].decode().split()[1])
 
+    #-------------------------------------------------------------------------------------------------------------------------------------#
+    #-------------------------------------------------------------------------------------------------------------------------------------#
+    #-------------------------------------------------------------------------------------------------------------------------------------#
+
     stop_time_in_seconds = time.time()
     total_time_in_minutes = (stop_time_in_seconds - start_time_in_seconds)/60
 
     presentable_data_str = '\n\n' + 'expected placebo arm 50% responder rate:              ' + str(np.round(expected_placebo_arm_RR50, 3)) + ' %\n'      + \
                                     'expected drug arm 50% responder rate:                 ' + str(np.round(expected_drug_arm_RR50, 3))    + ' %\n'      + \
                                     '50% responder rate empirical statistical power:       ' + str(np.round(RR50_stat_power, 3))           + ' %\n'      + \
-                                    '50% responder rate analytical statistical power:      ' + str(np.round(fisher_exact_stat_power, 3))   + ' %\n'      + \
+                                    '50% responder rate analytical statistical power:      ' + str(np.round(fisher_exact_stat_power, 3))   + ' %\n\n'      + \
                                     'expected placebo arm median percent change:           ' + str(np.round(expected_placebo_arm_MPC, 3))  + ' %\n'      + \
                                     'expected drug arm median percent change:              ' + str(np.round(expected_drug_arm_MPC, 3))     + ' %\n'      + \
-                                    'median percent change empirical statistical power:    ' + str(np.round(MPC_stat_power, 3))            + ' %\n'      + \
+                                    'median percent change empirical statistical power:    ' + str(np.round(MPC_stat_power, 3))            + ' %\n\n'      + \
                                     'expected placebo arm time-to-prerandomization:        ' + str(np.round(expected_placebo_arm_TTP, 3))  + ' days\n'   + \
                                     'expected drug arm time-to-prerandomization:           ' + str(np.round(expected_drug_arm_TTP, 3))     + ' days\n'   + \
                                     'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_stat_power, 3))            + ' %\n\n'    + \
                                     'total runtime:                                        ' + str(np.round(total_time_in_minutes, 3))     + ' minutes\n'
 
     presentable_data_file_path        = os.getcwd() + '/' + presentable_data_file_name        + '.txt'
+    '''
     endpoint_statistics_file_path     = os.getcwd() + '/' + endpoint_statistics_file_name     + '.json'
     patient_placebo_arm_pop_file_path = os.getcwd() + '/' + patient_placebo_arm_pop_file_name + '.json'
     patient_drug_arm_pop_file_path    = os.getcwd() + '/' + patient_drug_arm_pop_file_name    + '.json'
 
     print(presentable_data_str, flush=True)
+    '''
 
     with open(presentable_data_file_path, 'w+') as text_file:
 
         text_file.write(presentable_data_str)
 
+    '''
     with open(endpoint_statistics_file_path, 'w+') as json_file:
 
         json.dump([expected_placebo_arm_RR50, expected_drug_arm_RR50, RR50_stat_power, fisher_exact_stat_power,
@@ -366,4 +382,4 @@ if(__name__ == '__main__'):
     with open(patient_drug_arm_pop_file_path, 'w+') as json_file:
 
         json.dump(patient_pop_drug_arm_params[:, 0:1].tolist(), json_file)
-
+    '''
