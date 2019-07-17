@@ -90,6 +90,11 @@ def count_days_to_prerandomization_time(baseline_monthly_seizure_frequencies,
     return TTP_times
 
 
+if(__name__=='__main__'):
+
+    
+
+'''
 def calculate_individual_point_measures(daily_patient_diaries_per_point, 
                                         num_patients_per_trial_arm,
                                         num_patients_per_point, 
@@ -120,7 +125,7 @@ def calculate_individual_point_measures(daily_patient_diaries_per_point,
     median_TTP_time_per_point_per_trial_arm       = np.median(TTP_times_per_point_per_trial_arm)
 
     return [median_percent_change_per_point_per_trial_arm, median_TTP_time_per_point_per_trial_arm]
-
+'''
 '''
 if(__name__=='__main__'):
 
