@@ -123,13 +123,55 @@ def calculate_individual_point_endpoints(daily_patient_diaries_per_point,
     return [percent_changes_per_point, TTP_times_per_point]
 
 
+def apply_effect(daily_patient_diaries,
+                 num_patients_per_point, 
+                 num_days_per_patient_baseline, 
+                 num_days_per_patient_testing, 
+                 effect_mu,
+                 effect_sigma):
+
+    testing_daily_patient_diaries = daily_patient_diaries[:, num_days_per_patient_baseline:]
+
+    for patient_index in range(num_patients_per_point):
+
+        effect = np.random.normal(effect_mu, effect_sigma)
+        if(effect > 1):
+            effect = 1
+
+        current_testing_daily_patient_diary = testing_daily_patient_diaries[patient_index, :]
+
+        for day_index in range(num_days_per_patient_testing):
+
+            current_seizure_count = current_testing_daily_patient_diary[day_index]
+            num_removed = 0
+
+            for seizure_index in range(np.int_(current_seizure_count)):
+
+                if(np.random.random() <= np.abs(effect)):
+
+                    num_removed = num_removed + np.sign(effect)
+            
+            current_seizure_count = current_seizure_count - num_removed
+            current_testing_daily_patient_diary[day_index] = current_seizure_count
+
+        testing_daily_patient_diaries[patient_index, :] = current_testing_daily_patient_diary
+    
+    daily_patient_diaries[:, num_days_per_patient_baseline:] = testing_daily_patient_diaries
+
+    return daily_patient_diaries
+
+
 def generate_point_endpoint_estimates(patient_pop_monthly_params,
                                       min_req_base_sz_count,
                                       num_days_per_patient_baseline, 
                                       num_days_per_patient_testing,
                                       num_days_per_patient_total,
                                       num_patients_per_point_per_trial_arm,
-                                      num_points_per_trial_arm):
+                                      num_points_per_trial_arm,
+                                      placebo_mu,
+                                      placebo_sigma,
+                                      drug_mu,
+                                      drug_sigma):
 
     median_percent_change_array = np.zeros(num_points_per_trial_arm)
     mean_TTP_array              = np.zeros(num_points_per_trial_arm)
@@ -148,6 +190,24 @@ def generate_point_endpoint_estimates(patient_pop_monthly_params,
                                            num_days_per_patient_baseline, 
                                            num_days_per_patient_total,
                                            num_patients_per_point_per_trial_arm)
+
+        # add the placebo effect
+        daily_patient_diaries_per_point = \
+            apply_effect(daily_patient_diaries_per_point,
+                         num_patients_per_point_per_trial_arm, 
+                         num_days_per_patient_baseline, 
+                         num_days_per_patient_testing, 
+                         placebo_mu,
+                         placebo_sigma)
+        
+        # add the drug efficacy
+        daily_patient_diaries_per_point = \
+            apply_effect(daily_patient_diaries_per_point,
+                         num_patients_per_point_per_trial_arm, 
+                         num_days_per_patient_baseline, 
+                         num_days_per_patient_testing, 
+                         drug_mu,
+                         drug_sigma)
 
         [percent_changes_per_point, TTP_times_per_point] = \
             calculate_individual_point_endpoints(daily_patient_diaries_per_point,
@@ -184,6 +244,11 @@ if(__name__=='__main__'):
     monthly_std_dev_min        = 1
     monthly_std_dev_max        = 8
 
+    placebo_mu    = 0
+    placebo_sigma = 0.05
+    drug_mu       = 0.2
+    drug_sigma    = 0.05
+
     min_req_base_sz_count = 4
     num_months_per_patient_baseline = 2
     num_months_per_patient_testing = 3
@@ -201,21 +266,46 @@ if(__name__=='__main__'):
 
     algorithm_start_time_in_seconds = time.time()
 
-    patient_pop_monthly_params = \
+    patient_placebo_pop_monthly_params = \
+        generate_pop_params(monthly_mean_min,    
+                            monthly_mean_max, 
+                            monthly_std_dev_min, 
+                            monthly_std_dev_max, 
+                            num_points_per_trial_arm)
+    
+    patient_drug_pop_monthly_params = \
         generate_pop_params(monthly_mean_min,    
                             monthly_mean_max, 
                             monthly_std_dev_min, 
                             monthly_std_dev_max, 
                             num_points_per_trial_arm)
 
-    [median_percent_change_array, mean_TTP_array] = \
-        generate_point_endpoint_estimates(patient_pop_monthly_params,
+    [median_placebo_percent_change_array, mean_placebo_TTP_array] = \
+        generate_point_endpoint_estimates(patient_placebo_pop_monthly_params,
                                           min_req_base_sz_count,
                                           num_days_per_patient_baseline, 
                                           num_days_per_patient_testing,
                                           num_days_per_patient_total,
                                           num_patients_per_point_per_trial_arm,
-                                          num_points_per_trial_arm)
+                                          num_points_per_trial_arm,
+                                          placebo_mu,
+                                          placebo_sigma,
+                                          0,
+                                          0)
+    
+    [median_drug_percent_change_array, mean_drug_TTP_array] = \
+        generate_point_endpoint_estimates(patient_drug_pop_monthly_params,
+                                          min_req_base_sz_count,
+                                          num_days_per_patient_baseline, 
+                                          num_days_per_patient_testing,
+                                          num_days_per_patient_total,
+                                          num_patients_per_point_per_trial_arm,
+                                          num_points_per_trial_arm,
+                                          placebo_mu,
+                                          placebo_sigma,
+                                          drug_mu,
+                                          drug_sigma)
+
 
     algorithm_stop_time_in_seconds  = time.time()
     algorithm_total_runtime_in_minutes  = (algorithm_stop_time_in_seconds - algorithm_start_time_in_seconds)/60
