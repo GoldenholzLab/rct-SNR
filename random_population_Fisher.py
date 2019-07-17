@@ -21,6 +21,17 @@ This script requires Fisher_Exact_Power_Calc.R to calculate the analytical power
 
 as test_Multiple_Fisher_Exacts.sh for the O2 cluster as of right now.
 
+
+UPDATE: 7/17/2019:
+
+It might look as if though instead of just being reserved for the Fisher Exact Test, the algorithm currently in this script
+
+might become the sciprt for empirically simulating the statistical power of all 3 methods. What I don't know for sure right now
+
+is simulating many trials from the same of patient parameters is the same as simulating one trial with each patient being representative
+
+of their specific parameters.
+
 '''
 
 def generate_pop_params(monthly_mean_min,    monthly_mean_max, 

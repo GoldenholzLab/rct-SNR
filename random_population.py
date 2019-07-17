@@ -116,9 +116,9 @@ def calculate_individual_point_endpoints(daily_patient_diaries_per_point,
     percent_changes_per_point = np.divide(baseline_daily_seizure_frequencies_per_point - testing_daily_seizure_frequencies_per_point, baseline_daily_seizure_frequencies_per_point)
 
     TTP_times_per_point = count_days_to_prerandomization_time(baseline_monthly_seizure_frequencies_per_point,
-                                                    testing_daily_seizure_diaries_per_point, 
-                                                    num_days_per_patient_testing,
-                                                    num_patients_per_point)
+                                                              testing_daily_seizure_diaries_per_point, 
+                                                              num_days_per_patient_testing,
+                                                              num_patients_per_point)
 
     return [percent_changes_per_point, TTP_times_per_point]
 
@@ -309,7 +309,9 @@ if(__name__=='__main__'):
 
     algorithm_stop_time_in_seconds  = time.time()
     algorithm_total_runtime_in_minutes  = (algorithm_stop_time_in_seconds - algorithm_start_time_in_seconds)/60
-    algorithm_total_runtime_in_minutes_str = 'endpoint estimation overall runtime: ' + str(np.round(algorithm_total_runtime_in_minutes, 3)) + ' minutes'
+    algorithm_total_runtime_in_minutes_str = 'algorithm total runtime: ' + str(np.round(algorithm_total_runtime_in_minutes, 3)) + ' minutes'
+
+    print(algorithm_total_runtime_in_minutes_str)
 
     #--------------------------------------------------------------------------------------------------#
     #--------------------------------------------------------------------------------------------------#
