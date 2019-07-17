@@ -96,7 +96,7 @@ def count_days_to_prerandomization_time(baseline_monthly_seizure_frequencies_per
     return TTP_times
 
 
-def calculate_individual_patient_endpoints(daily_patient_diaries_per_point,
+def calculate_individual_point_endpoints(daily_patient_diaries_per_point,
                                            num_patients_per_point, 
                                            num_days_per_patient_baseline, 
                                            num_days_per_patient_testing):
@@ -150,7 +150,7 @@ def generate_point_endpoint_estimates(patient_pop_monthly_params,
                                            num_patients_per_point_per_trial_arm)
 
         [percent_changes_per_point, TTP_times_per_point] = \
-            calculate_individual_patient_endpoints(daily_patient_diaries_per_point,
+            calculate_individual_point_endpoints(daily_patient_diaries_per_point,
                                                    num_patients_per_point_per_trial_arm, 
                                                    num_days_per_patient_baseline, 
                                                    num_days_per_patient_testing)
