@@ -1,15 +1,16 @@
 import numpy as np
+import time
 
 
 def generate_pop_params(monthly_mean_min,    
                         monthly_mean_max, 
                         monthly_std_dev_min, 
                         monthly_std_dev_max, 
-                        num_patients_per_trial_arm):
+                        num_points_per_trial_arm):
 
-    patient_pop_monthly_params = np.zeros((num_patients_per_trial_arm, 4))
+    patient_pop_monthly_params = np.zeros((num_points_per_trial_arm, 4))
 
-    for patient_index in range(num_patients_per_trial_arm):
+    for patient_index in range(num_points_per_trial_arm):
 
         overdispersed = False
 
@@ -38,40 +39,45 @@ def generate_pop_params(monthly_mean_min,
     return patient_pop_monthly_params
 
 
-def generate_patient_diary(daily_n, daily_odds_ratio, 
-                           min_req_base_sz_count,
-                           num_days_per_patient_baseline, 
-                           num_days_per_patient_total):
+def generate_daily_patient_diaries(daily_n,
+                                   daily_odds_ratio,
+                                   min_req_base_sz_count,
+                                   num_days_per_patient_baseline, 
+                                   num_days_per_patient_total,
+                                   num_patients_per_point):
 
-    acceptable_baseline = False
-    daily_patient_diary = np.zeros(num_days_per_patient_total)
+    daily_patient_diaries = np.zeros((num_patients_per_point, num_days_per_patient_total))
 
-    while(not acceptable_baseline):
+    for patient_index in range(num_patients_per_point):
 
-        for day_index in range(num_days_per_patient_total):
+        acceptable_baseline = False
 
-            daily_rate = np.random.gamma(daily_n, daily_odds_ratio)
-            daily_count = np.random.poisson(daily_rate)
+        while(not acceptable_baseline):
 
-            daily_patient_diary[day_index] = daily_count
+            for day_index in range(num_days_per_patient_total):
+
+                daily_rate = np.random.gamma(daily_n, daily_odds_ratio)
+                daily_count = np.random.poisson(daily_rate)
+
+                daily_patient_diaries[patient_index, day_index] = daily_count
                 
-        patient_baseline_sz_count = np.sum(daily_patient_diary[:num_days_per_patient_baseline])
+            patient_baseline_sz_count = np.sum(daily_patient_diaries[patient_index, :num_days_per_patient_baseline])
                 
-        if(patient_baseline_sz_count >= min_req_base_sz_count):
+            if(patient_baseline_sz_count >= min_req_base_sz_count):
 
-            acceptable_baseline = True
+                acceptable_baseline = True
     
-    return daily_patient_diary
+    return daily_patient_diaries
     
 
-def count_days_to_prerandomization_time(baseline_monthly_seizure_frequencies, 
-                                        testing_daily_seizure_diaries, 
+def count_days_to_prerandomization_time(baseline_monthly_seizure_frequencies_per_point,
+                                        testing_daily_seizure_diaries_per_point, 
                                         num_days_per_patient_testing,
-                                        num_patients_per_trial_arm):
+                                        num_patients_per_point):
 
-    TTP_times = np.zeros(num_patients_per_trial_arm)
+    TTP_times = np.zeros(num_patients_per_point)
 
-    for patient_index in range(num_patients_per_trial_arm):
+    for patient_index in range(num_patients_per_point):
 
         reached_count = False
         day_index = 0
@@ -79,9 +85,9 @@ def count_days_to_prerandomization_time(baseline_monthly_seizure_frequencies,
 
         while(not reached_count):
 
-            sum_count = sum_count + testing_daily_seizure_diaries[patient_index, day_index]
+            sum_count = sum_count + testing_daily_seizure_diaries_per_point[patient_index, day_index]
 
-            reached_count = ( ( sum_count >= baseline_monthly_seizure_frequencies[patient_index] )  or ( day_index == (num_days_per_patient_testing - 1) ) )
+            reached_count = ( ( sum_count >= baseline_monthly_seizure_frequencies_per_point[patient_index] )  or ( day_index == (num_days_per_patient_testing - 1) ) )
 
             day_index = day_index + 1
     
@@ -90,96 +96,131 @@ def count_days_to_prerandomization_time(baseline_monthly_seizure_frequencies,
     return TTP_times
 
 
-if(__name__=='__main__'):
-
+def calculate_individual_patient_endpoints(daily_patient_diaries_per_point,
+                                           num_patients_per_point, 
+                                           num_days_per_patient_baseline, 
+                                           num_days_per_patient_testing):
     
-
-'''
-def calculate_individual_point_measures(daily_patient_diaries_per_point, 
-                                        num_patients_per_trial_arm,
-                                        num_patients_per_point, 
-                                        num_days_per_patient_baseline,
-                                        num_days_per_patient_testing):
-
     baseline_daily_seizure_diaries_per_point = daily_patient_diaries_per_point[:, :num_days_per_patient_baseline]
     testing_daily_seizure_diaries_per_point  = daily_patient_diaries_per_point[:, num_days_per_patient_baseline:]
-
+    
     baseline_daily_seizure_frequencies_per_point = np.mean(baseline_daily_seizure_diaries_per_point, 1)
     testing_daily_seizure_frequencies_per_point = np.mean(testing_daily_seizure_diaries_per_point, 1)
 
     baseline_monthly_seizure_frequencies_per_point = baseline_daily_seizure_frequencies_per_point*28
 
-    for patient_point_iter in range(num_patients_per_point):
-        if(baseline_daily_seizure_frequencies_per_point[patient_point_iter] == 0):
-            baseline_daily_seizure_frequencies_per_point[patient_point_iter] = 0.000000001
+    for patient_index in range(num_patients_per_point):
+        if(baseline_daily_seizure_frequencies_per_point[patient_index] == 0):
+            baseline_daily_seizure_frequencies_per_point[patient_index] = 0.000000001
+    
+    percent_changes_per_point = np.divide(baseline_daily_seizure_frequencies_per_point - testing_daily_seizure_frequencies_per_point, baseline_daily_seizure_frequencies_per_point)
 
-    percent_changes_per_point_per_trial_arm = np.divide(baseline_daily_seizure_frequencies_per_point - testing_daily_seizure_frequencies_per_point, baseline_daily_seizure_frequencies_per_point)
+    TTP_times_per_point = count_days_to_prerandomization_time(baseline_monthly_seizure_frequencies_per_point,
+                                                    testing_daily_seizure_diaries_per_point, 
+                                                    num_days_per_patient_testing,
+                                                    num_patients_per_point)
 
-    TTP_times_per_point_per_trial_arm = \
-        count_days_to_prerandomization_time(baseline_monthly_seizure_frequencies_per_point,
-                                            testing_daily_seizure_diaries_per_point, 
-                                            num_days_per_patient_testing,
-                                            num_patients_per_trial_arm)
+    return [percent_changes_per_point, TTP_times_per_point]
 
-    median_percent_change_per_point_per_trial_arm = np.median(percent_changes_per_point_per_trial_arm)
-    median_TTP_time_per_point_per_trial_arm       = np.median(TTP_times_per_point_per_trial_arm)
 
-    return [median_percent_change_per_point_per_trial_arm, median_TTP_time_per_point_per_trial_arm]
-'''
-'''
+def generate_point_endpoint_estimates(patient_pop_monthly_params,
+                                      min_req_base_sz_count,
+                                      num_days_per_patient_baseline, 
+                                      num_days_per_patient_testing,
+                                      num_days_per_patient_total,
+                                      num_patients_per_point_per_trial_arm,
+                                      num_points_per_trial_arm):
+
+    median_percent_change_array = np.zeros(num_points_per_trial_arm)
+    mean_TTP_array              = np.zeros(num_points_per_trial_arm)
+
+    for point_index in range(num_points_per_trial_arm):
+
+        patient_endpoint_estimation_start_time_in_seconds = time.time()
+
+        daily_n          = patient_pop_monthly_params[point_index, 2]
+        daily_odds_ratio = patient_pop_monthly_params[point_index, 3]
+
+        daily_patient_diaries_per_point = \
+            generate_daily_patient_diaries(daily_n,
+                                           daily_odds_ratio,
+                                           min_req_base_sz_count,
+                                           num_days_per_patient_baseline, 
+                                           num_days_per_patient_total,
+                                           num_patients_per_point_per_trial_arm)
+
+        [percent_changes_per_point, TTP_times_per_point] = \
+            calculate_individual_patient_endpoints(daily_patient_diaries_per_point,
+                                                   num_patients_per_point_per_trial_arm, 
+                                                   num_days_per_patient_baseline, 
+                                                   num_days_per_patient_testing)
+
+        # median percent change per point was used instead of mean percent change because the histogram of percent change showed that it was left-skewed
+        median_percent_change_per_point = np.median(percent_changes_per_point)
+        mean_TTP_per_point = np.mean(TTP_times_per_point)
+
+        median_percent_change_array[point_index] = median_percent_change_per_point
+        mean_TTP_array[point_index] = mean_TTP_per_point
+
+        patient_endpoint_estimation_stop_time_in_seconds = time.time()
+        patient_endpoint_estimation_total_runtime_in_seconds = patient_endpoint_estimation_stop_time_in_seconds - patient_endpoint_estimation_start_time_in_seconds
+
+        point_index_str                                          = 'point index: ' + str(point_index + 1)
+        median_percent_change_per_point_str                      = 'median percent change per point:              ' + str(np.round(100*median_percent_change_per_point, 3)) + ' %'
+        mean_TTP_per_point_str                                   = 'average time-to-prerandomization per point:   ' + str(np.round(mean_TTP_per_point, 3)) + ' days'
+        patient_endpoint_estimation_total_runtime_in_minutes_str = 'individual point endpoint estimation runtime: ' +  str(np.round(patient_endpoint_estimation_total_runtime_in_seconds, 3)) + ' seconds'
+
+        data_str = '\n' + point_index_str + '\n' + median_percent_change_per_point_str + '\n' + mean_TTP_per_point_str + '\n' + patient_endpoint_estimation_total_runtime_in_minutes_str + '\n'
+
+        print(data_str)
+    
+    return [median_percent_change_array, mean_TTP_array]
+
+
 if(__name__=='__main__'):
 
-    monthly_mean_min = 4
-    monthly_mean_max = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 8
+    monthly_mean_min           = 4
+    monthly_mean_max           = 16
+    monthly_std_dev_min        = 1
+    monthly_std_dev_max        = 8
 
+    min_req_base_sz_count = 4
     num_months_per_patient_baseline = 2
     num_months_per_patient_testing = 3
-    num_patients_per_trial_arm = 153
-    min_req_base_sz_count = 4
+    num_points_per_trial_arm = 153
 
-    num_patients_per_point = 5000
+    num_patients_per_point_per_trial_arm = 5000
 
+    #--------------------------------------------------------------------------------------------------#
+    #--------------------------------------------------------------------------------------------------#
+    #--------------------------------------------------------------------------------------------------#
 
-    #---------------------------------------------------------------------------------------------------------------------#
-    #---------------------------------------------------------------------------------------------------------------------#
-    #---------------------------------------------------------------------------------------------------------------------#
-    
-    num_days_per_patient_baseline = num_months_per_patient_baseline*28
-    num_days_per_patient_testing = num_months_per_patient_testing*28
+    num_days_per_patient_baseline = 28*num_months_per_patient_baseline
+    num_days_per_patient_testing = 28*num_months_per_patient_testing
     num_days_per_patient_total = num_days_per_patient_baseline + num_days_per_patient_testing
 
+    algorithm_start_time_in_seconds = time.time()
+
     patient_pop_monthly_params = \
-        generate_pop_params(monthly_mean_min,    monthly_mean_max, 
-                            monthly_std_dev_min, monthly_std_dev_max, 
-                            num_patients_per_trial_arm)
-    
-    #median_percent_changes_per_trial_arm
+        generate_pop_params(monthly_mean_min,    
+                            monthly_mean_max, 
+                            monthly_std_dev_min, 
+                            monthly_std_dev_max, 
+                            num_points_per_trial_arm)
 
-    for patient_index in range(num_patients_per_trial_arm):
+    [median_percent_change_array, mean_TTP_array] = \
+        generate_point_endpoint_estimates(patient_pop_monthly_params,
+                                          min_req_base_sz_count,
+                                          num_days_per_patient_baseline, 
+                                          num_days_per_patient_testing,
+                                          num_days_per_patient_total,
+                                          num_patients_per_point_per_trial_arm,
+                                          num_points_per_trial_arm)
 
-        daily_n          = patient_pop_monthly_params[patient_index, 2]
-        daily_odds_ratio = patient_pop_monthly_params[patient_index, 3]
+    algorithm_stop_time_in_seconds  = time.time()
+    algorithm_total_runtime_in_minutes  = (algorithm_stop_time_in_seconds - algorithm_start_time_in_seconds)/60
+    algorithm_total_runtime_in_minutes_str = 'endpoint estimation overall runtime: ' + str(np.round(algorithm_total_runtime_in_minutes, 3)) + ' minutes'
 
-        daily_patient_diaries_per_point_per_trial_arm = np.zeros((num_patients_per_point, num_days_per_patient_total))
-
-        for patient_point_inter in range(num_patients_per_point):
-
-            daily_patient_diaries_per_point_per_trial_arm[patient_point_inter, :] = \
-                generate_patient_diary(daily_n, daily_odds_ratio, min_req_base_sz_count,
-                                       num_days_per_patient_baseline, num_days_per_patient_total)
-    
-        # median of percent change was done here instead of mean of percent change because histogram of percent change per point showed a left-skewed distribution
-        # for TTP, mean and median were about the same
-        [median_percent_change_per_point_per_trial_arm, median_TTP_time_per_point_per_trial_arm] = \
-            calculate_individual_point_measures(daily_patient_diaries_per_point_per_trial_arm, 
-                                                num_patients_per_trial_arm,
-                                                num_patients_per_point, 
-                                                num_days_per_patient_baseline,
-                                                num_days_per_patient_testing)
-
-    #---------------------------------------------------------------------------------------------------------------------#
-    #---------------------------------------------------------------------------------------------------------------------#
-    #---------------------------------------------------------------------------------------------------------------------#
-'''
+    #--------------------------------------------------------------------------------------------------#
+    #--------------------------------------------------------------------------------------------------#
+    #--------------------------------------------------------------------------------------------------#
