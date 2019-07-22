@@ -7,6 +7,9 @@
 # pictures
 *.png
 
+# Excel files
+.xlsx
+
 # text files and word documents
 *.txt
 *.docx
