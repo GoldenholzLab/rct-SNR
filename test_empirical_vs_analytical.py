@@ -241,7 +241,11 @@ def generate_individual_patient_endpoints_per_map_point(placebo_arm_daily_n,
                                                         num_testing_days_per_patient,
                                                         num_total_days_per_patient,
                                                         min_req_bs_sz_count,
-                                                        num_trials):
+                                                        num_trials,
+                                                        placebo_mu,
+                                                        placebo_sigma,
+                                                        drug_mu,
+                                                        drug_sigma):
 
     one_placebo_map_point_seizure_diaries = \
         generate_one_map_point_of_seizure_diaries(placebo_arm_daily_n, 
@@ -250,6 +254,14 @@ def generate_individual_patient_endpoints_per_map_point(placebo_arm_daily_n,
                                                   num_baseline_days_per_patient,
                                                   num_total_days_per_patient,
                                                   min_req_bs_sz_count)
+
+    one_placebo_map_point_seizure_diaries = \
+        apply_effect(one_placebo_map_point_seizure_diaries,
+                     num_baseline_days_per_patient,
+                     num_testing_days_per_patient,
+                     num_trials,
+                     placebo_mu,
+                     placebo_sigma)
     
     [one_placebo_map_point_percent_changes, one_placebo_map_point_TTP_times] = \
         calculate_individual_patient_endpoints_per_diary_set(one_placebo_map_point_seizure_diaries,
@@ -264,6 +276,22 @@ def generate_individual_patient_endpoints_per_map_point(placebo_arm_daily_n,
                                                   num_baseline_days_per_patient,
                                                   num_total_days_per_patient,
                                                   min_req_bs_sz_count)
+    
+    one_drug_map_point_seizure_diaries = \
+        apply_effect(one_placebo_map_point_seizure_diaries,
+                     num_baseline_days_per_patient,
+                     num_testing_days_per_patient,
+                     num_trials,
+                     placebo_mu,
+                     placebo_sigma)
+    
+    one_drug_map_point_seizure_diaries = \
+        apply_effect(one_placebo_map_point_seizure_diaries,
+                     num_baseline_days_per_patient,
+                     num_testing_days_per_patient,
+                     num_trials,
+                     drug_mu,
+                     drug_sigma)
     
     [one_drug_map_point_percent_changes, one_drug_map_point_TTP_times] = \
         calculate_individual_patient_endpoints_per_diary_set(one_drug_map_point_seizure_diaries,
@@ -396,7 +424,11 @@ def calculate_analytical_stat_power(patient_placebo_pop_daily_params,
                                     num_testing_days_per_patient,
                                     num_total_days_per_patient,
                                     min_req_bs_sz_count,
-                                    num_trials):
+                                    num_trials,
+                                    placebo_mu,
+                                    placebo_sigma,
+                                    drug_mu,
+                                    drug_sigma):
 
     median_percent_change_per_placebo_arm_theo_patients = np.zeros(num_theo_patients_per_trial_arm)
     median_percent_change_per_drug_arm_theo_patients    = np.zeros(num_theo_patients_per_trial_arm)
@@ -422,18 +454,36 @@ def calculate_analytical_stat_power(patient_placebo_pop_daily_params,
                                                                  num_testing_days_per_patient,
                                                                  num_total_days_per_patient,
                                                                  min_req_bs_sz_count,
-                                                                 num_trials)
+                                                                 num_trials,
+                                                                 placebo_mu,
+                                                                 placebo_sigma,
+                                                                 drug_mu,
+                                                                 drug_sigma)
         
+        '''        
         # did not change the code here to reflect that the mode is being calculated instead of the median
         median_percent_change_per_placebo_map_point = stats.mode(one_placebo_map_point_percent_changes)[0]
         median_percent_change_per_drug_map_point    = stats.mode(one_drug_map_point_percent_changes)[0]
+        '''
+        '''
+        median_percent_change_per_placebo_map_point = np.percentile(one_placebo_map_point_percent_changes, 85)
+        median_percent_change_per_drug_map_point    = np.percentile(one_drug_map_point_percent_changes, 85)
+        '''
+        
+        median_percent_change_per_placebo_map_point = np.median(one_placebo_map_point_percent_changes)
+        median_percent_change_per_drug_map_point    = np.median(one_drug_map_point_percent_changes)
+        
+        '''
+        median_percent_change_per_placebo_map_point = np.mean(one_placebo_map_point_percent_changes)
+        median_percent_change_per_drug_map_point    = np.mean(one_drug_map_point_percent_changes)
+        '''
 
         average_TTP_per_placebo_map_point           = np.mean(one_placebo_map_point_TTP_times)
         average_TTP_per_drug_map_point              = np.mean(one_drug_map_point_TTP_times)
 
         median_percent_change_per_placebo_arm_theo_patients[theo_patient_index] = median_percent_change_per_placebo_map_point
-        average_TTP_per_placebo_arm_theo_patients[theo_patient_index]           = average_TTP_per_placebo_map_point
         median_percent_change_per_drug_arm_theo_patients[theo_patient_index]    = median_percent_change_per_drug_map_point
+        average_TTP_per_placebo_arm_theo_patients[theo_patient_index]           = average_TTP_per_placebo_map_point
         average_TTP_per_drug_arm_theo_patients[theo_patient_index]              = average_TTP_per_drug_map_point
         
         patient_point_stop_time_in_seconds = time.time()
@@ -509,20 +559,26 @@ if(__name__=='__main__'):
                                         num_testing_days_per_patient,
                                         num_total_days_per_patient,
                                         min_req_bs_sz_count,
-                                        num_trials)       
+                                        num_trials,
+                                        placebo_mu,
+                                        placebo_sigma,
+                                        drug_mu,
+                                        drug_sigma)       
 
     expected_emp_placebo_arm_RR50_str = 'expected empirical placebo arm 50% responder rate :   ' + str(np.round(expected_emp_placebo_arm_RR50, 3)) + ' %'
     expected_emp_drug_arm_RR50_str    = 'expected empirical drug arm 50% responder rate :      ' + str(np.round(expected_emp_drug_arm_RR50, 3))    + ' %'
     expected_ana_placebo_arm_RR50_str = 'expected analytical placebo arm 50% responder rate :  ' + str(np.round(expected_ana_placebo_arm_RR50, 3)) + ' %'
     expected_ana_drug_arm_RR50_str    = 'expected analytical drug arm 50% responder rate :     ' + str(np.round(expected_ana_drug_arm_RR50, 3))    + ' %'
 
-    RR50_emp_stat_power_str       = '50% responder rate empirical statistical power:       ' + str(np.round(RR50_emp_stat_power, 3))           + ' %'
-    RR50_ana_stat_power_str       = '50% responder rate analytical statistical power:      ' + str(np.round(fisher_exact_stat_power, 3))       + ' %'
-    MPC_emp_stat_power_str        = 'median percent change empirical statistical power:    ' + str(np.round(MPC_emp_stat_power, 3))            + ' %'
-    TTP_emp_stat_power_str        = 'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_emp_stat_power, 3))            + ' %'
+    RR50_emp_stat_power_str       = '50% responder rate empirical statistical power:       ' + str(np.round(RR50_emp_stat_power, 3))     + ' %'
+    RR50_ana_stat_power_str       = '50% responder rate analytical statistical power:      ' + str(np.round(fisher_exact_stat_power, 3)) + ' %'
+    MPC_emp_stat_power_str        = 'median percent change empirical statistical power:    ' + str(np.round(MPC_emp_stat_power, 3))      + ' %'
+    TTP_emp_stat_power_str        = 'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_emp_stat_power, 3))      + ' %'
+    
     data_str = '\n' + expected_emp_placebo_arm_RR50_str + '\n' + expected_emp_drug_arm_RR50_str + \
                '\n' + expected_ana_placebo_arm_RR50_str + '\n' + expected_ana_drug_arm_RR50_str + '\n' + \
                '\n' + RR50_emp_stat_power_str           + '\n' + RR50_ana_stat_power_str        + \
-               '\n' + MPC_emp_stat_power_str            + '\n' + TTP_emp_stat_power_str         + '\n'    
+               '\n' + MPC_emp_stat_power_str            + '\n' + TTP_emp_stat_power_str         + '\n'
+    
     print(data_str)
 
