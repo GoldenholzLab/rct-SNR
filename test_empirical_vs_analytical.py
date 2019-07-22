@@ -311,9 +311,9 @@ def generate_p_values_per_trial(patient_drug_pop_daily_params,
                                                         drug_mu,
                                                         drug_sigma)
         
-    num_placebo_50_percent_responders     = np.sum(one_placebo_arm_percent_changes > 0.5)
+    num_placebo_50_percent_responders     = np.sum(one_placebo_arm_percent_changes >= 0.5)
     num_placebo_50_percent_non_responders = num_theo_patients_per_trial_arm - num_placebo_50_percent_responders
-    num_drug_50_percent_responders        = np.sum(one_drug_arm_percent_changes > 0.5)
+    num_drug_50_percent_responders        = np.sum(one_drug_arm_percent_changes >= 0.5)
     num_drug_50_percent_non_responders    = num_theo_patients_per_trial_arm - num_drug_50_percent_responders
     table = np.array([[num_placebo_50_percent_responders, num_placebo_50_percent_non_responders], [num_drug_50_percent_responders, num_drug_50_percent_non_responders]])
 
@@ -413,9 +413,11 @@ def calculate_analytical_stat_power(patient_placebo_pop_daily_params,
                                                                  min_req_bs_sz_count,
                                                                  num_trials)
         
+        # did not change the code here to reflect that the mode is being calculated instead of the median
         median_percent_change_per_placebo_map_point = stats.mode(one_placebo_map_point_percent_changes)[0]
-        average_TTP_per_placebo_map_point           = np.mean(one_placebo_map_point_TTP_times)
         median_percent_change_per_drug_map_point    = stats.mode(one_drug_map_point_percent_changes)[0]
+
+        average_TTP_per_placebo_map_point           = np.mean(one_placebo_map_point_TTP_times)
         average_TTP_per_drug_map_point              = np.mean(one_drug_map_point_TTP_times)
 
         median_percent_change_per_placebo_arm_theo_patients[theo_patient_index] = median_percent_change_per_placebo_map_point
