@@ -115,9 +115,9 @@ def generate_one_map_point_of_seizure_diaries(daily_n,
 
 
 def calculate_individual_patient_endpoints_per_diary_set(daily_seizure_diaries,
-                                           num_baseline_days_per_patient,
-                                           num_testing_days_per_patient,
-                                           num_daily_seizure_diaries):
+                                                         num_baseline_days_per_patient,
+                                                         num_testing_days_per_patient,
+                                                         num_daily_seizure_diaries):
 
     baseline_daily_seizure_diaries = daily_seizure_diaries[:, :num_baseline_days_per_patient]
     testing_daily_seizure_diaries  = daily_seizure_diaries[:, num_baseline_days_per_patient:]
@@ -230,6 +230,52 @@ def generate_individual_patient_endpoints_per_trial(patient_pop_daily_params,
                                                              num_theo_patients_per_trial_arm)
     
     return [one_trial_arm_percent_changes, one_trial_arm_TTP_times]
+
+
+def generate_individual_patient_endpoints_per_map_point(placebo_arm_daily_n,
+                                                        placebo_arm_daily_odds_ratio,
+                                                        drug_arm_daily_n, 
+                                                        drug_arm_daily_odds_ratio,
+                                                        num_baseline_days_per_patient,
+                                                        num_testing_days_per_patient,
+                                                        num_total_days_per_patient,
+                                                        min_req_bs_sz_count,
+                                                        num_trials):
+
+    print( [ 28*placebo_arm_daily_n*placebo_arm_daily_odds_ratio, np.sqrt(28*placebo_arm_daily_n*placebo_arm_daily_odds_ratio*(1 + placebo_arm_daily_odds_ratio)) ] )
+
+    one_placebo_map_point_seizure_diaries = \
+        generate_one_map_point_of_seizure_diaries(placebo_arm_daily_n, 
+                                                  placebo_arm_daily_odds_ratio, 
+                                                  num_trials,
+                                                  num_baseline_days_per_patient,
+                                                  num_total_days_per_patient,
+                                                  min_req_bs_sz_count)
+    
+    [one_placebo_map_point_percent_changes, one_placebo_map_point_TTP_times] = \
+        calculate_individual_patient_endpoints_per_diary_set(one_placebo_map_point_seizure_diaries,
+                                                             num_baseline_days_per_patient,
+                                                             num_testing_days_per_patient,
+                                                             num_trials)
+
+    print( [ 28*drug_arm_daily_n*drug_arm_daily_odds_ratio, np.sqrt(28*drug_arm_daily_n*drug_arm_daily_odds_ratio*(1 + drug_arm_daily_odds_ratio)) ] )
+
+    one_drug_map_point_seizure_diaries = \
+        generate_one_map_point_of_seizure_diaries(drug_arm_daily_n, 
+                                                  drug_arm_daily_odds_ratio, 
+                                                  num_trials,
+                                                  num_baseline_days_per_patient,
+                                                  num_total_days_per_patient,
+                                                  min_req_bs_sz_count)
+    
+    [one_drug_map_point_percent_changes, one_drug_map_point_TTP_times] = \
+        calculate_individual_patient_endpoints_per_diary_set(one_drug_map_point_seizure_diaries,
+                                                             num_baseline_days_per_patient,
+                                                             num_testing_days_per_patient,
+                                                             num_trials)
+    
+    return [one_placebo_map_point_percent_changes, one_placebo_map_point_TTP_times, 
+            one_drug_map_point_percent_changes,    one_drug_map_point_TTP_times    ]
 
 
 def generate_p_values_per_trial(patient_drug_pop_daily_params,
@@ -371,7 +417,8 @@ if(__name__=='__main__'):
                                     monthly_std_dev_min, 
                                     monthly_std_dev_max, 
                                     num_theo_patients_per_trial_arm)
-
+    
+    '''
     [RR50_emp_stat_power, MPC_emp_stat_power, TTP_emp_stat_power] = \
         calculate_empirical_stat_power(patient_drug_pop_daily_params,
                                        patient_placebo_pop_daily_params, 
@@ -385,47 +432,42 @@ if(__name__=='__main__'):
                                        drug_mu,
                                        drug_sigma,
                                        num_trials)
+    '''
     
+    print(patient_placebo_pop_daily_params)
+    print(patient_drug_pop_daily_params)
+
     for patient_index in range(num_theo_patients_per_trial_arm):
 
         patient_point_start_time_in_seconds = time.time()
 
-        one_placebo_map_point_seizure_diaries = \
-            generate_one_map_point_of_seizure_diaries(patient_placebo_pop_daily_params[patient_index, 0], 
-                                                      patient_placebo_pop_daily_params[patient_index, 1], 
-                                                      num_trials,
-                                                      num_baseline_days_per_patient,
-                                                      num_total_days_per_patient,
-                                                      min_req_bs_sz_count)
-    
-        [one_placebo_map_point_percent_changes, one_placebo_map_point_TTP_times] = \
-            calculate_individual_patient_endpoints_per_diary_set(one_placebo_map_point_seizure_diaries,
-                                                                 num_baseline_days_per_patient,
-                                                                 num_testing_days_per_patient,
-                                                                 num_trials)
+        placebo_arm_daily_n          = patient_placebo_pop_daily_params[patient_index, 0]
+        placebo_arm_daily_odds_ratio = patient_placebo_pop_daily_params[patient_index, 1]
+        drug_arm_daily_n             = patient_drug_pop_daily_params[patient_index, 0]
+        drug_arm_daily_odds_ratio    = patient_drug_pop_daily_params[patient_index, 1]
 
-        one_drug_map_point_seizure_diaries = \
-            generate_one_map_point_of_seizure_diaries(patient_drug_pop_daily_params[patient_index, 0], 
-                                                      patient_drug_pop_daily_params[patient_index, 1], 
-                                                      num_trials,
-                                                      num_baseline_days_per_patient,
-                                                      num_total_days_per_patient,
-                                                      min_req_bs_sz_count)
-    
-        [one_drug_map_point_percent_changes, one_drug_map_point_TTP_times] = \
-            calculate_individual_patient_endpoints_per_diary_set(one_drug_map_point_seizure_diaries,
+        [one_placebo_map_point_percent_changes, one_placebo_map_point_TTP_times, 
+         one_drug_map_point_percent_changes,    one_drug_map_point_TTP_times] = \
+             generate_individual_patient_endpoints_per_map_point(placebo_arm_daily_n,
+                                                                 placebo_arm_daily_odds_ratio,
+                                                                 drug_arm_daily_n, 
+                                                                 drug_arm_daily_odds_ratio,
                                                                  num_baseline_days_per_patient,
                                                                  num_testing_days_per_patient,
+                                                                 num_total_days_per_patient,
+                                                                 min_req_bs_sz_count,
                                                                  num_trials)
+        
+
         
         patient_point_stop_time_in_seconds = time.time()
         total_patient_point_runtime_in_seconds = patient_point_stop_time_in_seconds - patient_point_start_time_in_seconds
         total_patient_point_runtime_in_seconds_str = 'patient point #' + str(patient_index + 1) + ' runtime: ' + str(np.round(total_patient_point_runtime_in_seconds, 3)) + ' seconds'
         print(total_patient_point_runtime_in_seconds_str)
-    
+    '''
     RR50_emp_stat_power_str = '50% responder rate empirical statistical power:       ' + str(np.round(RR50_emp_stat_power, 3)) + ' %'
     MPC_emp_stat_power_str  = 'median percent change empirical statistical power:    ' + str(np.round(MPC_emp_stat_power, 3))  + ' %'
     TTP_emp_stat_power_str  = 'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_emp_stat_power, 3))  + ' %'
-    data_str = '\n' + RR50_emp_stat_power_str + '\n' + MPC_emp_stat_power_str + '\n' + TTP_emp_stat_power_str + '\n'
-    
+    data_str = '\n' + RR50_emp_stat_power_str + '\n' + MPC_emp_stat_power_str + '\n' + TTP_emp_stat_power_str + '\n'    
     print(data_str)
+    '''
