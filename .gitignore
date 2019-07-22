@@ -8,7 +8,7 @@
 *.png
 
 # Excel files
-.xlsx
+*.xlsx
 
 # text files and word documents
 *.txt
