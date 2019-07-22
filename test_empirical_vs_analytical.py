@@ -1,6 +1,7 @@
 import numpy as np
 from lifelines.statistics import logrank_test
 import scipy.stats as stats
+import subprocess
 import time
 
 
@@ -242,8 +243,6 @@ def generate_individual_patient_endpoints_per_map_point(placebo_arm_daily_n,
                                                         min_req_bs_sz_count,
                                                         num_trials):
 
-    print( [ 28*placebo_arm_daily_n*placebo_arm_daily_odds_ratio, np.sqrt(28*placebo_arm_daily_n*placebo_arm_daily_odds_ratio*(1 + placebo_arm_daily_odds_ratio)) ] )
-
     one_placebo_map_point_seizure_diaries = \
         generate_one_map_point_of_seizure_diaries(placebo_arm_daily_n, 
                                                   placebo_arm_daily_odds_ratio, 
@@ -257,8 +256,6 @@ def generate_individual_patient_endpoints_per_map_point(placebo_arm_daily_n,
                                                              num_baseline_days_per_patient,
                                                              num_testing_days_per_patient,
                                                              num_trials)
-
-    print( [ 28*drug_arm_daily_n*drug_arm_daily_odds_ratio, np.sqrt(28*drug_arm_daily_n*drug_arm_daily_odds_ratio*(1 + drug_arm_daily_odds_ratio)) ] )
 
     one_drug_map_point_seizure_diaries = \
         generate_one_map_point_of_seizure_diaries(drug_arm_daily_n, 
@@ -398,7 +395,7 @@ if(__name__=='__main__'):
     num_testing_months_per_patient  = 3
     min_req_bs_sz_count             = 4
 
-    num_trials = 50
+    num_trials = 500
 
     num_baseline_days_per_patient = 28*num_baseline_months_per_patient
     num_testing_days_per_patient  = 28*num_testing_months_per_patient
@@ -433,18 +430,20 @@ if(__name__=='__main__'):
                                        drug_sigma,
                                        num_trials)
     '''
-    
-    print(patient_placebo_pop_daily_params)
-    print(patient_drug_pop_daily_params)
 
-    for patient_index in range(num_theo_patients_per_trial_arm):
+    median_percent_change_per_placebo_arm_theo_patients = np.zeros(num_theo_patients_per_trial_arm)
+    average_TTP_per_placebo_arm_theo_patients           = np.zeros(num_theo_patients_per_trial_arm)
+    median_percent_change_per_drug_arm_theo_patients    = np.zeros(num_theo_patients_per_trial_arm)
+    average_TTP_per_drug_arm_theo_patients              = np.zeros(num_theo_patients_per_trial_arm)
+
+    for theo_patient_index in range(num_theo_patients_per_trial_arm):
 
         patient_point_start_time_in_seconds = time.time()
 
-        placebo_arm_daily_n          = patient_placebo_pop_daily_params[patient_index, 0]
-        placebo_arm_daily_odds_ratio = patient_placebo_pop_daily_params[patient_index, 1]
-        drug_arm_daily_n             = patient_drug_pop_daily_params[patient_index, 0]
-        drug_arm_daily_odds_ratio    = patient_drug_pop_daily_params[patient_index, 1]
+        placebo_arm_daily_n          = patient_placebo_pop_daily_params[theo_patient_index, 0]
+        placebo_arm_daily_odds_ratio = patient_placebo_pop_daily_params[theo_patient_index, 1]
+        drug_arm_daily_n             = patient_drug_pop_daily_params[theo_patient_index, 0]
+        drug_arm_daily_odds_ratio    = patient_drug_pop_daily_params[theo_patient_index, 1]
 
         [one_placebo_map_point_percent_changes, one_placebo_map_point_TTP_times, 
          one_drug_map_point_percent_changes,    one_drug_map_point_TTP_times] = \
@@ -458,12 +457,21 @@ if(__name__=='__main__'):
                                                                  min_req_bs_sz_count,
                                                                  num_trials)
         
+        median_percent_change_per_placebo_map_point = np.median(one_placebo_map_point_percent_changes)
+        average_TTP_per_placebo_map_point           = np.mean(one_placebo_map_point_TTP_times)
+        median_percent_change_per_drug_map_point    = np.median(one_drug_map_point_percent_changes)
+        average_TTP_per_drug_map_point              = np.mean(one_drug_map_point_TTP_times)
 
+        median_percent_change_per_placebo_arm_theo_patients[theo_patient_index] = median_percent_change_per_placebo_map_point
+        average_TTP_per_placebo_arm_theo_patients[theo_patient_index]           = average_TTP_per_placebo_map_point
+        median_percent_change_per_drug_arm_theo_patients[theo_patient_index]    = median_percent_change_per_drug_map_point
+        average_TTP_per_drug_arm_theo_patients[theo_patient_index]              = average_TTP_per_drug_map_point
         
         patient_point_stop_time_in_seconds = time.time()
         total_patient_point_runtime_in_seconds = patient_point_stop_time_in_seconds - patient_point_start_time_in_seconds
-        total_patient_point_runtime_in_seconds_str = 'patient point #' + str(patient_index + 1) + ' runtime: ' + str(np.round(total_patient_point_runtime_in_seconds, 3)) + ' seconds'
+        total_patient_point_runtime_in_seconds_str = 'patient point #' + str(theo_patient_index + 1) + ' runtime: ' + str(np.round(total_patient_point_runtime_in_seconds, 3)) + ' seconds'
         print(total_patient_point_runtime_in_seconds_str)
+
     '''
     RR50_emp_stat_power_str = '50% responder rate empirical statistical power:       ' + str(np.round(RR50_emp_stat_power, 3)) + ' %'
     MPC_emp_stat_power_str  = 'median percent change empirical statistical power:    ' + str(np.round(MPC_emp_stat_power, 3))  + ' %'
@@ -471,3 +479,13 @@ if(__name__=='__main__'):
     data_str = '\n' + RR50_emp_stat_power_str + '\n' + MPC_emp_stat_power_str + '\n' + TTP_emp_stat_power_str + '\n'    
     print(data_str)
     '''
+
+    expected_placebo_arm_RR50 = np.sum(median_percent_change_per_placebo_arm_theo_patients >= 0.5)/num_theo_patients_per_trial_arm
+    expected_drug_arm_RR50    = np.sum(median_percent_change_per_drug_arm_theo_patients >= 0.5)/num_theo_patients_per_trial_arm
+    command = ['Rscript', 'Fisher_Exact_Power_Calc.R', str(expected_placebo_arm_RR50), str(expected_drug_arm_RR50), str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm)]
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
+    fisher_exact_stat_power = float(process.communicate()[0].decode().split()[1])
+
+    print(str(np.round(100*expected_placebo_arm_RR50, 3)) + ' %')
+    print(str(np.round(100*expected_drug_arm_RR50, 3)) + ' %')
+    print(str(np.round(fisher_exact_stat_power, 3)) + ' %')
