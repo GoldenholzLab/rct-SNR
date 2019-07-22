@@ -17,4 +17,4 @@ module load R/3.5.1
 
 source activate main_env
 
-srun -c 1 python random_population.py $1
+srun -c 1 python random_population_Fisher.py $1
