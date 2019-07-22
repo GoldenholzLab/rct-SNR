@@ -487,54 +487,15 @@ if(__name__=='__main__'):
                                        drug_mu,
                                        drug_sigma,
                                        num_trials)
-
-
-    median_percent_change_per_placebo_arm_theo_patients = np.zeros(num_theo_patients_per_trial_arm)
-    average_TTP_per_placebo_arm_theo_patients           = np.zeros(num_theo_patients_per_trial_arm)
-    median_percent_change_per_drug_arm_theo_patients    = np.zeros(num_theo_patients_per_trial_arm)
-    average_TTP_per_drug_arm_theo_patients              = np.zeros(num_theo_patients_per_trial_arm)
-
-    for theo_patient_index in range(num_theo_patients_per_trial_arm):
-
-        patient_point_start_time_in_seconds = time.time()
-
-        placebo_arm_daily_n          = patient_placebo_pop_daily_params[theo_patient_index, 0]
-        placebo_arm_daily_odds_ratio = patient_placebo_pop_daily_params[theo_patient_index, 1]
-        drug_arm_daily_n             = patient_drug_pop_daily_params[theo_patient_index, 0]
-        drug_arm_daily_odds_ratio    = patient_drug_pop_daily_params[theo_patient_index, 1]
-
-        [one_placebo_map_point_percent_changes, one_placebo_map_point_TTP_times, 
-         one_drug_map_point_percent_changes,    one_drug_map_point_TTP_times] = \
-             generate_individual_patient_endpoints_per_map_point(placebo_arm_daily_n,
-                                                                 placebo_arm_daily_odds_ratio,
-                                                                 drug_arm_daily_n, 
-                                                                 drug_arm_daily_odds_ratio,
-                                                                 num_baseline_days_per_patient,
-                                                                 num_testing_days_per_patient,
-                                                                 num_total_days_per_patient,
-                                                                 min_req_bs_sz_count,
-                                                                 num_trials)
-        
-        median_percent_change_per_placebo_map_point = stats.mode(one_placebo_map_point_percent_changes)[0]
-        average_TTP_per_placebo_map_point           = np.mean(one_placebo_map_point_TTP_times)
-        median_percent_change_per_drug_map_point    = stats.mode(one_drug_map_point_percent_changes)[0]
-        average_TTP_per_drug_map_point              = np.mean(one_drug_map_point_TTP_times)
-
-        median_percent_change_per_placebo_arm_theo_patients[theo_patient_index] = median_percent_change_per_placebo_map_point
-        average_TTP_per_placebo_arm_theo_patients[theo_patient_index]           = average_TTP_per_placebo_map_point
-        median_percent_change_per_drug_arm_theo_patients[theo_patient_index]    = median_percent_change_per_drug_map_point
-        average_TTP_per_drug_arm_theo_patients[theo_patient_index]              = average_TTP_per_drug_map_point
-        
-        patient_point_stop_time_in_seconds = time.time()
-        total_patient_point_runtime_in_seconds = patient_point_stop_time_in_seconds - patient_point_start_time_in_seconds
-        total_patient_point_runtime_in_seconds_str = 'patient point #' + str(theo_patient_index + 1) + ' runtime: ' + str(np.round(total_patient_point_runtime_in_seconds, 3)) + ' seconds'
-        print(total_patient_point_runtime_in_seconds_str)
-
-    expected_placebo_arm_RR50 = np.sum(median_percent_change_per_placebo_arm_theo_patients >= 0.5)/num_theo_patients_per_trial_arm
-    expected_drug_arm_RR50    = np.sum(median_percent_change_per_drug_arm_theo_patients >= 0.5)/num_theo_patients_per_trial_arm
-    command = ['Rscript', 'Fisher_Exact_Power_Calc.R', str(expected_placebo_arm_RR50), str(expected_drug_arm_RR50), str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm)]
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    fisher_exact_stat_power = float(process.communicate()[0].decode().split()[1])       
+    
+    fisher_exact_stat_power = calculate_analytical_stat_power(patient_placebo_pop_daily_params,
+                                                              patient_drug_pop_daily_params,
+                                                              num_theo_patients_per_trial_arm,
+                                                              num_baseline_days_per_patient,
+                                                              num_testing_days_per_patient,
+                                                              num_total_days_per_patient,
+                                                              min_req_bs_sz_count,
+                                                              num_trials)       
 
     RR50_emp_stat_power_str = '50% responder rate empirical statistical power:       ' + str(np.round(RR50_emp_stat_power, 3))     + ' %'
     RR50_ana_stat_power_str = '50% responder rate analytical statistical power:      ' + str(np.round(fisher_exact_stat_power, 3)) + ' %'
