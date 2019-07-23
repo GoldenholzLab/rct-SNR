@@ -3,7 +3,8 @@
 #SBATCH -c 1                               
 #SBATCH -t 0-00:05                         
 #SBATCH -p short                           
-#SBATCH -o hostname_%j.out                 
+#SBATCH -o jmr95_%j.out  
+#SBATCH -e jmr95_%j.out                  
 #SBATCH --mail-type=ALL                    
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
