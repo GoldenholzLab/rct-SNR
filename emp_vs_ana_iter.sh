@@ -14,8 +14,8 @@ num_baseline_months_per_patient=2
 num_testing_months_per_patient=3
 min_req_bs_sz_count=4
 
-num_trials=5
-num_iter=3
+num_trials=500
+num_iter=1
 
 inputs[1]=$monthly_mean_min
 inputs[2]=$monthly_mean_max
