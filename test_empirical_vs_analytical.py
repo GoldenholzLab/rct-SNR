@@ -3,6 +3,7 @@ from lifelines.statistics import logrank_test
 import scipy.stats as stats
 import subprocess
 import time
+import psutil
 
 
 def generate_patient_pop_params(monthly_mean_min,
@@ -463,19 +464,19 @@ def calculate_analytical_stat_power(patient_placebo_pop_daily_params,
                                                                  drug_mu,
                                                                  drug_sigma)
         
-        '''        
+        '''
         # did not change the code here to reflect that the mode is being calculated instead of the median
         median_percent_change_per_placebo_map_point = stats.mode(one_placebo_map_point_percent_changes)[0]
         median_percent_change_per_drug_map_point    = stats.mode(one_drug_map_point_percent_changes)[0]
         '''
-        '''
-        median_percent_change_per_placebo_map_point = np.percentile(one_placebo_map_point_percent_changes, 85)
-        median_percent_change_per_drug_map_point    = np.percentile(one_drug_map_point_percent_changes, 85)
-        '''
         
+        median_percent_change_per_placebo_map_point = np.percentile(one_placebo_map_point_percent_changes, 65)
+        median_percent_change_per_drug_map_point    = np.percentile(one_drug_map_point_percent_changes, 65)
+        
+        '''
         median_percent_change_per_placebo_map_point = np.median(one_placebo_map_point_percent_changes)
         median_percent_change_per_drug_map_point    = np.median(one_drug_map_point_percent_changes)
-        
+        '''
         '''
         median_percent_change_per_placebo_map_point = np.mean(one_placebo_map_point_percent_changes)
         median_percent_change_per_drug_map_point    = np.mean(one_drug_map_point_percent_changes)
@@ -503,24 +504,21 @@ def calculate_analytical_stat_power(patient_placebo_pop_daily_params,
     return [expected_ana_placebo_arm_RR50, expected_ana_drug_arm_RR50, fisher_exact_ana_stat_power]
 
 
-if(__name__=='__main__'):
+def do_comparison(monthly_mean_min,
+                  monthly_mean_max, 
+                  monthly_std_dev_min, 
+                  monthly_std_dev_max,
+                  num_theo_patients_per_trial_arm, 
+                  num_baseline_months_per_patient,
+                  num_testing_months_per_patient,
+                  min_req_bs_sz_count,
+                  placebo_mu,
+                  placebo_sigma,
+                  drug_mu,
+                  drug_sigma,
+                  num_trials):
 
-    monthly_mean_min    = 4
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 8
-
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
-
-    num_theo_patients_per_trial_arm = 153
-    num_baseline_months_per_patient = 2
-    num_testing_months_per_patient  = 3
-    min_req_bs_sz_count             = 4
-
-    num_trials = 500
+    algorithm_start_time_in_seconds = time.time()
 
     num_baseline_days_per_patient = 28*num_baseline_months_per_patient
     num_testing_days_per_patient  = 28*num_testing_months_per_patient
@@ -539,9 +537,11 @@ if(__name__=='__main__'):
                                     monthly_std_dev_min, 
                                     monthly_std_dev_max, 
                                     num_theo_patients_per_trial_arm)
+    
+    empirical_start_time_in_seconds = time.time()
 
     [expected_emp_placebo_arm_RR50, expected_emp_drug_arm_RR50, RR50_emp_stat_power, 
-    fisher_exact_emp_stat_power,   MPC_emp_stat_power,          TTP_emp_stat_power] = \
+     fisher_exact_emp_stat_power,   MPC_emp_stat_power,          TTP_emp_stat_power] = \
         calculate_empirical_stat_power(patient_drug_pop_daily_params,
                                        patient_placebo_pop_daily_params, 
                                        num_theo_patients_per_trial_arm,
@@ -555,6 +555,11 @@ if(__name__=='__main__'):
                                        drug_sigma,
                                        num_trials)
     
+    empirical_stop_time_in_seconds = time.time()
+    empirical_runtime_in_minutes = (empirical_stop_time_in_seconds - empirical_start_time_in_seconds)/60
+    
+    analytical_start_time_in_seconds = time.time()
+    
     [expected_ana_placebo_arm_RR50, expected_ana_drug_arm_RR50, fisher_exact_ana_stat_power] = \
         calculate_analytical_stat_power(patient_placebo_pop_daily_params,
                                         patient_drug_pop_daily_params,
@@ -567,8 +572,42 @@ if(__name__=='__main__'):
                                         placebo_mu,
                                         placebo_sigma,
                                         drug_mu,
-                                        drug_sigma)       
+                                        drug_sigma)
 
+    analytical_stop_time_in_seconds = time.time()
+    analytical_runtime_in_minutes = (analytical_stop_time_in_seconds - analytical_start_time_in_seconds)/60
+
+    algorithm_stop_time_in_seconds = time.time()
+    algorithm_runtime_in_minutes = (algorithm_stop_time_in_seconds - algorithm_start_time_in_seconds)/60
+
+    svem = psutil.virtual_memory()
+    total_mem_in_bytes = svem.total
+    available_mem_in_bytes = svem.available
+    used_mem_in_bytes = total_mem_in_bytes - available_mem_in_bytes
+    used_mem_in_gigabytes = used_mem_in_bytes/np.power(1024, 3)
+
+    return [patient_placebo_pop_monthly_params, patient_drug_pop_monthly_params,
+            expected_emp_placebo_arm_RR50, expected_emp_drug_arm_RR50, expected_ana_placebo_arm_RR50, expected_ana_drug_arm_RR50, 
+            RR50_emp_stat_power, fisher_exact_emp_stat_power, fisher_exact_ana_stat_power, MPC_emp_stat_power, TTP_emp_stat_power,
+            empirical_runtime_in_minutes, analytical_runtime_in_minutes, algorithm_runtime_in_minutes, used_mem_in_gigabytes]
+
+
+def print_comparison(patient_placebo_pop_monthly_params, 
+                     patient_drug_pop_monthly_params,
+                     expected_emp_placebo_arm_RR50, 
+                     expected_emp_drug_arm_RR50, 
+                     expected_ana_placebo_arm_RR50, 
+                     expected_ana_drug_arm_RR50, 
+                     RR50_emp_stat_power, 
+                     fisher_exact_emp_stat_power, 
+                     fisher_exact_ana_stat_power, 
+                     MPC_emp_stat_power, 
+                     TTP_emp_stat_power,
+                     empirical_runtime_in_minutes, 
+                     analytical_runtime_in_minutes, 
+                     algorithm_runtime_in_minutes,
+                     used_mem_in_gigabytes):
+    
     expected_emp_placebo_arm_RR50_str = 'expected empirical placebo arm 50% responder rate :   ' + str(np.round(expected_emp_placebo_arm_RR50, 3)) + ' %'
     expected_emp_drug_arm_RR50_str    = 'expected empirical drug arm 50% responder rate :      ' + str(np.round(expected_emp_drug_arm_RR50, 3))    + ' %'
     expected_ana_placebo_arm_RR50_str = 'expected analytical placebo arm 50% responder rate :  ' + str(np.round(expected_ana_placebo_arm_RR50, 3)) + ' %'
@@ -579,11 +618,71 @@ if(__name__=='__main__'):
     fisher_exact_ana_stat_power_str = 'Fisher Exact Test analytical statistical power:       ' + str(np.round(fisher_exact_ana_stat_power, 3)) + ' %'
     MPC_emp_stat_power_str          = 'median percent change empirical statistical power:    ' + str(np.round(MPC_emp_stat_power, 3))          + ' %'
     TTP_emp_stat_power_str          = 'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_emp_stat_power, 3))          + ' %'
+
+    empirical_runtime_in_minutes_str  = 'emprical algorithm runtime:   ' + str(np.round(empirical_runtime_in_minutes, 3))  + ' minutes'
+    analytical_runtime_in_minutes_str = 'analytical algorithm runtime: ' + str(np.round(analytical_runtime_in_minutes, 3)) + ' minutes'
+    algorithm_runtime_in_minutes_str  = 'total algorithm runtime:      ' + str(np.round(algorithm_runtime_in_minutes, 3))  + ' minutes'
+    memory_usage_str                  = 'memory usage:                 ' + str(np.round(used_mem_in_gigabytes, 3))         + ' GB'
     
-    data_str = '\n' + expected_emp_placebo_arm_RR50_str + '\n' + expected_emp_drug_arm_RR50_str  + \
-               '\n' + expected_ana_placebo_arm_RR50_str + '\n' + expected_ana_drug_arm_RR50_str  + '\n' + \
-               '\n' + RR50_emp_stat_power_str           + '\n' + fisher_exact_ana_stat_power_str + \
-               '\n' + MPC_emp_stat_power_str            + '\n' + TTP_emp_stat_power_str          + '\n'
+    data_str = '\n' + expected_emp_placebo_arm_RR50_str + '\n' + expected_emp_drug_arm_RR50_str    + \
+               '\n' + expected_ana_placebo_arm_RR50_str + '\n' + expected_ana_drug_arm_RR50_str    + '\n' + \
+               '\n' + RR50_emp_stat_power_str           + '\n' + fisher_exact_emp_stat_power_str   + '\n' + fisher_exact_ana_stat_power_str   + '\n' \
+               '\n' + MPC_emp_stat_power_str            + '\n' + TTP_emp_stat_power_str            + '\n' + \
+               '\n' + empirical_runtime_in_minutes_str  + '\n' + analytical_runtime_in_minutes_str + '\n' + algorithm_runtime_in_minutes_str  + '\n' + memory_usage_str + '\n'
     
     print(data_str)
+
+
+if(__name__=='__main__'):
+
+    monthly_mean_min    = 4
+    monthly_mean_max    = 16
+    monthly_std_dev_min = 1
+    monthly_std_dev_max = 8
+
+    placebo_mu    = 0
+    placebo_sigma = 0.05
+    drug_mu       = 0.2
+    drug_sigma    = 0.05
+
+    num_theo_patients_per_trial_arm = 153
+    num_baseline_months_per_patient = 2
+    num_testing_months_per_patient  = 3
+    min_req_bs_sz_count             = 4
+
+    num_trials = 50
+
+    [patient_placebo_pop_monthly_params, patient_drug_pop_monthly_params,
+     expected_emp_placebo_arm_RR50, expected_emp_drug_arm_RR50, expected_ana_placebo_arm_RR50, expected_ana_drug_arm_RR50, 
+     RR50_emp_stat_power, fisher_exact_emp_stat_power, fisher_exact_ana_stat_power, MPC_emp_stat_power, TTP_emp_stat_power,
+     empirical_runtime_in_minutes, analytical_runtime_in_minutes, algorithm_runtime_in_minutes, used_mem_in_gigabytes] = \
+         do_comparison(monthly_mean_min,
+                  monthly_mean_max, 
+                  monthly_std_dev_min, 
+                  monthly_std_dev_max,
+                  num_theo_patients_per_trial_arm, 
+                  num_baseline_months_per_patient,
+                  num_testing_months_per_patient,
+                  min_req_bs_sz_count,
+                  placebo_mu,
+                  placebo_sigma,
+                  drug_mu,
+                  drug_sigma,
+                  num_trials)
+
+    print_comparison(patient_placebo_pop_monthly_params, 
+                     patient_drug_pop_monthly_params,
+                     expected_emp_placebo_arm_RR50, 
+                     expected_emp_drug_arm_RR50, 
+                     expected_ana_placebo_arm_RR50, 
+                     expected_ana_drug_arm_RR50, 
+                     RR50_emp_stat_power, 
+                     fisher_exact_emp_stat_power, 
+                     fisher_exact_ana_stat_power, 
+                     MPC_emp_stat_power, 
+                     TTP_emp_stat_power,
+                     empirical_runtime_in_minutes, 
+                     analytical_runtime_in_minutes, 
+                     algorithm_runtime_in_minutes,
+                     used_mem_in_gigabytes)
 
