@@ -1,11 +1,11 @@
 #!/usr/bin/bash
 
-#SBATCH -c 1                               # 1 core
-#SBATCH -t 0-00:05                         # Runtime of 5 minutes, in D-HH:MM format
-#SBATCH -p short                           # Run in short partition
-#SBATCH -o hostname_%j.out                 # File to which STDOUT + STDERR will be written, including job ID in filename
-#SBATCH --mail-type=ALL                    # ALL email notification type
-#SBATCH --mail-user=abc123@hms.harvard.edu  # Email to which notifications will be sent
+#SBATCH -c 1                               
+#SBATCH -t 0-00:05                         
+#SBATCH -p short                           
+#SBATCH -o hostname_%j.out                 
+#SBATCH --mail-type=ALL                    
+#SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
 monthly_mean_min=4
 monthly_mean_max=6
