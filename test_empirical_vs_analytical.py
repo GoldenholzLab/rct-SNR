@@ -407,14 +407,17 @@ def calculate_empirical_stat_power(patient_drug_pop_daily_params,
         total_trial_time_in_seconds_str = 'trial #' + str(trial_index + 1) + ' runtime: ' + str(np.round(total_trial_time_in_seconds, 3)) + ' seconds'
         print(total_trial_time_in_seconds_str)
     
-    expected_placebo_arm_RR50 = np.mean(placebo_arm_RR50_array)
-    expected_drug_arm_RR50    = np.mean(drug_arm_RR50_array)
+    expected_emp_placebo_arm_RR50 = np.mean(placebo_arm_RR50_array)
+    expected_emp_drug_arm_RR50    = np.mean(drug_arm_RR50_array)
+    command = ['Rscript', 'Fisher_Exact_Power_Calc.R', str(expected_emp_placebo_arm_RR50), str(expected_emp_drug_arm_RR50), str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm)]
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
+    fisher_exact_emp_stat_power = float(process.communicate()[0].decode().split()[1])
 
     RR50_emp_stat_power = 100*np.sum(RR50_p_value_array < 0.05)/num_trials
     MPC_emp_stat_power  = 100*np.sum(MPC_p_value_array < 0.05)/num_trials
     TTP_emp_stat_power  = 100*np.sum(TTP_p_value_array < 0.05)/num_trials
 
-    return [expected_placebo_arm_RR50, expected_drug_arm_RR50, RR50_emp_stat_power, MPC_emp_stat_power, TTP_emp_stat_power]
+    return [expected_emp_placebo_arm_RR50, expected_emp_drug_arm_RR50, RR50_emp_stat_power, fisher_exact_emp_stat_power, MPC_emp_stat_power, TTP_emp_stat_power]
 
 
 def calculate_analytical_stat_power(patient_placebo_pop_daily_params,
@@ -491,13 +494,13 @@ def calculate_analytical_stat_power(patient_placebo_pop_daily_params,
         total_patient_point_runtime_in_seconds_str = 'patient point #' + str(theo_patient_index + 1) + ' runtime: ' + str(np.round(total_patient_point_runtime_in_seconds, 3)) + ' seconds'
         print(total_patient_point_runtime_in_seconds_str)
 
-    expected_placebo_arm_RR50 = 100*np.sum(median_percent_change_per_placebo_arm_theo_patients >= 0.5)/num_theo_patients_per_trial_arm
-    expected_drug_arm_RR50    = 100*np.sum(median_percent_change_per_drug_arm_theo_patients >= 0.5)/num_theo_patients_per_trial_arm
-    command = ['Rscript', 'Fisher_Exact_Power_Calc.R', str(expected_placebo_arm_RR50), str(expected_drug_arm_RR50), str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm)]
+    expected_ana_placebo_arm_RR50 = 100*np.sum(median_percent_change_per_placebo_arm_theo_patients >= 0.5)/num_theo_patients_per_trial_arm
+    expected_ana_drug_arm_RR50    = 100*np.sum(median_percent_change_per_drug_arm_theo_patients >= 0.5)/num_theo_patients_per_trial_arm
+    command = ['Rscript', 'Fisher_Exact_Power_Calc.R', str(expected_ana_placebo_arm_RR50), str(expected_ana_drug_arm_RR50), str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm)]
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    fisher_exact_stat_power = float(process.communicate()[0].decode().split()[1])
+    fisher_exact_ana_stat_power = float(process.communicate()[0].decode().split()[1])
 
-    return [expected_placebo_arm_RR50, expected_drug_arm_RR50, fisher_exact_stat_power]
+    return [expected_ana_placebo_arm_RR50, expected_ana_drug_arm_RR50, fisher_exact_ana_stat_power]
 
 
 if(__name__=='__main__'):
@@ -537,7 +540,8 @@ if(__name__=='__main__'):
                                     monthly_std_dev_max, 
                                     num_theo_patients_per_trial_arm)
 
-    [expected_emp_placebo_arm_RR50, expected_emp_drug_arm_RR50, RR50_emp_stat_power, MPC_emp_stat_power, TTP_emp_stat_power] = \
+    [expected_emp_placebo_arm_RR50, expected_emp_drug_arm_RR50, RR50_emp_stat_power, 
+    fisher_exact_emp_stat_power,   MPC_emp_stat_power,          TTP_emp_stat_power] = \
         calculate_empirical_stat_power(patient_drug_pop_daily_params,
                                        patient_placebo_pop_daily_params, 
                                        num_theo_patients_per_trial_arm,
@@ -551,7 +555,7 @@ if(__name__=='__main__'):
                                        drug_sigma,
                                        num_trials)
     
-    [expected_ana_placebo_arm_RR50, expected_ana_drug_arm_RR50, fisher_exact_stat_power] = \
+    [expected_ana_placebo_arm_RR50, expected_ana_drug_arm_RR50, fisher_exact_ana_stat_power] = \
         calculate_analytical_stat_power(patient_placebo_pop_daily_params,
                                         patient_drug_pop_daily_params,
                                         num_theo_patients_per_trial_arm,
@@ -570,15 +574,16 @@ if(__name__=='__main__'):
     expected_ana_placebo_arm_RR50_str = 'expected analytical placebo arm 50% responder rate :  ' + str(np.round(expected_ana_placebo_arm_RR50, 3)) + ' %'
     expected_ana_drug_arm_RR50_str    = 'expected analytical drug arm 50% responder rate :     ' + str(np.round(expected_ana_drug_arm_RR50, 3))    + ' %'
 
-    RR50_emp_stat_power_str       = '50% responder rate empirical statistical power:       ' + str(np.round(RR50_emp_stat_power, 3))     + ' %'
-    RR50_ana_stat_power_str       = '50% responder rate analytical statistical power:      ' + str(np.round(fisher_exact_stat_power, 3)) + ' %'
-    MPC_emp_stat_power_str        = 'median percent change empirical statistical power:    ' + str(np.round(MPC_emp_stat_power, 3))      + ' %'
-    TTP_emp_stat_power_str        = 'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_emp_stat_power, 3))      + ' %'
+    RR50_emp_stat_power_str         = '50% responder rate empirical statistical power:       ' + str(np.round(RR50_emp_stat_power, 3))         + ' %'
+    fisher_exact_emp_stat_power_str = 'Fisher Exact Test empirical statistical power:        ' + str(np.round(fisher_exact_emp_stat_power, 3)) + ' %'
+    fisher_exact_ana_stat_power_str = 'Fisher Exact Test analytical statistical power:       ' + str(np.round(fisher_exact_ana_stat_power, 3)) + ' %'
+    MPC_emp_stat_power_str          = 'median percent change empirical statistical power:    ' + str(np.round(MPC_emp_stat_power, 3))          + ' %'
+    TTP_emp_stat_power_str          = 'time-to-prerandomization empirical statistical power: ' + str(np.round(TTP_emp_stat_power, 3))          + ' %'
     
-    data_str = '\n' + expected_emp_placebo_arm_RR50_str + '\n' + expected_emp_drug_arm_RR50_str + \
-               '\n' + expected_ana_placebo_arm_RR50_str + '\n' + expected_ana_drug_arm_RR50_str + '\n' + \
-               '\n' + RR50_emp_stat_power_str           + '\n' + RR50_ana_stat_power_str        + \
-               '\n' + MPC_emp_stat_power_str            + '\n' + TTP_emp_stat_power_str         + '\n'
+    data_str = '\n' + expected_emp_placebo_arm_RR50_str + '\n' + expected_emp_drug_arm_RR50_str  + \
+               '\n' + expected_ana_placebo_arm_RR50_str + '\n' + expected_ana_drug_arm_RR50_str  + '\n' + \
+               '\n' + RR50_emp_stat_power_str           + '\n' + fisher_exact_ana_stat_power_str + \
+               '\n' + MPC_emp_stat_power_str            + '\n' + TTP_emp_stat_power_str          + '\n'
     
     print(data_str)
 
