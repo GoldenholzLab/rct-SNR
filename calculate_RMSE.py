@@ -5,7 +5,7 @@ import numpy as np
 
 if (__name__=='__main__'):
 
-    num_iter = 3
+    num_iter = int(sys.argv[1])
 
     fisher_exact_emp_stat_power_err_sq_array = np.zeros(num_iter)
     fisher_exact_ana_stat_power_err_sq_array = np.zeros(num_iter)
