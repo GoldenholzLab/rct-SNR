@@ -4,6 +4,9 @@ import scipy.stats as stats
 import subprocess
 import time
 import psutil
+import sys
+import json
+import os
 
 
 def generate_patient_pop_params(monthly_mean_min,
@@ -635,22 +638,23 @@ def print_comparison(patient_placebo_pop_monthly_params,
 
 if(__name__=='__main__'):
 
-    monthly_mean_min    = 4
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 8
+    monthly_mean_min    = int(sys.argv[1])
+    monthly_mean_max    = int(sys.argv[2])
+    monthly_std_dev_min = int(sys.argv[3])
+    monthly_std_dev_max = int(sys.argv[4])
 
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
+    placebo_mu    = float(sys.argv[5])
+    placebo_sigma = float(sys.argv[6])
+    drug_mu       = float(sys.argv[7])
+    drug_sigma    = float(sys.argv[8])
 
-    num_theo_patients_per_trial_arm = 153
-    num_baseline_months_per_patient = 2
-    num_testing_months_per_patient  = 3
-    min_req_bs_sz_count             = 4
-
-    num_trials = 50
+    num_theo_patients_per_trial_arm = int(sys.argv[9])
+    num_baseline_months_per_patient = int(sys.argv[10])
+    num_testing_months_per_patient  = int(sys.argv[11])
+    min_req_bs_sz_count             = int(sys.argv[12])
+    
+    num_trials = int(sys.argv[13])
+    json_filename = sys.argv[14]
 
     [patient_placebo_pop_monthly_params, patient_drug_pop_monthly_params,
      expected_emp_placebo_arm_RR50, expected_emp_drug_arm_RR50, expected_ana_placebo_arm_RR50, expected_ana_drug_arm_RR50, 
@@ -669,6 +673,11 @@ if(__name__=='__main__'):
                   drug_mu,
                   drug_sigma,
                   num_trials)
+
+    json_filepath = os.getcwd() + '/' + json_filename + '.json'
+    RR50_stat_power_data = [RR50_emp_stat_power, fisher_exact_emp_stat_power, fisher_exact_ana_stat_power]
+    with open(json_filepath, 'w+') as json_file:
+        json.dump(RR50_stat_power_data, json_file)
 
     print_comparison(patient_placebo_pop_monthly_params, 
                      patient_drug_pop_monthly_params,
