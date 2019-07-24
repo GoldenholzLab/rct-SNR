@@ -435,7 +435,8 @@ def calculate_analytical_stat_power(patient_placebo_pop_daily_params,
                                     placebo_mu,
                                     placebo_sigma,
                                     drug_mu,
-                                    drug_sigma):
+                                    drug_sigma,
+                                    percentile):
 
     median_percent_change_per_placebo_arm_theo_patients = np.zeros(num_theo_patients_per_trial_arm)
     median_percent_change_per_drug_arm_theo_patients    = np.zeros(num_theo_patients_per_trial_arm)
@@ -473,8 +474,8 @@ def calculate_analytical_stat_power(patient_placebo_pop_daily_params,
         median_percent_change_per_drug_map_point    = stats.mode(one_drug_map_point_percent_changes)[0]
         '''
         
-        median_percent_change_per_placebo_map_point = np.percentile(one_placebo_map_point_percent_changes, 60)
-        median_percent_change_per_drug_map_point    = np.percentile(one_drug_map_point_percent_changes, 60)
+        median_percent_change_per_placebo_map_point = np.percentile(one_placebo_map_point_percent_changes, percentile)
+        median_percent_change_per_drug_map_point    = np.percentile(one_drug_map_point_percent_changes, percentile)
         
         '''
         median_percent_change_per_placebo_map_point = np.median(one_placebo_map_point_percent_changes)
@@ -519,7 +520,8 @@ def do_comparison(monthly_mean_min,
                   placebo_sigma,
                   drug_mu,
                   drug_sigma,
-                  num_trials):
+                  num_trials,
+                  percentile):
 
     algorithm_start_time_in_seconds = time.time()
 
@@ -575,7 +577,8 @@ def do_comparison(monthly_mean_min,
                                         placebo_mu,
                                         placebo_sigma,
                                         drug_mu,
-                                        drug_sigma)
+                                        drug_sigma,
+                                        percentile)
 
     analytical_stop_time_in_seconds = time.time()
     analytical_runtime_in_minutes = (analytical_stop_time_in_seconds - analytical_start_time_in_seconds)/60
@@ -609,8 +612,12 @@ def print_comparison(patient_placebo_pop_monthly_params,
                      empirical_runtime_in_minutes, 
                      analytical_runtime_in_minutes, 
                      algorithm_runtime_in_minutes,
-                     used_mem_in_gigabytes):
+                     used_mem_in_gigabytes,
+                     percentile,
+                     iteration):
     
+    title_str = '[percentile, iteration]: [' + str(percentile) + ', ' + str(iteration) + ']'
+
     expected_emp_placebo_arm_RR50_str = 'expected empirical placebo arm 50% responder rate :   ' + str(np.round(expected_emp_placebo_arm_RR50, 3)) + ' %'
     expected_emp_drug_arm_RR50_str    = 'expected empirical drug arm 50% responder rate :      ' + str(np.round(expected_emp_drug_arm_RR50, 3))    + ' %'
     expected_ana_placebo_arm_RR50_str = 'expected analytical placebo arm 50% responder rate :  ' + str(np.round(expected_ana_placebo_arm_RR50, 3)) + ' %'
@@ -627,7 +634,7 @@ def print_comparison(patient_placebo_pop_monthly_params,
     algorithm_runtime_in_minutes_str  = 'total algorithm runtime:      ' + str(np.round(algorithm_runtime_in_minutes, 3))  + ' minutes'
     memory_usage_str                  = 'memory usage:                 ' + str(np.round(used_mem_in_gigabytes, 3))         + ' GB'
     
-    data_str = '\n' + expected_emp_placebo_arm_RR50_str + '\n' + expected_emp_drug_arm_RR50_str    + \
+    data_str = '\n' + title_str + '\n\n' + expected_emp_placebo_arm_RR50_str + '\n' + expected_emp_drug_arm_RR50_str    + \
                '\n' + expected_ana_placebo_arm_RR50_str + '\n' + expected_ana_drug_arm_RR50_str    + '\n' + \
                '\n' + RR50_emp_stat_power_str           + '\n' + fisher_exact_emp_stat_power_str   + '\n' + fisher_exact_ana_stat_power_str   + '\n' \
                '\n' + MPC_emp_stat_power_str            + '\n' + TTP_emp_stat_power_str            + '\n' + \
@@ -654,7 +661,8 @@ if(__name__=='__main__'):
     min_req_bs_sz_count             = int(sys.argv[12])
     
     num_trials = int(sys.argv[13])
-    json_filename = sys.argv[14]
+    percentile = float(sys.argv[14])
+    iteration = int(sys.argv[15])
 
     [patient_placebo_pop_monthly_params, patient_drug_pop_monthly_params,
      expected_emp_placebo_arm_RR50, expected_emp_drug_arm_RR50, expected_ana_placebo_arm_RR50, expected_ana_drug_arm_RR50, 
@@ -672,8 +680,10 @@ if(__name__=='__main__'):
                   placebo_sigma,
                   drug_mu,
                   drug_sigma,
-                  num_trials)
+                  num_trials,
+                  percentile)
 
+    json_filename = 'percentile_' + str(percentile) + '_|_iteration_' + str(iteration)
     json_filepath = os.getcwd() + '/' + json_filename + '.json'
     RR50_stat_power_data = [RR50_emp_stat_power, fisher_exact_emp_stat_power, fisher_exact_ana_stat_power]
     with open(json_filepath, 'w+') as json_file:
@@ -693,5 +703,7 @@ if(__name__=='__main__'):
                      empirical_runtime_in_minutes, 
                      analytical_runtime_in_minutes, 
                      algorithm_runtime_in_minutes,
-                     used_mem_in_gigabytes)
+                     used_mem_in_gigabytes,
+                     percentile,
+                     iteration)
 

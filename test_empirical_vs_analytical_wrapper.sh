@@ -2,7 +2,7 @@
 
 #SBATCH -p short
 #SBATCH --mem=10G
-#SBATCH -t 0-01:45
+#SBATCH -t 0-04:00
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
@@ -24,6 +24,7 @@ inputs[10]=${11}
 inputs[11]=${12}
 inputs[12]=${13}
 inputs[13]=${14}
+inputs[14]=${15}
 
 module load gcc/6.2.0
 module load conda2/4.2.13

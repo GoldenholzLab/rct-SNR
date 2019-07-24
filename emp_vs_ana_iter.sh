@@ -14,8 +14,11 @@ num_baseline_months_per_patient=2
 num_testing_months_per_patient=3
 min_req_bs_sz_count=4
 
-num_trials=500
-num_iter=1
+num_trials=10
+num_iter=3
+
+min_percentile=55
+max_percentile=60
 
 inputs[1]=$monthly_mean_min
 inputs[2]=$monthly_mean_max
@@ -31,9 +34,12 @@ inputs[11]=$num_testing_months_per_patient
 inputs[12]=$min_req_bs_sz_count
 inputs[13]=$num_trials
 
-for ((i=1; i<num_iter+1; i=i+1))
+for ((percentile=min_percentile; percentile<max_percentile+1; percentile=percentile+1))
 do
-    inputs[14]=$i
-    bash test_empirical_vs_analytical.sh ${inputs[@]}
-
+    inputs[14]=$percentile
+    for ((iter=1; iter<num_iter+1; iter=iter+1))
+    do
+        inputs[15]=$iter
+        bash test_empirical_vs_analytical.sh ${inputs[@]}
+    done
 done

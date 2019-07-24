@@ -10,7 +10,7 @@
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
 monthly_mean_min=4
-monthly_mean_max=16
+monthly_mean_max=6
 monthly_std_dev_min=1
 monthly_std_dev_max=8
 
@@ -24,8 +24,11 @@ num_baseline_months_per_patient=2
 num_testing_months_per_patient=3
 min_req_bs_sz_count=4
 
-num_trials=5000
+num_trials=10000
 num_iter=50
+
+min_percentile=55
+max_percentile=65
 
 inputs[1]=$monthly_mean_min
 inputs[2]=$monthly_mean_max
@@ -41,9 +44,12 @@ inputs[11]=$num_testing_months_per_patient
 inputs[12]=$min_req_bs_sz_count
 inputs[13]=$num_trials
 
-for ((i=1; i<num_iter+1; i=i+1))
+for ((percentile=min_percentile; percentile<max_percentile+1; percentile=percentile+1))
 do
-    inputs[14]=$i
-    sbatch test_empirical_vs_analytical_wrapper.sh ${inputs[@]}
-
+    inputs[14]=$percentile
+    for ((iter=1; iter<num_iter+1; iter=iter+1))
+    do
+        inputs[15]=$iter
+        sbatch test_empirical_vs_analytical_wrapper.sh ${inputs[@]}
+    done
 done
