@@ -5,10 +5,10 @@ import test_empirical_vs_analytical as teva
 
 if(__name__=='__main__'):
 
-    placebo_arm_monthly_mean        = 5
-    placebo_arm_monthly_std_dev     = 7
-    drug_arm_monthly_mean           = 6
-    drug_arm_monthly_std_dev        = 7
+    placebo_arm_monthly_mean        = 10
+    placebo_arm_monthly_std_dev     = 5
+    drug_arm_monthly_mean           = 11
+    drug_arm_monthly_std_dev        = 6
     num_baseline_months_per_patient = 2
     num_testing_months_per_patient  = 3
     min_req_bs_sz_count             = 4
@@ -16,9 +16,9 @@ if(__name__=='__main__'):
     placebo_sigma                   = 0.05
     drug_mu                         = 0.2
     drug_sigma                      = 0.05
-    num_trials                      = 5000
+    num_trials                      = 10000
     num_bins                        = 200
-    percentile                      = 50
+    percentile                      = 60
 
     placebo_arm_monthly_mean_sq = np.power(placebo_arm_monthly_mean, 2)
     placebo_arm_monthly_var     = np.power(placebo_arm_monthly_std_dev, 2)
@@ -61,13 +61,13 @@ if(__name__=='__main__'):
     plt.hist(one_placebo_map_point_percent_changes, bins=num_bins, density=True)
     plt.axvline(placebo_percentile, color='red')
     plt.legend(['placebo ' + str(percentile) + 'th percentile = ' + placebo_percentile_str + ' %'])
-    plt.xlim([-150, 100])
+    plt.xlim([-200, 100])
 
     plt.subplot(2,1,2)
     plt.hist(one_drug_map_point_percent_changes, bins=num_bins, density=True)
     plt.axvline(drug_percentile, color='red')
     plt.legend(['drug ' + str(percentile) + 'th percentile = ' + drug_percentile_str + ' %'])
-    plt.xlim([-150, 100])
+    plt.xlim([-200, 100])
 
     plt.show()
 

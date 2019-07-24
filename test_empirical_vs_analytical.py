@@ -473,8 +473,8 @@ def calculate_analytical_stat_power(patient_placebo_pop_daily_params,
         median_percent_change_per_drug_map_point    = stats.mode(one_drug_map_point_percent_changes)[0]
         '''
         
-        median_percent_change_per_placebo_map_point = np.percentile(one_placebo_map_point_percent_changes, 55)
-        median_percent_change_per_drug_map_point    = np.percentile(one_drug_map_point_percent_changes, 55)
+        median_percent_change_per_placebo_map_point = np.percentile(one_placebo_map_point_percent_changes, 60)
+        median_percent_change_per_drug_map_point    = np.percentile(one_drug_map_point_percent_changes, 60)
         
         '''
         median_percent_change_per_placebo_map_point = np.median(one_placebo_map_point_percent_changes)
