@@ -1,11 +1,12 @@
 #!/usr/bin/bash
 
-#SBATCH -c 1                               
-#SBATCH -t 0-00:05                         
-#SBATCH -p short                           
-#SBATCH -o jmr95_%j.out  
-#SBATCH -e jmr95_%j.out                  
-#SBATCH --mail-type=ALL                    
+#SBATCH -p short
+#SBATCH -t 0-00:03
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -e jmr95_%j.err
+#SBATCH -o jmr95_%j.out
+#SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
 monthly_mean_min=4
