@@ -14,4 +14,9 @@ min_percentile=55
 max_percentile=65
 num_iter=50
 
+module load gcc/6.2.0
+module load conda2/4.2.13
+module load python/3.6.0
+source acativate main_env
+
 srun -c 1 python calculate_RMSE.py $min_percentile $max_percentile $num_iter
