@@ -14,4 +14,4 @@ min_percentile=55
 max_percentile=65
 num_iter=50
 
-python calculate_RMSE.py $min_percentile $max_percentile $num_iter
+srun -c 1 python calculate_RMSE.py $min_percentile $max_percentile $num_iter
