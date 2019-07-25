@@ -194,16 +194,16 @@ def apply_effect(daily_seizure_diaries,
     return daily_seizure_diaries
 
 
-def generate_individual_patient_endpoints_per_trial(patient_pop_daily_params, 
-                                                    num_theo_patients_per_trial_arm,
-                                                    num_baseline_days_per_patient,
-                                                    num_testing_days_per_patient,
-                                                    num_total_days_per_patient,
-                                                    min_req_bs_sz_count,
-                                                    placebo_mu,
-                                                    placebo_sigma,
-                                                    drug_mu,
-                                                    drug_sigma):
+def generate_individual_patient_endpoints_per_trial_arm(patient_pop_daily_params, 
+                                                        num_theo_patients_per_trial_arm,
+                                                        num_baseline_days_per_patient,
+                                                        num_testing_days_per_patient,
+                                                        num_total_days_per_patient,
+                                                        min_req_bs_sz_count,
+                                                        placebo_mu,
+                                                        placebo_sigma,
+                                                        drug_mu,
+                                                        drug_sigma):
 
     one_trial_arm_daily_seizure_diaries = \
         generate_one_trial_arm_of_seizure_diaries(patient_pop_daily_params, 
@@ -320,28 +320,28 @@ def generate_p_values_per_trial(patient_drug_pop_daily_params,
                                 drug_sigma):
 
     [one_placebo_arm_percent_changes, one_placebo_arm_TTP_times] = \
-        generate_individual_patient_endpoints_per_trial(patient_placebo_pop_daily_params, 
-                                                        num_theo_patients_per_trial_arm,
-                                                        num_baseline_days_per_patient,
-                                                        num_testing_days_per_patient,
-                                                        num_total_days_per_patient,
-                                                        min_req_bs_sz_count,
-                                                        placebo_mu,
-                                                        placebo_sigma,
-                                                        0,
-                                                        0)
+        generate_individual_patient_endpoints_per_trial_arm(patient_placebo_pop_daily_params, 
+                                                            num_theo_patients_per_trial_arm,
+                                                            num_baseline_days_per_patient,
+                                                            num_testing_days_per_patient,
+                                                            num_total_days_per_patient,
+                                                            min_req_bs_sz_count,
+                                                            placebo_mu,
+                                                            placebo_sigma,
+                                                            0,
+                                                            0)
 
     [one_drug_arm_percent_changes, one_drug_arm_TTP_times] = \
-        generate_individual_patient_endpoints_per_trial(patient_drug_pop_daily_params, 
-                                                        num_theo_patients_per_trial_arm,
-                                                        num_baseline_days_per_patient,
-                                                        num_testing_days_per_patient,
-                                                        num_total_days_per_patient,
-                                                        min_req_bs_sz_count,
-                                                        placebo_mu,
-                                                        placebo_sigma,
-                                                        drug_mu,
-                                                        drug_sigma)
+        generate_individual_patient_endpoints_per_trial_arm(patient_drug_pop_daily_params, 
+                                                            num_theo_patients_per_trial_arm,
+                                                            num_baseline_days_per_patient,
+                                                            num_testing_days_per_patient,
+                                                            num_total_days_per_patient,
+                                                            min_req_bs_sz_count,
+                                                            placebo_mu,
+                                                            placebo_sigma,
+                                                            drug_mu,
+                                                            drug_sigma)
         
     num_placebo_50_percent_responders     = np.sum(one_placebo_arm_percent_changes >= 0.5)
     num_placebo_50_percent_non_responders = num_theo_patients_per_trial_arm - num_placebo_50_percent_responders
