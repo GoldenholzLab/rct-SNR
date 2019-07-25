@@ -5,36 +5,44 @@ import numpy as np
 
 if (__name__=='__main__'):
 
-    num_iter = int(sys.argv[1])
+    min_percentile = int(sys.argv[1])
+    max_percentile = int(sys.argv[2])
+    num_iter       = int(sys.argv[3])
 
-    fisher_exact_emp_stat_power_err_sq_array = []
-    fisher_exact_ana_stat_power_err_sq_array = []
+    fisher_exact_emp_stat_power_RMSE_array = np.zeros(max_percentile + 1 - min_percentile)
+    fisher_exact_ana_stat_power_RMSE_array = np.zeros(max_percentile + 1 - min_percentile)
+    data_str = ''
+    folder  = os.getcwd()
 
-    for iter_num in range(1, num_iter + 1):
+    for percentile in range(min_percentile, max_percentile + 1):
+        
+        fisher_exact_emp_stat_power_err_sq_array_per_percentile = np.zeros(num_iter)
+        fisher_exact_ana_stat_power_err_sq_array_per_percentile = np.zeros(num_iter) 
 
-        json_filepath = os.getcwd() + '/' + str(iter_num) + '.json'
-        if ( os.path.isfile(json_filepath) ):
+        for iter_num in range(1, num_iter + 1):
+
+            json_filename = 'percentile_' + str(float(percentile)) + '_|_iteration' + '_' + str(iter_num) + '.json' 
+            json_filepath = folder + '/' + json_filename
+
             with open(json_filepath, 'r') as json_file:
-                data = json.load(json_file)
-    
+
+                data = np.array(json.load(json_file))
+        
             RR50_emp_stat_power         = data[0]
             fisher_exact_emp_stat_power = data[1]
             fisher_exact_ana_stat_power = data[2]
 
-            fisher_exact_emp_stat_power_err = RR50_emp_stat_power - fisher_exact_emp_stat_power
-            fisher_exact_ana_stat_power_err = RR50_emp_stat_power - fisher_exact_ana_stat_power
+            fisher_exact_emp_stat_power_err_sq_array_per_percentile[iter_num - 1] = np.power(RR50_emp_stat_power - fisher_exact_emp_stat_power, 2)
+            fisher_exact_ana_stat_power_err_sq_array_per_percentile[iter_num - 1] = np.power(RR50_emp_stat_power - fisher_exact_ana_stat_power, 2)
+        
+        fisher_exact_emp_stat_power_RMSE_per_percentile = np.round(np.sqrt(np.mean(fisher_exact_emp_stat_power_err_sq_array_per_percentile)), 3)
+        fisher_exact_ana_stat_power_RMSE_per_percentile = np.round(np.sqrt(np.mean(fisher_exact_ana_stat_power_err_sq_array_per_percentile)), 3)
     
-            fisher_exact_emp_stat_power_err_sq = np.power(fisher_exact_emp_stat_power_err, 2)
-            fisher_exact_ana_stat_power_err_sq = np.power(fisher_exact_ana_stat_power_err, 2)
+        data_str = data_str + '\n[percentile, RMSE]: [' + str(percentile) + ', ' + str(fisher_exact_emp_stat_power_RMSE_per_percentile) + ']'
+    
+    data_str = data_str + '\n'
 
-            fisher_exact_emp_stat_power_err_sq_array.append(fisher_exact_emp_stat_power_err_sq)
-            fisher_exact_ana_stat_power_err_sq_array.append(fisher_exact_ana_stat_power_err_sq)
-
-    fisher_exact_emp_stat_power_RMSE = np.sqrt(np.mean(fisher_exact_emp_stat_power_err_sq_array))
-    fisher_exact_ana_stat_power_RMSE = np.sqrt(np.mean(fisher_exact_ana_stat_power_err_sq_array))
-
-    fisher_exact_emp_stat_power_RMSE_str = str(np.round(fisher_exact_emp_stat_power_RMSE, 3))
-    fisher_exact_ana_stat_power_RMSE_str = str(np.round(fisher_exact_ana_stat_power_RMSE, 3))
-
-    print(fisher_exact_emp_stat_power_RMSE_str)
-    print(fisher_exact_ana_stat_power_RMSE_str)
+    text_filename = 'final_data.txt'
+    text_filepath = folder + '/' + text_filename
+    with open(text_filepath, 'w+') as text_file:
+        text_file.write(data_str)
