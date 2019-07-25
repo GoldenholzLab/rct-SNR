@@ -33,13 +33,14 @@ inputs[10]=$num_baseline_months_per_patient
 inputs[11]=$num_testing_months_per_patient
 inputs[12]=$min_req_bs_sz_count
 inputs[13]=$num_trials
+inputs[14]='/users/juanromero/Documents/Python_3_Files/useless_folder'
 
 for ((percentile=min_percentile; percentile<max_percentile+1; percentile=percentile+1))
 do
-    inputs[14]=$percentile
+    inputs[15]=$percentile
     for ((iter=1; iter<num_iter+1; iter=iter+1))
     do
-        inputs[15]=$iter
+        inputs[16]=$iter
         bash test_empirical_vs_analytical.sh ${inputs[@]}
     done
 done

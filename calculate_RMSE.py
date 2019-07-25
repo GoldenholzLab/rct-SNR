@@ -8,11 +8,11 @@ if (__name__=='__main__'):
     min_percentile = int(sys.argv[1])
     max_percentile = int(sys.argv[2])
     num_iter       = int(sys.argv[3])
+    folder         = sys.argv[4]
 
     fisher_exact_emp_stat_power_RMSE_array = np.zeros(max_percentile + 1 - min_percentile)
     fisher_exact_ana_stat_power_RMSE_array = np.zeros(max_percentile + 1 - min_percentile)
     data_str = ''
-    folder  = os.getcwd()
 
     for percentile in range(min_percentile, max_percentile + 1):
         
@@ -21,7 +21,7 @@ if (__name__=='__main__'):
 
         for iter_num in range(1, num_iter + 1):
 
-            json_filename = 'percentile_' + str(float(percentile)) + '_|_iteration' + '_' + str(iter_num) + '.json' 
+            json_filename = 'percentile_' + str(percentile) + '_|_iteration' + '_' + str(iter_num) + '.json' 
             json_filepath = folder + '/' + json_filename
 
             if( os.path.isfile(json_filepath) ):

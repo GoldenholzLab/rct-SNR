@@ -13,6 +13,7 @@
 min_percentile=55
 max_percentile=65
 num_iter=50
+folder='/n/scratch2/jmr95/percentile_question'
 
 module load gcc/6.2.0
 module load conda2/4.2.13

@@ -15,5 +15,6 @@ inputs[11]=${12}
 inputs[12]=${13}
 inputs[13]=${14}
 inputs[14]=${15}
+inputs[15]=${16}
 
 python test_empirical_vs_analytical.py ${inputs[@]}

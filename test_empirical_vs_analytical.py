@@ -661,8 +661,9 @@ if(__name__=='__main__'):
     min_req_bs_sz_count             = int(sys.argv[12])
     
     num_trials = int(sys.argv[13])
-    percentile = float(sys.argv[14])
-    iteration = int(sys.argv[15])
+    folder     = sys.argv[14]
+    percentile = int(sys.argv[15])
+    iteration  = int(sys.argv[16])
 
     [patient_placebo_pop_monthly_params, patient_drug_pop_monthly_params,
      expected_emp_placebo_arm_RR50, expected_emp_drug_arm_RR50, expected_ana_placebo_arm_RR50, expected_ana_drug_arm_RR50, 
@@ -683,8 +684,11 @@ if(__name__=='__main__'):
                   num_trials,
                   percentile)
 
+    if( not os.path.isdir(folder) ):
+        os.makedirs(folder)
+
     json_filename = 'percentile_' + str(percentile) + '_|_iteration_' + str(iteration)
-    json_filepath = os.getcwd() + '/' + json_filename + '.json'
+    json_filepath = folder + '/' + json_filename + '.json'
     RR50_stat_power_data = [RR50_emp_stat_power, fisher_exact_emp_stat_power, fisher_exact_ana_stat_power]
     with open(json_filepath, 'w+') as json_file:
         json.dump(RR50_stat_power_data, json_file)
