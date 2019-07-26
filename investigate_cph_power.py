@@ -259,35 +259,7 @@ def generate_one_trial_TTP_times(monthly_mean_min,
     
     return [one_placebo_arm_TTP_times, one_drug_arm_TTP_times]
 
-
-def get_failure_prob(num_testing_months_per_patient,
-                     num_theo_patients_per_trial_arm,
-                     one_trial_arm_TTP_times):
-
-    one_trial_arm_num_TTPs_per_day = np.zeros(num_testing_months_per_patient*28 - 1)
-    testing_day_array = np.arange(1, num_testing_months_per_patient*28)
-    fail_prob_array = np.zeros(num_testing_months_per_patient*28 - 1)
-
-    for testing_day in testing_day_array:
-
-        one_trial_arm_num_TTPs_per_day[testing_day - 1] = np.sum(one_trial_arm_TTP_times == testing_day)
     
-    one_trial_arm_survival_curve = num_theo_patients_per_trial_arm - np.cumsum(one_trial_arm_num_TTPs_per_day)
-
-    for testing_day in testing_day_array:
-
-        fail_prob_array[testing_day - 1] = (1 - one_trial_arm_survival_curve[testing_day - 1]/num_theo_patients_per_trial_arm)
-
-        if(testing_day != 1):
-
-            fail_prob_array[testing_day - 1] = fail_prob_array[testing_day - 1]*np.prod(one_trial_arm_survival_curve[:testing_day - 2]/num_theo_patients_per_trial_arm)
-    
-    fail_prob = np.sum(fail_prob_array)
-
-    return fail_prob
-
-    
-
 def generate_trial_outcomes(monthly_mean_min,
                             monthly_mean_max, 
                             monthly_std_dev_min, 
@@ -355,12 +327,7 @@ if(__name__=='__main__'):
                                      drug_mu,
                                      drug_sigma)
 
-    print(100*get_failure_prob(num_testing_months_per_patient,
-                               num_theo_patients_per_trial_arm,
-                               one_placebo_arm_TTP_times))
-    print(100*get_failure_prob(num_testing_months_per_patient,
-                               num_theo_patients_per_trial_arm,
-                               one_drug_arm_TTP_times))
+    
 
 
 '''
