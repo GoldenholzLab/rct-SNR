@@ -1,6 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
-
+from lifelines.statistics import logrank_test
+from lifelines.statistics import power_under_cph
 
 
 def generate_patient_pop_params(monthly_mean_min,
@@ -202,18 +202,18 @@ def generate_individual_patient_TTP_times_per_trial_arm(patient_pop_daily_params
     return one_trial_arm_TTP_times
 
 
-def generate_trial_TTP_times(monthly_mean_min,
-                             monthly_mean_max, 
-                             monthly_std_dev_min, 
-                             monthly_std_dev_max,
-                             min_req_bs_sz_count,
-                             num_baseline_months_per_patient,
-                             num_testing_months_per_patient,
-                             num_theo_patients_per_trial_arm,
-                             placebo_mu,
-                             placebo_sigma,
-                             drug_mu,
-                             drug_sigma):
+def generate_one_trial_TTP_times(monthly_mean_min,
+                                 monthly_mean_max, 
+                                 monthly_std_dev_min, 
+                                 monthly_std_dev_max,
+                                 min_req_bs_sz_count,
+                                 num_baseline_months_per_patient,
+                                 num_testing_months_per_patient,
+                                 num_theo_patients_per_trial_arm,
+                                 placebo_mu,
+                                 placebo_sigma,
+                                 drug_mu,
+                                 drug_sigma):
 
     num_baseline_days_per_patient = num_baseline_months_per_patient*28
     num_testing_days_per_patient  = num_testing_months_per_patient*28
@@ -259,19 +259,120 @@ def generate_trial_TTP_times(monthly_mean_min,
     
     return [one_placebo_arm_TTP_times, one_drug_arm_TTP_times]
 
+
+def generate_trial_outcomes(monthly_mean_min,
+                            monthly_mean_max, 
+                            monthly_std_dev_min, 
+                            monthly_std_dev_max,
+                            min_req_bs_sz_count,
+                            num_baseline_months_per_patient,
+                            num_testing_months_per_patient,
+                            num_theo_patients_per_trial_arm,
+                            placebo_mu,
+                            placebo_sigma,
+                            drug_mu,
+                            drug_sigma):
+
+    [one_placebo_arm_TTP_times, one_drug_arm_TTP_times] = \
+        generate_one_trial_TTP_times(monthly_mean_min,
+                                     monthly_mean_max, 
+                                     monthly_std_dev_min, 
+                                     monthly_std_dev_max,
+                                     min_req_bs_sz_count,
+                                     num_baseline_months_per_patient,
+                                     num_testing_months_per_patient,
+                                     num_theo_patients_per_trial_arm,
+                                     placebo_mu,
+                                     placebo_sigma,
+                                     drug_mu,
+                                     drug_sigma)
+
+    events_observed_placebo = np.ones(len(one_placebo_arm_TTP_times))
+    events_observed_drug = np.ones(len(one_drug_arm_TTP_times))
+    TTP_results = logrank_test(one_placebo_arm_TTP_times, one_drug_arm_TTP_times, events_observed_placebo, events_observed_drug)
+    TTP_p_value = TTP_results.p_value
+
+    prob_event_placebo = np.sum(one_placebo_arm_TTP_times == 28*num_testing_months_per_patient)/num_theo_patients_per_trial_arm
+    prob_event_drug    = np.sum(one_drug_arm_TTP_times    == 28*num_testing_months_per_patient)/num_theo_patients_per_trial_arm
+
+    return [TTP_p_value, prob_event_placebo, prob_event_drug]
+
+'''
+if(__name__=='__main__'):
+
+    monthly_mean_min                = 1
+    monthly_mean_max                = 16
+    monthly_std_dev_min             = 1
+    monthly_std_dev_max             = 16
+    min_req_bs_sz_count             = 4
+    num_baseline_months_per_patient = 2
+    num_testing_months_per_patient  = 3
+    num_theo_patients_per_trial_arm = 153
+    placebo_mu                      = 0
+    placebo_sigma                   = 0.05
+    drug_mu                         = 0.2
+    drug_sigma                      = 0.05
+    num_trials                      = 100
+    postulated_hazard_ratio         = np.exp(0.1)
+
+    TTP_p_value_array        = np.zeros(num_trials)
+    prob_event_placebo_array = np.zeros(num_trials)
+    prob_event_drug_array    = np.zeros(num_trials)
+
+    for trial_index in range(num_trials):
+
+        print('trial #' + str(trial_index + 1))
+
+        [TTP_p_value, prob_event_placebo, prob_event_drug] = \
+            generate_trial_outcomes(monthly_mean_min,
+                                    monthly_mean_max, 
+                                    monthly_std_dev_min, 
+                                    monthly_std_dev_max,
+                                    min_req_bs_sz_count,
+                                    num_baseline_months_per_patient,
+                                    num_testing_months_per_patient,
+                                    num_theo_patients_per_trial_arm,
+                                    placebo_mu,
+                                    placebo_sigma,
+                                    drug_mu,
+                                    drug_sigma)
+        
+        TTP_p_value_array[trial_index]        = TTP_p_value
+        prob_event_placebo_array[trial_index] = prob_event_placebo
+        prob_event_drug_array[trial_index]    = prob_event_drug
+    
+    mean_prob_event_placebo = np.mean(prob_event_placebo_array)
+    mean_prob_event_drug    = np.mean(prob_event_drug_array)
+
+    TTP_empirical_power_str  = str(np.round(100*np.sum(TTP_p_value_array < 0.05)/num_trials, 3))
+    TTP_analytical_power_str = str(np.round(100*power_under_cph(num_theo_patients_per_trial_arm, 
+                                                                num_theo_patients_per_trial_arm,
+                                                                mean_prob_event_drug,
+                                                                mean_prob_event_placebo,
+                                                                postulated_hazard_ratio), 3))
+
+    data_str =   '\nempirical power:  ' + TTP_empirical_power_str + \
+               ' %\nanalytical power: ' + TTP_analytical_power_str + ' %\n'
+
+    print(data_str)
+    print([100*mean_prob_event_placebo, 100*mean_prob_event_drug])
 '''
 
-This if-statement revealed that a hazard ratio of apporixmately exp{0.285} is reasonable to expect for the
-
-population being used, although it it goes down slightly to exp{0.105} for the wider population.
 
 
 if(__name__=='__main__'):
+    '''
 
-    monthly_mean_min = 4
+    This if-statement revealed that a hazard ratio of apporixmately exp{0.285} is reasonable to expect for the
+
+    population being used, although it it goes down slightly to exp{0.105} for the wider population.
+
+    '''
+
+    monthly_mean_min = 1
     monthly_mean_max = 16
     monthly_std_dev_min = 1
-    monthly_std_dev_max = 8
+    monthly_std_dev_max = 16
 
     min_req_bs_sz_count             = 4
     num_baseline_months_per_patient = 2
@@ -288,18 +389,18 @@ if(__name__=='__main__'):
     num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
 
     [one_placebo_arm_TTP_times, one_drug_arm_TTP_times] = \
-        generate_trial_TTP_times(monthly_mean_min,
-                                 monthly_mean_max, 
-                                 monthly_std_dev_min, 
-                                 monthly_std_dev_max,
-                                 min_req_bs_sz_count,
-                                 num_baseline_months_per_patient,
-                                 num_testing_months_per_patient,
-                                 num_theo_patients_per_trial_arm,
-                                 placebo_mu,
-                                 placebo_sigma,
-                                 drug_mu,
-                                 drug_sigma)
+        generate_one_trial_TTP_times(monthly_mean_min,
+                                     monthly_mean_max, 
+                                     monthly_std_dev_min, 
+                                     monthly_std_dev_max,
+                                     min_req_bs_sz_count,
+                                     num_baseline_months_per_patient,
+                                     num_testing_months_per_patient,
+                                     num_theo_patients_per_trial_arm,
+                                     placebo_mu,
+                                     placebo_sigma,
+                                     drug_mu,
+                                     drug_sigma)
     
     num_testing_days_per_patient   = 28*num_testing_months_per_patient
     one_placebo_arm_survival_data  = np.zeros((2, num_testing_days_per_patient - 1))
@@ -322,12 +423,14 @@ if(__name__=='__main__'):
     average_log_hazard_ratio = np.mean(log_hazard_ratios)
     std_dev_log_hazard_ratio = np.std(log_hazard_ratios)
 
-    plt.figure()
-    plt.plot(np.arange(1, num_testing_days_per_patient), one_placebo_arm_survival_curve)
-    plt.plot(np.arange(1, num_testing_days_per_patient), one_drug_arm_survival_curve)
-    plt.show()
-
     print(log_hazard_ratios)
     print(str(np.round(average_log_hazard_ratio, 3)) + ' ± ' + str(np.round(std_dev_log_hazard_ratio, 3)))
 
-'''
+    import matplotlib.pyplot as plt
+
+    plt.figure()
+    plt.plot(np.arange(1, num_testing_days_per_patient), one_placebo_arm_survival_curve)
+    plt.plot(np.arange(1, num_testing_days_per_patient), one_drug_arm_survival_curve)
+    plt.legend(['placebo', 'drug'])
+    plt.show()
+
