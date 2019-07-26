@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 '''
 
@@ -267,10 +268,10 @@ def generate_trial_TTP_times(monthly_mean_min,
 
 if(__name__=='__main__'):
 
-    monthly_mean_min = 1
+    monthly_mean_min = 4
     monthly_mean_max = 16
     monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
+    monthly_std_dev_max = 8
 
     min_req_bs_sz_count             = 4
     num_baseline_months_per_patient = 2
@@ -320,6 +321,11 @@ if(__name__=='__main__'):
     log_hazard_ratios = np.log(hazard_ratios)
     average_log_hazard_ratio = np.mean(log_hazard_ratios)
     std_dev_log_hazard_ratio = np.std(log_hazard_ratios)
+
+    plt.figure()
+    plt.plot(np.arange(1, num_testing_days_per_patient), one_placebo_arm_survival_curve)
+    plt.plot(np.arange(1, num_testing_days_per_patient), one_drug_arm_survival_curve)
+    plt.show()
 
     print(log_hazard_ratios)
     print(str(np.round(average_log_hazard_ratio, 3)) + ' ± ' + str(np.round(std_dev_log_hazard_ratio, 3)))
