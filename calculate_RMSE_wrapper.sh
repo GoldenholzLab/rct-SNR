@@ -20,4 +20,4 @@ module load conda2/4.2.13
 module load python/3.6.0
 source activate main_env
 
-srun -c 1 python calculate_RMSE.py $min_percentile $max_percentile $num_iter
+srun -c 1 python calculate_RMSE.py $min_percentile $max_percentile $num_iter $folder
