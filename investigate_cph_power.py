@@ -260,6 +260,34 @@ def generate_one_trial_TTP_times(monthly_mean_min,
     return [one_placebo_arm_TTP_times, one_drug_arm_TTP_times]
 
 
+def get_failure_prob(num_testing_months_per_patient,
+                     num_theo_patients_per_trial_arm,
+                     one_trial_arm_TTP_times):
+
+    one_trial_arm_num_TTPs_per_day = np.zeros(num_testing_months_per_patient*28 - 1)
+    testing_day_array = np.arange(1, num_testing_months_per_patient*28)
+    fail_prob_array = np.zeros(num_testing_months_per_patient*28 - 1)
+
+    for testing_day in testing_day_array:
+
+        one_trial_arm_num_TTPs_per_day[testing_day - 1] = np.sum(one_trial_arm_TTP_times == testing_day)
+    
+    one_trial_arm_survival_curve = num_theo_patients_per_trial_arm - np.cumsum(one_trial_arm_num_TTPs_per_day)
+
+    for testing_day in testing_day_array:
+
+        fail_prob_array[testing_day - 1] = (1 - one_trial_arm_survival_curve[testing_day - 1]/num_theo_patients_per_trial_arm)
+
+        if(testing_day != 1):
+
+            fail_prob_array[testing_day - 1] = fail_prob_array[testing_day - 1]*np.prod(one_trial_arm_survival_curve[:testing_day - 2]/num_theo_patients_per_trial_arm)
+    
+    fail_prob = np.sum(fail_prob_array)
+
+    return fail_prob
+
+    
+
 def generate_trial_outcomes(monthly_mean_min,
                             monthly_mean_max, 
                             monthly_std_dev_min, 
@@ -296,6 +324,44 @@ def generate_trial_outcomes(monthly_mean_min,
     prob_event_drug    = np.sum(one_drug_arm_TTP_times    == 28*num_testing_months_per_patient)/num_theo_patients_per_trial_arm
 
     return [TTP_p_value, prob_event_placebo, prob_event_drug]
+
+    
+if(__name__=='__main__'):
+
+    monthly_mean_min                = 1
+    monthly_mean_max                = 16
+    monthly_std_dev_min             = 1
+    monthly_std_dev_max             = 16
+    min_req_bs_sz_count             = 4
+    num_baseline_months_per_patient = 2
+    num_testing_months_per_patient  = 3
+    num_theo_patients_per_trial_arm = 153
+    placebo_mu                      = 0
+    placebo_sigma                   = 0.05
+    drug_mu                         = 0.2
+    drug_sigma                      = 0.05
+
+    [one_placebo_arm_TTP_times, one_drug_arm_TTP_times] = \
+        generate_one_trial_TTP_times(monthly_mean_min,
+                                     monthly_mean_max, 
+                                     monthly_std_dev_min, 
+                                     monthly_std_dev_max,
+                                     min_req_bs_sz_count,
+                                     num_baseline_months_per_patient,
+                                     num_testing_months_per_patient,
+                                     num_theo_patients_per_trial_arm,
+                                     placebo_mu,
+                                     placebo_sigma,
+                                     drug_mu,
+                                     drug_sigma)
+
+    print(100*get_failure_prob(num_testing_months_per_patient,
+                               num_theo_patients_per_trial_arm,
+                               one_placebo_arm_TTP_times))
+    print(100*get_failure_prob(num_testing_months_per_patient,
+                               num_theo_patients_per_trial_arm,
+                               one_drug_arm_TTP_times))
+
 
 '''
 if(__name__=='__main__'):
@@ -357,17 +423,15 @@ if(__name__=='__main__'):
     print(data_str)
     print([100*mean_prob_event_placebo, 100*mean_prob_event_drug])
 '''
-
-
-
+'''
 if(__name__=='__main__'):
-    '''
-
+'''
+'''
     This if-statement revealed that a hazard ratio of apporixmately exp{0.285} is reasonable to expect for the
 
     population being used, although it it goes down slightly to exp{0.105} for the wider population.
-
-    '''
+'''
+'''
 
     monthly_mean_min = 1
     monthly_mean_max = 16
@@ -433,4 +497,4 @@ if(__name__=='__main__'):
     plt.plot(np.arange(1, num_testing_days_per_patient), one_drug_arm_survival_curve)
     plt.legend(['placebo', 'drug'])
     plt.show()
-
+'''
