@@ -43,7 +43,7 @@ if (__name__=='__main__'):
         fisher_exact_emp_stat_power_RMSE_per_percentile = np.round(np.sqrt(np.mean(fisher_exact_emp_stat_power_err_sq_array_per_percentile)), 3)
         fisher_exact_ana_stat_power_RMSE_per_percentile = np.round(np.sqrt(np.mean(fisher_exact_ana_stat_power_err_sq_array_per_percentile)), 3)
     
-        data_str = data_str + '\n[percentile, RMSE]: [' + str(percentile) + ', ' + str(fisher_exact_emp_stat_power_RMSE_per_percentile) + ']'
+        data_str = data_str + '\n[percentile, RMSE]: [' + str(percentile) + ', ' + str(fisher_exact_emp_stat_power_RMSE_per_percentile) + ', ' + str(fisher_exact_ana_stat_power_RMSE_per_percentile) + ']'
     
     data_str = data_str + '\n'
 
