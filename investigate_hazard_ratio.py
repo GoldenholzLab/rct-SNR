@@ -1,13 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-'''
 
-This script revealed that a hazard ratio of apporixmately exp{0.285} is reasonable to expect for the
-
-population being used, although it it goes down slightly to exp{0.105} for the wider population.
-
-'''
 
 def generate_patient_pop_params(monthly_mean_min,
                                 monthly_mean_max, 
@@ -265,6 +259,12 @@ def generate_trial_TTP_times(monthly_mean_min,
     
     return [one_placebo_arm_TTP_times, one_drug_arm_TTP_times]
 
+'''
+
+This if-statement revealed that a hazard ratio of apporixmately exp{0.285} is reasonable to expect for the
+
+population being used, although it it goes down slightly to exp{0.105} for the wider population.
+
 
 if(__name__=='__main__'):
 
@@ -329,3 +329,5 @@ if(__name__=='__main__'):
 
     print(log_hazard_ratios)
     print(str(np.round(average_log_hazard_ratio, 3)) + ' ± ' + str(np.round(std_dev_log_hazard_ratio, 3)))
+
+'''
