@@ -1,6 +1,8 @@
 import numpy as np
 from lifelines.statistics import logrank_test
 from lifelines.statistics import power_under_cph
+import warnings
+warnings.filterwarnings("error")
 
 
 def generate_patient_pop_params(monthly_mean_min,
@@ -102,7 +104,8 @@ def calculate_individual_patient_TTP_times_per_diary_set(daily_seizure_diaries,
 
     baseline_monthly_seizure_frequencies = 28*np.mean(baseline_daily_seizure_diaries, 1)
 
-    TTP_times = np.zeros(num_daily_seizure_diaries)
+    TTP_times      = np.zeros(num_daily_seizure_diaries)
+    observed_array = np.zeros(num_daily_seizure_diaries)
 
     for daily_seizure_diary_index in range(num_daily_seizure_diaries):
 
@@ -113,12 +116,17 @@ def calculate_individual_patient_TTP_times_per_diary_set(daily_seizure_diaries,
         while(not reached_count):
 
             sum_count = sum_count + testing_daily_seizure_diaries[daily_seizure_diary_index, day_index]
-            reached_count = ( ( sum_count >= baseline_monthly_seizure_frequencies[daily_seizure_diary_index] )  or ( day_index == (num_testing_days_per_patient - 1) ) )
+
+            reached_count  = sum_count >= baseline_monthly_seizure_frequencies[daily_seizure_diary_index]
+            right_censored = day_index == (num_testing_days_per_patient - 1)
+            reached_count  = reached_count or right_censored
+
             day_index = day_index + 1
         
-        TTP_times[daily_seizure_diary_index] = day_index
+        TTP_times[daily_seizure_diary_index]      = day_index
+        observed_array[daily_seizure_diary_index] = not right_censored
     
-    return TTP_times
+    return [TTP_times, observed_array]
 
 
 def apply_effect(daily_seizure_diaries,
@@ -193,13 +201,13 @@ def generate_individual_patient_TTP_times_per_trial_arm(patient_pop_daily_params
                      drug_mu,
                      drug_sigma)
 
-    one_trial_arm_TTP_times = \
+    [one_trial_arm_TTP_times, one_trial_arm_observed_array] = \
         calculate_individual_patient_TTP_times_per_diary_set(one_trial_arm_daily_seizure_diaries,
                                                              num_baseline_days_per_patient,
                                                              num_testing_days_per_patient,
                                                              num_theo_patients_per_trial_arm)
 
-    return one_trial_arm_TTP_times
+    return [one_trial_arm_TTP_times, one_trial_arm_observed_array]
 
 
 def generate_one_trial_TTP_times(monthly_mean_min,
@@ -233,7 +241,7 @@ def generate_one_trial_TTP_times(monthly_mean_min,
                                     monthly_std_dev_max, 
                                     num_theo_patients_per_trial_arm)
 
-    one_placebo_arm_TTP_times = \
+    [one_placebo_arm_TTP_times, one_placebo_arm_observed_array] = \
         generate_individual_patient_TTP_times_per_trial_arm(patient_placebo_pop_daily_params, 
                                                             num_theo_patients_per_trial_arm,
                                                             num_baseline_days_per_patient,
@@ -245,7 +253,7 @@ def generate_one_trial_TTP_times(monthly_mean_min,
                                                             0,
                                                             0)
     
-    one_drug_arm_TTP_times = \
+    [one_drug_arm_TTP_times, one_drug_arm_observed_array] = \
         generate_individual_patient_TTP_times_per_trial_arm(patient_drug_pop_daily_params, 
                                                             num_theo_patients_per_trial_arm,
                                                             num_baseline_days_per_patient,
@@ -257,12 +265,19 @@ def generate_one_trial_TTP_times(monthly_mean_min,
                                                             drug_mu,
                                                             drug_sigma)
     
-    return [one_placebo_arm_TTP_times, one_drug_arm_TTP_times]
+    return [one_placebo_arm_TTP_times, one_placebo_arm_observed_array, 
+            one_drug_arm_TTP_times,    one_drug_arm_observed_array, ]
 
 
 def calculate_prob_fail_one_trial_arm(one_trial_arm_TTP_times,
                                       num_testing_months_per_patient,
                                       num_theo_patients_per_trial_arm):
+
+    '''
+
+    have to remember to take care of right-censoring
+
+    '''
 
     num_testing_days_per_patient = num_testing_months_per_patient*28
     testing_day_array = np.arange(1, num_testing_days_per_patient)
@@ -277,6 +292,10 @@ def calculate_prob_fail_one_trial_arm(one_trial_arm_TTP_times,
 
     one_trial_arm_prob_fail_at_time_i = np.zeros(num_testing_days_per_patient - 2)
     for testing_day_index in range(num_testing_days_per_patient - 2):
+
+        if(one_trial_arm_hazard_fcn[testing_day_index] == 0):
+            one_trial_arm_hazard_fcn[testing_day_index] = 0.00000001
+
         if(testing_day_index != 0):
             one_trial_arm_prob_fail_at_time_i[testing_day_index] = one_trial_arm_hazard_fcn[testing_day_index]*np.prod(1 - one_trial_arm_hazard_fcn[:testing_day_index - 1])
         else:
@@ -284,7 +303,7 @@ def calculate_prob_fail_one_trial_arm(one_trial_arm_TTP_times,
     
     one_trial_arm_prob_fail = np.sum(one_trial_arm_prob_fail_at_time_i)
 
-    return one_trial_arm_prob_fail
+    return [one_trial_arm_hazard_fcn, one_trial_arm_prob_fail]
 
 
 def generate_trial_outcomes(monthly_mean_min,
@@ -300,7 +319,8 @@ def generate_trial_outcomes(monthly_mean_min,
                             drug_mu,
                             drug_sigma):
 
-    [one_placebo_arm_TTP_times, one_drug_arm_TTP_times] = \
+    [one_placebo_arm_TTP_times, one_placebo_arm_observed_array, 
+     one_drug_arm_TTP_times,    one_drug_arm_observed_array, ] = \
         generate_one_trial_TTP_times(monthly_mean_min,
                                      monthly_mean_max, 
                                      monthly_std_dev_min, 
@@ -314,23 +334,36 @@ def generate_trial_outcomes(monthly_mean_min,
                                      drug_mu,
                                      drug_sigma)
 
-    events_observed_placebo = np.ones(len(one_placebo_arm_TTP_times))
-    events_observed_drug = np.ones(len(one_drug_arm_TTP_times))
-    TTP_results = logrank_test(one_placebo_arm_TTP_times, one_drug_arm_TTP_times, events_observed_placebo, events_observed_drug)
+    #events_observed_placebo = np.ones(len(one_placebo_arm_TTP_times))
+    #events_observed_drug = np.ones(len(one_drug_arm_TTP_times))
+    TTP_results = logrank_test(one_placebo_arm_TTP_times,
+                               one_drug_arm_TTP_times, 
+                               one_placebo_arm_observed_array, 
+                               one_drug_arm_observed_array)
     TTP_p_value = TTP_results.p_value
 
-    prob_event_placebo = np.sum(one_placebo_arm_TTP_times == 28*num_testing_months_per_patient)/num_theo_patients_per_trial_arm
-    prob_event_drug    = np.sum(one_drug_arm_TTP_times    == 28*num_testing_months_per_patient)/num_theo_patients_per_trial_arm
+    [one_placebo_arm_hazard_fcn, one_placebo_arm_prob_fail] = \
+        calculate_prob_fail_one_trial_arm(one_placebo_arm_TTP_times,
+                                          num_testing_months_per_patient,
+                                          num_theo_patients_per_trial_arm)
 
-    return [TTP_p_value, prob_event_placebo, prob_event_drug]
+    [one_drug_arm_hazard_fcn, one_drug_arm_prob_fail] = \
+        calculate_prob_fail_one_trial_arm(one_drug_arm_TTP_times,
+                                          num_testing_months_per_patient,
+                                          num_theo_patients_per_trial_arm)
+
+    average_log_hazard_ratio = np.mean(np.log(np.divide(one_drug_arm_hazard_fcn, one_placebo_arm_hazard_fcn)))
+
+
+    return [TTP_p_value, one_placebo_arm_prob_fail, one_drug_arm_prob_fail, average_log_hazard_ratio]
 
 
 if(__name__=='__main__'):
 
-    monthly_mean_min                = 1
+    monthly_mean_min                = 4
     monthly_mean_max                = 16
     monthly_std_dev_min             = 1
-    monthly_std_dev_max             = 16
+    monthly_std_dev_max             = 8
     min_req_bs_sz_count             = 4
     num_baseline_months_per_patient = 2
     num_testing_months_per_patient  = 3
@@ -339,18 +372,18 @@ if(__name__=='__main__'):
     placebo_sigma                   = 0.05
     drug_mu                         = 0.2
     drug_sigma                      = 0.05
-    num_trials                      = 100
-    postulated_hazard_ratio         = np.exp(0.1)
+    num_trials                      = 20000
 
-    TTP_p_value_array        = np.zeros(num_trials)
-    prob_event_placebo_array = np.zeros(num_trials)
-    prob_event_drug_array    = np.zeros(num_trials)
+    TTP_p_value_array              = np.zeros(num_trials)
+    placebo_arm_prob_fail_array    = np.zeros(num_trials)
+    drug_arm_prob_fail_array       = np.zeros(num_trials)
+    average_log_hazard_ratio_array = np.zeros(num_trials)
 
     for trial_index in range(num_trials):
 
         print('trial #' + str(trial_index + 1))
 
-        [TTP_p_value, prob_event_placebo, prob_event_drug] = \
+        [TTP_p_value, one_placebo_arm_prob_fail, one_drug_arm_prob_fail, average_log_hazard_ratio] = \
             generate_trial_outcomes(monthly_mean_min,
                                     monthly_mean_max, 
                                     monthly_std_dev_min, 
@@ -364,16 +397,15 @@ if(__name__=='__main__'):
                                     drug_mu,
                                     drug_sigma)
         
-        TTP_p_value_array[trial_index]        = TTP_p_value
-        prob_event_placebo_array[trial_index] = prob_event_placebo
-        prob_event_drug_array[trial_index]    = prob_event_drug
-    
-    one_placebo_arm_prob_fail = calculate_prob_fail_one_trial_arm(one_placebo_arm_TTP_times,
-                                                                  num_testing_months_per_patient,
-                                                                  num_theo_patients_per_trial_arm)
-    one_drug_arm_prob_fail    = calculate_prob_fail_one_trial_arm(one_drug_arm_TTP_times,
-                                                                  num_testing_months_per_patient,
-                                                                  num_theo_patients_per_trial_arm)
+        TTP_p_value_array[trial_index]           = TTP_p_value
+        placebo_arm_prob_fail_array[trial_index] = one_placebo_arm_prob_fail
+        drug_arm_prob_fail_array[trial_index]    = one_drug_arm_prob_fail
+        average_log_hazard_ratio_array[trial_index]      = average_log_hazard_ratio
+
+    mean_placebo_arm_prob_fail    = np.mean(placebo_arm_prob_fail_array)
+    mean_drug_arm_prob_fail       = np.mean(drug_arm_prob_fail_array)
+    mean_average_log_hazard_ratio = np.mean(average_log_hazard_ratio_array)
+    postulated_hazard_ratio       = np.exp(mean_average_log_hazard_ratio)
 
     TTP_empirical_power_str  = str(np.round(100*np.sum(TTP_p_value_array < 0.05)/num_trials, 3))
     TTP_analytical_power_str = str(np.round(100*power_under_cph(num_theo_patients_per_trial_arm, 
@@ -386,7 +418,12 @@ if(__name__=='__main__'):
                ' %\nanalytical power: ' + TTP_analytical_power_str + ' %\n'
 
     print(data_str)
-    print([100*mean_prob_event_placebo, 100*mean_prob_event_drug])
+    print( str(np.round(100*np.array([mean_placebo_arm_prob_fail, mean_drug_arm_prob_fail]), 3)) + ', ' + str(np.round(mean_average_log_hazard_ratio, 3)) )
+
+    import matplotlib.pyplot as plt
+    plt.figure()
+    plt.hist(average_log_hazard_ratio_array, bins=50, density=True)
+    plt.show()
 
 
 '''
@@ -396,18 +433,19 @@ if(__name__=='__main__'):
     This if-statement revealed that a hazard ratio of apporixmately exp{0.285} is reasonable to expect for the
 
     population being used, although it it goes down slightly to exp{0.105} for the wider population.
+    
+    Edit : Never mind, I made the mistake of using survival curves instead of thir derivatives, a.k.a. hazard rates.
 '''
 '''
-
-    monthly_mean_min = 1
+    monthly_mean_min = 4
     monthly_mean_max = 16
     monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
+    monthly_std_dev_max = 8
 
     min_req_bs_sz_count             = 4
     num_baseline_months_per_patient = 2
     num_testing_months_per_patient  = 3
-    num_theo_patients_per_trial_arm = 10000
+    num_theo_patients_per_trial_arm = 200
     
     placebo_mu    = 0
     placebo_sigma = 0.05
@@ -418,7 +456,8 @@ if(__name__=='__main__'):
     num_testing_days_per_patient  = num_testing_months_per_patient*28
     num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
 
-    [one_placebo_arm_TTP_times, one_drug_arm_TTP_times] = \
+    [one_placebo_arm_TTP_times, _,
+     one_drug_arm_TTP_times,    _] = \
         generate_one_trial_TTP_times(monthly_mean_min,
                                      monthly_mean_max, 
                                      monthly_std_dev_min, 
@@ -457,10 +496,9 @@ if(__name__=='__main__'):
     print(str(np.round(average_log_hazard_ratio, 3)) + ' ± ' + str(np.round(std_dev_log_hazard_ratio, 3)))
 
     import matplotlib.pyplot as plt
-
     plt.figure()
     plt.plot(np.arange(1, num_testing_days_per_patient), one_placebo_arm_survival_curve)
     plt.plot(np.arange(1, num_testing_days_per_patient), one_drug_arm_survival_curve)
-    plt.legend(['placebo', 'drug'])
+    plt.legend(['placebo', 'drug']) 
     plt.show()
 '''
