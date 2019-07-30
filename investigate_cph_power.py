@@ -330,10 +330,10 @@ def generate_trial_outcomes(patient_placebo_pop_daily_params,
                                           num_testing_days_per_patient,
                                           num_theo_patients_per_trial_arm)
 
-    average_log_hazard_ratio = np.mean(np.log(np.divide(one_drug_arm_hazard_fcn, one_placebo_arm_hazard_fcn)))
+    log_hazard_ratio_array = np.log(np.divide(one_drug_arm_hazard_fcn, one_placebo_arm_hazard_fcn))
 
 
-    return [TTP_p_value, one_placebo_arm_prob_fail, one_drug_arm_prob_fail, average_log_hazard_ratio]
+    return [TTP_p_value, one_placebo_arm_prob_fail, one_drug_arm_prob_fail, log_hazard_ratio_array]
 
 
 if(__name__=='__main__'):
@@ -350,12 +350,7 @@ if(__name__=='__main__'):
     placebo_sigma                   = 0.05
     drug_mu                         = 0.2
     drug_sigma                      = 0.05
-    num_trials                      = 100
-
-    TTP_p_value_array              = np.zeros(num_trials)
-    placebo_arm_prob_fail_array    = np.zeros(num_trials)
-    drug_arm_prob_fail_array       = np.zeros(num_trials)
-    average_log_hazard_ratio_array = np.zeros(num_trials)
+    num_trials                      = 300
 
     num_baseline_days_per_patient = num_baseline_months_per_patient*28
     num_testing_days_per_patient  = num_testing_months_per_patient*28
@@ -374,12 +369,17 @@ if(__name__=='__main__'):
                                     monthly_std_dev_min, 
                                     monthly_std_dev_max, 
                                     num_theo_patients_per_trial_arm)
+    
+    TTP_p_value_array           = np.zeros(num_trials)
+    placebo_arm_prob_fail_array = np.zeros(num_trials)
+    drug_arm_prob_fail_array    = np.zeros(num_trials)
+    log_hazard_ratio_arrays     = np.zeros((num_trials, num_testing_days_per_patient - 2))
 
     for trial_index in range(num_trials):
 
         print('trial #' + str(trial_index + 1))
 
-        [TTP_p_value, one_placebo_arm_prob_fail, one_drug_arm_prob_fail, average_log_hazard_ratio] = \
+        [TTP_p_value, one_placebo_arm_prob_fail, one_drug_arm_prob_fail, log_hazard_ratio_array] = \
             generate_trial_outcomes(patient_placebo_pop_daily_params, 
                                     patient_drug_pop_daily_params,
                                     min_req_bs_sz_count,
@@ -395,12 +395,13 @@ if(__name__=='__main__'):
         TTP_p_value_array[trial_index]           = TTP_p_value
         placebo_arm_prob_fail_array[trial_index] = one_placebo_arm_prob_fail
         drug_arm_prob_fail_array[trial_index]    = one_drug_arm_prob_fail
-        average_log_hazard_ratio_array[trial_index]      = average_log_hazard_ratio
+        log_hazard_ratio_arrays[trial_index, :]  = log_hazard_ratio_array
 
-    mean_placebo_arm_prob_fail    = np.mean(placebo_arm_prob_fail_array)
-    mean_drug_arm_prob_fail       = np.mean(drug_arm_prob_fail_array)
-    mean_average_log_hazard_ratio = np.mean(average_log_hazard_ratio_array)
-    postulated_hazard_ratio       = np.exp(mean_average_log_hazard_ratio)
+    mean_placebo_arm_prob_fail = np.mean(placebo_arm_prob_fail_array)
+    mean_drug_arm_prob_fail    = np.mean(drug_arm_prob_fail_array)
+    log_hazard_ratio_array     = log_hazard_ratio_arrays.flatten('C')
+    average_log_hazard_ratio   = np.mean(log_hazard_ratio_array)
+    postulated_hazard_ratio    = np.exp(np.mean(log_hazard_ratio_array))
 
     TTP_empirical_power_str  = str(np.round(100*np.sum(TTP_p_value_array < 0.05)/num_trials, 3))
     TTP_analytical_power_str = str(np.round(100*power_under_cph(num_theo_patients_per_trial_arm, 
@@ -412,12 +413,13 @@ if(__name__=='__main__'):
     data_str =   '\nempirical power:  ' + TTP_empirical_power_str + \
                ' %\nanalytical power: ' + TTP_analytical_power_str + ' %\n'
 
+    print(log_hazard_ratio_array)
     print(data_str)
-    print( str(np.round(100*np.array([mean_placebo_arm_prob_fail, mean_drug_arm_prob_fail]), 3)) + ', ' + str(np.round(mean_average_log_hazard_ratio, 3)) )
+    print( str(np.round(100*np.array([mean_placebo_arm_prob_fail, mean_drug_arm_prob_fail]), 3)) + ', ' + str(np.round(average_log_hazard_ratio, 3)) )
 
     import matplotlib.pyplot as plt
     plt.figure()
-    plt.hist(average_log_hazard_ratio_array, bins=50, density=True)
+    plt.hist(log_hazard_ratio_array, bins=50, density=True)
     plt.show()
 
 
