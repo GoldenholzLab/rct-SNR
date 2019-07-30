@@ -1,8 +1,9 @@
 import numpy as np
 from lifelines.statistics import logrank_test
 from lifelines.statistics import power_under_cph
-import warnings
-warnings.filterwarnings("error")
+import scipy.stats as stats
+import json
+import os
 
 
 def generate_patient_pop_params(monthly_mean_min,
@@ -261,21 +262,22 @@ def calculate_prob_fail_one_trial_arm(one_trial_arm_TTP_times,
     '''
 
     testing_day_array = np.arange(1, num_testing_days_per_patient)
+    one_trial_arm_event_density  = np.zeros(num_testing_days_per_patient - 1)
     one_trial_arm_survival_curve = np.zeros(num_testing_days_per_patient - 1)
     for testing_day_index in range(num_testing_days_per_patient - 1):
+        one_trial_arm_event_density[testing_day_index] = np.sum(one_trial_arm_TTP_times == testing_day_array[testing_day_index])
+        if(one_trial_arm_event_density[testing_day_index] == 0):
+            one_trial_arm_event_density[testing_day_index] = 0.00000001
         if(testing_day_index != 0):
-            one_trial_arm_survival_curve[testing_day_index] = one_trial_arm_survival_curve[testing_day_index - 1] + np.sum(one_trial_arm_TTP_times == testing_day_array[testing_day_index])
+            one_trial_arm_survival_curve[testing_day_index] = one_trial_arm_survival_curve[testing_day_index - 1] + one_trial_arm_event_density[testing_day_index]
         else:
-            one_trial_arm_survival_curve[testing_day_index] = np.sum(one_trial_arm_TTP_times == testing_day_array[testing_day_index])
+            one_trial_arm_survival_curve[testing_day_index] = one_trial_arm_event_density[testing_day_index]
     one_trial_arm_survival_curve = num_theo_patients_per_trial_arm - one_trial_arm_survival_curve
-    one_trial_arm_hazard_fcn = (one_trial_arm_survival_curve[:-1] - one_trial_arm_survival_curve[1:])/one_trial_arm_survival_curve[:-1]
+    #one_trial_arm_hazard_fcn = (one_trial_arm_survival_curve[:-1] - one_trial_arm_survival_curve[1:])/one_trial_arm_survival_curve[:-1]
+    one_trial_arm_hazard_fcn = np.divide(one_trial_arm_event_density, one_trial_arm_survival_curve)
 
-    one_trial_arm_prob_fail_at_time_i = np.zeros(num_testing_days_per_patient - 2)
-    for testing_day_index in range(num_testing_days_per_patient - 2):
-
-        if(one_trial_arm_hazard_fcn[testing_day_index] == 0):
-            one_trial_arm_hazard_fcn[testing_day_index] = 0.00000001
-
+    one_trial_arm_prob_fail_at_time_i = np.zeros(num_testing_days_per_patient - 1)
+    for testing_day_index in range(num_testing_days_per_patient - 1):
         if(testing_day_index != 0):
             one_trial_arm_prob_fail_at_time_i[testing_day_index] = one_trial_arm_hazard_fcn[testing_day_index]*np.prod(1 - one_trial_arm_hazard_fcn[:testing_day_index - 1])
         else:
@@ -332,7 +334,6 @@ def generate_trial_outcomes(patient_placebo_pop_daily_params,
 
     log_hazard_ratio_array = np.log(np.divide(one_drug_arm_hazard_fcn, one_placebo_arm_hazard_fcn))
 
-
     return [TTP_p_value, one_placebo_arm_prob_fail, one_drug_arm_prob_fail, log_hazard_ratio_array]
 
 
@@ -350,7 +351,7 @@ if(__name__=='__main__'):
     placebo_sigma                   = 0.05
     drug_mu                         = 0.2
     drug_sigma                      = 0.05
-    num_trials                      = 300
+    num_trials                      = 1000
 
     num_baseline_days_per_patient = num_baseline_months_per_patient*28
     num_testing_days_per_patient  = num_testing_months_per_patient*28
@@ -373,7 +374,7 @@ if(__name__=='__main__'):
     TTP_p_value_array           = np.zeros(num_trials)
     placebo_arm_prob_fail_array = np.zeros(num_trials)
     drug_arm_prob_fail_array    = np.zeros(num_trials)
-    log_hazard_ratio_arrays     = np.zeros((num_trials, num_testing_days_per_patient - 2))
+    log_hazard_ratio_arrays     = np.zeros((num_trials, num_testing_days_per_patient - 1))
 
     for trial_index in range(num_trials):
 
@@ -400,20 +401,20 @@ if(__name__=='__main__'):
     mean_placebo_arm_prob_fail = np.mean(placebo_arm_prob_fail_array)
     mean_drug_arm_prob_fail    = np.mean(drug_arm_prob_fail_array)
     log_hazard_ratio_array     = log_hazard_ratio_arrays.flatten('C')
+    log_hazard_ratio_array     = log_hazard_ratio_array[np.logical_and(np.logical_and(log_hazard_ratio_array > -5, log_hazard_ratio_array < 5), log_hazard_ratio_array != 0)]
     average_log_hazard_ratio   = np.mean(log_hazard_ratio_array)
-    postulated_hazard_ratio    = np.exp(np.mean(log_hazard_ratio_array))
+    postulated_hazard_ratio    = np.exp(average_log_hazard_ratio)
 
     TTP_empirical_power_str  = str(np.round(100*np.sum(TTP_p_value_array < 0.05)/num_trials, 3))
     TTP_analytical_power_str = str(np.round(100*power_under_cph(num_theo_patients_per_trial_arm, 
                                                                 num_theo_patients_per_trial_arm,
                                                                 one_drug_arm_prob_fail,
                                                                 one_placebo_arm_prob_fail,
-                                                                postulated_hazard_ratio), 3))
+                                                                np.exp(postulated_hazard_ratio)), 3))
 
     data_str =   '\nempirical power:  ' + TTP_empirical_power_str + \
                ' %\nanalytical power: ' + TTP_analytical_power_str + ' %\n'
 
-    print(log_hazard_ratio_array)
     print(data_str)
     print( str(np.round(100*np.array([mean_placebo_arm_prob_fail, mean_drug_arm_prob_fail]), 3)) + ', ' + str(np.round(average_log_hazard_ratio, 3)) )
 
