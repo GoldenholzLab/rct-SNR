@@ -72,24 +72,18 @@ def calculate_expected_RR50_responses(num_theo_patients_per_trial_arm,
     return [expected_RR50_placebo_response, expected_RR50_drug_response]
 
 
-def generate_pop_params(monthly_mean_min,    monthly_mean_max, 
-                        monthly_std_dev_min, monthly_std_dev_max, 
-                        num_patients_per_trial_arm):
+def generate_one_trial_arm_of_patient_diaries(patient_pop_monthly_param_sets, 
+                                              num_patients_per_trial_arm, 
+                                              min_req_base_sz_count,
+                                              num_baseline_days_per_patient, 
+                                              num_total_days_per_patient):
 
-    patient_pop_monthly_params = np.zeros((num_patients_per_trial_arm, 4))
+    daily_patient_diaries = np.zeros((num_patients_per_trial_arm, num_total_days_per_patient))
 
     for patient_index in range(num_patients_per_trial_arm):
 
-        overdispersed = False
-
-        while(not overdispersed):
-
-            monthly_mean    = np.random.randint(monthly_mean_min,    monthly_mean_max)
-            monthly_std_dev = np.random.randint(monthly_std_dev_min, monthly_std_dev_max)
-
-            if(monthly_std_dev > np.sqrt(monthly_mean)):
-
-                overdispersed = True
+        monthly_mean    = patient_pop_monthly_param_sets[patient_index, 0]
+        monthly_std_dev = patient_pop_monthly_param_sets[patient_index, 1]
 
         daily_mean = monthly_mean/28
         daily_std_dev = monthly_std_dev/np.sqrt(28)
@@ -99,14 +93,128 @@ def generate_pop_params(monthly_mean_min,    monthly_mean_max,
         daily_n = 1/daily_overdispersion
         daily_odds_ratio = daily_overdispersion*daily_mean
 
-        patient_pop_monthly_params[patient_index, 0] = monthly_mean
-        patient_pop_monthly_params[patient_index, 1] = monthly_std_dev
-        patient_pop_monthly_params[patient_index, 2] = daily_n
-        patient_pop_monthly_params[patient_index, 3] = daily_odds_ratio
+        acceptable_baseline = False
+        current_daily_patient_diary = np.zeros(num_total_days_per_patient)
+
+        while(not acceptable_baseline):
+
+            for day_index in range(num_total_days_per_patient):
+
+                daily_rate = np.random.gamma(daily_n, daily_odds_ratio)
+                daily_count = np.random.poisson(daily_rate)
+
+                current_daily_patient_diary[day_index] = daily_count
+                
+            current_patient_baseline_sz_count = np.sum(current_daily_patient_diary[:num_baseline_days_per_patient])
+                
+            if(current_patient_baseline_sz_count >= min_req_base_sz_count):
+
+                    acceptable_baseline = True
+            
+        daily_patient_diaries[patient_index, :] = current_daily_patient_diary
     
-    return patient_pop_monthly_params
+    return daily_patient_diaries
 
 
+def calculate_individual_patient_percent_changes(daily_patient_diaries,
+                                                 num_patients_per_trial_arm, 
+                                                 num_days_per_patient_baseline):
+    
+    baseline_daily_seizure_diaries = daily_patient_diaries[:, :num_days_per_patient_baseline]
+    testing_daily_seizure_diaries  = daily_patient_diaries[:, num_days_per_patient_baseline:]
+    
+    baseline_daily_seizure_frequencies = np.mean(baseline_daily_seizure_diaries, 1)
+    testing_daily_seizure_frequencies = np.mean(testing_daily_seizure_diaries, 1)
+
+    for patient_index in range(num_patients_per_trial_arm):
+        if(baseline_daily_seizure_frequencies[patient_index] == 0):
+            baseline_daily_seizure_frequencies[patient_index] = 0.000000001
+    
+    percent_changes = np.divide(baseline_daily_seizure_frequencies - testing_daily_seizure_frequencies, baseline_daily_seizure_frequencies)
+
+    return percent_changes
+
+
+def apply_effect(daily_patient_diaries,         num_patients_per_trial_arm, 
+                 num_days_per_patient_baseline, num_days_per_patient_testing, 
+                 effect_mu,                     effect_sigma):
+
+    testing_daily_patient_diaries = daily_patient_diaries[:, num_days_per_patient_baseline:]
+
+    for patient_index in range(num_patients_per_trial_arm):
+
+        effect = np.random.normal(effect_mu, effect_sigma)
+        if(effect > 1):
+            effect = 1
+
+        current_testing_daily_patient_diary = testing_daily_patient_diaries[patient_index, :]
+
+        for day_index in range(num_days_per_patient_testing):
+
+            current_seizure_count = current_testing_daily_patient_diary[day_index]
+            num_removed = 0
+
+            for seizure_index in range(np.int_(current_seizure_count)):
+
+                if(np.random.random() <= np.abs(effect)):
+
+                    num_removed = num_removed + np.sign(effect)
+            
+            current_seizure_count = current_seizure_count - num_removed
+            current_testing_daily_patient_diary[day_index] = current_seizure_count
+
+        testing_daily_patient_diaries[patient_index, :] = current_testing_daily_patient_diary
+    
+    daily_patient_diaries[:, num_days_per_patient_baseline:] = testing_daily_patient_diaries
+
+    return daily_patient_diaries
+
+
+def generate_individual_patient_percent_changes_per_trial_arm(patient_pop_monthly_param_sets, 
+                                                              num_patients_per_trial_arm,
+                                                              num_baseline_days_per_patient,
+                                                              num_testing_days_per_patient,
+                                                              num_total_days_per_patient,
+                                                              min_req_base_sz_count,
+                                                              placebo_mu,
+                                                              placebo_sigma,
+                                                              drug_mu,
+                                                              drug_sigma):
+
+    one_trial_arm_daily_seizure_diaries = \
+        generate_one_trial_arm_of_patient_diaries(patient_pop_monthly_param_sets, 
+                                                  num_patients_per_trial_arm, 
+                                                  min_req_base_sz_count,
+                                                  num_baseline_days_per_patient, 
+                                                  num_total_days_per_patient)
+        
+    one_trial_arm_daily_seizure_diaries = \
+        apply_effect(one_trial_arm_daily_seizure_diaries,
+                     num_baseline_days_per_patient,
+                     num_testing_days_per_patient,
+                     num_patients_per_trial_arm,
+                     placebo_mu,
+                     placebo_sigma)
+        
+    one_trial_arm_daily_seizure_diaries = \
+        apply_effect(one_trial_arm_daily_seizure_diaries,
+                     num_baseline_days_per_patient,
+                     num_testing_days_per_patient,
+                     num_patients_per_trial_arm,
+                     drug_mu,
+                     drug_sigma)
+
+    '''
+    [one_trial_arm_TTP_times, one_trial_arm_observed_array] = \
+        calculate_individual_patient_TTP_times_per_diary_set(one_trial_arm_daily_seizure_diaries,
+                                                             num_baseline_days_per_patient,
+                                                             num_testing_days_per_patient,
+                                                             num_theo_patients_per_trial_arm)
+    
+    return [one_trial_arm_TTP_times, one_trial_arm_observed_array]
+    '''
+
+'''
 if(__name__=='__main__'):
 
     monthly_mean_min     = 4
@@ -144,3 +252,4 @@ if(__name__=='__main__'):
     fisher_exact_stat_power = 100*float(process.communicate()[0].decode().split()[1])
 
     print(fisher_exact_stat_power)
+'''
