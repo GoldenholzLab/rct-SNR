@@ -2,7 +2,7 @@
 
 #SBATCH -p short
 #SBATCH --mem=10G
-#SBATCH -t 0-00:10
+#SBATCH -t 0-08:30
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
@@ -32,4 +32,4 @@ inputs[12]=${13}
 inputs[13]=${14}
 
 #srun -c 1 python emp_and_map_based_analysis.py ${inputs[@]}
-python emp_and_map_based_analysis.py ${inputs[@]}
+python -u emp_and_map_based_analysis.py ${inputs[@]}
