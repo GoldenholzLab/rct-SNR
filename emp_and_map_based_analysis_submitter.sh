@@ -24,8 +24,8 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=10000
-num_stat_power_estimates=1000
+num_trials=10
+num_stat_power_estimates=10
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max

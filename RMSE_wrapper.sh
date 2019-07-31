@@ -12,7 +12,7 @@
 module load gcc/6.2.0
 module load conda2/4.2.13
 module load python/3.6.0
-source activate_main_env
+source activate main_env
 
 num_stat_power_estimates=10
 
