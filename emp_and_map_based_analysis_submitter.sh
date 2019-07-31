@@ -24,9 +24,8 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=5000
-num_stat_power_estimates_per_iter=2
-num_iter=100
+num_trials=10
+num_stat_power_estimates=10
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
@@ -44,12 +43,11 @@ inputs[10]=$drug_mu
 inputs[11]=$drug_sigma
 
 inputs[12]=$num_trials
-inputs[13]=$num_stat_power_estimates_per_iter
 
-for ((iter_index=1; iter_index<$num_iter+1; iter_index=iter_index+1))
+for ((stat_power_estimate_index=1; stat_power_estimate_index<$num_stat_power_estimates+1; stat_power_estimate_index=stat_power_estimate_index+1))
 do
 
-    inputs[14]=$iter_index
+    inputs[13]=$stat_power_estimate_index
     
     sbatch emp_and_map_based_analysis_wrapper.sh ${inputs[@]}
 

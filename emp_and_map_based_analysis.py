@@ -275,9 +275,7 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
                                           placebo_sigma,
                                           drug_mu,
                                           drug_sigma,
-                                          num_trials,
-                                          stat_power_estimate_index,
-                                          iter_index):
+                                          num_trials):
 
     p_value_array = np.zeros(num_trials)
 
@@ -300,8 +298,7 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
         
         trial_stop_time_in_seconds = time.time()
         trial_runtime_str = str(np.round((trial_stop_time_in_seconds - trial_start_time_in_seconds)/60, 3))
-        print( 'trial #' + str(trial_index + 1) + ', statistical power estimate #' + str(stat_power_estimate_index + 1) + \
-                ', iter_index #' + str(iter_index) + ', runtime: ' + trial_runtime_str + ' minutes' )
+        print( 'trial #' + str(trial_index + 1) + ', runtime: ' + trial_runtime_str + ' minutes' )
     
     emp_stat_power = 100*np.sum(p_value_array < 0.05)/num_trials
 
@@ -340,58 +337,46 @@ def calculate_statistical_power_estimates(monthly_mean_min,
                                           placebo_sigma,
                                           drug_mu,
                                           drug_sigma,
-                                          num_trials,
-                                          num_stat_power_estimates_per_iter,
-                                          iter_index):
+                                          num_trials):
 
     num_baseline_days_per_patient = num_baseline_months_per_patient*28
     num_testing_days_per_patient  = num_testing_months_per_patient*28
     num_total_days_per_patient = num_baseline_days_per_patient + num_testing_days_per_patient
 
-    fisher_exact_stat_power_array = np.zeros(num_stat_power_estimates_per_iter)
-    emp_stat_power_array          = np.zeros(num_stat_power_estimates_per_iter)
+    placebo_arm_patient_pop_monthly_param_sets = \
+        generate_patient_pop_params(monthly_mean_min,
+                                    monthly_mean_max, 
+                                    monthly_std_dev_min, 
+                                    monthly_std_dev_max, 
+                                    num_theo_patients_per_trial_arm)
 
-    for stat_power_estimate_index in range(num_stat_power_estimates_per_iter):
+    drug_arm_patient_pop_monthly_param_sets = \
+        generate_patient_pop_params(monthly_mean_min,
+                                    monthly_mean_max, 
+                                    monthly_std_dev_min, 
+                                    monthly_std_dev_max, 
+                                    num_theo_patients_per_trial_arm)
 
-        placebo_arm_patient_pop_monthly_param_sets = \
-            generate_patient_pop_params(monthly_mean_min,
-                                        monthly_mean_max, 
-                                        monthly_std_dev_min, 
-                                        monthly_std_dev_max, 
-                                        num_theo_patients_per_trial_arm)
+    fisher_exact_stat_power = \
+        calculate_analytical_statistical_power(num_theo_patients_per_trial_arm,
+                                               placebo_arm_patient_pop_monthly_param_sets,
+                                               drug_arm_patient_pop_monthly_param_sets)
 
-        drug_arm_patient_pop_monthly_param_sets = \
-            generate_patient_pop_params(monthly_mean_min,
-                                        monthly_mean_max, 
-                                        monthly_std_dev_min, 
-                                        monthly_std_dev_max, 
-                                        num_theo_patients_per_trial_arm)
+    emp_stat_power = \
+        calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_sets,
+                                              drug_arm_patient_pop_monthly_param_sets,
+                                              num_theo_patients_per_trial_arm,
+                                              num_baseline_days_per_patient,
+                                              num_testing_days_per_patient,
+                                              num_total_days_per_patient,
+                                              min_req_base_sz_count,
+                                              placebo_mu,
+                                              placebo_sigma,
+                                              drug_mu,
+                                              drug_sigma,
+                                              num_trials)
 
-        fisher_exact_stat_power = \
-            calculate_analytical_statistical_power(num_theo_patients_per_trial_arm,
-                                                   placebo_arm_patient_pop_monthly_param_sets,
-                                                   drug_arm_patient_pop_monthly_param_sets)
-
-        emp_stat_power = \
-            calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_sets,
-                                                  drug_arm_patient_pop_monthly_param_sets,
-                                                  num_theo_patients_per_trial_arm,
-                                                  num_baseline_days_per_patient,
-                                                  num_testing_days_per_patient,
-                                                  num_total_days_per_patient,
-                                                  min_req_base_sz_count,
-                                                  placebo_mu,
-                                                  placebo_sigma,
-                                                  drug_mu,
-                                                  drug_sigma,
-                                                  num_trials,
-                                                  stat_power_estimate_index,
-                                                  iter_index)
-
-        fisher_exact_stat_power_array[stat_power_estimate_index] = fisher_exact_stat_power
-        emp_stat_power_array[stat_power_estimate_index]          = emp_stat_power
-
-    return [fisher_exact_stat_power_array, emp_stat_power_array]
+    return [fisher_exact_stat_power, emp_stat_power]
 
 
 if(__name__=='__main__'):
@@ -411,11 +396,10 @@ if(__name__=='__main__'):
     drug_mu       = float(sys.argv[11])
     drug_sigma    = float(sys.argv[12])
 
-    num_trials                        = int(sys.argv[13])
-    num_stat_power_estimates_per_iter = int(sys.argv[14])
-    iter_index                        = int(sys.argv[15])
+    num_trials                = int(sys.argv[13])
+    stat_power_estimate_index = int(sys.argv[14])
 
-    [fisher_exact_stat_power_array, emp_stat_power_array] = \
+    [fisher_exact_stat_power, emp_stat_power] = \
         calculate_statistical_power_estimates(monthly_mean_min,
                                               monthly_mean_max,
                                               monthly_std_dev_min,
@@ -428,13 +412,10 @@ if(__name__=='__main__'):
                                               placebo_sigma,
                                               drug_mu,
                                               drug_sigma,
-                                              num_trials,
-                                              num_stat_power_estimates_per_iter,
-                                              iter_index)
+                                              num_trials)
     
-    with open(os.getcwd() + '/fisher_exact_power_array_' + str(iter_index) + '.json', 'w+') as json_file:
-        json.dump(fisher_exact_stat_power_array.tolist(), json_file)
+    with open(os.getcwd() + '/fisher_exact_power_' + str(stat_power_estimate_index) + '.txt', 'w+') as text_file:
+        text_file.write(str(fisher_exact_stat_power))
     
-    with open(os.getcwd() + '/emp_power_array_' + str(iter_index) + '.json', 'w+') as json_file:
-        json.dump(emp_stat_power_array.tolist(), json_file)
-
+    with open(os.getcwd() + '/emp_power_' + str(stat_power_estimate_index) + '.txt', 'w+') as text_file:
+        text_file.write(str(emp_stat_power))

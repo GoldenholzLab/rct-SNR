@@ -30,6 +30,6 @@ inputs[10]=${11}
 inputs[11]=${12}
 inputs[12]=${13}
 inputs[13]=${14}
-inputs[14]=${15}
 
-srun -c 1 python emp_and_map_based_analysis.py ${inputs[@]}
+#srun -c 1 python emp_and_map_based_analysis.py ${inputs[@]}
+python emp_and_map_based_analysis.py ${inputs[@]}

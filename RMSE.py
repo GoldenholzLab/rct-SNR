@@ -5,20 +5,22 @@ import sys
 
 if(__name__=='__main__'):
 
-    num_iter_iter = int(sys.argv[1])
-    emp_stat_power_array = np.array([])
-    fisher_exact_stat_power_array = np.array([])
+    num_stat_power_estimates = int(sys.argv[1])
 
-    for iter_iter_index in range(1, num_iter_iter+1):
+    emp_stat_power_array          = np.zeros(num_stat_power_estimates)
+    fisher_exact_stat_power_array = np.zeros(num_stat_power_estimates)
 
-        emp_file_path = os.getcwd() + '/emp_power_array_' + str(iter_iter_index) + '.json'
-        map_file_path = os.getcwd() + '/fisher_exact_power_array_' + str(iter_iter_index) + '.json'
+    for stat_power_estimate_index in range(num_stat_power_estimates):
 
-        with open(emp_file_path, 'r') as json_file:
-            emp_stat_power_array = np.append(emp_stat_power_array, np.array(json.load(json_file)))
-        with open(map_file_path, 'r') as json_file:
-            fisher_exact_stat_power_array = np.append(fisher_exact_stat_power_array, np.array(json.load(json_file)))
-        
+        emp_file_path = os.getcwd() + '/emp_power_' + str(stat_power_estimate_index + 1) + '.txt'
+        map_file_path = os.getcwd() + '/fisher_exact_power_' + str(stat_power_estimate_index + 1) + '.txt'
+
+        with open(emp_file_path, 'r') as text_file:
+            emp_stat_power_array[stat_power_estimate_index] = float(text_file.read())
+        with open(map_file_path, 'r') as text_file:
+            fisher_exact_stat_power_array[stat_power_estimate_index] = float(text_file.read())
+    
     stat_power_RMSE_str = str(np.round(np.sqrt(np.mean(np.power(emp_stat_power_array - fisher_exact_stat_power_array, 2))), 3))
     with open('RMSE.txt', 'w+') as text_file:
         text_file.write(stat_power_RMSE_str)
+    

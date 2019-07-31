@@ -14,6 +14,7 @@ module load conda2/4.2.13
 module load python/3.6.0
 source activate_main_env
 
-num_iter=10
+num_stat_power_estimates=10
 
-srun -c 1 python RMSE.py $num_iter
+srun -c 1 python RMSE.py $num_stat_power_estimates
+
