@@ -1,4 +1,19 @@
+#!/usr/bin/bash
 
-num_iter_iter=10
+#SBATCH -p short
+#SBATCH -t 0-00:05
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -e jmr95_%j.err
+#SBATCH -o jmr95_%j.out
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
-python RMSE.py $num_iter_iter
+module load gcc/6.2.0
+module load conda2/4.2.13
+module load python/3.6.0
+source activate_main_env
+
+num_iter=10
+
+srun -c 1 python RMSE.py $num_iter
