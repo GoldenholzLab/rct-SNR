@@ -284,7 +284,7 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
 
     for trial_index in range(num_trials):
 
-        print( 'trial #' + str(trial_index + 1) + ', statistical power estimate #' + str(stat_power_estimate_index + 1) + ', iter_index #' + str(iter_index) )
+        trial_start_time_in_seconds = time.time()
 
         p_value_array[trial_index] = \
             calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
@@ -298,6 +298,11 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
                                         placebo_sigma,
                                         drug_mu,
                                         drug_sigma)
+        
+        trial_stop_time_in_seconds = time.time()
+        trial_runtime_str = str(np.round((trial_stop_time_in_seconds - trial_start_time_in_seconds)/60, 3))
+        print( 'trial #' + str(trial_index + 1) + ', statistical power estimate #' + str(stat_power_estimate_index + 1) + \
+                ', iter_index #' + str(iter_index) + ', runtime: ' + trial_runtime_str + ' minutes' )
     
     emp_stat_power = 100*np.sum(p_value_array < 0.05)/num_trials
 
@@ -392,6 +397,8 @@ def calculate_statistical_power_estimates(monthly_mean_min,
 
 if(__name__=='__main__'):
 
+    start_time_in_seconds = time.time()
+
     monthly_mean_min     = int(sys.argv[1])
     monthly_mean_max     = int(sys.argv[2])
     monthly_std_dev_min  = int(sys.argv[3])
@@ -409,7 +416,7 @@ if(__name__=='__main__'):
 
     num_trials               = int(sys.argv[13])
     num_stat_power_estimates = int(sys.argv[14])
-    iter_index           = int(sys.argv[15])
+    iter_index               = int(sys.argv[15])
 
     [fisher_exact_stat_power_array, emp_stat_power_array] = \
         calculate_statistical_power_estimates(monthly_mean_min,
@@ -434,3 +441,5 @@ if(__name__=='__main__'):
     with open(os.getcwd() + '/emp_power_array_' + str(iter_index) + '.json', 'w+') as json_file:
         json.dump(emp_stat_power_array.tolist(), json_file)
 
+    stop_time_in_seconds = time.time()
+    print( str(np.round((stop_time_in_seconds - start_time_in_seconds)/60, 3)) )
