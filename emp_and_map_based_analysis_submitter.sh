@@ -15,8 +15,8 @@ drug_mu=0.2
 drug_sigma=0.05
 
 num_trials=10
-num_iterations=10
-num_iter_iter=10
+num_stat_power_estimates=10
+num_iter=10
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
@@ -34,12 +34,12 @@ inputs[10]=$drug_mu
 inputs[11]=$drug_sigma
 
 inputs[12]=$num_trials
-inputs[13]=$num_iterations
+inputs[13]=$num_stat_power_estimates_per_iter
 
-for ((iter_iter_index=1; iter_iter_index<$num_iter_iter+1; iter_iter_index=iter_iter_index+1))
+for ((iter_index=1; iter_index<$num_iter+1; iter_index=iter_index+1))
 do
 
-    inputs[14]=$iter_iter_index
+    inputs[14]=$iter_index
     
     bash emp_and_map_based_analysis_wrapper.sh ${inputs[@]}
 

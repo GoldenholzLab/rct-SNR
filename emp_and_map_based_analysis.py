@@ -341,17 +341,17 @@ def calculate_statistical_power_estimates(monthly_mean_min,
                                           drug_mu,
                                           drug_sigma,
                                           num_trials,
-                                          num_stat_power_estimates,
+                                          num_stat_power_estimates_per_iter,
                                           iter_index):
 
     num_baseline_days_per_patient = num_baseline_months_per_patient*28
     num_testing_days_per_patient  = num_testing_months_per_patient*28
     num_total_days_per_patient = num_baseline_days_per_patient + num_testing_days_per_patient
 
-    fisher_exact_stat_power_array = np.zeros(num_stat_power_estimates)
-    emp_stat_power_array          = np.zeros(num_stat_power_estimates)
+    fisher_exact_stat_power_array = np.zeros(num_stat_power_estimates_per_iter)
+    emp_stat_power_array          = np.zeros(num_stat_power_estimates_per_iter)
 
-    for stat_power_estimate_index in range(num_stat_power_estimates):
+    for stat_power_estimate_index in range(num_stat_power_estimates_per_iter):
 
         placebo_arm_patient_pop_monthly_param_sets = \
             generate_patient_pop_params(monthly_mean_min,
@@ -411,9 +411,9 @@ if(__name__=='__main__'):
     drug_mu       = float(sys.argv[11])
     drug_sigma    = float(sys.argv[12])
 
-    num_trials               = int(sys.argv[13])
-    num_stat_power_estimates = int(sys.argv[14])
-    iter_index               = int(sys.argv[15])
+    num_trials                        = int(sys.argv[13])
+    num_stat_power_estimates_per_iter = int(sys.argv[14])
+    iter_index                        = int(sys.argv[15])
 
     [fisher_exact_stat_power_array, emp_stat_power_array] = \
         calculate_statistical_power_estimates(monthly_mean_min,
@@ -429,7 +429,7 @@ if(__name__=='__main__'):
                                               drug_mu,
                                               drug_sigma,
                                               num_trials,
-                                              num_stat_power_estimates,
+                                              num_stat_power_estimates_per_iter,
                                               iter_index)
     
     with open(os.getcwd() + '/fisher_exact_power_array_' + str(iter_index) + '.json', 'w+') as json_file:
