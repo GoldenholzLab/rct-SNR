@@ -15,7 +15,7 @@ drug_mu=0.2
 drug_sigma=0.05
 
 num_trials=10
-num_stat_power_estimates=10
+num_stat_power_estimates_per_iter=10
 num_iter=10
 
 inputs[0]=$monthly_mean_min
