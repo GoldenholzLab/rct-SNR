@@ -10,10 +10,10 @@ def get_RR50_response_maps():
     expected_RR50_placebo_response_map_filename = 'expected_placebo_RR50_map_4'
     expected_RR50_drug_response_map_filename    = 'expected_drug_RR50_map_4'
 
-    with open(os.getcwd() + '/' + expected_RR50_placebo_response_map_filename + '.json', 'r') as json_file:
+    with open(os.getcwd() + '/' + expected_RR50_placebo_response_map_filename + '.map', 'r') as json_file:
         expected_RR50_placebo_response_map = np.array(json.load(json_file))/100
 
-    with open(os.getcwd() + '/' + expected_RR50_drug_response_map_filename + '.json', 'r') as json_file:
+    with open(os.getcwd() + '/' + expected_RR50_drug_response_map_filename + '.map', 'r') as json_file:
         expected_RR50_drug_response_map = np.array(json.load(json_file))/100
 
     return [expected_RR50_placebo_response_map, expected_RR50_drug_response_map]
@@ -321,26 +321,21 @@ def calculate_analytical_statistical_power(num_theo_patients_per_trial_arm,
     return fisher_exact_stat_power
 
 
-if(__name__=='__main__'):
-
-    monthly_mean_min     = int(sys.argv[1])
-    monthly_mean_max     = int(sys.argv[2])
-    monthly_std_dev_min  = int(sys.argv[3])
-    monthly_std_dev_max  = int(sys.argv[4])
-
-    min_req_base_sz_count           = int(sys.argv[5])
-    num_baseline_months_per_patient = int(sys.argv[6])
-    num_testing_months_per_patient  = int(sys.argv[7])
-    num_theo_patients_per_trial_arm = int(sys.argv[8])
-
-    placebo_mu    = float(sys.argv[9])
-    placebo_sigma = float(sys.argv[10])
-    drug_mu       = float(sys.argv[11])
-    drug_sigma    = float(sys.argv[12])
-
-    num_trials     = int(sys.argv[13])
-    num_iterations = int(sys.argv[14])
-    file_name      = sys.argv[15]
+def calculate_statistical_power_estimates(monthly_mean_min,
+                                          monthly_mean_max,
+                                          monthly_std_dev_min,
+                                          monthly_std_dev_max,
+                                          min_req_base_sz_count,
+                                          num_baseline_months_per_patient,
+                                          num_testing_months_per_patient,
+                                          num_theo_patients_per_trial_arm,
+                                          placebo_mu,
+                                          placebo_sigma,
+                                          drug_mu,
+                                          drug_sigma,
+                                          num_trials,
+                                          num_iterations,
+                                          file_name):
 
     num_baseline_days_per_patient = num_baseline_months_per_patient*28
     num_testing_days_per_patient  = num_testing_months_per_patient*28
@@ -387,6 +382,47 @@ if(__name__=='__main__'):
 
         fisher_exact_stat_power_array[num_iter] = fisher_exact_stat_power
         emp_stat_power_array[num_iter]          = emp_stat_power
+
+    return [fisher_exact_stat_power_array, emp_stat_power_array]
+
+
+if(__name__=='__main__'):
+
+    monthly_mean_min     = int(sys.argv[1])
+    monthly_mean_max     = int(sys.argv[2])
+    monthly_std_dev_min  = int(sys.argv[3])
+    monthly_std_dev_max  = int(sys.argv[4])
+
+    min_req_base_sz_count           = int(sys.argv[5])
+    num_baseline_months_per_patient = int(sys.argv[6])
+    num_testing_months_per_patient  = int(sys.argv[7])
+    num_theo_patients_per_trial_arm = int(sys.argv[8])
+
+    placebo_mu    = float(sys.argv[9])
+    placebo_sigma = float(sys.argv[10])
+    drug_mu       = float(sys.argv[11])
+    drug_sigma    = float(sys.argv[12])
+
+    num_trials     = int(sys.argv[13])
+    num_iterations = int(sys.argv[14])
+    file_name      = sys.argv[15]
+
+    [fisher_exact_stat_power_array, emp_stat_power_array] = \
+        calculate_statistical_power_estimates(monthly_mean_min,
+                                              monthly_mean_max,
+                                              monthly_std_dev_min,
+                                              monthly_std_dev_max,
+                                              min_req_base_sz_count,
+                                              num_baseline_months_per_patient,
+                                              num_testing_months_per_patient,
+                                              num_theo_patients_per_trial_arm,
+                                              placebo_mu,
+                                              placebo_sigma,
+                                              drug_mu,
+                                              drug_sigma,
+                                              num_trials,
+                                              num_iterations,
+                                              file_name)
     
     with open(os.getcwd() + '/fisher_exact_power_array_' + file_name + '.json', 'w+') as json_file:
         json.dump(fisher_exact_stat_power_array.tolist(), json_file)
