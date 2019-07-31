@@ -39,7 +39,7 @@ inputs[13]=$num_iterations
 for ((iter_iter_index=1; iter_iter_index<$num_iter_iter+1; iter_iter_index=iter_iter_index+1))
 do
 
-    inputs[14]=$num_iter_iter
+    inputs[14]=$iter_iter_index
     
     bash emp_and_map_based_analysis_wrapper.sh ${inputs[@]}
 
