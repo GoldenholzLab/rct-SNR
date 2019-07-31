@@ -5,7 +5,6 @@ import os
 import subprocess
 import sys
 import time
-import psutil
 
 def get_RR50_response_maps():
 
