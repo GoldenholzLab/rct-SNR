@@ -3,6 +3,7 @@ import scipy.stats as stats
 import json
 import os
 import subprocess
+import sys
 
 def get_RR50_response_maps():
 
@@ -322,23 +323,24 @@ def calculate_analytical_statistical_power(num_theo_patients_per_trial_arm,
 
 if(__name__=='__main__'):
 
-    monthly_mean_min     = 4
-    monthly_mean_max     = 16
-    monthly_std_dev_min  = 1
-    monthly_std_dev_max  = 8
+    monthly_mean_min     = int(sys.argv[1])
+    monthly_mean_max     = int(sys.argv[2])
+    monthly_std_dev_min  = int(sys.argv[3])
+    monthly_std_dev_max  = int(sys.argv[4])
 
-    min_req_base_sz_count           = 4
-    num_baseline_months_per_patient = 2
-    num_testing_months_per_patient  = 3
-    num_theo_patients_per_trial_arm = 153
+    min_req_base_sz_count           = int(sys.argv[5])
+    num_baseline_months_per_patient = int(sys.argv[6])
+    num_testing_months_per_patient  = int(sys.argv[7])
+    num_theo_patients_per_trial_arm = int(sys.argv[8])
 
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
+    placebo_mu    = float(sys.argv[9])
+    placebo_sigma = float(sys.argv[10])
+    drug_mu       = float(sys.argv[11])
+    drug_sigma    = float(sys.argv[12])
 
-    num_trials     = 500
-    num_iterations = 100
+    num_trials     = int(sys.argv[13])
+    num_iterations = int(sys.argv[14])
+    file_name      = sys.argv[15]
 
     num_baseline_days_per_patient = num_baseline_months_per_patient*28
     num_testing_days_per_patient  = num_testing_months_per_patient*28
@@ -386,5 +388,9 @@ if(__name__=='__main__'):
         fisher_exact_stat_power_array[num_iter] = fisher_exact_stat_power
         emp_stat_power_array[num_iter]          = emp_stat_power
     
+    with open(os.getcwd() + '/fisher_exact_power_array_' + file_name + '.json', 'w+') as json_file:
+        json.dump(fisher_exact_stat_power_array.tolist(), json_file)
     
+    with open(os.getcwd() + '/emp_power_array_' + file_name + '.json', 'w+') as json_file:
+        json.dump(emp_stat_power_array.tolist(), json_file)
 
