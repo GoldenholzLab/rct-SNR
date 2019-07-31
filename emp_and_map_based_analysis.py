@@ -397,8 +397,6 @@ def calculate_statistical_power_estimates(monthly_mean_min,
 
 if(__name__=='__main__'):
 
-    start_time_in_seconds = time.time()
-
     monthly_mean_min     = int(sys.argv[1])
     monthly_mean_max     = int(sys.argv[2])
     monthly_std_dev_min  = int(sys.argv[3])
@@ -441,5 +439,3 @@ if(__name__=='__main__'):
     with open(os.getcwd() + '/emp_power_array_' + str(iter_index) + '.json', 'w+') as json_file:
         json.dump(emp_stat_power_array.tolist(), json_file)
 
-    stop_time_in_seconds = time.time()
-    print( str(np.round((stop_time_in_seconds - start_time_in_seconds)/60, 3)) )
