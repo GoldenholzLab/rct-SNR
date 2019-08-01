@@ -51,6 +51,6 @@ do
 
     inputs[14]=$stat_power_estimate_index
     
-    batch emp_and_map_based_analysis_wrapper.sh ${inputs[@]}
+    sbatch emp_and_map_based_analysis_wrapper.sh ${inputs[@]}
 
 done
