@@ -397,7 +397,8 @@ if(__name__=='__main__'):
     drug_sigma    = float(sys.argv[12])
 
     num_trials                = int(sys.argv[13])
-    stat_power_estimate_index = int(sys.argv[14])
+    folder                    = sys.argv[14]
+    stat_power_estimate_index = int(sys.argv[15])
 
     [fisher_exact_stat_power, emp_stat_power] = \
         calculate_statistical_power_estimates(monthly_mean_min,
@@ -414,8 +415,8 @@ if(__name__=='__main__'):
                                               drug_sigma,
                                               num_trials)
     
-    with open(os.getcwd() + '/fisher_exact_power_' + str(stat_power_estimate_index) + '.txt', 'w+') as text_file:
-        text_file.write(str(fisher_exact_stat_power))
-    
-    with open(os.getcwd() + '/emp_power_' + str(stat_power_estimate_index) + '.txt', 'w+') as text_file:
-        text_file.write(str(emp_stat_power))
+    if( not os.path.isdir(folder) ):
+        os.makedirs(folder)
+
+    with open(folder + '/power_comparison_' + str(stat_power_estimate_index) + '.txt', 'w+') as text_file:
+        text_file.write(str(fisher_exact_stat_power)+ ', ' + str(emp_stat_power))
