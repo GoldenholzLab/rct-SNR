@@ -15,6 +15,6 @@ module load python/3.6.0
 source activate main_env
 
 num_stat_power_estimates=10
-folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
+folder='/n/scratch2/jmr95/fisher_exact_analysis_question'
 
 srun -c 1 python RMSE.py $num_stat_power_estimates $folder
