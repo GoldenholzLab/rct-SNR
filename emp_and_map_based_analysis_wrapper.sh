@@ -2,7 +2,7 @@
 
 #SBATCH -p short
 #SBATCH --mem=10G
-#SBATCH -t 0-08:30
+#SBATCH -t 0-00:50
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
