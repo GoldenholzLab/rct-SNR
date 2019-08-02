@@ -49,10 +49,16 @@ def generate_patient_pop_params(monthly_mean_min,
 
 
 def calculate_expected_RR50_responses_from_maps(num_theo_patients_per_trial_arm,
-                                      placebo_arm_patient_pop_monthly_param_sets,
-                                      drug_arm_patient_pop_monthly_param_sets,
-                                      expected_RR50_placebo_response_map,
-                                      expected_RR50_drug_response_map):
+                                                placebo_arm_patient_pop_monthly_param_sets,
+                                                drug_arm_patient_pop_monthly_param_sets,
+                                                expected_RR50_placebo_response_map,
+                                                expected_RR50_drug_response_map):
+
+    '''
+
+    Was 1-D summation instead of 2-D summation a bad idea?
+
+    '''
 
     expected_RR50_placebo_response_per_monthly_param_set = np.zeros(num_theo_patients_per_trial_arm)
     expected_RR50_drug_response_per_monthly_param_set    = np.zeros(num_theo_patients_per_trial_arm)
