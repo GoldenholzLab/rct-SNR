@@ -1,6 +1,9 @@
 # Apple Files
 *.DS_store
 
+# comma de-limited files
+*.csv
+
 # ignore JSON files
 *.json
 
