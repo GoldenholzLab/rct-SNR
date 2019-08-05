@@ -235,7 +235,7 @@ def generate_one_trial_TTP_times(placebo_arm_patient_pop_monthly_param_sets,
 
 def calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
                                 drug_arm_patient_pop_monthly_param_sets,
-                                num_patients_per_trial_arm,
+                                num_theo_patients_per_trial_arm,
                                 num_baseline_days_per_patient,
                                 num_testing_days_per_patient,
                                 num_total_days_per_patient,
@@ -243,10 +243,11 @@ def calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
                                 placebo_mu,
                                 placebo_sigma,
                                 drug_mu,
-                                drug_sigma):
+                                drug_sigma,
+                                tmp_file_name):
 
     [one_placebo_arm_TTP_times, one_placebo_arm_observed_array, 
-     one_drug_arm_TTP_times,    one_drug_arm_observed_array, ] = \
+     one_drug_arm_TTP_times,    one_drug_arm_observed_array   ] = \
         generate_one_trial_TTP_times(placebo_arm_patient_pop_monthly_param_sets, 
                                      drug_arm_patient_pop_monthly_param_sets,
                                      min_req_base_sz_count,
@@ -265,12 +266,35 @@ def calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
                                one_drug_arm_observed_array)
     TTP_p_value = TTP_results.p_value
 
-    return TTP_p_value
+    #-----------------------------------------------------------------------------------------------------------------------------------------#
+    #-----------------------------------------------------------------------------------------------------------------------------------------#
+    #-----------------------------------------------------------------------------------------------------------------------------------------#
+
+    relative_tmp_file_path = tmp_file_name + '.csv'
+    TTP_times              = np.append(one_placebo_arm_TTP_times, one_drug_arm_TTP_times)
+    events                 = np.append(one_placebo_arm_observed_array, one_drug_arm_observed_array)
+    treatment_arms_str     = np.append( np.array(num_theo_patients_per_trial_arm*['C']) , np.array(num_theo_patients_per_trial_arm*['E']) )
+    treatment_arms         = np.int_(treatment_arms_str == "C")
+
+    data = np.array([TTP_times, events, treatment_arms, treatment_arms_str]).transpose()
+    pd.DataFrame(data, columns=['TTP_times', 'events', 'treatment_arms', 'treatment_arms_str']).to_csv(relative_tmp_file_path)
+    process = subprocess.Popen(['Rscript', 'calculate_cph_power.R', relative_tmp_file_path, str(alpha), str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm)], stdout=subprocess.PIPE)
+    postulated_log_hazard_ratio = float(process.communicate()[0].decode().split()[1])
+    os.remove(relative_tmp_file_path)
+
+    prob_fail_placebo_arm = np.sum(one_placebo_arm_observed_array == True)/num_theo_patients_per_trial_arm
+    prob_fail_drug_arm    = np.exp(postulated_log_hazard_ratio)*np.sum(one_drug_arm_observed_array == True)/num_theo_patients_per_trial_arm
+
+    #-----------------------------------------------------------------------------------------------------------------------------------------#
+    #-----------------------------------------------------------------------------------------------------------------------------------------#
+    #-----------------------------------------------------------------------------------------------------------------------------------------#
+
+    return [TTP_p_value, postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
 
 
 def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_sets,
                                           drug_arm_patient_pop_monthly_param_sets,
-                                          num_patients_per_trial_arm,
+                                          num_theo_patients_per_trial_arm,
                                           num_baseline_days_per_patient,
                                           num_testing_days_per_patient,
                                           num_total_days_per_patient,
@@ -279,18 +303,22 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
                                           placebo_sigma,
                                           drug_mu,
                                           drug_sigma,
-                                          num_trials):
+                                          num_trials,
+                                          alpha):
 
     p_value_array = np.zeros(num_trials)
+    plhr_array    = np.zeros(num_trials)
+    prob_fail_placebo_arm_array = np.zeros(num_trials)
+    prob_fail_drug_arm_array = np.zeros(num_trials)
 
     for trial_index in range(num_trials):
 
         trial_start_time_in_seconds = time.time()
 
-        p_value_array[trial_index] = \
+        [p_value_array[trial_index], plhr_array[trial_index], prob_fail_placebo_arm_array[trial_index], prob_fail_drug_arm_array[trial_index]] = \
             calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
                                         drug_arm_patient_pop_monthly_param_sets,
-                                        num_patients_per_trial_arm,
+                                        num_theo_patients_per_trial_arm,
                                         num_baseline_days_per_patient,
                                         num_testing_days_per_patient,
                                         num_total_days_per_patient,
@@ -298,17 +326,97 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
                                         placebo_mu,
                                         placebo_sigma,
                                         drug_mu,
-                                        drug_sigma)
+                                        drug_sigma,
+                                        str(trial_index))
         
         trial_stop_time_in_seconds = time.time()
         trial_runtime_str = str(np.round((trial_stop_time_in_seconds - trial_start_time_in_seconds)/60, 3))
         print( 'trial #' + str(trial_index + 1) + ', runtime: ' + trial_runtime_str + ' minutes' )
     
     emp_stat_power = 100*np.sum(p_value_array < 0.05)/num_trials
+    plhr_mean = np.mean(plhr_array)
+    prob_fail_placebo_arm = np.mean(prob_fail_placebo_arm_array)
+    prob_fail_drug_arm = np.mean(prob_fail_drug_arm_array)
 
-    return emp_stat_power
+    #--------------------------------------------------------------------------------------------------------------------------#
+    #--------------------------------------------------------------------------------------------------------------------------#
+    #--------------------------------------------------------------------------------------------------------------------------#
+
+    print(num_theo_patients_per_trial_arm)
+    print(100*prob_fail_drug_arm)
+    print(100*prob_fail_placebo_arm)
+    print(plhr_mean)
+    print(alpha)
+
+    command        = ['Rscript', 'calculate_cph_power_2.R', str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm), str(prob_fail_drug_arm), str(prob_fail_placebo_arm), str(plhr_mean), str(alpha)]
+    process        = subprocess.Popen(command, stdout=subprocess.PIPE)
+    ana_stat_power = 100*float(process.communicate()[0].decode().split()[1])
+
+    #--------------------------------------------------------------------------------------------------------------------------#
+    #--------------------------------------------------------------------------------------------------------------------------#
+    #--------------------------------------------------------------------------------------------------------------------------#
+    
+    return [emp_stat_power, ana_stat_power]
 
 
+if(__name__=='__main__'):
+
+    monthly_mean_min    = 4
+    monthly_mean_max    = 16
+    monthly_std_dev_min = 1
+    monthly_std_dev_max = 8
+
+    num_theo_patients_per_trial_arm = 153
+    num_baseline_months_per_patient = 2
+    num_testing_months_per_patient  = 3
+    min_req_base_sz_count           = 4
+
+    placebo_mu    = 0
+    placebo_sigma = 0.05
+    drug_mu       = 0.2
+    drug_sigma    = 0.05
+
+    num_trials = 100
+    alpha      = 0.05
+
+    placebo_arm_patient_pop_monthly_param_sets = \
+        generate_patient_pop_params(monthly_mean_min,
+                                    monthly_mean_max, 
+                                    monthly_std_dev_min, 
+                                    monthly_std_dev_max, 
+                                    num_theo_patients_per_trial_arm)
+    
+    drug_arm_patient_pop_monthly_param_sets = \
+        generate_patient_pop_params(monthly_mean_min,
+                                    monthly_mean_max, 
+                                    monthly_std_dev_min, 
+                                    monthly_std_dev_max, 
+                                    num_theo_patients_per_trial_arm)
+
+    num_baseline_days_per_patient = num_baseline_months_per_patient*28
+    num_testing_days_per_patient  = num_testing_months_per_patient*28
+    num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
+
+    [emp_stat_power, ana_stat_power] = \
+        calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_sets,
+                                              drug_arm_patient_pop_monthly_param_sets,
+                                              num_theo_patients_per_trial_arm,
+                                              num_baseline_days_per_patient,
+                                              num_testing_days_per_patient,
+                                              num_total_days_per_patient,
+                                              min_req_base_sz_count,
+                                              placebo_mu,
+                                              placebo_sigma,
+                                              drug_mu,
+                                              drug_sigma,
+                                              num_trials,
+                                              alpha)
+    
+    print(emp_stat_power)
+    print(ana_stat_power)
+
+
+'''
 def estimate_analytical_power(placebo_TTP_times,
                    placebo_events,
                    drug_TTP_times,
@@ -368,59 +476,6 @@ def estimate_analytical_power_2(placebo_TTP_times,
     
     return [postulated_hazard_ratio, 100*prob_fail_placebo, 100*prob_fail_drug, power]
 
-
-if(__name__=='__main__'):
-
-    monthly_mean_min                = 8
-    monthly_mean_max                = 16
-    monthly_std_dev_min             = 1
-    monthly_std_dev_max             = 4
-    num_theo_patients_per_trial_arm = 153
-    num_baseline_months_per_patient = 2
-    num_testing_months_per_patient  = 3
-    min_req_base_sz_count           = 4
-    placebo_mu                      = 0
-    placebo_sigma                   = 0.05
-    drug_mu                         = 0.2
-    drug_sigma                      = 0.05
-    num_trials                      = 100
-
-    placebo_arm_patient_pop_monthly_param_sets = \
-        generate_patient_pop_params(monthly_mean_min,
-                                    monthly_mean_max, 
-                                    monthly_std_dev_min, 
-                                    monthly_std_dev_max, 
-                                    num_theo_patients_per_trial_arm)
-    
-    drug_arm_patient_pop_monthly_param_sets = \
-        generate_patient_pop_params(monthly_mean_min,
-                                    monthly_mean_max, 
-                                    monthly_std_dev_min, 
-                                    monthly_std_dev_max, 
-                                    num_theo_patients_per_trial_arm)
-
-    num_baseline_days_per_patient = num_baseline_months_per_patient*28
-    num_testing_days_per_patient  = num_testing_months_per_patient*28
-    num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
-
-    emp_stat_power = \
-        calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_sets,
-                                              drug_arm_patient_pop_monthly_param_sets,
-                                              num_theo_patients_per_trial_arm,
-                                              num_baseline_days_per_patient,
-                                              num_testing_days_per_patient,
-                                              num_total_days_per_patient,
-                                              min_req_base_sz_count,
-                                              placebo_mu,
-                                              placebo_sigma,
-                                              drug_mu,
-                                              drug_sigma,
-                                              num_trials)
-    
-    print(emp_stat_power)
-
-
-'''
 num_placebo_patients = 6
 num_drug_patients    = 6
 alpha                = 0.05

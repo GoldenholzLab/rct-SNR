@@ -11,4 +11,4 @@ alpha = as.double(args[6])
 
 power <- powerCT.default(nE, nC, pE, pC, RR, alpha)
 
-print(100*power)
+print(power)
