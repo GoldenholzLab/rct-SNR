@@ -44,7 +44,6 @@ def generate_patient_pop_params(monthly_mean_min,
         patient_pop_monthly_param_sets[theo_patient_index, 0] = monthly_mean
         patient_pop_monthly_param_sets[theo_patient_index, 1] = monthly_std_dev
 
-
     return patient_pop_monthly_param_sets
 
 
