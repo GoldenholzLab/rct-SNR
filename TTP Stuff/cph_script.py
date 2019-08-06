@@ -5,6 +5,15 @@ import subprocess
 import os
 import time
 
+'''
+
+This is a an experimental script which successfully proved that the experimental statistical
+
+power can be calculated analytically via parameters estimated from the patient population using
+
+R scripts.
+
+'''
 
 def generate_patient_pop_params(monthly_mean_min,
                                 monthly_mean_max, 
