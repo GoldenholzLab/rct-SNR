@@ -1,50 +1,18 @@
 import numpy as np
-from lifelines.statistics import logrank_test
-import pandas as pd
 import subprocess
 import os
-import time
+import pandas as pd
 
-
-def generate_patient_pop_params(monthly_mean_min,
-                                monthly_mean_max, 
-                                monthly_std_dev_min, 
-                                monthly_std_dev_max, 
-                                num_theo_patients_per_trial_arm):
-
-    patient_pop_monthly_param_sets = np.zeros((num_theo_patients_per_trial_arm , 2))
-
-    for theo_patient_index in range(num_theo_patients_per_trial_arm ):
-
-        overdispersed = False
-
-        while(not overdispersed):
-
-            monthly_mean    = np.random.randint(monthly_mean_min,    monthly_mean_max)
-            monthly_std_dev = np.random.randint(monthly_std_dev_min, monthly_std_dev_max)
-
-            if(monthly_std_dev > np.sqrt(monthly_mean)):
-
-                overdispersed = True
-
-        patient_pop_monthly_param_sets[theo_patient_index, 0] = monthly_mean
-        patient_pop_monthly_param_sets[theo_patient_index, 1] = monthly_std_dev
-
-    return patient_pop_monthly_param_sets
-
-
-def generate_one_trial_arm_of_patient_diaries(patient_pop_monthly_param_sets, 
-                                              num_patients_per_trial_arm, 
+def generate_one_trial_arm_of_patient_diaries(monthly_mean,
+                                              monthly_std_dev,
+                                              num_theo_patients_per_trial_arm, 
                                               min_req_base_sz_count,
                                               num_baseline_days_per_patient, 
                                               num_total_days_per_patient):
 
-    daily_patient_diaries = np.zeros((num_patients_per_trial_arm, num_total_days_per_patient))
+    daily_patient_diaries = np.zeros((num_theo_patients_per_trial_arm, num_total_days_per_patient))
 
-    for patient_index in range(num_patients_per_trial_arm):
-
-        monthly_mean    = patient_pop_monthly_param_sets[patient_index, 0]
-        monthly_std_dev = patient_pop_monthly_param_sets[patient_index, 1]
+    for patient_index in range(num_theo_patients_per_trial_arm):
 
         daily_mean = monthly_mean/28
         daily_std_dev = monthly_std_dev/np.sqrt(28)
@@ -150,7 +118,8 @@ def apply_effect(daily_seizure_diaries,
     return daily_seizure_diaries
 
 
-def generate_individual_patient_TTP_times_per_trial_arm(patient_pop_monthly_param_sets, 
+def generate_individual_patient_TTP_times_per_trial_arm(monthly_mean,
+                                                        monthly_std_dev,
                                                         num_theo_patients_per_trial_arm,
                                                         num_baseline_days_per_patient,
                                                         num_testing_days_per_patient,
@@ -162,7 +131,8 @@ def generate_individual_patient_TTP_times_per_trial_arm(patient_pop_monthly_para
                                                         drug_sigma):
 
     one_trial_arm_daily_seizure_diaries = \
-        generate_one_trial_arm_of_patient_diaries(patient_pop_monthly_param_sets, 
+        generate_one_trial_arm_of_patient_diaries(monthly_mean,
+                                                  monthly_std_dev, 
                                                   num_theo_patients_per_trial_arm, 
                                                   min_req_base_sz_count,
                                                   num_baseline_days_per_patient, 
@@ -193,8 +163,8 @@ def generate_individual_patient_TTP_times_per_trial_arm(patient_pop_monthly_para
     return [one_trial_arm_TTP_times, one_trial_arm_observed_array]
 
 
-def generate_one_trial_TTP_times(placebo_arm_patient_pop_monthly_param_sets, 
-                                 drug_arm_patient_pop_monthly_param_sets,
+def generate_one_trial_TTP_times(monthly_mean,
+                                 monthly_std_dev,
                                  min_req_base_sz_count,
                                  num_baseline_days_per_patient,
                                  num_testing_days_per_patient,
@@ -206,7 +176,8 @@ def generate_one_trial_TTP_times(placebo_arm_patient_pop_monthly_param_sets,
                                  drug_sigma):
 
     [one_placebo_arm_TTP_times, one_placebo_arm_observed_array] = \
-        generate_individual_patient_TTP_times_per_trial_arm(placebo_arm_patient_pop_monthly_param_sets, 
+        generate_individual_patient_TTP_times_per_trial_arm(monthly_mean,
+                                                            monthly_std_dev,
                                                             num_theo_patients_per_trial_arm,
                                                             num_baseline_days_per_patient,
                                                             num_testing_days_per_patient,
@@ -218,7 +189,8 @@ def generate_one_trial_TTP_times(placebo_arm_patient_pop_monthly_param_sets,
                                                             0)
     
     [one_drug_arm_TTP_times, one_drug_arm_observed_array] = \
-        generate_individual_patient_TTP_times_per_trial_arm(drug_arm_patient_pop_monthly_param_sets, 
+        generate_individual_patient_TTP_times_per_trial_arm(monthly_mean,
+                                                            monthly_std_dev, 
                                                             num_theo_patients_per_trial_arm,
                                                             num_baseline_days_per_patient,
                                                             num_testing_days_per_patient,
@@ -233,11 +205,12 @@ def generate_one_trial_TTP_times(placebo_arm_patient_pop_monthly_param_sets,
             one_drug_arm_TTP_times,    one_drug_arm_observed_array   ]
 
 
-def generate_one_trial_analytical_summaries(one_placebo_arm_TTP_times,
-                                            one_placebo_arm_observed_array,
-                                            one_drug_arm_TTP_times,
-                                            one_drug_arm_observed_array,
-                                            tmp_file_name):
+def generate_one_trial_analytical_quantities(one_placebo_arm_TTP_times,
+                                             one_placebo_arm_observed_array,
+                                             one_drug_arm_TTP_times,
+                                             one_drug_arm_observed_array,
+                                             num_theo_patients_per_trial_arm,
+                                             tmp_file_name):
 
     relative_tmp_file_path = tmp_file_name + '.csv'
     TTP_times              = np.append(one_placebo_arm_TTP_times, one_drug_arm_TTP_times)
@@ -258,101 +231,68 @@ def generate_one_trial_analytical_summaries(one_placebo_arm_TTP_times,
     return [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
 
 
-def calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
-                                drug_arm_patient_pop_monthly_param_sets,
-                                num_theo_patients_per_trial_arm,
-                                num_baseline_days_per_patient,
-                                num_testing_days_per_patient,
-                                num_total_days_per_patient,
-                                min_req_base_sz_count,
-                                placebo_mu,
-                                placebo_sigma,
-                                drug_mu,
-                                drug_sigma,
-                                tmp_file_name):
+def generate_one_map_point_analytical_quantities(monthly_mean, 
+                                                 monthly_std_dev,
+                                                 min_req_base_sz_count,
+                                                 num_baseline_days_per_patient,
+                                                 num_testing_days_per_patient,
+                                                 num_total_days_per_patient,
+                                                 num_theo_patients_per_trial_arm,
+                                                 placebo_mu,
+                                                 placebo_sigma,
+                                                 drug_mu,
+                                                 drug_sigma,
+                                                 num_trials):
 
-    [one_placebo_arm_TTP_times, one_placebo_arm_observed_array, 
-     one_drug_arm_TTP_times,    one_drug_arm_observed_array   ] = \
-        generate_one_trial_TTP_times(placebo_arm_patient_pop_monthly_param_sets, 
-                                     drug_arm_patient_pop_monthly_param_sets,
-                                     min_req_base_sz_count,
-                                     num_baseline_days_per_patient,
-                                     num_testing_days_per_patient,
-                                     num_total_days_per_patient,
-                                     num_theo_patients_per_trial_arm,
-                                     placebo_mu,
-                                     placebo_sigma,
-                                     drug_mu,
-                                     drug_sigma)
+    print('\n[monthly mean, monthly standard deviation]: [' + str(monthly_mean) + ', ' + str(monthly_std_dev) + ']')
 
-    TTP_results = logrank_test(one_placebo_arm_TTP_times,
-                               one_drug_arm_TTP_times, 
-                               one_placebo_arm_observed_array, 
-                               one_drug_arm_observed_array)
-    TTP_p_value = TTP_results.p_value
+    if(monthly_std_dev > np.sqrt(monthly_mean)):
 
-    [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm] = \
-        generate_one_trial_analytical_summaries(one_placebo_arm_TTP_times,
-                                                one_placebo_arm_observed_array,
-                                                one_drug_arm_TTP_times,
-                                                one_drug_arm_observed_array,
-                                                tmp_file_name)
+        tmp_file_name = str(monthly_mean) + '_' + str(monthly_std_dev)
 
-    return [TTP_p_value, postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
+        postulated_log_hazard_ratio_array = np.zeros(num_trials)
+        prob_fail_placebo_arm_array       = np.zeros(num_trials)
+        prob_fail_drug_arm_array          = np.zeros(num_trials)
 
+        for trial_index in range(num_trials):
 
-def calculate_empirical_and_analytical_statistical_powers(placebo_arm_patient_pop_monthly_param_sets,
-                                                          drug_arm_patient_pop_monthly_param_sets,
-                                                          num_theo_patients_per_trial_arm,
-                                                          num_baseline_days_per_patient,
-                                                          num_testing_days_per_patient,
-                                                          num_total_days_per_patient,
-                                                          min_req_base_sz_count,
-                                                          placebo_mu,
-                                                          placebo_sigma,
-                                                          drug_mu,
-                                                          drug_sigma,
-                                                          num_trials,
-                                                          alpha):
+            [one_placebo_arm_TTP_times, one_placebo_arm_observed_array, 
+             one_drug_arm_TTP_times,    one_drug_arm_observed_array   ] = \
+                generate_one_trial_TTP_times(monthly_mean, 
+                                             monthly_std_dev,
+                                             min_req_base_sz_count,
+                                             num_baseline_days_per_patient,
+                                             num_testing_days_per_patient,
+                                             num_total_days_per_patient,
+                                             num_theo_patients_per_trial_arm,
+                                             placebo_mu,
+                                             placebo_sigma,
+                                             drug_mu,
+                                             drug_sigma)
 
-    p_value_array = np.zeros(num_trials)
-    plhr_array    = np.zeros(num_trials)
-    prob_fail_placebo_arm_array = np.zeros(num_trials)
-    prob_fail_drug_arm_array = np.zeros(num_trials)
+            [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm] = \
+                generate_one_trial_analytical_quantities(one_placebo_arm_TTP_times,
+                                                         one_placebo_arm_observed_array,
+                                                         one_drug_arm_TTP_times,
+                                                         one_drug_arm_observed_array,
+                                                         num_theo_patients_per_trial_arm,
+                                                         tmp_file_name)
+            
+            postulated_log_hazard_ratio_array[trial_index] = postulated_log_hazard_ratio
+            prob_fail_placebo_arm_array[trial_index]       = prob_fail_placebo_arm
+            prob_fail_drug_arm_array[trial_index]          = prob_fail_drug_arm
 
-    for trial_index in range(num_trials):
-
-        trial_start_time_in_seconds = time.time()
-
-        [p_value_array[trial_index], plhr_array[trial_index], prob_fail_placebo_arm_array[trial_index], prob_fail_drug_arm_array[trial_index]] = \
-            calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
-                                        drug_arm_patient_pop_monthly_param_sets,
-                                        num_theo_patients_per_trial_arm,
-                                        num_baseline_days_per_patient,
-                                        num_testing_days_per_patient,
-                                        num_total_days_per_patient,
-                                        min_req_base_sz_count,
-                                        placebo_mu,
-                                        placebo_sigma,
-                                        drug_mu,
-                                        drug_sigma,
-                                        str(trial_index))
+            print('trial #: ' + str(trial_index + 1))
         
-        trial_stop_time_in_seconds = time.time()
-        trial_runtime_str = str(np.round((trial_stop_time_in_seconds - trial_start_time_in_seconds)/60, 3))
-        print( 'trial #' + str(trial_index + 1) + ', runtime: ' + trial_runtime_str + ' minutes' )
+        average_postulated_log_hazard_ratio = np.mean(postulated_log_hazard_ratio_array)
+        average_prob_fail_placebo_arm       = np.mean(prob_fail_placebo_arm_array)
+        average_prob_fail_drug_arm          = np.mean(prob_fail_drug_arm_array)
+        
+        return [average_postulated_log_hazard_ratio, average_prob_fail_placebo_arm, average_prob_fail_drug_arm]
     
-    emp_stat_power = 100*np.sum(p_value_array < 0.05)/num_trials
-    
-    average_hazard_ratio  = np.exp(np.mean(plhr_array))
-    prob_fail_placebo_arm = np.mean(prob_fail_placebo_arm_array)
-    prob_fail_drug_arm = np.mean(prob_fail_drug_arm_array)
-    command               = ['Rscript', 'calculate_cph_power.R', str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm), 
-                      str(prob_fail_drug_arm), str(prob_fail_placebo_arm), str(average_hazard_ratio), str(alpha)]
-    process        = subprocess.Popen(command, stdout=subprocess.PIPE)
-    ana_stat_power = 100*float(process.communicate()[0].decode().split()[1])
-    
-    return [emp_stat_power, ana_stat_power]
+    else:
+
+        return [np.nan, np.nan, np.nan]
 
 
 if(__name__=='__main__'):
@@ -362,52 +302,55 @@ if(__name__=='__main__'):
     monthly_std_dev_min = 1
     monthly_std_dev_max = 16
 
-    num_theo_patients_per_trial_arm = 153
+    num_theo_patients_per_trial_arm = 150
+    min_req_base_sz_count           = 4
     num_baseline_months_per_patient = 2
     num_testing_months_per_patient  = 3
-    min_req_base_sz_count           = 4
+    num_trials                      = 10
 
     placebo_mu    = 0
     placebo_sigma = 0.05
     drug_mu       = 0.2
     drug_sigma    = 0.05
 
-    num_trials = 100
-    alpha      = 0.05
-
-    placebo_arm_patient_pop_monthly_param_sets = \
-        generate_patient_pop_params(monthly_mean_min,
-                                    monthly_mean_max, 
-                                    monthly_std_dev_min, 
-                                    monthly_std_dev_max, 
-                                    num_theo_patients_per_trial_arm)
-    
-    drug_arm_patient_pop_monthly_param_sets = \
-        generate_patient_pop_params(monthly_mean_min,
-                                    monthly_mean_max, 
-                                    monthly_std_dev_min, 
-                                    monthly_std_dev_max, 
-                                    num_theo_patients_per_trial_arm)
-
     num_baseline_days_per_patient = num_baseline_months_per_patient*28
     num_testing_days_per_patient  = num_testing_months_per_patient*28
     num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
 
-    [emp_stat_power, ana_stat_power] = \
-        calculate_empirical_and_analytical_statistical_powers(placebo_arm_patient_pop_monthly_param_sets,
-                                                              drug_arm_patient_pop_monthly_param_sets,
-                                                              num_theo_patients_per_trial_arm,
-                                                              num_baseline_days_per_patient,
-                                                              num_testing_days_per_patient,
-                                                              num_total_days_per_patient,
-                                                              min_req_base_sz_count,
-                                                              placebo_mu,
-                                                              placebo_sigma,
-                                                              drug_mu,
-                                                              drug_sigma,
-                                                              num_trials,
-                                                              alpha)
-    
-    print(emp_stat_power)
-    print(ana_stat_power)
+    num_monthly_means     = monthly_mean_max - monthly_mean_min + 1
+    num_monthly_std_devs = monthly_std_dev_max - monthly_std_dev_min + 1
+    monthly_mean_array    = np.arange(monthly_mean_min,    monthly_mean_max + 1)
+    monthly_std_dev_array = np.arange(monthly_std_dev_min, monthly_std_dev_max + 1)
+
+    placement_map                     = np.zeros((num_monthly_std_devs, num_monthly_means), dtype=tuple)
+    average_log_hazard_ratio_map      = np.zeros((num_monthly_std_devs, num_monthly_means))
+    average_prob_fail_placebo_arm_map = np.zeros((num_monthly_std_devs, num_monthly_means))
+    average_prob_fail_drug_arm_map    = np.zeros((num_monthly_std_devs, num_monthly_means))
+
+    for monthly_mean in monthly_mean_array:
+        for monthly_std_dev in monthly_std_dev_array:
+
+            [average_postulated_log_hazard_ratio, average_prob_fail_placebo_arm, average_prob_fail_drug_arm] = \
+                generate_one_map_point_analytical_quantities(monthly_mean, 
+                                                             monthly_std_dev,
+                                                             min_req_base_sz_count,
+                                                             num_baseline_days_per_patient,
+                                                             num_testing_days_per_patient,
+                                                             num_total_days_per_patient,
+                                                             num_theo_patients_per_trial_arm,
+                                                             placebo_mu,
+                                                             placebo_sigma,
+                                                             drug_mu,
+                                                             drug_sigma,
+                                                             num_trials)
+           
+            placement_map[monthly_std_dev_max - monthly_std_dev, monthly_mean - monthly_mean_min]             = (monthly_mean, monthly_std_dev)
+            average_log_hazard_ratio_map[monthly_std_dev_max - monthly_std_dev, monthly_mean - monthly_mean_min]      = average_postulated_log_hazard_ratio
+            average_prob_fail_placebo_arm_map[monthly_std_dev_max - monthly_std_dev, monthly_mean - monthly_mean_min] = average_prob_fail_placebo_arm
+            average_prob_fail_drug_arm_map[monthly_std_dev_max - monthly_std_dev, monthly_mean - monthly_mean_min]    = average_prob_fail_drug_arm
+
+    print('\n' + pd.DataFrame(placement_map).to_string()             + '\n\n' + \
+                 pd.DataFrame(100*average_log_hazard_ratio_map).to_string()      + '\n\n' + \
+                 pd.DataFrame(100*average_prob_fail_placebo_arm_map).to_string() + '\n\n' +
+                 pd.DataFrame(100*average_prob_fail_drug_arm_map).to_string()    + '\n' )
 
