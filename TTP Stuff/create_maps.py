@@ -1,6 +1,7 @@
 import numpy as np
 import subprocess
 import os
+import time
 import pandas as pd
 
 def generate_one_trial_arm_of_patient_diaries(monthly_mean,
@@ -256,6 +257,8 @@ def generate_one_map_point_analytical_quantities(monthly_mean,
 
         for trial_index in range(num_trials):
 
+            trial_start_time_in_seconds = time.time()
+
             [one_placebo_arm_TTP_times, one_placebo_arm_observed_array, 
              one_drug_arm_TTP_times,    one_drug_arm_observed_array   ] = \
                 generate_one_trial_TTP_times(monthly_mean, 
@@ -282,7 +285,9 @@ def generate_one_map_point_analytical_quantities(monthly_mean,
             prob_fail_placebo_arm_array[trial_index]       = prob_fail_placebo_arm
             prob_fail_drug_arm_array[trial_index]          = prob_fail_drug_arm
 
-            print('trial #: ' + str(trial_index + 1))
+            trial_total_runtime_in_seconds_str = str(np.round(time.time() - trial_start_time_in_seconds, 2))
+
+            print('trial #: ' + str(trial_index + 1) + ', runtime: ' + trial_total_runtime_in_seconds_str + ' seconds')
         
         average_postulated_log_hazard_ratio = np.mean(postulated_log_hazard_ratio_array)
         average_prob_fail_placebo_arm       = np.mean(prob_fail_placebo_arm_array)
