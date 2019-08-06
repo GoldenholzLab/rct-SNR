@@ -394,19 +394,19 @@ if(__name__=='__main__'):
     num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
 
     [emp_stat_power, ana_stat_power] = \
-        calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_sets,
-                                              drug_arm_patient_pop_monthly_param_sets,
-                                              num_theo_patients_per_trial_arm,
-                                              num_baseline_days_per_patient,
-                                              num_testing_days_per_patient,
-                                              num_total_days_per_patient,
-                                              min_req_base_sz_count,
-                                              placebo_mu,
-                                              placebo_sigma,
-                                              drug_mu,
-                                              drug_sigma,
-                                              num_trials,
-                                              alpha)
+        calculate_empirical_and_analytical_statistical_power(placebo_arm_patient_pop_monthly_param_sets,
+                                                             drug_arm_patient_pop_monthly_param_sets,
+                                                             num_theo_patients_per_trial_arm,
+                                                             num_baseline_days_per_patient,
+                                                             num_testing_days_per_patient,
+                                                             num_total_days_per_patient,
+                                                             min_req_base_sz_count,
+                                                             placebo_mu,
+                                                             placebo_sigma,
+                                                             drug_mu,
+                                                             drug_sigma,
+                                                             num_trials,
+                                                             alpha)
     
     print(emp_stat_power)
     print(ana_stat_power)
