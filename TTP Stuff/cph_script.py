@@ -233,6 +233,31 @@ def generate_one_trial_TTP_times(placebo_arm_patient_pop_monthly_param_sets,
             one_drug_arm_TTP_times,    one_drug_arm_observed_array   ]
 
 
+def generate_one_trial_analytical_summaries(one_placebo_arm_TTP_times,
+                                            one_placebo_arm_observed_array,
+                                            one_drug_arm_TTP_times,
+                                            one_drug_arm_observed_array,
+                                            tmp_file_name):
+
+    relative_tmp_file_path = tmp_file_name + '.csv'
+    TTP_times              = np.append(one_placebo_arm_TTP_times, one_drug_arm_TTP_times)
+    events                 = np.append(one_placebo_arm_observed_array, one_drug_arm_observed_array)
+    treatment_arms_str     = np.append( np.array(num_theo_patients_per_trial_arm*['C']) , np.array(num_theo_patients_per_trial_arm*['E']) )
+    treatment_arms         = np.int_(treatment_arms_str == "C")
+
+    data = np.array([TTP_times, events, treatment_arms, treatment_arms_str]).transpose()
+    pd.DataFrame(data, columns=['TTP_times', 'events', 'treatment_arms', 'treatment_arms_str']).to_csv(relative_tmp_file_path)
+    command = ['Rscript', 'estimate_log_hazard_ratio.R', relative_tmp_file_path]
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
+    postulated_log_hazard_ratio = float(process.communicate()[0].decode().split()[1])
+    os.remove(relative_tmp_file_path)
+
+    prob_fail_placebo_arm = np.sum(one_placebo_arm_observed_array == True)/num_theo_patients_per_trial_arm
+    prob_fail_drug_arm    = np.sum(one_drug_arm_observed_array == True)/num_theo_patients_per_trial_arm
+
+    return [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
+
+
 def calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
                                 drug_arm_patient_pop_monthly_param_sets,
                                 num_theo_patients_per_trial_arm,
@@ -266,45 +291,29 @@ def calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
                                one_drug_arm_observed_array)
     TTP_p_value = TTP_results.p_value
 
-    #-----------------------------------------------------------------------------------------------------------------------------------------#
-    #-----------------------------------------------------------------------------------------------------------------------------------------#
-    #-----------------------------------------------------------------------------------------------------------------------------------------#
-
-    relative_tmp_file_path = tmp_file_name + '.csv'
-    TTP_times              = np.append(one_placebo_arm_TTP_times, one_drug_arm_TTP_times)
-    events                 = np.append(one_placebo_arm_observed_array, one_drug_arm_observed_array)
-    treatment_arms_str     = np.append( np.array(num_theo_patients_per_trial_arm*['C']) , np.array(num_theo_patients_per_trial_arm*['E']) )
-    treatment_arms         = np.int_(treatment_arms_str == "C")
-
-    data = np.array([TTP_times, events, treatment_arms, treatment_arms_str]).transpose()
-    pd.DataFrame(data, columns=['TTP_times', 'events', 'treatment_arms', 'treatment_arms_str']).to_csv(relative_tmp_file_path)
-    process = subprocess.Popen(['Rscript', 'calculate_cph_power.R', relative_tmp_file_path, str(alpha), str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm)], stdout=subprocess.PIPE)
-    postulated_log_hazard_ratio = float(process.communicate()[0].decode().split()[1])
-    os.remove(relative_tmp_file_path)
-
-    prob_fail_placebo_arm = np.sum(one_placebo_arm_observed_array == True)/num_theo_patients_per_trial_arm
-    prob_fail_drug_arm    = np.exp(postulated_log_hazard_ratio)*np.sum(one_drug_arm_observed_array == True)/num_theo_patients_per_trial_arm
-
-    #-----------------------------------------------------------------------------------------------------------------------------------------#
-    #-----------------------------------------------------------------------------------------------------------------------------------------#
-    #-----------------------------------------------------------------------------------------------------------------------------------------#
+    [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm] = \
+        generate_one_trial_analytical_summaries(one_placebo_arm_TTP_times,
+                                                one_placebo_arm_observed_array,
+                                                one_drug_arm_TTP_times,
+                                                one_drug_arm_observed_array,
+                                                tmp_file_name)
 
     return [TTP_p_value, postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
 
 
-def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_sets,
-                                          drug_arm_patient_pop_monthly_param_sets,
-                                          num_theo_patients_per_trial_arm,
-                                          num_baseline_days_per_patient,
-                                          num_testing_days_per_patient,
-                                          num_total_days_per_patient,
-                                          min_req_base_sz_count,
-                                          placebo_mu,
-                                          placebo_sigma,
-                                          drug_mu,
-                                          drug_sigma,
-                                          num_trials,
-                                          alpha):
+def calculate_empirical_and_analytical_statistical_powers(placebo_arm_patient_pop_monthly_param_sets,
+                                                          drug_arm_patient_pop_monthly_param_sets,
+                                                          num_theo_patients_per_trial_arm,
+                                                          num_baseline_days_per_patient,
+                                                          num_testing_days_per_patient,
+                                                          num_total_days_per_patient,
+                                                          min_req_base_sz_count,
+                                                          placebo_mu,
+                                                          placebo_sigma,
+                                                          drug_mu,
+                                                          drug_sigma,
+                                                          num_trials,
+                                                          alpha):
 
     p_value_array = np.zeros(num_trials)
     plhr_array    = np.zeros(num_trials)
@@ -334,37 +343,24 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
         print( 'trial #' + str(trial_index + 1) + ', runtime: ' + trial_runtime_str + ' minutes' )
     
     emp_stat_power = 100*np.sum(p_value_array < 0.05)/num_trials
-    plhr_mean = np.mean(plhr_array)
+    
+    average_hazard_ratio  = np.exp(np.mean(plhr_array))
     prob_fail_placebo_arm = np.mean(prob_fail_placebo_arm_array)
     prob_fail_drug_arm = np.mean(prob_fail_drug_arm_array)
-
-    #--------------------------------------------------------------------------------------------------------------------------#
-    #--------------------------------------------------------------------------------------------------------------------------#
-    #--------------------------------------------------------------------------------------------------------------------------#
-
-    print(num_theo_patients_per_trial_arm)
-    print(100*prob_fail_drug_arm)
-    print(100*prob_fail_placebo_arm)
-    print(plhr_mean)
-    print(alpha)
-
-    command        = ['Rscript', 'calculate_cph_power_2.R', str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm), str(prob_fail_drug_arm), str(prob_fail_placebo_arm), str(plhr_mean), str(alpha)]
+    command               = ['Rscript', 'calculate_cph_power.R', str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm), 
+                      str(prob_fail_drug_arm), str(prob_fail_placebo_arm), str(average_hazard_ratio), str(alpha)]
     process        = subprocess.Popen(command, stdout=subprocess.PIPE)
     ana_stat_power = 100*float(process.communicate()[0].decode().split()[1])
-
-    #--------------------------------------------------------------------------------------------------------------------------#
-    #--------------------------------------------------------------------------------------------------------------------------#
-    #--------------------------------------------------------------------------------------------------------------------------#
     
     return [emp_stat_power, ana_stat_power]
 
 
 if(__name__=='__main__'):
 
-    monthly_mean_min    = 4
+    monthly_mean_min    = 1
     monthly_mean_max    = 16
     monthly_std_dev_min = 1
-    monthly_std_dev_max = 8
+    monthly_std_dev_max = 16
 
     num_theo_patients_per_trial_arm = 153
     num_baseline_months_per_patient = 2
@@ -415,97 +411,3 @@ if(__name__=='__main__'):
     print(emp_stat_power)
     print(ana_stat_power)
 
-
-'''
-def estimate_analytical_power(placebo_TTP_times,
-                   placebo_events,
-                   drug_TTP_times,
-                   drug_events,
-                   alpha,
-                   num_placebo_patients,
-                   num_drug_patients,
-                   tmp_file_name):
-
-    relative_tmp_file_path = tmp_file_name + '.csv'
-    TTP_times              = np.append(placebo_TTP_times, drug_TTP_times)
-    events                 = np.append(placebo_events, drug_events)
-    treatment_arms_str     = np.append( np.array(num_placebo_patients*['C']) , np.array(num_drug_patients*['E']) )
-    treatment_arms         = np.int_(treatment_arms_str == "C")
-
-    data = np.array([TTP_times, events, treatment_arms, treatment_arms_str]).transpose()
-    pd.DataFrame(data, columns=['TTP_times', 'events', 'treatment_arms', 'treatment_arms_str']).to_csv(relative_tmp_file_path)
-    process = subprocess.Popen(['Rscript', 'calculate_cph_power.R', relative_tmp_file_path, str(alpha), str(num_placebo_patients), str(num_drug_patients)], stdout=subprocess.PIPE)
-    values = process.communicate()[0].decode().split()
-    os.remove(relative_tmp_file_path)
-
-    RR    = float(values[1])
-    pC    = float(values[3])
-    pE    = float(values[5])
-    power = float(values[7])
-
-    return [RR, pC, pE, power]
-
-
-def estimate_analytical_power_2(placebo_TTP_times,
-                                 placebo_events,
-                                 drug_TTP_times,
-                                 drug_events,
-                                 tmp_file_name,
-                                 num_placebo_patients,
-                                 num_drug_patients,
-                                 alpha):
-
-    relative_tmp_file_path = tmp_file_name + '.csv'
-    TTP_times              = np.append(placebo_TTP_times, drug_TTP_times)
-    events                 = np.append(placebo_events, drug_events)
-    treatment_arms_str     = np.append( np.array(num_placebo_patients*['C']) , np.array(num_drug_patients*['E']) )
-    treatment_arms         = np.int_(treatment_arms_str == "C")
-
-    data = np.array([TTP_times, events, treatment_arms]).transpose()
-    pd.DataFrame(data, columns=['TTP_times', 'events', 'treatment_arms']).to_csv(relative_tmp_file_path)
-    process = subprocess.Popen(['Rscript', 'estimate_hazard_ratio.R', relative_tmp_file_path], stdout=subprocess.PIPE)
-    postulated_hazard_ratio = float(process.communicate()[0].decode().split()[1])
-    os.remove(relative_tmp_file_path)
-
-    prob_fail_placebo = np.sum(placebo_events == True)/num_placebo_patients
-    prob_fail_drug    = postulated_hazard_ratio*np.sum(drug_events    == True)/num_drug_patients   # this line is very suspicious
-
-    command = ['Rscript', 'calculate_cph_power_2.R', str(num_drug_patients), str(num_placebo_patients), str(prob_fail_drug), str(prob_fail_placebo), str(postulated_hazard_ratio), str(alpha)]
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    power   = float(process.communicate()[0].decode().split()[1])
-    
-    return [postulated_hazard_ratio, 100*prob_fail_placebo, 100*prob_fail_drug, power]
-
-num_placebo_patients = 6
-num_drug_patients    = 6
-alpha                = 0.05
-num_testing_days     = 84
-tmp_file_name        = 'tmp'
-placebo_TTP_times    = np.array([  21,   15,   45,    67,    85,    4])
-placebo_events       = np.array([True, True, True,  True, False, True])
-drug_TTP_times       = np.array([  24,   56,   78,    85,    23,    8])
-drug_events          = np.array([True, True, True, False,  True, True])
-
-
-[RR, pC, pE, power] = \
-    estimate_analytical_power(placebo_TTP_times,
-                   placebo_events,
-                   drug_TTP_times,
-                   drug_events,
-                   alpha,
-                   num_placebo_patients,
-                   num_drug_patients,
-                   tmp_file_name)
-
-[postulated_hazard_ratio, prob_fail_placebo, prob_fail_drug, power_2] = \
-    estimate_analytical_power_2(placebo_TTP_times,
-                     placebo_events,
-                     drug_TTP_times,
-                     drug_events,
-                     num_placebo_patients,
-                     num_drug_patients,
-                     alpha)
-
-print([postulated_hazard_ratio, np.round(prob_fail_placebo, 5), np.round(prob_fail_drug, 5), power_2])
-print([RR, pC, pE, power])
-'''
