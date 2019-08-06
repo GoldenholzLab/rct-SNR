@@ -238,9 +238,8 @@ def generate_one_trial_analytical_quantities(one_placebo_arm_TTP_times,
 def generate_one_map_point_analytical_quantities(monthly_mean, 
                                                  monthly_std_dev,
                                                  min_req_base_sz_count,
-                                                 num_baseline_days_per_patient,
-                                                 num_testing_days_per_patient,
-                                                 num_total_days_per_patient,
+                                                 num_baseline_months_per_patient,
+                                                 num_testing_months_per_patient,
                                                  num_theo_patients_per_trial_arm,
                                                  placebo_mu,
                                                  placebo_sigma,
@@ -249,6 +248,10 @@ def generate_one_map_point_analytical_quantities(monthly_mean,
                                                  num_trials):
 
     tmp_file_name = str(monthly_mean) + '_' + str(monthly_std_dev)
+
+    num_baseline_days_per_patient = num_baseline_months_per_patient*28
+    num_testing_days_per_patient  = num_testing_months_per_patient*28
+    num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_months_per_patient
 
     postulated_log_hazard_ratio_array = np.zeros(num_trials)
     prob_fail_placebo_arm_array       = np.zeros(num_trials)
@@ -308,7 +311,7 @@ if(__name__=='__main__'):
     drug_mu                         = float(sys.argv[9])
     drug_sigma                      = float(sys.argv[10])
     num_trials                      =   int(sys.argv[11])
-
+    
     [average_postulated_log_hazard_ratio, average_prob_fail_placebo_arm, average_prob_fail_drug_arm] = \
         generate_one_map_point_analytical_quantities(monthly_mean, 
                                                      monthly_std_dev,
