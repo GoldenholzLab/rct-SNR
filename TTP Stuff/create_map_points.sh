@@ -1,12 +1,20 @@
+: '
+#!/usr/bin/bash
 
+#SBATCH -p short
+#SBATCH -t 0-00:05
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -e jmr95_%j.err
+#SBATCH -o jmr95_%j.out
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jromero5@bidmc.harvard.edu
+'
 
-monthly_mean_min=4
+monthly_mean_min=1
 monthly_mean_max=16
 monthly_std_dev_min=1
-monthly_std_dev_max=8
-
-monthly_mean=6
-monthly_std_dev=6
+monthly_std_dev_max=16
 
 min_req_base_sz_count=4
 num_baseline_months_per_patient=2
