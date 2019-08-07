@@ -9,12 +9,12 @@
 #SBATCH -o jmr95_%j.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
-'
 
 monthly_mean_min=1
 monthly_mean_max=16
 monthly_std_dev_min=1
 monthly_std_dev_max=16
+'
 
 min_req_base_sz_count=4
 num_baseline_months_per_patient=2

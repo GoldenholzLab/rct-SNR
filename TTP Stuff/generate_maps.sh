@@ -10,12 +10,12 @@
 #SBATCH -o jmr95_%j.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
-'
 
 module load gcc/6.2.0
 module load conda2/4.2.13
 module load python/3.6.0
 source activate main_env
+''
 
 monthly_mean_min=4
 monthly_mean_max=16
