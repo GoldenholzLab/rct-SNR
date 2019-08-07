@@ -298,6 +298,21 @@ def generate_one_map_point_analytical_quantities(monthly_mean,
     return [average_postulated_log_hazard_ratio, average_prob_fail_placebo_arm, average_prob_fail_drug_arm]
 
 
+def store_results(monthly_mean,
+                  monthly_std_dev,
+                  average_postulated_log_hazard_ratio, 
+                  average_prob_fail_placebo_arm, 
+                  average_prob_fail_drug_arm,
+                  folder):
+
+    json_file_name = str(monthly_mean) + '_' + str(monthly_std_dev)
+    json_file_path = folder + '/' + json_file_name + '.json'
+    if ( not os.path.isdir(folder) ):
+        os.makedirs(folder)
+    with open(json_file_path, 'w+') as json_file:
+        json.dump([average_postulated_log_hazard_ratio, average_prob_fail_placebo_arm, average_prob_fail_drug_arm], json_file)
+
+
 if(__name__=='__main__'):
 
     monthly_mean                    =   int(sys.argv[1])
@@ -311,6 +326,7 @@ if(__name__=='__main__'):
     drug_mu                         = float(sys.argv[9])
     drug_sigma                      = float(sys.argv[10])
     num_trials                      =   int(sys.argv[11])
+    folder                          =       sys.argv[12]
     
     print([monthly_mean, monthly_std_dev])
 
@@ -326,181 +342,13 @@ if(__name__=='__main__'):
                                                      drug_mu,
                                                      drug_sigma,
                                                      num_trials)
-    print(np.round(np.array([average_postulated_log_hazard_ratio, 100*average_prob_fail_placebo_arm, 100*average_prob_fail_drug_arm]), 3))
 
+    store_results(monthly_mean,
+                  monthly_std_dev,
+                  average_postulated_log_hazard_ratio, 
+                  average_prob_fail_placebo_arm, 
+                  average_prob_fail_drug_arm,
+                  folder)
 
-'''
-def generate_one_map_point_analytical_quantities(monthly_mean, 
-                                                 monthly_std_dev,
-                                                 min_req_base_sz_count,
-                                                 num_baseline_days_per_patient,
-                                                 num_testing_days_per_patient,
-                                                 num_total_days_per_patient,
-                                                 num_theo_patients_per_trial_arm,
-                                                 placebo_mu,
-                                                 placebo_sigma,
-                                                 drug_mu,
-                                                 drug_sigma,
-                                                 num_trials):
-
-    print('\n[monthly mean, monthly standard deviation]: [' + str(monthly_mean) + ', ' + str(monthly_std_dev) + ']')
-
-    if(monthly_std_dev > np.sqrt(monthly_mean)):
-
-        tmp_file_name = str(monthly_mean) + '_' + str(monthly_std_dev)
-
-        postulated_log_hazard_ratio_array = np.zeros(num_trials)
-        prob_fail_placebo_arm_array       = np.zeros(num_trials)
-        prob_fail_drug_arm_array          = np.zeros(num_trials)
-
-        for trial_index in range(num_trials):
-
-            trial_start_time_in_seconds = time.time()
-
-            [one_placebo_arm_TTP_times, one_placebo_arm_observed_array, 
-             one_drug_arm_TTP_times,    one_drug_arm_observed_array   ] = \
-                generate_one_trial_TTP_times(monthly_mean, 
-                                             monthly_std_dev,
-                                             min_req_base_sz_count,
-                                             num_baseline_days_per_patient,
-                                             num_testing_days_per_patient,
-                                             num_total_days_per_patient,
-                                             num_theo_patients_per_trial_arm,
-                                             placebo_mu,
-                                             placebo_sigma,
-                                             drug_mu,
-                                             drug_sigma)
-
-            [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm] = \
-                generate_one_trial_analytical_quantities(one_placebo_arm_TTP_times,
-                                                         one_placebo_arm_observed_array,
-                                                         one_drug_arm_TTP_times,
-                                                         one_drug_arm_observed_array,
-                                                         num_theo_patients_per_trial_arm,
-                                                         tmp_file_name)
-            
-            postulated_log_hazard_ratio_array[trial_index] = postulated_log_hazard_ratio
-            prob_fail_placebo_arm_array[trial_index]       = prob_fail_placebo_arm
-            prob_fail_drug_arm_array[trial_index]          = prob_fail_drug_arm
-
-            trial_total_runtime_in_seconds_str = str(np.round(time.time() - trial_start_time_in_seconds, 2))
-
-            print('trial #: ' + str(trial_index + 1) + ', runtime: ' + trial_total_runtime_in_seconds_str + ' seconds')
-        
-        average_postulated_log_hazard_ratio = np.mean(postulated_log_hazard_ratio_array)
-        average_prob_fail_placebo_arm       = np.mean(prob_fail_placebo_arm_array)
-        average_prob_fail_drug_arm          = np.mean(prob_fail_drug_arm_array)
-        
-        return [average_postulated_log_hazard_ratio, average_prob_fail_placebo_arm, average_prob_fail_drug_arm]
-    
-    else:
-
-        return [np.nan, np.nan, np.nan]
-
-
-def generate_maps(monthly_mean_min,
-                  monthly_mean_max,
-                  monthly_std_dev_min,
-                  monthly_std_dev_max,
-                  num_baseline_months_per_patient,
-                  num_testing_months_per_patient,
-                  min_req_base_sz_count,
-                  num_theo_patients_per_trial_arm,
-                  placebo_mu,
-                  placebo_sigma,
-                  drug_mu,
-                  drug_sigma,
-                  num_trials):
-
-    num_baseline_days_per_patient = num_baseline_months_per_patient*28
-    num_testing_days_per_patient  = num_testing_months_per_patient*28
-    num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
-
-    num_monthly_means     = monthly_mean_max - monthly_mean_min + 1
-    num_monthly_std_devs = monthly_std_dev_max - monthly_std_dev_min + 1
-    monthly_mean_array    = np.arange(monthly_mean_min,    monthly_mean_max + 1)
-    monthly_std_dev_array = np.arange(monthly_std_dev_min, monthly_std_dev_max + 1)
-    
-    average_log_hazard_ratio_map      = np.zeros((num_monthly_std_devs, num_monthly_means))
-    average_prob_fail_placebo_arm_map = np.zeros((num_monthly_std_devs, num_monthly_means))
-    average_prob_fail_drug_arm_map    = np.zeros((num_monthly_std_devs, num_monthly_means))
-
-    for monthly_mean in monthly_mean_array:
-        for monthly_std_dev in monthly_std_dev_array:
-
-            [average_postulated_log_hazard_ratio, average_prob_fail_placebo_arm, average_prob_fail_drug_arm] = \
-                generate_one_map_point_analytical_quantities(monthly_mean, 
-                                                             monthly_std_dev,
-                                                             min_req_base_sz_count,
-                                                             num_baseline_days_per_patient,
-                                                             num_testing_days_per_patient,
-                                                             num_total_days_per_patient,
-                                                             num_theo_patients_per_trial_arm,
-                                                             placebo_mu,
-                                                             placebo_sigma,
-                                                             drug_mu,
-                                                             drug_sigma,
-                                                             num_trials)
-           
-            average_log_hazard_ratio_map[monthly_std_dev_max - monthly_std_dev, monthly_mean - monthly_mean_min]      = average_postulated_log_hazard_ratio
-            average_prob_fail_placebo_arm_map[monthly_std_dev_max - monthly_std_dev, monthly_mean - monthly_mean_min] = average_prob_fail_placebo_arm
-            average_prob_fail_drug_arm_map[monthly_std_dev_max - monthly_std_dev, monthly_mean - monthly_mean_min]    = average_prob_fail_drug_arm
-    
-    return [average_log_hazard_ratio_map, average_prob_fail_placebo_arm_map, average_prob_fail_drug_arm_map]
-
-
-if(__name__=='__main__'):
-
-    monthly_mean_min    = 6
-    monthly_mean_max    = 8
-    monthly_std_dev_min = 6
-    monthly_std_dev_max = 8
-
-    num_theo_patients_per_trial_arm = 150
-    min_req_base_sz_count           = 4
-    num_baseline_months_per_patient = 2
-    num_testing_months_per_patient  = 3
-    num_trials                      = 2
-
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
-
-    average_log_hazard_ratio_map_file_name      = 'average_log_hazard_ratio_map_file_name'
-    average_prob_fail_placebo_arm_map_file_name = 'average_prob_fail_placebo_arm_map'
-    average_prob_fail_drug_arm_map_file_name    = 'average_prob_fail_drug_arm_map'
-    folder                                      = '/Users/juanromero/Documents/Python_3_Files/useless_folder'
-
-    [average_log_hazard_ratio_map, average_prob_fail_placebo_arm_map, average_prob_fail_drug_arm_map] = \
-        generate_maps(monthly_mean_min,
-                      monthly_mean_max,
-                      monthly_std_dev_min,
-                      monthly_std_dev_max,
-                      num_baseline_months_per_patient,
-                      num_testing_months_per_patient,
-                      min_req_base_sz_count,
-                      num_theo_patients_per_trial_arm,
-                      placebo_mu,
-                      placebo_sigma,
-                      drug_mu,
-                      drug_sigma,
-                      num_trials)
-
-    if( not os.path.isdir(folder) ):
-        os.makedirs(folder)
-
-    with open(folder + '/' + average_log_hazard_ratio_map_file_name, 'w+') as json_file:
-        json.dump(average_log_hazard_ratio_map.tolist(), json_file)
-    
-    with open(folder + '/' + average_prob_fail_placebo_arm_map_file_name, 'w+') as json_file:
-        json.dump(average_prob_fail_placebo_arm_map.tolist(), json_file)
-
-    with open(folder + '/' + average_prob_fail_drug_arm_map_file_name, 'w+') as json_file:
-        json.dump(average_prob_fail_drug_arm_map.tolist(), json_file)
-
-    print('\n' + pd.DataFrame(average_log_hazard_ratio_map).to_string()          + '\n\n' + \
-                 pd.DataFrame(100*average_prob_fail_placebo_arm_map).to_string() + '\n\n' + \
-                 pd.DataFrame(100*average_prob_fail_drug_arm_map).to_string()    + '\n' )
-'''
+    print(str(np.round(np.array([average_postulated_log_hazard_ratio, 100*average_prob_fail_placebo_arm, 100*average_prob_fail_drug_arm]), 3)) + '\n')
     
