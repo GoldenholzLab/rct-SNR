@@ -27,7 +27,7 @@ drug_mu=0.2
 drug_sigma=0.05
 
 num_trials=2
-folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
+folder='/n/scratch2/jmr95/test_maps_2/cph_power_analysis_parameter_maps'
 
 inputs[3]=$min_req_base_sz_count
 inputs[4]=$num_baseline_months_per_patient
