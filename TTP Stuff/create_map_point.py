@@ -251,7 +251,7 @@ def generate_one_map_point_analytical_quantities(monthly_mean,
 
     num_baseline_days_per_patient = num_baseline_months_per_patient*28
     num_testing_days_per_patient  = num_testing_months_per_patient*28
-    num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_months_per_patient
+    num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
 
     postulated_log_hazard_ratio_array = np.zeros(num_trials)
     prob_fail_placebo_arm_array       = np.zeros(num_trials)
@@ -312,6 +312,8 @@ if(__name__=='__main__'):
     drug_sigma                      = float(sys.argv[10])
     num_trials                      =   int(sys.argv[11])
     
+    print([monthly_mean, monthly_std_dev])
+
     [average_postulated_log_hazard_ratio, average_prob_fail_placebo_arm, average_prob_fail_drug_arm] = \
         generate_one_map_point_analytical_quantities(monthly_mean, 
                                                      monthly_std_dev,
@@ -324,6 +326,7 @@ if(__name__=='__main__'):
                                                      drug_mu,
                                                      drug_sigma,
                                                      num_trials)
+    print(np.round(np.array([average_postulated_log_hazard_ratio, 100*average_prob_fail_placebo_arm, 100*average_prob_fail_drug_arm]), 3))
 
 
 '''
