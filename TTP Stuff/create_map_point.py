@@ -225,23 +225,8 @@ def generate_one_trial_analytical_quantities(one_placebo_arm_TTP_times,
     data = np.array([TTP_times, events, treatment_arms, treatment_arms_str]).transpose()
     pd.DataFrame(data, columns=['TTP_times', 'events', 'treatment_arms', 'treatment_arms_str']).to_csv(relative_tmp_file_path)
     command = ['Rscript', 'estimate_log_hazard_ratio.R', relative_tmp_file_path]
-    #process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    #postulated_log_hazard_ratio = float(process.communicate()[0].decode().split()[1])
-
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    print(process.communicate())
-
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    print(process.communicate()[0])
-
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    print(process.communicate()[0].decode())
-
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    print(process.communicate()[0].decode().split())
-
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    print(process.communicate()[0].decode().split()[1])
+    postulated_log_hazard_ratio = float(process.communicate()[0].decode().split()[1])
 
     os.remove(relative_tmp_file_path)
 
