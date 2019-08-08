@@ -29,4 +29,4 @@ inputs[10]=${10}
 inputs[11]=${11}
 inputs[12]=${12}
 
-python create_map_point.py ${inputs[@]}
+python -u create_map_point.py ${inputs[@]}

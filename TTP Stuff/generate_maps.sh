@@ -30,4 +30,4 @@ inputs[3]=$monthly_std_dev_min
 inputs[4]=$monthly_std_dev_max
 inputs[5]=$folder
 
-python generate_maps.py ${inputs[@]}
+python -u generate_maps.py ${inputs[@]}
