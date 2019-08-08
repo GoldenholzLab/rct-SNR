@@ -26,7 +26,7 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=2
+num_trials=10
 folder='/n/scratch2/jmr95/test_maps_2/cph_power_analysis_parameter_maps'
 #folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
 
