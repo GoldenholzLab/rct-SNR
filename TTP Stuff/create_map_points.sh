@@ -9,7 +9,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
-monthly_mean_min=1
+monthly_mean_min=2
 monthly_mean_max=16
 monthly_std_dev_min=1
 monthly_std_dev_max=16
@@ -25,8 +25,8 @@ drug_mu=0.2
 drug_sigma=0.05
 
 num_trials=1000
-folder='/n/scratch2/jmr95/test_maps_2/cph_power_analysis_parameter_maps'
-#folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
+#folder='/n/scratch2/jmr95/cph_power_analysis_parameter_maps'
+folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
 
 inputs[3]=$min_req_base_sz_count
 inputs[4]=$num_baseline_months_per_patient
@@ -51,9 +51,11 @@ do
             inputs[2]=$monthly_std_dev
 
             sbatch create_map_point_wrapper.sh ${inputs[@]}
+            #bash create_map_point_wrapper.sh ${inputs[@]}
         else
 
             sbatch create_null_map_point_wrapper.sh $monthly_mean $monthly_std_dev $folder
+            #bash create_null_map_point_wrapper.sh $monthly_mean $monthly_std_dev $folder
         fi
     done
 done

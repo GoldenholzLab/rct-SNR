@@ -2,7 +2,7 @@
 
 #SBATCH -p short
 #SBATCH --mem=10G
-#SBATCH -t 0-02:15
+#SBATCH -t 0-01:15
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
@@ -29,4 +29,5 @@ inputs[10]=${10}
 inputs[11]=${11}
 inputs[12]=${12}
 
-python -u create_map_point.py ${inputs[@]}
+srun -c 1 python -u create_map_point.py ${inputs[@]}
+#python -u create_map_point.py ${inputs[@]}

@@ -20,8 +20,8 @@ monthly_mean_max=16
 monthly_std_dev_min=1
 monthly_std_dev_max=16
 
-#folder='/n/scratch2/jmr95/test_maps_2/cph_power_analysis_parameter_maps'
-folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
+folder='/n/scratch2/jmr95/test_maps_2/cph_power_analysis_parameter_maps'
+#folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
 
 
 inputs[1]=$monthly_mean_min
@@ -30,4 +30,5 @@ inputs[3]=$monthly_std_dev_min
 inputs[4]=$monthly_std_dev_max
 inputs[5]=$folder
 
-python -u generate_maps.py ${inputs[@]}
+srun -c 1 python -u generate_maps.py ${inputs[@]}
+#python -u generate_maps.py ${inputs[@]}

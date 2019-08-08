@@ -18,4 +18,5 @@ inputs[1]=$1
 inputs[2]=$2
 inputs[3]=$3
 
-python -u create_null_map_point.py ${inputs[@]}
+srun -c 1 python -u create_null_map_point.py ${inputs[@]}
+#python -u create_null_map_point.py ${inputs[@]}
