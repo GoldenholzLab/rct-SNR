@@ -50,10 +50,10 @@ do
             inputs[1]=$monthly_mean
             inputs[2]=$monthly_std_dev
 
-            sbatch create_map_point_wrapper.sh ${inputs[@]} -u
+            sbatch create_map_point_wrapper.sh ${inputs[@]}
         else
 
-            sbatch create_null_map_point_wrapper.sh $monthly_mean $monthly_std_dev $folder -u
+            sbatch create_null_map_point_wrapper.sh $monthly_mean $monthly_std_dev $folder
         fi
     done
 done
