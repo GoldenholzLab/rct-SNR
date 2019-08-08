@@ -14,7 +14,7 @@ module load conda2/4.2.13
 module load python/3.6.0
 source activate main_env
 
-num_stat_power_estimates=10
+num_stat_power_estimates=1000
 folder='/n/scratch2/jmr95/fisher_exact_analysis_question'
 
 srun -c 1 python RMSE.py $num_stat_power_estimates $folder
