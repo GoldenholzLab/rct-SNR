@@ -24,7 +24,7 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=10
+num_trials=1000
 folder='/n/scratch2/jmr95/test_maps_2/cph_power_analysis_parameter_maps'
 #folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
 
@@ -50,10 +50,10 @@ do
             inputs[1]=$monthly_mean
             inputs[2]=$monthly_std_dev
 
-            sbatch create_map_point_wrapper.sh ${inputs[@]}
+            sbatch create_map_point_wrapper.sh ${inputs[@]} -u
         else
 
-            sbatch create_null_map_point_wrapper.sh $monthly_mean $monthly_std_dev $folder
+            sbatch create_null_map_point_wrapper.sh $monthly_mean $monthly_std_dev $folder -u
         fi
     done
 done
