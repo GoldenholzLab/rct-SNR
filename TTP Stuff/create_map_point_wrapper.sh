@@ -1,9 +1,8 @@
-: '
 #!/usr/bin/bash
 
 #SBATCH -p short
 #SBATCH --mem=10G
-#SBATCH -t 0-04:00
+#SBATCH -t 0-02:15
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
@@ -16,7 +15,6 @@ module load conda2/4.2.13
 module load python/3.6.0
 module load R/3.5.1
 source activate main_env
-'
 
 inputs[1]=$1
 inputs[2]=$2

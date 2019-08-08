@@ -1,4 +1,3 @@
-: '
 #!/usr/bin/bash
 
 #SBATCH -p short
@@ -15,7 +14,6 @@ module load gcc/6.2.0
 module load conda2/4.2.13
 module load python/3.6.0
 source activate main_env
-'
 
 monthly_mean_min=1
 monthly_mean_max=16

@@ -1,4 +1,3 @@
-: '
 #!/usr/bin/bash
 
 #SBATCH -p short
@@ -9,7 +8,6 @@
 #SBATCH -o jmr95_%j.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
-'
 
 monthly_mean_min=1
 monthly_mean_max=16
