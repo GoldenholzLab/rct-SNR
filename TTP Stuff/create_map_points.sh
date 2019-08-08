@@ -9,8 +9,8 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
-monthly_mean_min=2
-monthly_mean_max=16
+monthly_mean_min=1
+monthly_mean_max=1
 monthly_std_dev_min=1
 monthly_std_dev_max=16
 
