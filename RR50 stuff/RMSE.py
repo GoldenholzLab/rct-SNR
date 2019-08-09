@@ -15,10 +15,11 @@ if(__name__=='__main__'):
 
         power_comp_file_path = folder + '/power_comparison_' + str(stat_power_estimate_index + 1) + '.txt'
 
-        with open(power_comp_file_path, 'r') as text_file:
-            [fisher_exact_power_str, emp_stat_power_str] = text_file.read().split(', ')
-            fisher_exact_stat_power_list.append(float(fisher_exact_power_str))
-            emp_stat_power_list.append(float(emp_stat_power_str))
+        if( os.path.isfile(power_comp_file_path) ):
+            with open(power_comp_file_path, 'r') as text_file:
+                [fisher_exact_power_str, emp_stat_power_str] = text_file.read().split(', ')
+                fisher_exact_stat_power_list.append(float(fisher_exact_power_str))
+                emp_stat_power_list.append(float(emp_stat_power_str))
     
     fisher_exact_stat_power_array = np.array(fisher_exact_stat_power_list)
     emp_stat_power_array          = np.array(emp_stat_power_list)
