@@ -2,6 +2,7 @@ import os
 import json
 import numpy as np
 import sys
+import matplotlib.pyplot as plt
 
 if(__name__=='__main__'):
 
@@ -23,8 +24,12 @@ if(__name__=='__main__'):
     
     fisher_exact_stat_power_array = np.array(fisher_exact_stat_power_list)
     emp_stat_power_array          = np.array(emp_stat_power_list)
+    error_array                   = emp_stat_power_array - fisher_exact_stat_power_array
 
-    stat_power_RMSE_str = str(np.round(np.sqrt(np.mean(np.power(emp_stat_power_array - fisher_exact_stat_power_array, 2))), 3))
+    stat_power_RMSE_str = str(np.round(np.sqrt(np.mean(np.power(error_array, 2))), 3))
     with open('RMSE.txt', 'w+') as text_file:
         text_file.write(stat_power_RMSE_str)
     
+    plt.figure()
+    plt.hist(error_array, bins=50, density=True)
+    plt.savefig('histogram_of_statistical_power_estimate_errors.png')
