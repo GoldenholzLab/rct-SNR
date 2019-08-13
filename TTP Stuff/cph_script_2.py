@@ -420,7 +420,7 @@ def calculate_analytical_statistical_powers(monthly_mean_min,
 
     return ana_stat_power
 
-'''
+
 if(__name__=='__main__'):
 
     monthly_mean_min    = 1
@@ -486,4 +486,4 @@ if(__name__=='__main__'):
 
     print(emp_stat_power)
     print(ana_stat_power)
-'''
+
