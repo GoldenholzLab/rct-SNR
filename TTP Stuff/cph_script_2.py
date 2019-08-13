@@ -341,15 +341,14 @@ def get_patient_pop_monthly_param_hist(monthly_mean_min,
     return patient_pop_monthly_param_hist
 
 
-def calculate_analytical_statistical_powers(monthly_mean_min,
-                                            monthly_mean_max,
-                                            monthly_std_dev_min,
-                                            monthly_std_dev_max,
-                                            alpha,
-                                            num_theo_patients_per_trial_arm,
-                                            placebo_arm_patient_pop_monthly_param_sets,
-                                            drug_arm_patient_pop_monthly_param_sets):
-    
+def get_monthly_parameter_maps_and_pop_hists(monthly_mean_min,
+                                             monthly_mean_max,
+                                             monthly_std_dev_min,
+                                             monthly_std_dev_max,
+                                             num_theo_patients_per_trial_arm,
+                                             placebo_arm_patient_pop_monthly_param_sets,
+                                             drug_arm_patient_pop_monthly_param_sets):
+
     average_postulated_log_hazard_ratio_map_file_name = 'average_postulated_log_hazard_ratio_map'
     average_prob_fail_placebo_arm_map_file_name       = 'average_prob_fail_placebo_arm_map'
     average_prob_fail_drug_arm_map_file_name          = 'average_prob_fail_drug_arm_map'
@@ -382,6 +381,33 @@ def calculate_analytical_statistical_powers(monthly_mean_min,
                                                monthly_std_dev_max,
                                                num_theo_patients_per_trial_arm,
                                                total_patient_pop_monthly_param_set)
+
+    return [average_postulated_log_hazard_ratio_map,    average_prob_fail_placebo_arm_map,       average_prob_fail_drug_arm_map,
+            placebo_arm_patient_pop_monthly_param_hist, drug_arm_patient_pop_monthly_param_hist, total_patient_pop_monthly_param_hist]
+
+
+def calculate_analytical_statistical_powers(monthly_mean_min,
+                                            monthly_mean_max,
+                                            monthly_std_dev_min,
+                                            monthly_std_dev_max,
+                                            alpha,
+                                            num_theo_patients_per_trial_arm,
+                                            placebo_arm_patient_pop_monthly_param_sets,
+                                            drug_arm_patient_pop_monthly_param_sets):
+    
+    [average_postulated_log_hazard_ratio_map, 
+     average_prob_fail_placebo_arm_map, 
+     average_prob_fail_drug_arm_map,
+     placebo_arm_patient_pop_monthly_param_hist, 
+     drug_arm_patient_pop_monthly_param_hist, 
+     total_patient_pop_monthly_param_hist] = \
+                get_monthly_parameter_maps_and_pop_hists(monthly_mean_min,
+                                             monthly_mean_max,
+                                             monthly_std_dev_min,
+                                             monthly_std_dev_max,
+                                             num_theo_patients_per_trial_arm,
+                                             placebo_arm_patient_pop_monthly_param_sets,
+                                             drug_arm_patient_pop_monthly_param_sets)
     
     average_hazard_ratio  = np.exp(np.sum(np.nansum(np.multiply(average_postulated_log_hazard_ratio_map, total_patient_pop_monthly_param_hist), 0)))
     prob_fail_placebo_arm = np.sum(np.nansum(np.multiply(average_prob_fail_placebo_arm_map, placebo_arm_patient_pop_monthly_param_hist), 0))
@@ -394,7 +420,7 @@ def calculate_analytical_statistical_powers(monthly_mean_min,
 
     return ana_stat_power
 
-
+'''
 if(__name__=='__main__'):
 
     monthly_mean_min    = 1
@@ -448,6 +474,16 @@ if(__name__=='__main__'):
                                               drug_sigma,
                                               num_trials)
     
-    print(emp_stat_power)
-    #print(ana_stat_power)
+    ana_stat_power = \
+        calculate_analytical_statistical_powers(monthly_mean_min,
+                                                monthly_mean_max,
+                                                monthly_std_dev_min,
+                                                monthly_std_dev_max,
+                                                alpha,
+                                                num_theo_patients_per_trial_arm,
+                                                placebo_arm_patient_pop_monthly_param_sets,
+                                                drug_arm_patient_pop_monthly_param_sets)
 
+    print(emp_stat_power)
+    print(ana_stat_power)
+'''
