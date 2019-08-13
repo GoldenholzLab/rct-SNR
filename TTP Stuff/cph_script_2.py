@@ -234,6 +234,31 @@ def generate_one_trial_TTP_times(placebo_arm_patient_pop_monthly_param_sets,
             one_drug_arm_TTP_times,    one_drug_arm_observed_array   ]
 
 
+def generate_one_trial_analytical_summaries(one_placebo_arm_TTP_times,
+                                            one_placebo_arm_observed_array,
+                                            one_drug_arm_TTP_times,
+                                            one_drug_arm_observed_array,
+                                            tmp_file_name):
+
+    relative_tmp_file_path = tmp_file_name + '.csv'
+    TTP_times              = np.append(one_placebo_arm_TTP_times, one_drug_arm_TTP_times)
+    events                 = np.append(one_placebo_arm_observed_array, one_drug_arm_observed_array)
+    treatment_arms_str     = np.append( np.array(num_theo_patients_per_trial_arm*['C']) , np.array(num_theo_patients_per_trial_arm*['E']) )
+    treatment_arms         = np.int_(treatment_arms_str == "C")
+
+    data = np.array([TTP_times, events, treatment_arms, treatment_arms_str]).transpose()
+    pd.DataFrame(data, columns=['TTP_times', 'events', 'treatment_arms', 'treatment_arms_str']).to_csv(relative_tmp_file_path)
+    command = ['Rscript', 'estimate_log_hazard_ratio.R', relative_tmp_file_path]
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
+    postulated_log_hazard_ratio = float(process.communicate()[0].decode().split()[1])
+    os.remove(relative_tmp_file_path)
+
+    prob_fail_placebo_arm = np.sum(one_placebo_arm_observed_array == True)/num_theo_patients_per_trial_arm
+    prob_fail_drug_arm    = np.sum(one_drug_arm_observed_array == True)/num_theo_patients_per_trial_arm
+
+    return [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
+
+
 def calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
                                 drug_arm_patient_pop_monthly_param_sets,
                                 num_theo_patients_per_trial_arm,
@@ -267,7 +292,14 @@ def calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
                                one_drug_arm_observed_array)
     TTP_p_value = TTP_results.p_value
 
-    return TTP_p_value
+    [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm] = \
+        generate_one_trial_analytical_summaries(one_placebo_arm_TTP_times,
+                                                one_placebo_arm_observed_array,
+                                                one_drug_arm_TTP_times,
+                                                one_drug_arm_observed_array,
+                                                tmp_file_name)
+
+    return [TTP_p_value, postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
 
 
 def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_sets,
@@ -284,12 +316,15 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
                                           num_trials):
 
     p_value_array = np.zeros(num_trials)
+    plhr_array    = np.zeros(num_trials)
+    prob_fail_placebo_arm_array = np.zeros(num_trials)
+    prob_fail_drug_arm_array = np.zeros(num_trials)
 
     for trial_index in range(num_trials):
 
         trial_start_time_in_seconds = time.time()
 
-        p_value_array[trial_index] = \
+        [p_value_array[trial_index], plhr_array[trial_index], prob_fail_placebo_arm_array[trial_index], prob_fail_drug_arm_array[trial_index]] = \
             calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
                                         drug_arm_patient_pop_monthly_param_sets,
                                         num_theo_patients_per_trial_arm,
@@ -309,7 +344,17 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
     
     emp_stat_power = 100*np.sum(p_value_array < 0.05)/num_trials
 
-    return emp_stat_power
+    average_log_hazard_ratio = np.mean(plhr_array)
+    average_hazard_ratio     = np.exp(average_log_hazard_ratio)
+    prob_fail_placebo_arm    = np.mean(prob_fail_placebo_arm_array)
+    prob_fail_drug_arm       = np.mean(prob_fail_drug_arm_array)
+
+    command        = ['Rscript', 'calculate_cph_power.R', str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm), 
+                      str(prob_fail_drug_arm), str(prob_fail_placebo_arm), str(average_hazard_ratio), str(alpha)]
+    process        = subprocess.Popen(command, stdout=subprocess.PIPE)
+    semi_ana_stat_power = 100*float(process.communicate()[0].decode().split()[1])
+
+    return [emp_stat_power, semi_ana_stat_power, average_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
 
 
 def retrieve_monthly_parameter_map(average_monthly_parameter_map_file_name):
@@ -400,7 +445,7 @@ def calculate_analytical_statistical_powers(monthly_mean_min,
      average_prob_fail_drug_arm_map,
      placebo_arm_patient_pop_monthly_param_hist, 
      drug_arm_patient_pop_monthly_param_hist, 
-     total_patient_pop_monthly_param_hist] = \
+     total_patient_pop_monthly_param_hist       ] = \
                 get_monthly_parameter_maps_and_pop_hists(monthly_mean_min,
                                              monthly_mean_max,
                                              monthly_std_dev_min,
@@ -409,18 +454,19 @@ def calculate_analytical_statistical_powers(monthly_mean_min,
                                              placebo_arm_patient_pop_monthly_param_sets,
                                              drug_arm_patient_pop_monthly_param_sets)
     
-    average_hazard_ratio  = np.exp(np.sum(np.nansum(np.multiply(average_postulated_log_hazard_ratio_map, total_patient_pop_monthly_param_hist), 0)))
-    prob_fail_placebo_arm = np.sum(np.nansum(np.multiply(average_prob_fail_placebo_arm_map, placebo_arm_patient_pop_monthly_param_hist), 0))
-    prob_fail_drug_arm    = np.sum(np.nansum(np.multiply(average_prob_fail_drug_arm_map,    drug_arm_patient_pop_monthly_param_hist), 0))
-
-    print([average_hazard_ratio, 100*prob_fail_placebo_arm, 100*prob_fail_drug_arm])
+    average_log_hazard_ratio = np.sum(np.nansum(np.multiply(average_postulated_log_hazard_ratio_map, total_patient_pop_monthly_param_hist), 0))
+    #average_log_hazard_ratio = np.sum(np.nansum(np.multiply(average_postulated_log_hazard_ratio_map, placebo_arm_patient_pop_monthly_param_hist), 0))
+    #average_log_hazard_ratio = np.sum(np.nansum(np.multiply(average_postulated_log_hazard_ratio_map, drug_arm_patient_pop_monthly_param_hist), 0))
+    average_hazard_ratio     = np.exp(average_log_hazard_ratio)
+    prob_fail_placebo_arm    = np.sum(np.nansum(np.multiply(average_prob_fail_placebo_arm_map, placebo_arm_patient_pop_monthly_param_hist), 0))
+    prob_fail_drug_arm       = np.sum(np.nansum(np.multiply(average_prob_fail_drug_arm_map,    drug_arm_patient_pop_monthly_param_hist), 0))
 
     command        = ['Rscript', 'calculate_cph_power.R', str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm), 
                       str(prob_fail_drug_arm), str(prob_fail_placebo_arm), str(average_hazard_ratio), str(alpha)]
     process        = subprocess.Popen(command, stdout=subprocess.PIPE)
     ana_stat_power = 100*float(process.communicate()[0].decode().split()[1])
 
-    return ana_stat_power
+    return [ana_stat_power, average_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
 
 
 if(__name__=='__main__'):
@@ -462,7 +508,11 @@ if(__name__=='__main__'):
     num_testing_days_per_patient  = num_testing_months_per_patient*28
     num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
 
-    emp_stat_power = \
+    [emp_stat_power, 
+     semi_ana_stat_power, 
+     average_log_hazard_ratio_semi, 
+     prob_fail_placebo_arm_semi, 
+     prob_fail_drug_arm_semi      ] = \
         calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_sets,
                                               drug_arm_patient_pop_monthly_param_sets,
                                               num_theo_patients_per_trial_arm,
@@ -476,7 +526,10 @@ if(__name__=='__main__'):
                                               drug_sigma,
                                               num_trials)
     
-    ana_stat_power = \
+    [ana_stat_power, 
+     average_log_hazard_ratio_map, 
+     prob_fail_placebo_arm_map, 
+     prob_fail_drug_arm_map     ] = \
         calculate_analytical_statistical_powers(monthly_mean_min,
                                                 monthly_mean_max,
                                                 monthly_std_dev_min,
@@ -487,5 +540,9 @@ if(__name__=='__main__'):
                                                 drug_arm_patient_pop_monthly_param_sets)
 
     print(emp_stat_power)
+    print(semi_ana_stat_power)
     print(ana_stat_power)
+
+    print('\n' + str( np.round(np.array([average_log_hazard_ratio_semi, 100*(np.exp(average_log_hazard_ratio_semi) - 1), 100*prob_fail_placebo_arm_semi, 100*prob_fail_drug_arm_semi]), 3) ) + 
+          '\n' + str( np.round(np.array([average_log_hazard_ratio_map,  100*(np.exp(average_log_hazard_ratio_map) - 1),  100*prob_fail_placebo_arm_map,  100*prob_fail_drug_arm_map ]), 3) )    + '\n' )
 
