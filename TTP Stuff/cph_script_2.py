@@ -413,6 +413,8 @@ def calculate_analytical_statistical_powers(monthly_mean_min,
     prob_fail_placebo_arm = np.sum(np.nansum(np.multiply(average_prob_fail_placebo_arm_map, placebo_arm_patient_pop_monthly_param_hist), 0))
     prob_fail_drug_arm    = np.sum(np.nansum(np.multiply(average_prob_fail_drug_arm_map,    drug_arm_patient_pop_monthly_param_hist), 0))
 
+    print([average_hazard_ratio, 100*prob_fail_placebo_arm, 100*prob_fail_drug_arm])
+
     command        = ['Rscript', 'calculate_cph_power.R', str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm), 
                       str(prob_fail_drug_arm), str(prob_fail_placebo_arm), str(average_hazard_ratio), str(alpha)]
     process        = subprocess.Popen(command, stdout=subprocess.PIPE)
