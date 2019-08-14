@@ -28,7 +28,7 @@ num_trials=2000
 alpha=0.05
 #folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
 folder='/n/scratch2/jmr95/TTP_stat_power_estimates'
-num_stat_power_estimates=1
+num_stat_power_estimates=1000
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
