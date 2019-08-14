@@ -1,19 +1,19 @@
 
-inputs[1]=$1
-inputs[2]=$2
-inputs[3]=$3
-inputs[4]=$4
-inputs[5]=$5
-inputs[6]=$6
-inputs[7]=$7
-inputs[8]=$8
-inputs[9]=$9
-inputs[10]=${10}
-inputs[11]=${11}
-inputs[12]=${12}
-inputs[13]=${13}
-inputs[14]=${14}
-inputs[15]=${15}
+inputs[0]=$1
+inputs[1]=$2
+inputs[2]=$3
+inputs[3]=$4
+inputs[4]=$5
+inputs[5]=$6
+inputs[6]=$7
+inputs[7]=$8
+inputs[8]=$9
+inputs[9]=${10}
+inputs[10]=${11}
+inputs[11]=${12}
+inputs[12]=${13}
+inputs[13]=${14}
+inputs[14]=${15}
 inputs[15]=${16}
 
 python -u cph_power_calc_investigation.py ${inputs[@]}
