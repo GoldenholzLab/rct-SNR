@@ -1,3 +1,13 @@
+#!/usr/bin/bash
+
+#SBATCH -p short
+#SBATCH -t 0-00:05
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -e jmr95_%j.err
+#SBATCH -o jmr95_%j.out
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
 monthly_mean_min=1
 monthly_mean_max=16
@@ -14,7 +24,7 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=100
+num_trials=2000
 alpha=0.05
 #folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
 folder='/n/scratch2/jmr95/TTP_stat_power_estimates'
@@ -40,6 +50,6 @@ for ((index=1; index<$num_stat_power_estimates+1; index=index+1))
 do
     inputs[15]=$index
 
-    bash cph_power_calc_investigation_wrapper.sh ${inputs[@]}
+    sbatch cph_power_calc_investigation_wrapper.sh ${inputs[@]}
 
 done
