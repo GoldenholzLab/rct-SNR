@@ -1,44 +1,20 @@
 
-monthly_mean_min=4
-monthly_mean_max=16
-monthly_std_dev_min=1
-monthly_std_dev_max=8
+inputs[1]=$1
+inputs[2]=$2
+inputs[3]=$3
+inputs[4]=$4
+inputs[5]=$5
+inputs[6]=$6
+inputs[7]=$7
+inputs[8]=$8
+inputs[9]=$9
+inputs[10]=${10}
+inputs[11]=${11}
+inputs[12]=${12}
+inputs[13]=${13}
+inputs[14]=${14}
+inputs[15]=${15}
+inputs[15]=${16}
 
-num_theo_patients_per_trial_arm=153
-num_baseline_months_per_patient=2
-num_testing_months_per_patient=3
-min_req_base_sz_count=4
+python -u cph_power_calc_investigation.py ${inputs[@]}
 
-placebo_mu=0
-placebo_sigma=0.05
-drug_mu=0.2
-drug_sigma=0.05
-
-num_trials=10
-alpha=0.05
-folder='/Users/juanromero/Documents/Python_3_Files/useless folder'
-num_stat_power_estimates=10
-
-inputs[1]=$monthly_mean_min
-inputs[2]=$monthly_mean_max
-inputs[3]=$monthly_std_dev_min
-inputs[4]=$monthly_std_dev_max
-inputs[5]=$num_theo_patients_per_trial_arm
-inputs[6]=$num_baseline_months_per_patient
-inputs[7]=$num_testing_months_per_patient
-inputs[8]=$min_req_base_sz_count
-inputs[9]=$placebo_mu
-inputs[10]=$placebo_sigma
-inputs[11]=$drug_mu
-inputs[12]=$drug_sigma
-inputs[13]=$num_trials
-inputs[14]=$alpha
-inputs[15]=$folder
-
-for ((index=1; index<$num_stat_power_estimates+1; index=index+1))
-do
-    inputs[16]=$index
-
-    python -u cph_power_calc_investigation.py ${inputs[@]}
-
-done
