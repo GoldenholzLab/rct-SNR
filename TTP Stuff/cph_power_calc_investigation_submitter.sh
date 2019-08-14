@@ -14,7 +14,7 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=2
+num_trials=10000
 alpha=0.05
 folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
 num_stat_power_estimates=1000

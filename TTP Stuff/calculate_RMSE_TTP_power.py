@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 if(__name__=='__main__'):
 
-    num_stat_power_estimates = 10
-    bins = 50
+    num_stat_power_estimates = 1000
+    bins = 100
     folder = '/Users/juanromero/Documents/Python_3_Files/useless_folder'
 
     empirical_stat_power_list = []
@@ -46,19 +46,24 @@ if(__name__=='__main__'):
     ana_stat_power_RMSE_str       = str(np.round(ana_stat_power_RMSE, 3))
     ana_stat_power_error_str            = ana_stat_power_mean_error_str + ' ± ' + ana_stat_power_RMSE_str
 
-    stat_power_error_str = 'semi-analytical statistical power error: ' + semi_ana_stat_power_error_str + '\n' + \
-                           'analytical statistical power error:      ' + ana_stat_power_error_str
+    stat_power_error_str = 'semi-analytical statistical power error:      ' + semi_ana_stat_power_error_str + '\n' + \
+                           'map-based analytical statistical power error: ' + ana_stat_power_error_str
     
     text_file_name = 'TTP_stat_power_error'
-    text_file_path = folder + '/' + text_file_name + '.txt'
+    text_file_path = os.getcwd() + '/' + text_file_name + '.txt'
     with open(text_file_path, 'w+') as text_file:
         text_file.write(stat_power_error_str)
-    
-    plt.figure()
-    plt.hist(semi_ana_stat_power_error_array)
 
     plt.figure()
-    plt.hist(ana_stat_power_error_array)
+    plt.hist(semi_ana_stat_power_error_array, bins=bins)
+    plt.title('semi-analytical statistical power estimate error histogram')
+    plt.xlabel('numerical difference in statistical power estimates (relative to empirical)')
+    plt.ylabel('frequency of error')
+    plt.savefig(os.getcwd() + '/semi_ana_stat_power_error.png')
 
-    plt.show()
-
+    plt.figure()
+    plt.hist(ana_stat_power_error_array, bins=bins)
+    plt.title('analytical statistical power estimate error histogram')
+    plt.xlabel('numerical difference in statistical power estimates (relative to empirical)')
+    plt.ylabel('frequency of error')
+    plt.savefig(os.getcwd() + '/ana_stat_power_error.png')
