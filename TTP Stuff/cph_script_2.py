@@ -359,7 +359,7 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
 
 def retrieve_monthly_parameter_map(average_monthly_parameter_map_file_name):
 
-    average_monthly_parameter_map_file_path = os.getcwd() + '/' + average_monthly_parameter_map_file_name + '.json'
+    average_monthly_parameter_map_file_path = os.getcwd() + '/' + average_monthly_parameter_map_file_name + '.map'
 
     with open(average_monthly_parameter_map_file_path, 'r') as json_file:
         average_monthly_parameter_map = np.array(json.load(json_file))
