@@ -367,18 +367,12 @@ def retrieve_monthly_parameter_map(average_monthly_parameter_map_file_name):
     return average_monthly_parameter_map
 
 
-def get_patient_pop_monthly_param_hist(monthly_mean_min,
-                                       monthly_mean_max,
-                                       monthly_std_dev_min,
-                                       monthly_std_dev_max,
-                                       num_theo_patients_per_trial_arm,
-                                       patient_pop_monthly_param_sets):
+def get_patient_pop_monthly_param_hist(patient_pop_monthly_param_sets):
     
     [patient_pop_monthly_param_hist, _, _] = \
         np.histogram2d(patient_pop_monthly_param_sets[:, 0],
                        patient_pop_monthly_param_sets[:, 1],
-                       bins=[monthly_mean_max - monthly_mean_min + 1, monthly_std_dev_max - monthly_std_dev_min + 1],
-                       range=[[monthly_mean_min, monthly_mean_max], [monthly_std_dev_min, monthly_std_dev_max]])
+                       bins=[16, 16], range=[[1, 16], [1, 16]])
     patient_pop_monthly_param_hist = np.flipud(np.fliplr(np.transpose(np.flipud(patient_pop_monthly_param_hist))))
     norm_const = np.sum(np.sum(patient_pop_monthly_param_hist, 0))
     patient_pop_monthly_param_hist = patient_pop_monthly_param_hist/norm_const
@@ -386,12 +380,7 @@ def get_patient_pop_monthly_param_hist(monthly_mean_min,
     return patient_pop_monthly_param_hist
 
 
-def get_monthly_parameter_maps_and_pop_hists(monthly_mean_min,
-                                             monthly_mean_max,
-                                             monthly_std_dev_min,
-                                             monthly_std_dev_max,
-                                             num_theo_patients_per_trial_arm,
-                                             placebo_arm_patient_pop_monthly_param_sets,
+def get_monthly_parameter_maps_and_pop_hists(placebo_arm_patient_pop_monthly_param_sets,
                                              drug_arm_patient_pop_monthly_param_sets):
 
     average_postulated_log_hazard_ratio_map_file_name = 'average_postulated_log_hazard_ratio_map'
@@ -403,40 +392,20 @@ def get_monthly_parameter_maps_and_pop_hists(monthly_mean_min,
     average_prob_fail_drug_arm_map          = retrieve_monthly_parameter_map(average_prob_fail_drug_arm_map_file_name)
 
     placebo_arm_patient_pop_monthly_param_hist = \
-        get_patient_pop_monthly_param_hist(monthly_mean_min,
-                                           monthly_mean_max,
-                                           monthly_std_dev_min,
-                                           monthly_std_dev_max,
-                                           num_theo_patients_per_trial_arm,
-                                           placebo_arm_patient_pop_monthly_param_sets)
+        get_patient_pop_monthly_param_hist(placebo_arm_patient_pop_monthly_param_sets)
     
     drug_arm_patient_pop_monthly_param_hist = \
-        get_patient_pop_monthly_param_hist(monthly_mean_min,
-                                           monthly_mean_max,
-                                           monthly_std_dev_min,
-                                           monthly_std_dev_max,
-                                           num_theo_patients_per_trial_arm,
-                                           drug_arm_patient_pop_monthly_param_sets)
+        get_patient_pop_monthly_param_hist(drug_arm_patient_pop_monthly_param_sets)
     
     total_patient_pop_monthly_param_set = np.vstack((placebo_arm_patient_pop_monthly_param_sets, drug_arm_patient_pop_monthly_param_sets))
     total_patient_pop_monthly_param_hist = \
-            get_patient_pop_monthly_param_hist(monthly_mean_min,
-                                               monthly_mean_max,
-                                               monthly_std_dev_min,
-                                               monthly_std_dev_max,
-                                               num_theo_patients_per_trial_arm,
-                                               total_patient_pop_monthly_param_set)
+            get_patient_pop_monthly_param_hist(total_patient_pop_monthly_param_set)
 
     return [average_postulated_log_hazard_ratio_map,    average_prob_fail_placebo_arm_map,       average_prob_fail_drug_arm_map,
             placebo_arm_patient_pop_monthly_param_hist, drug_arm_patient_pop_monthly_param_hist, total_patient_pop_monthly_param_hist]
 
 
-def calculate_analytical_statistical_powers(monthly_mean_min,
-                                            monthly_mean_max,
-                                            monthly_std_dev_min,
-                                            monthly_std_dev_max,
-                                            alpha,
-                                            num_theo_patients_per_trial_arm,
+def calculate_analytical_statistical_powers(alpha, num_theo_patients_per_trial_arm,
                                             placebo_arm_patient_pop_monthly_param_sets,
                                             drug_arm_patient_pop_monthly_param_sets):
     
@@ -446,13 +415,8 @@ def calculate_analytical_statistical_powers(monthly_mean_min,
      placebo_arm_patient_pop_monthly_param_hist, 
      drug_arm_patient_pop_monthly_param_hist, 
      total_patient_pop_monthly_param_hist       ] = \
-                get_monthly_parameter_maps_and_pop_hists(monthly_mean_min,
-                                             monthly_mean_max,
-                                             monthly_std_dev_min,
-                                             monthly_std_dev_max,
-                                             num_theo_patients_per_trial_arm,
-                                             placebo_arm_patient_pop_monthly_param_sets,
-                                             drug_arm_patient_pop_monthly_param_sets)
+         get_monthly_parameter_maps_and_pop_hists(placebo_arm_patient_pop_monthly_param_sets,
+                                                  drug_arm_patient_pop_monthly_param_sets)
     
     average_log_hazard_ratio = np.sum(np.nansum(np.multiply(average_postulated_log_hazard_ratio_map, total_patient_pop_monthly_param_hist), 0))
     #average_log_hazard_ratio = np.sum(np.nansum(np.multiply(average_postulated_log_hazard_ratio_map, placebo_arm_patient_pop_monthly_param_hist), 0))
@@ -469,27 +433,21 @@ def calculate_analytical_statistical_powers(monthly_mean_min,
     return [ana_stat_power, average_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
 
 
-if(__name__=='__main__'):
+def calculate_analytical_and_empirical_statistical_powers(monthly_mean_min,
+                                                          monthly_mean_max,
+                                                          monthly_std_dev_min,
+                                                          monthly_std_dev_max,
+                                                          num_theo_patients_per_trial_arm,
+                                                          num_baseline_months_per_patient,
+                                                          num_testing_months_per_patient,
+                                                          min_req_base_sz_count,
+                                                          placebo_mu,
+                                                          placebo_sigma,
+                                                          drug_mu,
+                                                          drug_sigma,
+                                                          num_trials,
+                                                          alpha):
 
-    monthly_mean_min    = 1
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
-
-    num_theo_patients_per_trial_arm = 153
-    num_baseline_months_per_patient = 2
-    num_testing_months_per_patient  = 3
-    min_req_base_sz_count           = 4
-
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
-
-    num_trials = 100
-    alpha      = 0.05
-
-    
     placebo_arm_patient_pop_monthly_param_sets = \
         generate_patient_pop_params(monthly_mean_min,
                                     monthly_mean_max, 
@@ -530,19 +488,60 @@ if(__name__=='__main__'):
      average_log_hazard_ratio_map, 
      prob_fail_placebo_arm_map, 
      prob_fail_drug_arm_map     ] = \
-        calculate_analytical_statistical_powers(monthly_mean_min,
-                                                monthly_mean_max,
-                                                monthly_std_dev_min,
-                                                monthly_std_dev_max,
-                                                alpha,
-                                                num_theo_patients_per_trial_arm,
+        calculate_analytical_statistical_powers(alpha, num_theo_patients_per_trial_arm,
                                                 placebo_arm_patient_pop_monthly_param_sets,
                                                 drug_arm_patient_pop_monthly_param_sets)
+    
+    return [emp_stat_power,                semi_ana_stat_power,        ana_stat_power, 
+            average_log_hazard_ratio_semi, prob_fail_placebo_arm_semi, prob_fail_drug_arm_semi,
+            average_log_hazard_ratio_map,  prob_fail_placebo_arm_map,  prob_fail_drug_arm_map  ]
 
-    print(emp_stat_power)
-    print(semi_ana_stat_power)
-    print(ana_stat_power)
 
-    print('\n' + str( np.round(np.array([average_log_hazard_ratio_semi, 100*(np.exp(average_log_hazard_ratio_semi) - 1), 100*prob_fail_placebo_arm_semi, 100*prob_fail_drug_arm_semi]), 3) ) + 
-          '\n' + str( np.round(np.array([average_log_hazard_ratio_map,  100*(np.exp(average_log_hazard_ratio_map) - 1),  100*prob_fail_placebo_arm_map,  100*prob_fail_drug_arm_map ]), 3) )    + '\n' )
+
+if(__name__=='__main__'):
+
+    monthly_mean_min    = 4
+    monthly_mean_max    = 16
+    monthly_std_dev_min = 1
+    monthly_std_dev_max = 8
+
+    num_theo_patients_per_trial_arm = 153
+    num_baseline_months_per_patient = 2
+    num_testing_months_per_patient  = 3
+    min_req_base_sz_count           = 4
+
+    placebo_mu    = 0
+    placebo_sigma = 0.05
+    drug_mu       = 0.2
+    drug_sigma    = 0.05
+
+    num_trials = 100
+    alpha      = 0.05
+
+    start_time_in_seconds = time.time()
+
+    [emp_stat_power,                semi_ana_stat_power,        ana_stat_power, 
+     average_log_hazard_ratio_semi, prob_fail_placebo_arm_semi, prob_fail_drug_arm_semi,
+     average_log_hazard_ratio_map,  prob_fail_placebo_arm_map,  prob_fail_drug_arm_map  ] = \
+         calculate_analytical_and_empirical_statistical_powers(monthly_mean_min,
+                                                               monthly_mean_max,
+                                                               monthly_std_dev_min,
+                                                               monthly_std_dev_max,
+                                                               num_theo_patients_per_trial_arm,
+                                                               num_baseline_months_per_patient,
+                                                               num_testing_months_per_patient,
+                                                               min_req_base_sz_count,
+                                                               placebo_mu,
+                                                               placebo_sigma,
+                                                               drug_mu,
+                                                               drug_sigma,
+                                                               num_trials,
+                                                               alpha)
+
+    total_runtime_in_minutes_str = str(np.round((time.time() - start_time_in_seconds)/60, 3))
+
+    print('\n' + str(np.round(emp_stat_power, 3)) + '\n' + str(np.round(semi_ana_stat_power, 3)) + '\n' + str(np.round(ana_stat_power, 3)) + '\n')
+    print('\n' + str(np.round(np.array([average_log_hazard_ratio_semi, 100*(np.exp(average_log_hazard_ratio_semi) - 1), 100*prob_fail_placebo_arm_semi, 100*prob_fail_drug_arm_semi]), 3)) + 
+          '\n' + str(np.round(np.array([average_log_hazard_ratio_map,  100*(np.exp(average_log_hazard_ratio_map) - 1),  100*prob_fail_placebo_arm_map,  100*prob_fail_drug_arm_map ]), 3))    + '\n' )
+    print('\ntotal runtime in minutes: ' + total_runtime_in_minutes_str + ' minutes')
 
