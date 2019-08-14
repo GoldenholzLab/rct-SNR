@@ -497,7 +497,6 @@ def calculate_analytical_and_empirical_statistical_powers(monthly_mean_min,
             average_log_hazard_ratio_map,  prob_fail_placebo_arm_map,  prob_fail_drug_arm_map  ]
 
 
-
 if(__name__=='__main__'):
 
     monthly_mean_min    = 4
@@ -517,6 +516,8 @@ if(__name__=='__main__'):
 
     num_trials = 100
     alpha      = 0.05
+    folder     = '/Users/juanromero/Documents/Python_3_Files/useless folder'
+    file_name  = '3'
 
     start_time_in_seconds = time.time()
 
@@ -538,10 +539,16 @@ if(__name__=='__main__'):
                                                                num_trials,
                                                                alpha)
 
+    file_path = folder + '/' + file_name + '.json'
+    if( not os.path.isdir(folder) ):
+        os.makedirs(folder)
+    with open(file_path, 'w+') as json_file:
+        json.dump([emp_stat_power, semi_ana_stat_power, ana_stat_power], json_file)
+
     total_runtime_in_minutes_str = str(np.round((time.time() - start_time_in_seconds)/60, 3))
 
     print('\n' + str(np.round(emp_stat_power, 3)) + '\n' + str(np.round(semi_ana_stat_power, 3)) + '\n' + str(np.round(ana_stat_power, 3)) + '\n')
     print('\n' + str(np.round(np.array([average_log_hazard_ratio_semi, 100*(np.exp(average_log_hazard_ratio_semi) - 1), 100*prob_fail_placebo_arm_semi, 100*prob_fail_drug_arm_semi]), 3)) + 
           '\n' + str(np.round(np.array([average_log_hazard_ratio_map,  100*(np.exp(average_log_hazard_ratio_map) - 1),  100*prob_fail_placebo_arm_map,  100*prob_fail_drug_arm_map ]), 3))    + '\n' )
-    print('\ntotal runtime in minutes: ' + total_runtime_in_minutes_str + ' minutes')
+    print('\ntotal runtime in minutes: ' + total_runtime_in_minutes_str + ' minutes\n')
 
