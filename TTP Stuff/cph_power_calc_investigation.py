@@ -315,7 +315,8 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
                                           placebo_sigma,
                                           drug_mu,
                                           drug_sigma,
-                                          num_trials):
+                                          num_trials,
+                                          stat_power_estimate_index):
 
     p_value_array = np.zeros(num_trials)
     plhr_array    = np.zeros(num_trials)
@@ -325,6 +326,8 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
     for trial_index in range(num_trials):
 
         trial_start_time_in_seconds = time.time()
+
+        tmp_file_name = str(trial_index) + '_' + str(stat_power_estimate_index)
 
         [p_value_array[trial_index], plhr_array[trial_index], prob_fail_placebo_arm_array[trial_index], prob_fail_drug_arm_array[trial_index]] = \
             calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
@@ -338,7 +341,7 @@ def calculate_empirical_statistical_power(placebo_arm_patient_pop_monthly_param_
                                         placebo_sigma,
                                         drug_mu,
                                         drug_sigma,
-                                        str(trial_index))
+                                        tmp_file_name)
         
         trial_stop_time_in_seconds = time.time()
         trial_runtime_str = str(np.round((trial_stop_time_in_seconds - trial_start_time_in_seconds)/60, 3))
@@ -448,7 +451,8 @@ def calculate_analytical_and_empirical_statistical_powers(monthly_mean_min,
                                                           drug_mu,
                                                           drug_sigma,
                                                           num_trials,
-                                                          alpha):
+                                                          alpha,
+                                                          stat_power_estimate_index):
 
     placebo_arm_patient_pop_monthly_param_sets = \
         generate_patient_pop_params(monthly_mean_min,
@@ -484,7 +488,8 @@ def calculate_analytical_and_empirical_statistical_powers(monthly_mean_min,
                                               placebo_sigma,
                                               drug_mu,
                                               drug_sigma,
-                                              num_trials)
+                                              num_trials,
+                                              stat_power_estimate_index)
     
     [ana_stat_power, 
      average_log_hazard_ratio_map, 
@@ -516,10 +521,10 @@ if(__name__=='__main__'):
     drug_mu       = float(sys.argv[11])
     drug_sigma    = float(sys.argv[12])
 
-    num_trials =   int(sys.argv[13])
-    alpha      = float(sys.argv[14])
-    folder     =       sys.argv[15]
-    file_name  =       sys.argv[16]
+    num_trials                =   int(sys.argv[13])
+    alpha                     = float(sys.argv[14])
+    folder                    =       sys.argv[15]
+    stat_power_estimate_index = int(sys.argv[16])
 
     start_time_in_seconds = time.time()
 
@@ -539,9 +544,10 @@ if(__name__=='__main__'):
                                                                drug_mu,
                                                                drug_sigma,
                                                                num_trials,
-                                                               alpha)
+                                                               alpha,
+                                                               stat_power_estimate_index)
 
-    file_path = folder + '/' + file_name + '.json'
+    file_path = folder + '/' + str(stat_power_estimate_index) + '.json'
     if( not os.path.isdir(folder) ):
         os.makedirs(folder)
     with open(file_path, 'w+') as json_file:
