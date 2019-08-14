@@ -1,8 +1,8 @@
 
-monthly_mean_min=4
+monthly_mean_min=1
 monthly_mean_max=16
 monthly_std_dev_min=1
-monthly_std_dev_max=8
+monthly_std_dev_max=16
 
 num_theo_patients_per_trial_arm=153
 num_baseline_months_per_patient=2
@@ -14,10 +14,11 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=10000
+num_trials=100
 alpha=0.05
-folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
-num_stat_power_estimates=1000
+#folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
+folder='/n/scratch2/jmr95/TTP_stat_power_estimates'
+num_stat_power_estimates=1
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
