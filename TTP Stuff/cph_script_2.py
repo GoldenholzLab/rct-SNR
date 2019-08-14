@@ -5,6 +5,7 @@ import subprocess
 import os
 import json
 import time
+import psutil
 
 
 def generate_patient_pop_params(monthly_mean_min,
@@ -514,7 +515,7 @@ if(__name__=='__main__'):
     drug_mu       = 0.2
     drug_sigma    = 0.05
 
-    num_trials = 100
+    num_trials = 10
     alpha      = 0.05
     folder     = '/Users/juanromero/Documents/Python_3_Files/useless folder'
     file_name  = '3'
@@ -546,9 +547,15 @@ if(__name__=='__main__'):
         json.dump([emp_stat_power, semi_ana_stat_power, ana_stat_power], json_file)
 
     total_runtime_in_minutes_str = str(np.round((time.time() - start_time_in_seconds)/60, 3))
+    svem = psutil.virtual_memory()
+    total_mem_in_bytes = svem.total
+    available_mem_in_bytes = svem.available
+    used_mem_in_bytes = total_mem_in_bytes - available_mem_in_bytes
+    used_mem_in_gigabytes = used_mem_in_bytes/np.power(1024, 3)
+    used_mem_in_gigabytes_str = str(np.round(used_mem_in_gigabytes, 3))
 
     print('\n' + str(np.round(emp_stat_power, 3)) + '\n' + str(np.round(semi_ana_stat_power, 3)) + '\n' + str(np.round(ana_stat_power, 3)) + '\n')
     print('\n' + str(np.round(np.array([average_log_hazard_ratio_semi, 100*(np.exp(average_log_hazard_ratio_semi) - 1), 100*prob_fail_placebo_arm_semi, 100*prob_fail_drug_arm_semi]), 3)) + 
           '\n' + str(np.round(np.array([average_log_hazard_ratio_map,  100*(np.exp(average_log_hazard_ratio_map) - 1),  100*prob_fail_placebo_arm_map,  100*prob_fail_drug_arm_map ]), 3))    + '\n' )
-    print('\ntotal runtime in minutes: ' + total_runtime_in_minutes_str + ' minutes\n')
+    print('\ntotal runtime in minutes: ' + total_runtime_in_minutes_str + ' minutes\ntotal memory used: ' + used_mem_in_gigabytes_str + ' GB\n')
 
