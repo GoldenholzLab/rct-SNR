@@ -1,3 +1,4 @@
+import sys
 import os
 import json
 import numpy as np
@@ -6,9 +7,9 @@ import matplotlib.pyplot as plt
 
 if(__name__=='__main__'):
 
-    num_stat_power_estimates = 1000
-    bins = 100
-    folder = '/Users/juanromero/Documents/Python_3_Files/useless_folder'
+    num_stat_power_estimates = int(sys.argv[1])
+    bins = int(sys.argv[2])
+    folder = sys.argv[3]
 
     empirical_stat_power_list = []
     semi_ana_stat_power_list  = []

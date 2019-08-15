@@ -21,3 +21,4 @@ bins=100
 folder='/n/scratch2/jmr95/TTP_stat_power_estimates'
 
 srun -c 1 python -u calculate_RMSE_TTP_power.py $num_stat_power_estimates $bins $folder
+#python -u calculate_RMSE_TTP_power.py $num_stat_power_estimates $bins $folder
