@@ -15,6 +15,7 @@ def generate_one_trial_arm_of_patient_diaries(monthly_mean,
 
     daily_patient_diaries = np.zeros((num_patients_per_dot, num_total_days_per_patient))
 
+    for patient_index in range(num_patients_per_dot):
 
         daily_mean = monthly_mean/28
         daily_std_dev = monthly_std_dev/np.sqrt(28)
