@@ -1,22 +1,19 @@
-import sys
 import numpy as np
-import subprocess
-import pandas as pd
 import os
-import time
 import json
+import time
 
 
 def generate_one_trial_arm_of_patient_diaries(monthly_mean,
                                               monthly_std_dev,
-                                              num_theo_patients_per_trial_arm, 
+                                              num_patients_per_dot, 
                                               min_req_base_sz_count,
                                               num_baseline_days_per_patient, 
                                               num_total_days_per_patient):
 
-    daily_patient_diaries = np.zeros((num_theo_patients_per_trial_arm, num_total_days_per_patient))
+    daily_patient_diaries = np.zeros((num_patients_per_dot, num_total_days_per_patient))
 
-    for patient_index in range(num_theo_patients_per_trial_arm):
+    for patient_index in range(num_patients_per_dot):
 
         daily_mean = monthly_mean/28
         daily_std_dev = monthly_std_dev/np.sqrt(28)
@@ -124,7 +121,7 @@ def apply_effect(daily_seizure_diaries,
 
 def generate_individual_patient_TTP_times_per_trial_arm(monthly_mean,
                                                         monthly_std_dev,
-                                                        num_theo_patients_per_trial_arm,
+                                                        num_patients_per_dot,
                                                         num_baseline_days_per_patient,
                                                         num_testing_days_per_patient,
                                                         num_total_days_per_patient,
@@ -137,7 +134,7 @@ def generate_individual_patient_TTP_times_per_trial_arm(monthly_mean,
     one_trial_arm_daily_seizure_diaries = \
         generate_one_trial_arm_of_patient_diaries(monthly_mean,
                                                   monthly_std_dev, 
-                                                  num_theo_patients_per_trial_arm, 
+                                                  num_patients_per_dot, 
                                                   min_req_base_sz_count,
                                                   num_baseline_days_per_patient, 
                                                   num_total_days_per_patient)
@@ -146,7 +143,7 @@ def generate_individual_patient_TTP_times_per_trial_arm(monthly_mean,
         apply_effect(one_trial_arm_daily_seizure_diaries,
                      num_baseline_days_per_patient,
                      num_testing_days_per_patient,
-                     num_theo_patients_per_trial_arm,
+                     num_patients_per_dot,
                      placebo_mu,
                      placebo_sigma)
         
@@ -154,7 +151,7 @@ def generate_individual_patient_TTP_times_per_trial_arm(monthly_mean,
         apply_effect(one_trial_arm_daily_seizure_diaries,
                      num_baseline_days_per_patient,
                      num_testing_days_per_patient,
-                     num_theo_patients_per_trial_arm,
+                     num_patients_per_dot,
                      drug_mu,
                      drug_sigma)
 
@@ -162,7 +159,7 @@ def generate_individual_patient_TTP_times_per_trial_arm(monthly_mean,
         calculate_individual_patient_TTP_times_per_diary_set(one_trial_arm_daily_seizure_diaries,
                                                              num_baseline_days_per_patient,
                                                              num_testing_days_per_patient,
-                                                             num_theo_patients_per_trial_arm)
+                                                             num_patients_per_dot)
 
     return [one_trial_arm_TTP_times, one_trial_arm_observed_array]
 
@@ -173,7 +170,7 @@ def generate_one_trial_TTP_times(monthly_mean,
                                  num_baseline_days_per_patient,
                                  num_testing_days_per_patient,
                                  num_total_days_per_patient,
-                                 num_theo_patients_per_trial_arm,
+                                 num_patients_per_dot,
                                  placebo_mu,
                                  placebo_sigma,
                                  drug_mu,
@@ -182,7 +179,7 @@ def generate_one_trial_TTP_times(monthly_mean,
     [one_placebo_arm_TTP_times, one_placebo_arm_observed_array] = \
         generate_individual_patient_TTP_times_per_trial_arm(monthly_mean,
                                                             monthly_std_dev,
-                                                            num_theo_patients_per_trial_arm,
+                                                            num_patients_per_dot,
                                                             num_baseline_days_per_patient,
                                                             num_testing_days_per_patient,
                                                             num_total_days_per_patient,
@@ -195,7 +192,7 @@ def generate_one_trial_TTP_times(monthly_mean,
     [one_drug_arm_TTP_times, one_drug_arm_observed_array] = \
         generate_individual_patient_TTP_times_per_trial_arm(monthly_mean,
                                                             monthly_std_dev, 
-                                                            num_theo_patients_per_trial_arm,
+                                                            num_patients_per_dot,
                                                             num_baseline_days_per_patient,
                                                             num_testing_days_per_patient,
                                                             num_total_days_per_patient,
@@ -209,6 +206,170 @@ def generate_one_trial_TTP_times(monthly_mean,
             one_drug_arm_TTP_times,    one_drug_arm_observed_array   ]
 
 
+def generate_one_trial_median_TTP_times_per_arm(monthly_mean,
+                                                monthly_std_dev,
+                                                min_req_base_sz_count,
+                                                num_baseline_days_per_patient,
+                                                num_testing_days_per_patient,
+                                                num_total_days_per_patient,
+                                                num_patients_per_dot,
+                                                placebo_mu,
+                                                placebo_sigma,
+                                                drug_mu,
+                                                drug_sigma):
+
+    start_time_in_seconds = time.time()
+
+    [one_placebo_arm_TTP_times, _, 
+     one_drug_arm_TTP_times,    _] = \
+         generate_one_trial_TTP_times(monthly_mean,
+                                      monthly_std_dev,
+                                      min_req_base_sz_count,
+                                      num_baseline_days_per_patient,
+                                      num_testing_days_per_patient,
+                                      num_total_days_per_patient,
+                                      num_patients_per_dot,
+                                      placebo_mu,
+                                      placebo_sigma,
+                                      drug_mu,
+                                      drug_sigma)
+
+    num_placebo_arm_median_TTP_time = np.median(one_placebo_arm_TTP_times)
+    num_drug_arm_median_TTP_time    = np.median(one_drug_arm_TTP_times)
+
+    num_placebo_arm_median_TTP_time_occurrences = np.sum(one_placebo_arm_TTP_times == num_placebo_arm_median_TTP_time)
+    num_drug_arm_median_TTP_time_occurrences    = np.sum(one_placebo_arm_TTP_times == num_drug_arm_median_TTP_time)
+
+    stop_time_in_seconds = time.time()
+    total_runtime_in_seconds = stop_time_in_seconds - start_time_in_seconds
+    total_runtime_in_minutes = total_runtime_in_seconds/60
+    total_runtime_in_minutes_str = str(np.round(total_runtime_in_minutes, 3))
+    
+    print('\n[monthly mean, monthly standard deviation]: ' + str([monthly_mean, monthly_std_dev]) + '\ntotal runtime: ' + total_runtime_in_minutes_str + ' minutes\n')
+
+    return [num_placebo_arm_median_TTP_time, num_placebo_arm_median_TTP_time_occurrences,
+            num_drug_arm_median_TTP_time,    num_drug_arm_median_TTP_time_occurrences   ]
+
+
+def create_median_TTP_time_map_per_trial_arm(monthly_mean_min,
+                                             monthly_mean_max,
+                                             monthly_std_dev_min,
+                                             monthly_std_dev_max,
+                                             min_req_base_sz_count,
+                                             num_baseline_days_per_patient,
+                                             num_testing_days_per_patient,
+                                             num_total_days_per_patient,
+                                             num_patients_per_dot,
+                                             placebo_mu,
+                                             placebo_sigma,
+                                             drug_mu,
+                                             drug_sigma):
+    
+    monthly_mean_array    = np.arange(monthly_mean_min,    monthly_mean_max    + 1)
+    monthly_std_dev_array = np.arange(monthly_std_dev_min, monthly_std_dev_max + 1)
+    num_monthly_means     = len(monthly_mean_array)
+    num_monthly_std_dev   = len(monthly_std_dev_array)
+
+    placebo_arm_median_TTP_time_map = np.zeros((num_monthly_std_dev, num_monthly_means))
+    drug_arm_median_TTP_time_map    = np.zeros((num_monthly_std_dev, num_monthly_means))
+
+    for monthly_mean_index in range(num_monthly_means):
+        for monthly_std_dev_index in range(num_monthly_std_dev):
+
+            monthly_mean    = monthly_mean_array[monthly_mean_index]
+            monthly_std_dev = monthly_std_dev_max - monthly_std_dev_array[monthly_std_dev_index] + 1
+
+            if(monthly_std_dev > np.sqrt(monthly_mean)):
+
+                [num_placebo_arm_median_TTP_time, _,
+                 num_drug_arm_median_TTP_time,    _] = \
+                     generate_one_trial_median_TTP_times_per_arm(monthly_mean,
+                                                                 monthly_std_dev,
+                                                                 min_req_base_sz_count,
+                                                                 num_baseline_days_per_patient,
+                                                                 num_testing_days_per_patient,
+                                                                 num_total_days_per_patient,
+                                                                 num_patients_per_dot,
+                                                                 placebo_mu,
+                                                                 placebo_sigma,
+                                                                 drug_mu,
+                                                                 drug_sigma)
+
+                placebo_arm_median_TTP_time_map[monthly_std_dev_index, monthly_mean_index] = num_placebo_arm_median_TTP_time
+                drug_arm_median_TTP_time_map[monthly_std_dev_index, monthly_mean_index]    = num_drug_arm_median_TTP_time
+            
+            else:
+
+                placebo_arm_median_TTP_time_map[monthly_std_dev_index, monthly_mean_index] = np.nan
+                drug_arm_median_TTP_time_map[monthly_std_dev_index, monthly_mean_index]    = np.nan
+    
+    return [placebo_arm_median_TTP_time_map, drug_arm_median_TTP_time_map]
+
+
+def store_maps(map, map_file_name, mpa_folder):
+
+    map_file+path
+
+
+if(__name__=='__main__'):
+
+    monthly_mean_min    = 1
+    monthly_mean_max    = 16
+    monthly_std_dev_min = 1
+    monthly_std_dev_max = 16
+
+    min_req_base_sz_count           = 4
+    num_baseline_months_per_patient = 2
+    num_testing_months_per_patient  = 3
+    num_patients_per_dot            = 5000
+
+    placebo_mu    = 0
+    placebo_sigma = 0.05
+    drug_mu       = 0.2
+    drug_sigma    = 0.05
+
+    #-----------------------------------------------------------------------------------------------------------------#
+    #-----------------------------------------------------------------------------------------------------------------#
+    #-----------------------------------------------------------------------------------------------------------------#
+
+    algorithm_start_time_in_seconds = time.time()
+
+    num_baseline_days_per_patient = num_baseline_months_per_patient*28
+    num_testing_days_per_patient  = num_testing_months_per_patient*28
+    num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
+
+    [placebo_arm_median_TTP_time_map, drug_arm_median_TTP_time_map] = \
+        create_median_TTP_time_map_per_trial_arm(monthly_mean_min,
+                                                 monthly_mean_max,
+                                                 monthly_std_dev_min,
+                                                 monthly_std_dev_max,
+                                                 min_req_base_sz_count,
+                                                 num_baseline_days_per_patient,
+                                                 num_testing_days_per_patient,
+                                                 num_total_days_per_patient,
+                                                 num_patients_per_dot,
+                                                 placebo_mu,
+                                                 placebo_sigma,
+                                                 drug_mu,
+                                                 drug_sigma)
+
+    algorithm_stop_time_in_seconds = time.time()
+    total_algorithm_runtime_in_seconds = algorithm_stop_time_in_seconds - algorithm_start_time_in_seconds
+    total_algorithm_runtime_in_minutes = total_algorithm_runtime_in_seconds/60
+    total_algorithm_runtime_in_minutes_str = str(np.round(total_algorithm_runtime_in_minutes, 3))
+    print('total algorithm runtime: ' + total_algorithm_runtime_in_minutes_str + ' minutes')
+
+    #-----------------------------------------------------------------------------------------------------------------#
+    #-----------------------------------------------------------------------------------------------------------------#
+    #-----------------------------------------------------------------------------------------------------------------#
+
+
+
+
+
+
+
+'''
 def generate_one_trial_analytical_quantities(one_placebo_arm_TTP_times,
                                              one_placebo_arm_observed_array,
                                              one_drug_arm_TTP_times,
@@ -352,4 +513,5 @@ if(__name__=='__main__'):
                   folder)
 
     print(str(np.round(np.array([average_postulated_log_hazard_ratio, 100*average_prob_fail_placebo_arm, 100*average_prob_fail_drug_arm]), 3)) + '\n')
-    
+'''
+
