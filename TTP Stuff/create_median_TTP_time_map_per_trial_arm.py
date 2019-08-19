@@ -2,6 +2,8 @@ import numpy as np
 import os
 import json
 import time
+import sys
+import psutil
 
 
 def generate_one_trial_arm_of_patient_diaries(monthly_mean,
@@ -13,7 +15,6 @@ def generate_one_trial_arm_of_patient_diaries(monthly_mean,
 
     daily_patient_diaries = np.zeros((num_patients_per_dot, num_total_days_per_patient))
 
-    for patient_index in range(num_patients_per_dot):
 
         daily_mean = monthly_mean/28
         daily_std_dev = monthly_std_dev/np.sqrt(28)
@@ -306,31 +307,32 @@ def create_median_TTP_time_map_per_trial_arm(monthly_mean_min,
     return [placebo_arm_median_TTP_time_map, drug_arm_median_TTP_time_map]
 
 
-def store_maps(map, map_file_name, mpa_folder):
+def store_map(map, map_file_name, map_folder):
 
-    map_file+path
+    map_file_path = map_folder + '/' + map_file_name + '.map'
+    with open(map_file_path, 'w+') as json_file: 
+        json.dump(map.tolist(), json_file)
 
 
 if(__name__=='__main__'):
 
-    monthly_mean_min    = 1
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
+    monthly_mean_min    = int(sys.argv[1])
+    monthly_mean_max    = int(sys.argv[2])
+    monthly_std_dev_min = int(sys.argv[3])
+    monthly_std_dev_max = int(sys.argv[4])
 
-    min_req_base_sz_count           = 4
-    num_baseline_months_per_patient = 2
-    num_testing_months_per_patient  = 3
-    num_patients_per_dot            = 5000
+    min_req_base_sz_count           = int(sys.argv[5])
+    num_baseline_months_per_patient = int(sys.argv[6])
+    num_testing_months_per_patient  = int(sys.argv[7])
+    num_patients_per_dot            = int(sys.argv[8])
 
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
+    placebo_mu    = float(sys.argv[9])
+    placebo_sigma = float(sys.argv[10])
+    drug_mu       = float(sys.argv[11])
+    drug_sigma    = float(sys.argv[12])
 
-    #-----------------------------------------------------------------------------------------------------------------#
-    #-----------------------------------------------------------------------------------------------------------------#
-    #-----------------------------------------------------------------------------------------------------------------#
+    placebo_arm_median_TTP_time_map_file_name = sys.argv[13]
+    drug_arm_median_TTP_time_map_file_name    = sys.argv[14]
 
     algorithm_start_time_in_seconds = time.time()
 
@@ -353,165 +355,22 @@ if(__name__=='__main__'):
                                                  drug_mu,
                                                  drug_sigma)
 
+    store_map(placebo_arm_median_TTP_time_map, placebo_arm_median_TTP_time_map_file_name, os.getcwd())
+    store_map(drug_arm_median_TTP_time_map,    drug_arm_median_TTP_time_map_file_name,    os.getcwd())
+
     algorithm_stop_time_in_seconds = time.time()
+
+    svem = psutil.virtual_memory()
+    total_mem_in_bytes = svem.total
+    available_mem_in_bytes = svem.available
+    used_mem_in_bytes = total_mem_in_bytes - available_mem_in_bytes
+    used_mem_in_gigabytes = used_mem_in_bytes/np.power(1024, 3)
+    used_mem_in_gigabytes_str = str(np.round(used_mem_in_gigabytes, 3))
+
     total_algorithm_runtime_in_seconds = algorithm_stop_time_in_seconds - algorithm_start_time_in_seconds
     total_algorithm_runtime_in_minutes = total_algorithm_runtime_in_seconds/60
     total_algorithm_runtime_in_minutes_str = str(np.round(total_algorithm_runtime_in_minutes, 3))
-    print('total algorithm runtime: ' + total_algorithm_runtime_in_minutes_str + ' minutes')
-
-    #-----------------------------------------------------------------------------------------------------------------#
-    #-----------------------------------------------------------------------------------------------------------------#
-    #-----------------------------------------------------------------------------------------------------------------#
+    print('\ntotal algorithm runtime: ' + total_algorithm_runtime_in_minutes_str + ' minutes\nmemory used: ' + used_mem_in_gigabytes_str + ' GB\nWZ')
 
 
-
-
-
-
-
-'''
-def generate_one_trial_analytical_quantities(one_placebo_arm_TTP_times,
-                                             one_placebo_arm_observed_array,
-                                             one_drug_arm_TTP_times,
-                                             one_drug_arm_observed_array,
-                                             num_theo_patients_per_trial_arm,
-                                             tmp_file_name):
-
-    relative_tmp_file_path = tmp_file_name + '.csv'
-    TTP_times              = np.append(one_placebo_arm_TTP_times, one_drug_arm_TTP_times)
-    events                 = np.append(one_placebo_arm_observed_array, one_drug_arm_observed_array)
-    treatment_arms_str     = np.append( np.array(num_theo_patients_per_trial_arm*['C']) , np.array(num_theo_patients_per_trial_arm*['E']) )
-    treatment_arms         = np.int_(treatment_arms_str == "C")
-
-    data = np.array([TTP_times, events, treatment_arms, treatment_arms_str]).transpose()
-    pd.DataFrame(data, columns=['TTP_times', 'events', 'treatment_arms', 'treatment_arms_str']).to_csv(relative_tmp_file_path)
-    command = ['Rscript', 'estimate_log_hazard_ratio.R', relative_tmp_file_path]
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    postulated_log_hazard_ratio = float(process.communicate()[0].decode().split()[1])
-
-    os.remove(relative_tmp_file_path)
-
-    prob_fail_placebo_arm = np.sum(one_placebo_arm_observed_array == True)/num_theo_patients_per_trial_arm
-    prob_fail_drug_arm    = np.sum(one_drug_arm_observed_array == True)/num_theo_patients_per_trial_arm
-
-    return [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
-
-
-def generate_one_map_point_analytical_quantities(monthly_mean, 
-                                                 monthly_std_dev,
-                                                 min_req_base_sz_count,
-                                                 num_baseline_months_per_patient,
-                                                 num_testing_months_per_patient,
-                                                 num_theo_patients_per_trial_arm,
-                                                 placebo_mu,
-                                                 placebo_sigma,
-                                                 drug_mu,
-                                                 drug_sigma,
-                                                 num_trials):
-
-    tmp_file_name = str(monthly_mean) + '_' + str(monthly_std_dev)
-
-    num_baseline_days_per_patient = num_baseline_months_per_patient*28
-    num_testing_days_per_patient  = num_testing_months_per_patient*28
-    num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
-
-    postulated_log_hazard_ratio_array = np.zeros(num_trials)
-    prob_fail_placebo_arm_array       = np.zeros(num_trials)
-    prob_fail_drug_arm_array          = np.zeros(num_trials)
-
-    for trial_index in range(num_trials):
-
-        trial_start_time_in_seconds = time.time()
-
-        [one_placebo_arm_TTP_times, one_placebo_arm_observed_array, 
-         one_drug_arm_TTP_times,    one_drug_arm_observed_array   ] = \
-            generate_one_trial_TTP_times(monthly_mean, 
-                                         monthly_std_dev,
-                                         min_req_base_sz_count,
-                                         num_baseline_days_per_patient,
-                                         num_testing_days_per_patient,
-                                         num_total_days_per_patient,
-                                         num_theo_patients_per_trial_arm,
-                                         placebo_mu,
-                                         placebo_sigma,
-                                         drug_mu,
-                                         drug_sigma)
-
-        [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm] = \
-            generate_one_trial_analytical_quantities(one_placebo_arm_TTP_times,
-                                                     one_placebo_arm_observed_array,
-                                                     one_drug_arm_TTP_times,
-                                                     one_drug_arm_observed_array,
-                                                     num_theo_patients_per_trial_arm,
-                                                     tmp_file_name)
-            
-        postulated_log_hazard_ratio_array[trial_index] = postulated_log_hazard_ratio
-        prob_fail_placebo_arm_array[trial_index]       = prob_fail_placebo_arm
-        prob_fail_drug_arm_array[trial_index]          = prob_fail_drug_arm
-
-        trial_total_runtime_in_seconds_str = str(np.round(time.time() - trial_start_time_in_seconds, 2))
-
-        print('trial #: ' + str(trial_index + 1) + ', runtime: ' + trial_total_runtime_in_seconds_str + ' seconds')
-        
-    average_postulated_log_hazard_ratio = np.mean(postulated_log_hazard_ratio_array)
-    average_prob_fail_placebo_arm       = np.mean(prob_fail_placebo_arm_array)
-    average_prob_fail_drug_arm          = np.mean(prob_fail_drug_arm_array)
-        
-    return [average_postulated_log_hazard_ratio, average_prob_fail_placebo_arm, average_prob_fail_drug_arm]
-
-
-def store_results(monthly_mean,
-                  monthly_std_dev,
-                  average_postulated_log_hazard_ratio, 
-                  average_prob_fail_placebo_arm, 
-                  average_prob_fail_drug_arm,
-                  folder):
-
-    json_file_name = str(monthly_mean) + '_' + str(monthly_std_dev)
-    json_file_path = folder + '/' + json_file_name + '.json'
-    if ( not os.path.isdir(folder) ):
-        os.makedirs(folder)
-    with open(json_file_path, 'w+') as json_file:
-        json.dump([average_postulated_log_hazard_ratio, average_prob_fail_placebo_arm, average_prob_fail_drug_arm], json_file)
-
-
-if(__name__=='__main__'):
-
-    monthly_mean                    =   int(sys.argv[1])
-    monthly_std_dev                 =   int(sys.argv[2])
-    min_req_base_sz_count           =   int(sys.argv[3])
-    num_baseline_months_per_patient =   int(sys.argv[4])
-    num_testing_months_per_patient  =   int(sys.argv[5])
-    num_theo_patients_per_trial_arm =   int(sys.argv[6])
-    placebo_mu                      = float(sys.argv[7])
-    placebo_sigma                   = float(sys.argv[8])
-    drug_mu                         = float(sys.argv[9])
-    drug_sigma                      = float(sys.argv[10])
-    num_trials                      =   int(sys.argv[11])
-    folder                          =       sys.argv[12]
-    
-    print([monthly_mean, monthly_std_dev])
-
-    [average_postulated_log_hazard_ratio, average_prob_fail_placebo_arm, average_prob_fail_drug_arm] = \
-        generate_one_map_point_analytical_quantities(monthly_mean, 
-                                                     monthly_std_dev,
-                                                     min_req_base_sz_count,
-                                                     num_baseline_months_per_patient,
-                                                     num_testing_months_per_patient,
-                                                     num_theo_patients_per_trial_arm,
-                                                     placebo_mu,
-                                                     placebo_sigma,
-                                                     drug_mu,
-                                                     drug_sigma,
-                                                     num_trials)
-
-    store_results(monthly_mean,
-                  monthly_std_dev,
-                  average_postulated_log_hazard_ratio, 
-                  average_prob_fail_placebo_arm, 
-                  average_prob_fail_drug_arm,
-                  folder)
-
-    print(str(np.round(np.array([average_postulated_log_hazard_ratio, 100*average_prob_fail_placebo_arm, 100*average_prob_fail_drug_arm]), 3)) + '\n')
-'''
 
