@@ -1,3 +1,4 @@
+: '
 #!/usr/bin/bash
 
 #SBATCH -p short
@@ -9,6 +10,7 @@
 #SBATCH -o jmr95_%j.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
+'
 
 monthly_mean_min=1
 monthly_mean_max=16
@@ -18,7 +20,7 @@ monthly_std_dev_max=16
 min_req_base_sz_count=4
 num_baseline_months_per_patient=2
 num_testing_months_per_patient=3
-num_patients_per_dot=5000
+num_patients_per_dot=50
 
 placebo_mu=0
 placebo_sigma=0.05
@@ -43,9 +45,12 @@ inputs[11]=$drug_sigma
 inputs[12]=$placebo_arm_median_TTP_time_map_file_name
 inputs[13]=$drug_arm_median_TTP_time_map_file_name
 
+: '
 module load gcc/6.2.0
 module load conda2/4.2.13
 module load python/3.6.0
 source activate main_env
+'
 
-srun -c 1 python -u create_median_TTP_time_map_per_trial_arm.py ${inputs[@]}
+#srun -c 1 python -u create_median_TTP_time_map_per_trial_arm.py ${inputs[@]}
+python -u create_median_TTP_time_map_per_trial_arm.py ${inputs[@]}
