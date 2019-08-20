@@ -36,4 +36,4 @@ module load conda2/4.2.13
 module load python/3.6.0
 source activate main_env
 
-python create_median_TTP_time_map_per_trial_arm.py -u ${inputs[@]}
+python -u create_median_TTP_time_map_per_trial_arm.py ${inputs[@]}
