@@ -30,7 +30,7 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-folder='/Users/juanromero/Documents/GitHub/rct-SNR/TTP Stuff/hist_maps_folder'
+folder='/n/scratch2/jmr95/cph_power_analysis_parameter_maps/log_hazard_ratio_map_data'
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
