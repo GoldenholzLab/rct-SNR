@@ -264,6 +264,47 @@ def generate_and_store_map_location_data(monthly_mean,
         store_map_location_data(folder, drug_map_location_file_name)
 
 
+def generate_and_store_map_data(monthly_mean_min, 
+                                monthly_mean_max,
+                                monthly_std_dev_min,
+                                monthly_std_dev_max,
+                                min_req_base_sz_count,
+                                num_baseline_days_per_patient,
+                                num_testing_days_per_patient,
+                                num_total_days_per_patient,
+                                num_patients_per_dot,
+                                placebo_mu,
+                                placebo_sigma,
+                                drug_mu,
+                                drug_sigma,
+                                folder):
+
+    for monthly_mean in np.arange(monthly_mean_min, monthly_mean_max + 1):
+        for monthly_std_dev in np.arange(monthly_std_dev_min, monthly_std_dev_max + 1):
+
+            map_point_start_time_in_seconds = time.time()
+
+            generate_and_store_map_location_data(monthly_mean,
+                                                 monthly_std_dev,
+                                                 min_req_base_sz_count,
+                                                 num_baseline_days_per_patient,
+                                                 num_testing_days_per_patient,
+                                                 num_total_days_per_patient,
+                                                 num_patients_per_dot,
+                                                 placebo_mu,
+                                                 placebo_sigma,
+                                                 drug_mu,
+                                                 drug_sigma,
+                                                 folder)
+
+            map_point_stop_time_in_seconds = time.time()
+            total_map_point_time_in_seconds = map_point_stop_time_in_seconds - map_point_start_time_in_seconds
+            total_map_point_time_in_minutes = total_map_point_time_in_seconds/60
+            total_map_point_time_in_minutes_str = str(np.round(total_map_point_time_in_minutes, 3))
+            map_point_runtime_str = str([monthly_mean, monthly_std_dev]) + ': ' + total_map_point_time_in_minutes_str + ' minutes'
+            print(map_point_runtime_str)
+
+
 if(__name__=='__main__'):
 
     monthly_mean_min    = 1
@@ -295,30 +336,20 @@ if(__name__=='__main__'):
 
     #------------------------------------------------------------------------------------------------------------------#
 
-    for monthly_mean in np.arange(monthly_mean_min, monthly_mean_max + 1):
-        for monthly_std_dev in np.arange(monthly_std_dev_min, monthly_std_dev_max + 1):
-
-            map_point_start_time_in_seconds = time.time()
-
-            generate_and_store_map_location_data(monthly_mean,
-                                                 monthly_std_dev,
-                                                 min_req_base_sz_count,
-                                                 num_baseline_days_per_patient,
-                                                 num_testing_days_per_patient,
-                                                 num_total_days_per_patient,
-                                                 num_patients_per_dot,
-                                                 placebo_mu,
-                                                 placebo_sigma,
-                                                 drug_mu,
-                                                 drug_sigma,
-                                                 folder)
-
-            map_point_stop_time_in_seconds = time.time()
-            total_map_point_time_in_seconds = map_point_stop_time_in_seconds - map_point_start_time_in_seconds
-            total_map_point_time_in_minutes = total_map_point_time_in_seconds/60
-            total_map_point_time_in_minutes_str = str(np.round(total_map_point_time_in_minutes, 3))
-            map_point_runtime_str = str([monthly_mean, monthly_std_dev]) + ': ' + total_map_point_time_in_minutes_str + ' minutes'
-            print(map_point_runtime_str)
+    generate_and_store_map_data(monthly_mean_min, 
+                                monthly_mean_max,
+                                monthly_std_dev_min,
+                                monthly_std_dev_max,
+                                min_req_base_sz_count,
+                                num_baseline_days_per_patient,
+                                num_testing_days_per_patient,
+                                num_total_days_per_patient,
+                                num_patients_per_dot,
+                                placebo_mu,
+                                placebo_sigma,
+                                drug_mu,
+                                drug_sigma,
+                                folder)
 
     #------------------------------------------------------------------------------------------------------------------#
     #------------------------------------------------------------------------------------------------------------------#
@@ -336,7 +367,7 @@ if(__name__=='__main__'):
     total_algorithm_runtime_in_seconds = algorithm_stop_time_in_seconds - algorithm_start_time_in_seconds
     total_algorithm_runtime_in_minutes = total_algorithm_runtime_in_seconds/60
     total_algorithm_runtime_in_minutes_str = str(np.round(total_algorithm_runtime_in_minutes, 3))
-    print('\ntotal algorithm runtime: ' + total_algorithm_runtime_in_minutes_str + ' minutes\nmemory used: ' + used_mem_in_gigabytes_str + ' GB\nWZ')
+    print('\ntotal algorithm runtime: ' + total_algorithm_runtime_in_minutes_str + ' minutes\nmemory used: ' + used_mem_in_gigabytes_str + ' GB\n')
 
 
 
