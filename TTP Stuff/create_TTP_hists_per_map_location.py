@@ -208,144 +208,100 @@ def generate_one_trial_TTP_times(monthly_mean,
             one_drug_arm_TTP_times,    one_drug_arm_observed_array   ]
 
 
-def generate_one_trial_median_TTP_times_per_arm(monthly_mean,
-                                                monthly_std_dev,
-                                                min_req_base_sz_count,
-                                                num_baseline_days_per_patient,
-                                                num_testing_days_per_patient,
-                                                num_total_days_per_patient,
-                                                num_patients_per_dot,
-                                                placebo_mu,
-                                                placebo_sigma,
-                                                drug_mu,
-                                                drug_sigma):
+def store_map_location_data(folder, file_name, data=None):
 
-    start_time_in_seconds = time.time()
-
-    [one_placebo_arm_TTP_times, _, 
-     one_drug_arm_TTP_times,    _] = \
-         generate_one_trial_TTP_times(monthly_mean,
-                                      monthly_std_dev,
-                                      min_req_base_sz_count,
-                                      num_baseline_days_per_patient,
-                                      num_testing_days_per_patient,
-                                      num_total_days_per_patient,
-                                      num_patients_per_dot,
-                                      placebo_mu,
-                                      placebo_sigma,
-                                      drug_mu,
-                                      drug_sigma)
-
-    num_placebo_arm_median_TTP_time = np.median(one_placebo_arm_TTP_times)
-    num_drug_arm_median_TTP_time    = np.median(one_drug_arm_TTP_times)
-
-    num_placebo_arm_median_TTP_time_occurrences = np.sum(one_placebo_arm_TTP_times == num_placebo_arm_median_TTP_time)
-    num_drug_arm_median_TTP_time_occurrences    = np.sum(one_placebo_arm_TTP_times == num_drug_arm_median_TTP_time)
-
-    stop_time_in_seconds = time.time()
-    total_runtime_in_seconds = stop_time_in_seconds - start_time_in_seconds
-    total_runtime_in_minutes = total_runtime_in_seconds/60
-    total_runtime_in_minutes_str = str(np.round(total_runtime_in_minutes, 3))
+    if( not os.path.isdir(folder) ):
+        os.makedirs(folder)
     
-    print('\n[monthly mean, monthly standard deviation]: ' + str([monthly_mean, monthly_std_dev]) + '\ntotal runtime: ' + total_runtime_in_minutes_str + ' minutes\n')
+    if( data is None ):
+        file_path = folder + '/' + file_name + '_nan' + '.json'
+        with open(file_path, 'w+') as map_file:
+            map_file.write('file is empty')
+    else:
+        file_path = folder + '/' + file_name + '.json'
+        with open(file_path, 'w+') as map_file:
+            json.dump(data.tolist(), map_file)
 
-    return [num_placebo_arm_median_TTP_time, num_placebo_arm_median_TTP_time_occurrences,
-            num_drug_arm_median_TTP_time,    num_drug_arm_median_TTP_time_occurrences   ]
 
-
-def create_median_TTP_time_map_per_trial_arm(monthly_mean_min,
-                                             monthly_mean_max,
-                                             monthly_std_dev_min,
-                                             monthly_std_dev_max,
-                                             min_req_base_sz_count,
-                                             num_baseline_days_per_patient,
-                                             num_testing_days_per_patient,
-                                             num_total_days_per_patient,
-                                             num_patients_per_dot,
-                                             placebo_mu,
-                                             placebo_sigma,
-                                             drug_mu,
-                                             drug_sigma):
+def generate_and_store_map_location_data(monthly_mean,
+                                         monthly_std_dev,
+                                         min_req_base_sz_count,
+                                         num_baseline_days_per_patient,
+                                         num_testing_days_per_patient,
+                                         num_total_days_per_patient,
+                                         num_patients_per_dot,
+                                         placebo_mu,
+                                         placebo_sigma,
+                                         drug_mu,
+                                         drug_sigma,
+                                         folder):
     
-    monthly_mean_array    = np.arange(monthly_mean_min,    monthly_mean_max    + 1)
-    monthly_std_dev_array = np.arange(monthly_std_dev_min, monthly_std_dev_max + 1)
-    num_monthly_means     = len(monthly_mean_array)
-    num_monthly_std_dev   = len(monthly_std_dev_array)
+    placebo_map_location_file_name = str(monthly_mean) + '_' + str(monthly_std_dev) + '_placebo'
+    drug_map_location_file_name    = str(monthly_mean) + '_' + str(monthly_std_dev) + '_drug'
 
-    placebo_arm_median_TTP_time_map = np.zeros((num_monthly_std_dev, num_monthly_means))
-    drug_arm_median_TTP_time_map    = np.zeros((num_monthly_std_dev, num_monthly_means))
+    if(monthly_std_dev > np.sqrt(monthly_mean)):
 
-    for monthly_mean_index in range(num_monthly_means):
-        for monthly_std_dev_index in range(num_monthly_std_dev):
+        [one_placebo_arm_TTP_times, _, 
+         one_drug_arm_TTP_times,    _] = \
+             generate_one_trial_TTP_times(monthly_mean,
+                                          monthly_std_dev,
+                                          min_req_base_sz_count,
+                                          num_baseline_days_per_patient,
+                                          num_testing_days_per_patient,
+                                          num_total_days_per_patient,
+                                          num_patients_per_dot,
+                                          placebo_mu,
+                                          placebo_sigma,
+                                          drug_mu,
+                                          drug_sigma)
 
-            monthly_mean    = monthly_mean_array[monthly_mean_index]
-            monthly_std_dev = monthly_std_dev_max - monthly_std_dev_array[monthly_std_dev_index] + 1
-
-            if(monthly_std_dev > np.sqrt(monthly_mean)):
-
-                [num_placebo_arm_median_TTP_time, _,
-                 num_drug_arm_median_TTP_time,    _] = \
-                     generate_one_trial_median_TTP_times_per_arm(monthly_mean,
-                                                                 monthly_std_dev,
-                                                                 min_req_base_sz_count,
-                                                                 num_baseline_days_per_patient,
-                                                                 num_testing_days_per_patient,
-                                                                 num_total_days_per_patient,
-                                                                 num_patients_per_dot,
-                                                                 placebo_mu,
-                                                                 placebo_sigma,
-                                                                 drug_mu,
-                                                                 drug_sigma)
-
-                placebo_arm_median_TTP_time_map[monthly_std_dev_index, monthly_mean_index] = num_placebo_arm_median_TTP_time
-                drug_arm_median_TTP_time_map[monthly_std_dev_index, monthly_mean_index]    = num_drug_arm_median_TTP_time
-            
-            else:
-
-                placebo_arm_median_TTP_time_map[monthly_std_dev_index, monthly_mean_index] = np.nan
-                drug_arm_median_TTP_time_map[monthly_std_dev_index, monthly_mean_index]    = np.nan
+        store_map_location_data(folder, placebo_map_location_file_name, one_placebo_arm_TTP_times)
+        store_map_location_data(folder, drug_map_location_file_name,    one_drug_arm_TTP_times)
     
-    return [placebo_arm_median_TTP_time_map, drug_arm_median_TTP_time_map]
+    else:
 
-
-def store_map(map, map_file_name, map_folder):
-
-    map_file_path = map_folder + '/' + map_file_name + '.map'
-    with open(map_file_path, 'w+') as json_file: 
-        json.dump(map.tolist(), json_file)
+        store_map_location_data(folder, placebo_map_location_file_name)
+        store_map_location_data(folder, drug_map_location_file_name)
 
 
 if(__name__=='__main__'):
 
-    monthly_mean_min    = int(sys.argv[1])
-    monthly_mean_max    = int(sys.argv[2])
-    monthly_std_dev_min = int(sys.argv[3])
-    monthly_std_dev_max = int(sys.argv[4])
+    monthly_mean_min    = 1
+    monthly_mean_max    = 16
+    monthly_std_dev_min = 1
+    monthly_std_dev_max = 16
 
-    min_req_base_sz_count           = int(sys.argv[5])
-    num_baseline_months_per_patient = int(sys.argv[6])
-    num_testing_months_per_patient  = int(sys.argv[7])
-    num_patients_per_dot            = int(sys.argv[8])
+    min_req_base_sz_count           = 4
+    num_baseline_months_per_patient = 2
+    num_testing_months_per_patient  = 3
+    num_patients_per_dot            = 5000
 
-    placebo_mu    = float(sys.argv[9])
-    placebo_sigma = float(sys.argv[10])
-    drug_mu       = float(sys.argv[11])
-    drug_sigma    = float(sys.argv[12])
+    placebo_mu    = 0
+    placebo_sigma = 0.05
+    drug_mu       = 0.2
+    drug_sigma    = 0.05
 
-    placebo_arm_median_TTP_time_map_file_name = sys.argv[13]
-    drug_arm_median_TTP_time_map_file_name    = sys.argv[14]
+    folder = os.getcwd() + '/hist_maps_folder'
 
     algorithm_start_time_in_seconds = time.time()
+
+    #------------------------------------------------------------------------------------------------------------------#
+    #------------------------------------------------------------------------------------------------------------------#
+    #------------------------------------------------------------------------------------------------------------------#
 
     num_baseline_days_per_patient = num_baseline_months_per_patient*28
     num_testing_days_per_patient  = num_testing_months_per_patient*28
     num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
 
-    [placebo_arm_median_TTP_time_map, drug_arm_median_TTP_time_map] = \
-        create_median_TTP_time_map_per_trial_arm(monthly_mean_min,
-                                                 monthly_mean_max,
-                                                 monthly_std_dev_min,
-                                                 monthly_std_dev_max,
+    #------------------------------------------------------------------------------------------------------------------#
+
+    for monthly_mean in np.arange(monthly_mean_min, monthly_mean_max + 1):
+        for monthly_std_dev in np.arange(monthly_std_dev_min, monthly_std_dev_max + 1):
+
+            map_point_start_time_in_seconds = time.time()
+
+            generate_and_store_map_location_data(monthly_mean,
+                                                 monthly_std_dev,
                                                  min_req_base_sz_count,
                                                  num_baseline_days_per_patient,
                                                  num_testing_days_per_patient,
@@ -354,10 +310,19 @@ if(__name__=='__main__'):
                                                  placebo_mu,
                                                  placebo_sigma,
                                                  drug_mu,
-                                                 drug_sigma)
+                                                 drug_sigma,
+                                                 folder)
 
-    store_map(placebo_arm_median_TTP_time_map, placebo_arm_median_TTP_time_map_file_name, os.getcwd())
-    store_map(drug_arm_median_TTP_time_map,    drug_arm_median_TTP_time_map_file_name,    os.getcwd())
+            map_point_stop_time_in_seconds = time.time()
+            total_map_point_time_in_seconds = map_point_stop_time_in_seconds - map_point_start_time_in_seconds
+            total_map_point_time_in_minutes = total_map_point_time_in_seconds/60
+            total_map_point_time_in_minutes_str = str(np.round(total_map_point_time_in_minutes, 3))
+            map_point_runtime_str = str([monthly_mean, monthly_std_dev]) + ': ' + total_map_point_time_in_minutes_str + ' minutes'
+            print(map_point_runtime_str)
+
+    #------------------------------------------------------------------------------------------------------------------#
+    #------------------------------------------------------------------------------------------------------------------#
+    #------------------------------------------------------------------------------------------------------------------#
 
     algorithm_stop_time_in_seconds = time.time()
 
