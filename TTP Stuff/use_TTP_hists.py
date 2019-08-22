@@ -104,7 +104,7 @@ def calculate_one_trial_analytical_quantities(placebo_arm_TTP_times,
     return [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
 
 
-def 
+
 
 
 if(__name__=='__main__'):
