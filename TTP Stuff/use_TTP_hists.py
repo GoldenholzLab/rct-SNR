@@ -70,13 +70,13 @@ def retrieve_theo_patient_pop_TTP_times(monthly_mean_min,
     
     num_TTP_times = len(trial_arm_TTP_times)
 
-    trial_arm_TTP_observed_array = np.zeros(num_TTP_times)
-    trial_arm_TTP_observed_array[ trial_arm_TTP_times == 84 ] = 1
+    trial_arm_TTP_observed_array = np.ones(num_TTP_times)
+    trial_arm_TTP_observed_array[ trial_arm_TTP_times == 84 ] = 0
 
     return [trial_arm_TTP_times, trial_arm_TTP_observed_array]
 
 
-def generate_one_trial_analytical_quantities(placebo_arm_TTP_times,
+def calculate_one_trial_analytical_quantities(placebo_arm_TTP_times,
                                              placebo_arm_TTP_observed_array,
                                              drug_arm_TTP_times,
                                              drug_arm_TTP_observed_array,
@@ -104,6 +104,9 @@ def generate_one_trial_analytical_quantities(placebo_arm_TTP_times,
     return [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
 
 
+def 
+
+
 if(__name__=='__main__'):
 
     monthly_mean_min    = 4
@@ -111,7 +114,7 @@ if(__name__=='__main__'):
     monthly_std_dev_min = 1
     monthly_std_dev_max = 8
 
-    num_theo_patients_per_trial_arm = 1
+    num_theo_patients_per_trial_arm = 153
     num_patients_per_dot            = 5000
 
     folder = os.getcwd() + '/hist_maps_folder'
@@ -140,19 +143,13 @@ if(__name__=='__main__'):
     tmp_file_name = 'tmp'
 
     [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm] = \
-        generate_one_trial_analytical_quantities(placebo_arm_TTP_times,
-                                                 placebo_arm_TTP_observed_array,
-                                                 drug_arm_TTP_times,
-                                                 drug_arm_TTP_observed_array,
-                                                 num_theo_patients_per_trial_arm,
-                                                 num_patients_per_dot,
-                                                 tmp_file_name)
+        calculate_one_trial_analytical_quantities(placebo_arm_TTP_times,
+                                                  placebo_arm_TTP_observed_array,
+                                                  drug_arm_TTP_times,
+                                                  drug_arm_TTP_observed_array,
+                                                  num_theo_patients_per_trial_arm,
+                                                  num_patients_per_dot,
+                                                  tmp_file_name)
     
-    print(np.round(np.array([postulated_log_hazard_ratio, 100*prob_fail_placebo_arm, 100*prob_fail_drug_arm]), 6))
-
-    import matplotlib.pyplot as plt
-    plt.figure()
-    plt.hist()
-    plt.figure()
-    plt.hist()
-    plt.show()
+    
+    
