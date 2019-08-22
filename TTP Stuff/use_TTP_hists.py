@@ -76,6 +76,34 @@ def retrieve_theo_patient_pop_TTP_times(monthly_mean_min,
     return [trial_arm_TTP_times, trial_arm_TTP_observed_array]
 
 
+def generate_one_trial_analytical_quantities(placebo_arm_TTP_times,
+                                             placebo_arm_TTP_observed_array,
+                                             drug_arm_TTP_times,
+                                             drug_arm_TTP_observed_array,
+                                             num_theo_patients_per_trial_arm,
+                                             num_patients_per_dot,
+                                             tmp_file_name):
+
+    relative_tmp_file_path = tmp_file_name + '.csv'
+    TTP_times              = np.append(placebo_arm_TTP_times, drug_arm_TTP_times)
+    events                 = np.append(placebo_arm_TTP_observed_array, drug_arm_TTP_observed_array)
+    treatment_arms_str     = np.append( np.array(num_theo_patients_per_trial_arm*num_patients_per_dot*['C']) , np.array(num_theo_patients_per_trial_arm*num_patients_per_dot*['E']) )
+    treatment_arms         = np.int_(treatment_arms_str == "C")
+
+    data = np.array([TTP_times, events, treatment_arms, treatment_arms_str]).transpose()
+    pd.DataFrame(data, columns=['TTP_times', 'events', 'treatment_arms', 'treatment_arms_str']).to_csv(relative_tmp_file_path)
+    command = ['Rscript', 'estimate_log_hazard_ratio.R', relative_tmp_file_path]
+    process = subprocess.Popen(command, stdout=subprocess.PIPE)
+    postulated_log_hazard_ratio = float(process.communicate()[0].decode().split()[1])
+
+    os.remove(relative_tmp_file_path)
+
+    prob_fail_placebo_arm = np.sum(placebo_arm_TTP_observed_array == True)/(num_theo_patients_per_trial_arm*num_patients_per_dot)
+    prob_fail_drug_arm    = np.sum(drug_arm_TTP_observed_array == True)/(num_theo_patients_per_trial_arm*num_patients_per_dot)
+
+    return [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
+
+
 if(__name__=='__main__'):
 
     monthly_mean_min    = 4
@@ -83,7 +111,8 @@ if(__name__=='__main__'):
     monthly_std_dev_min = 1
     monthly_std_dev_max = 8
 
-    num_theo_patients_per_trial_arm = 15
+    num_theo_patients_per_trial_arm = 1
+    num_patients_per_dot            = 5000
 
     folder = os.getcwd() + '/hist_maps_folder'
 
@@ -107,12 +136,23 @@ if(__name__=='__main__'):
                                             num_theo_patients_per_trial_arm,
                                             folder,
                                             drug_arm_str)
-    
-    tmp_file_name = 'tmp'
-    relative_tmp_file_path = tmp_file_name + '.csv'
-    TTP_times              = np.append(placebo_arm_TTP_times, drug_arm_TTP_times)
-    events                 = np.append(placebo_arm_TTP_observed_array, drug_arm_TTP_observed_array)
-    treatment_arms_str     = np.append( np.array(num_theo_patients_per_trial_arm*['C']) , np.array(num_theo_patients_per_trial_arm*['E']) )
-    treatment_arms         = np.int_(treatment_arms_str == "C")
 
-    print( pd.DataFrame( np.array([TTP_times, events, treatment_arms, treatment_arms_str]) ).to_string() )
+    tmp_file_name = 'tmp'
+
+    [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm] = \
+        generate_one_trial_analytical_quantities(placebo_arm_TTP_times,
+                                                 placebo_arm_TTP_observed_array,
+                                                 drug_arm_TTP_times,
+                                                 drug_arm_TTP_observed_array,
+                                                 num_theo_patients_per_trial_arm,
+                                                 num_patients_per_dot,
+                                                 tmp_file_name)
+    
+    print(np.round(np.array([postulated_log_hazard_ratio, 100*prob_fail_placebo_arm, 100*prob_fail_drug_arm]), 6))
+
+    import matplotlib.pyplot as plt
+    plt.figure()
+    plt.hist()
+    plt.figure()
+    plt.hist()
+    plt.show()
