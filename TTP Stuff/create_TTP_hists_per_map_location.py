@@ -322,7 +322,7 @@ if(__name__=='__main__'):
     drug_mu       = float(sys.argv[11])
     drug_sigma    = float(sys.argv[12])
 
-    folder = sys.argv[12]
+    folder = sys.argv[13]
 
     algorithm_start_time_in_seconds = time.time()
 
