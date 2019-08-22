@@ -307,22 +307,22 @@ def generate_and_store_map_data(monthly_mean_min,
 
 if(__name__=='__main__'):
 
-    monthly_mean_min    = 1
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
+    monthly_mean_min    = int(sys.argv[1])
+    monthly_mean_max    = int(sys.argv[2])
+    monthly_std_dev_min = int(sys.argv[3])
+    monthly_std_dev_max = int(sys.argv[4])
 
-    min_req_base_sz_count           = 4
-    num_baseline_months_per_patient = 2
-    num_testing_months_per_patient  = 3
-    num_patients_per_dot            = 5000
+    min_req_base_sz_count           = int(sys.argv[5])
+    num_baseline_months_per_patient = int(sys.argv[6])
+    num_testing_months_per_patient  = int(sys.argv[7])
+    num_patients_per_dot            = int(sys.argv[8])
 
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
+    placebo_mu    = float(sys.argv[9])
+    placebo_sigma = float(sys.argv[10])
+    drug_mu       = float(sys.argv[11])
+    drug_sigma    = float(sys.argv[12])
 
-    folder = os.getcwd() + '/hist_maps_folder'
+    folder = sys.argv[12]
 
     algorithm_start_time_in_seconds = time.time()
 
