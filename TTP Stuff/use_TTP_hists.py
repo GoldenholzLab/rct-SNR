@@ -87,7 +87,7 @@ def calculate_one_trial_analytical_quantities(placebo_arm_TTP_times,
     relative_tmp_file_path = tmp_file_name + '.csv'
     TTP_times              = np.append(placebo_arm_TTP_times, drug_arm_TTP_times)
     events                 = np.append(placebo_arm_TTP_observed_array, drug_arm_TTP_observed_array)
-    treatment_arms_str     = np.append( np.array(num_theo_patients_per_trial_arm*num_patients_per_dot*['C']) , np.array(num_theo_patients_per_trial_arm*num_patients_per_dot*['E']) )
+    treatment_arms_str     = np.append( np.array(num_theo_patients_per_trial_arm*num_patients_per_dot*['C']), np.array(num_theo_patients_per_trial_arm*num_patients_per_dot*['E']) )
     treatment_arms         = np.int_(treatment_arms_str == "C")
 
     data = np.array([TTP_times, events, treatment_arms, treatment_arms_str]).transpose()
