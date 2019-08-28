@@ -116,13 +116,15 @@ if(__name__=='__main__'):
 
     num_theo_patients_per_trial_arm = 153
     num_patients_per_dot            = 5000
+    alpha                           = 0.05
 
     folder = os.getcwd() + '/hist_maps_folder'
 
     placebo_arm_str = 'placebo'
     drug_arm_str    = 'drug'
 
-    [placebo_arm_TTP_times, placebo_arm_TTP_observed_array] = \
+    [placebo_arm_TTP_times, 
+     placebo_arm_TTP_observed_array] = \
         retrieve_theo_patient_pop_TTP_times(monthly_mean_min,
                                             monthly_mean_max, 
                                             monthly_std_dev_min, 
@@ -131,7 +133,8 @@ if(__name__=='__main__'):
                                             folder,
                                             placebo_arm_str)
     
-    [drug_arm_TTP_times, drug_arm_TTP_observed_array] = \
+    [drug_arm_TTP_times, 
+     drug_arm_TTP_observed_array] = \
         retrieve_theo_patient_pop_TTP_times(monthly_mean_min,
                                             monthly_mean_max, 
                                             monthly_std_dev_min, 
@@ -142,7 +145,9 @@ if(__name__=='__main__'):
 
     tmp_file_name = 'tmp'
 
-    [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm] = \
+    [postulated_log_hazard_ratio, 
+     prob_fail_placebo_arm, 
+     prob_fail_drug_arm         ] = \
         calculate_one_trial_analytical_quantities(placebo_arm_TTP_times,
                                                   placebo_arm_TTP_observed_array,
                                                   drug_arm_TTP_times,
@@ -150,6 +155,13 @@ if(__name__=='__main__'):
                                                   num_theo_patients_per_trial_arm,
                                                   num_patients_per_dot,
                                                   tmp_file_name)
+
+    command        = ['Rscript', 'calculate_cph_power.R', str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm), 
+                      str(prob_fail_drug_arm), str(prob_fail_placebo_arm), str(postulated_log_hazard_ratio), str(alpha)]
+    process        = subprocess.Popen(command, stdout=subprocess.PIPE)
+    ana_stat_power = 100*float(process.communicate()[0].decode().split()[1])
+
+    print([postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm, ana_stat_power])
     
     
     
