@@ -77,12 +77,12 @@ def retrieve_theo_patient_pop_TTP_times(monthly_mean_min,
 
 
 def calculate_one_trial_analytical_quantities(placebo_arm_TTP_times,
-                                             placebo_arm_TTP_observed_array,
-                                             drug_arm_TTP_times,
-                                             drug_arm_TTP_observed_array,
-                                             num_theo_patients_per_trial_arm,
-                                             num_patients_per_dot,
-                                             tmp_file_name):
+                                              placebo_arm_TTP_observed_array,
+                                              drug_arm_TTP_times,
+                                              drug_arm_TTP_observed_array,
+                                              num_theo_patients_per_trial_arm,
+                                              num_patients_per_dot,
+                                              tmp_file_name):
 
     relative_tmp_file_path = tmp_file_name + '.csv'
     TTP_times              = np.append(placebo_arm_TTP_times, drug_arm_TTP_times)
