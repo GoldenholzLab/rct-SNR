@@ -6,6 +6,7 @@ import pandas as pd
 from lifelines.statistics import logrank_test
 import time
 import sys
+import psutil
 
 
 def generate_patient_pop_params(monthly_mean_min,
@@ -525,6 +526,8 @@ if(__name__=='__main__'):
     stat_power_storage_folder =     sys.argv[17]
     stat_power_estimate_index = int(sys.argv[18])
 
+    program_start_time_in_seconds = time.time()
+
     [emp_stat_power, map_stat_power] = \
         estimate_empirical_and_map_stat_powers(monthly_mean_min,
                                                monthly_mean_max, 
@@ -543,6 +546,20 @@ if(__name__=='__main__'):
                                                alpha,
                                                hist_maps_folder,
                                                stat_power_estimate_index)
+
+    program_stop_time_in_seconds = time.time()
+    total_program_runtime_in_seconds = program_stop_time_in_seconds - program_start_time_in_seconds
+    total_program_runtime_in_minutes = total_program_runtime_in_seconds/60
+    total_program_runtime_in_minutes_str = str(np.round(total_program_runtime_in_minutes, 3))
+
+    svem = psutil.virtual_memory()
+    total_mem_in_bytes = svem.total
+    available_mem_in_bytes = svem.available
+    used_mem_in_bytes = total_mem_in_bytes - available_mem_in_bytes
+    used_mem_in_gigabytes = used_mem_in_bytes/np.power(1024, 3)
+    used_mem_in_gigabytes_str = str(np.round(used_mem_in_gigabytes, 3))
+
+    print('\n' + str(stat_power_estimate_index) + '\ntotal program runtime: ' + total_program_runtime_in_minutes_str + ' minutes\nmemory used: ' + used_mem_in_gigabytes_str + ' GB\n')
 
     if( not os.path.isdir(stat_power_storage_folder) ):
         os.makedirs(stat_power_storage_folder)
