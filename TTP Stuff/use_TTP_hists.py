@@ -5,6 +5,7 @@ import subprocess
 import pandas as pd
 from lifelines.statistics import logrank_test
 import time
+import sys
 
 
 def generate_patient_pop_params(monthly_mean_min,
@@ -501,28 +502,30 @@ def estimate_empirical_and_map_stat_powers(monthly_mean_min,
 
 if(__name__=='__main__'):
 
-    monthly_mean_min    = 4
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 8
+    monthly_mean_min    = int(sys.argv[1])
+    monthly_mean_max    = int(sys.argv[2])
+    monthly_std_dev_min = int(sys.argv[3])
+    monthly_std_dev_max = int(sys.argv[4])
 
-    num_baseline_months_per_patient = 2
-    num_testing_months_per_patient  = 3
-    min_req_base_sz_count           = 4
+    num_baseline_months_per_patient = int(sys.argv[5])
+    num_testing_months_per_patient  = int(sys.argv[6])
+    min_req_base_sz_count           = int(sys.argv[7])
 
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
+    placebo_mu    = float(sys.argv[8])
+    placebo_sigma = float(sys.argv[9])
+    drug_mu       = float(sys.argv[10])
+    drug_sigma    = float(sys.argv[11])
 
-    num_trials                      = 100
-    num_theo_patients_per_trial_arm = 153
-    num_patients_per_dot            = 5000
-    alpha                           = 0.05
+    num_trials                      =   int(sys.argv[12])
+    num_theo_patients_per_trial_arm =   int(sys.argv[13])
+    num_patients_per_dot            =   int(sys.argv[14])
+    alpha                           = float(sys.argv[15])
 
-    hist_maps_folder          = os.getcwd() + '/hist_maps_folder'
-    stat_power_storage_folder = '/Users/juanromero/Documents/Python_3_Files/useless_folder'
-    stat_power_estimate_index = 0
+    print([sys.argv[16], sys.argv[17]])
+
+    hist_maps_folder          =     sys.argv[16]
+    stat_power_storage_folder =     sys.argv[17]
+    stat_power_estimate_index = int(sys.argv[18])
 
     [emp_stat_power, map_stat_power] = \
         estimate_empirical_and_map_stat_powers(monthly_mean_min,
