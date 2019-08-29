@@ -14,14 +14,14 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=10
-num_theo_patients_per_trial_arm=15
+num_trials=10000
+num_theo_patients_per_trial_arm=153
 num_patients_per_dot=5000
 alpha=0.05
 
 hist_maps_folder="$(pwd)/hist_maps_folder"
 stat_power_storage_folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
-num_stat_power_estimates=5
+num_stat_power_estimates=1000
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
