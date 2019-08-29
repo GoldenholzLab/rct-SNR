@@ -23,8 +23,6 @@ hist_maps_folder="$(pwd)/hist_maps_folder"
 stat_power_storage_folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
 num_stat_power_estimates=5
 
-
-
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
 inputs[2]=$monthly_std_dev_min
@@ -42,8 +40,6 @@ inputs[13]=$num_patients_per_dot
 inputs[14]=$alpha
 inputs[15]=$hist_maps_folder
 inputs[16]=$stat_power_storage_folder
-
-#echo ${inputs[@]}
 
 for ((stat_power_estimate_index=1; stat_power_estimate_index<=$num_stat_power_estimates ; stat_power_estimate_index=stat_power_estimate_index+1))
 do
