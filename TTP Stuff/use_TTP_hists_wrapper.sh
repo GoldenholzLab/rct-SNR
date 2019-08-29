@@ -21,7 +21,8 @@ alpha=0.05
 
 hist_maps_folder="$(pwd)/hist_maps_folder"
 stat_power_storage_folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
-num_stat_power_estimates=10
+num_stat_power_estimates=5
+
 
 
 inputs[0]=$monthly_mean_min
@@ -35,12 +36,18 @@ inputs[7]=$placebo_mu
 inputs[8]=$placebo_sigma
 inputs[9]=$drug_mu
 inputs[10]=$drug_sigma
-inputs[11]=$hist_maps_folder
-inputs[12]=$stat_power_storage_folder
+inputs[11]=$num_trials
+inputs[12]=$num_theo_patients_per_trial_arm
+inputs[13]=$num_patients_per_dot
+inputs[14]=$alpha
+inputs[15]=$hist_maps_folder
+inputs[16]=$stat_power_storage_folder
+
+#echo ${inputs[@]}
 
 for ((stat_power_estimate_index=1; stat_power_estimate_index<=$num_stat_power_estimates ; stat_power_estimate_index=stat_power_estimate_index+1))
 do
-    inputs[13]=$stat_power_estimate_index
+    inputs[17]=$stat_power_estimate_index
 
     python -u use_TTP_hists.py ${inputs[@]} 
 
