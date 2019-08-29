@@ -340,18 +340,18 @@ def generate_one_trial_TTP_times(placebo_arm_patient_pop_monthly_param_sets,
             one_drug_arm_TTP_times,    one_drug_arm_observed_array   ]
 
 
-def calculate_one_trial_p_value_and_analytical_quantities(placebo_arm_patient_pop_monthly_param_sets,
-                                                          drug_arm_patient_pop_monthly_param_sets,
-                                                          num_theo_patients_per_trial_arm,
-                                                          num_baseline_days_per_patient,
-                                                          num_testing_days_per_patient,
-                                                          num_total_days_per_patient,
-                                                          min_req_base_sz_count,
-                                                          placebo_mu,
-                                                          placebo_sigma,
-                                                          drug_mu,
-                                                          drug_sigma,
-                                                          tmp_file_name):
+def calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
+                                drug_arm_patient_pop_monthly_param_sets,
+                                num_theo_patients_per_trial_arm,
+                                num_baseline_days_per_patient,
+                                num_testing_days_per_patient,
+                                num_total_days_per_patient,
+                                min_req_base_sz_count,
+                                placebo_mu,
+                                placebo_sigma,
+                                drug_mu,
+                                drug_sigma,
+                                tmp_file_name):
 
     [one_placebo_arm_TTP_times, one_placebo_arm_observed_array, 
      one_drug_arm_TTP_times,    one_drug_arm_observed_array   ] = \
@@ -382,7 +382,7 @@ def calculate_one_trial_p_value_and_analytical_quantities(placebo_arm_patient_po
                                                   1,
                                                   tmp_file_name)
 
-    return [TTP_p_value, postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm]
+    return TTP_p_value
 
 
 def calculate_empirical_and_semianalytical_statistical_power(placebo_arm_patient_pop_monthly_param_sets,
@@ -400,9 +400,6 @@ def calculate_empirical_and_semianalytical_statistical_power(placebo_arm_patient
                                                              stat_power_estimate_index):
 
     p_value_array = np.zeros(num_trials)
-    plhr_array    = np.zeros(num_trials)
-    prob_fail_placebo_arm_array = np.zeros(num_trials)
-    prob_fail_drug_arm_array = np.zeros(num_trials)
 
     for trial_index in range(num_trials):
 
@@ -410,22 +407,19 @@ def calculate_empirical_and_semianalytical_statistical_power(placebo_arm_patient
 
         tmp_file_name = str(trial_index) + '_' + str(stat_power_estimate_index)
 
-        [p_value_array[trial_index], 
-         plhr_array[trial_index], 
-         prob_fail_placebo_arm_array[trial_index], 
-         prob_fail_drug_arm_array[trial_index]    ] = \
-            calculate_one_trial_p_value_and_analytical_quantities(placebo_arm_patient_pop_monthly_param_sets,
-                                                                  drug_arm_patient_pop_monthly_param_sets,
-                                                                  num_theo_patients_per_trial_arm,
-                                                                  num_baseline_days_per_patient,
-                                                                  num_testing_days_per_patient,
-                                                                  num_total_days_per_patient,
-                                                                  min_req_base_sz_count,
-                                                                  placebo_mu,
-                                                                  placebo_sigma,
-                                                                  drug_mu,
-                                                                  drug_sigma,
-                                                                  tmp_file_name)
+        p_value_array[trial_index] = \
+            calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
+                                        drug_arm_patient_pop_monthly_param_sets,
+                                        num_theo_patients_per_trial_arm,
+                                        num_baseline_days_per_patient,
+                                        num_testing_days_per_patient,
+                                        num_total_days_per_patient,
+                                        min_req_base_sz_count,
+                                        placebo_mu,
+                                        placebo_sigma,
+                                        drug_mu,
+                                        drug_sigma,
+                                        tmp_file_name)
         
         trial_stop_time_in_seconds = time.time()
         trial_runtime_str = str(np.round((trial_stop_time_in_seconds - trial_start_time_in_seconds)/60, 3))
@@ -433,17 +427,7 @@ def calculate_empirical_and_semianalytical_statistical_power(placebo_arm_patient
     
     emp_stat_power = 100*np.sum(p_value_array < 0.05)/num_trials
 
-    average_log_hazard_ratio = np.mean(plhr_array)
-    average_hazard_ratio     = np.exp(average_log_hazard_ratio)
-    prob_fail_placebo_arm    = np.mean(prob_fail_placebo_arm_array)
-    prob_fail_drug_arm       = np.mean(prob_fail_drug_arm_array)
-
-    command        = ['Rscript', 'calculate_cph_power.R', str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm), 
-                      str(prob_fail_drug_arm), str(prob_fail_placebo_arm), str(average_hazard_ratio), str(alpha)]
-    process        = subprocess.Popen(command, stdout=subprocess.PIPE)
-    semi_ana_stat_power = 100*float(process.communicate()[0].decode().split()[1])
-
-    return [emp_stat_power, semi_ana_stat_power]
+    return emp_stat_power
 
 
 if(__name__=='__main__'):
