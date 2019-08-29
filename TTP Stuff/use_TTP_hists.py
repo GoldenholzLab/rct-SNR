@@ -373,31 +373,22 @@ def calculate_one_trial_p_value(placebo_arm_patient_pop_monthly_param_sets,
                                one_drug_arm_observed_array)
     TTP_p_value = TTP_results.p_value
 
-    [postulated_log_hazard_ratio, prob_fail_placebo_arm, prob_fail_drug_arm] = \
-        calculate_one_trial_analytical_quantities(one_placebo_arm_TTP_times,
-                                                  one_placebo_arm_observed_array,
-                                                  one_drug_arm_TTP_times,
-                                                  one_drug_arm_observed_array,
-                                                  num_theo_patients_per_trial_arm,
-                                                  1,
-                                                  tmp_file_name)
-
     return TTP_p_value
 
 
-def calculate_empirical_and_semianalytical_statistical_power(placebo_arm_patient_pop_monthly_param_sets,
-                                                             drug_arm_patient_pop_monthly_param_sets,
-                                                             num_theo_patients_per_trial_arm,
-                                                             num_baseline_days_per_patient,
-                                                             num_testing_days_per_patient,
-                                                             num_total_days_per_patient,
-                                                             min_req_base_sz_count,
-                                                             placebo_mu,
-                                                             placebo_sigma,
-                                                             drug_mu,
-                                                             drug_sigma,
-                                                             num_trials,
-                                                             stat_power_estimate_index):
+def calculate_empirical_power(placebo_arm_patient_pop_monthly_param_sets,
+                              drug_arm_patient_pop_monthly_param_sets,
+                              num_theo_patients_per_trial_arm,
+                              num_baseline_days_per_patient,
+                              num_testing_days_per_patient,
+                              num_total_days_per_patient,
+                              min_req_base_sz_count,
+                              placebo_mu,
+                              placebo_sigma,
+                              drug_mu,
+                              drug_sigma,
+                              num_trials,
+                              stat_power_estimate_index):
 
     p_value_array = np.zeros(num_trials)
 
@@ -430,6 +421,84 @@ def calculate_empirical_and_semianalytical_statistical_power(placebo_arm_patient
     return emp_stat_power
 
 
+def estimate_empirical_and_map_stat_powers(monthly_mean_min,
+                                           monthly_mean_max, 
+                                           monthly_std_dev_min, 
+                                           monthly_std_dev_max,
+                                           num_baseline_months_per_patient,
+                                           num_testing_months_per_patient,
+                                           min_req_base_sz_count,
+                                           placebo_mu,
+                                           placebo_sigma,
+                                           drug_mu,
+                                           drug_sigma,
+                                           num_trials,
+                                           num_theo_patients_per_trial_arm,
+                                           num_patients_per_dot,
+                                           alpha,
+                                           hist_maps_folder,
+                                           stat_power_estimate_index):
+
+    num_baseline_days_per_patient = num_baseline_months_per_patient*28
+    num_testing_days_per_patient  = num_testing_months_per_patient*28
+    num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
+
+    placebo_arm_patient_pop_monthly_param_set = \
+        generate_patient_pop_params(monthly_mean_min,
+                                    monthly_mean_max, 
+                                    monthly_std_dev_min, 
+                                    monthly_std_dev_max, 
+                                    num_theo_patients_per_trial_arm)
+    
+    drug_arm_patient_pop_monthly_param_set = \
+        generate_patient_pop_params(monthly_mean_min,
+                                    monthly_mean_max, 
+                                    monthly_std_dev_min, 
+                                    monthly_std_dev_max, 
+                                    num_theo_patients_per_trial_arm)
+
+    empirical_start_time_in_seconds = time.time()
+
+    emp_stat_power = \
+        calculate_empirical_power(placebo_arm_patient_pop_monthly_param_set,
+                                  drug_arm_patient_pop_monthly_param_set,
+                                  num_theo_patients_per_trial_arm,
+                                  num_baseline_days_per_patient,
+                                  num_testing_days_per_patient,
+                                  num_total_days_per_patient,
+                                  min_req_base_sz_count,
+                                  placebo_mu,
+                                  placebo_sigma,
+                                  drug_mu,
+                                  drug_sigma,
+                                  num_trials,
+                                  stat_power_estimate_index)
+    
+    empirical_stop_time_in_seconds = time.time()
+    total_empirical_runtime_in_seconds = empirical_stop_time_in_seconds - empirical_start_time_in_seconds
+    total_empirical_runtime_in_minutes = total_empirical_runtime_in_seconds/60
+    total_empirical_runtime_in_minutes_str = str(np.round(total_empirical_runtime_in_minutes, 3))
+    print('total empirical runtime: ' + total_empirical_runtime_in_minutes_str + ' minutes')
+
+    ana_map_start_time_in_seconds = time.time()
+
+    map_stat_power = \
+        estimate_map_based_statistical_power(placebo_arm_patient_pop_monthly_param_set,
+                                             drug_arm_patient_pop_monthly_param_set, 
+                                             num_theo_patients_per_trial_arm,
+                                             num_patients_per_dot,
+                                             alpha,
+                                             hist_maps_folder)
+
+    ana_map_stop_time_in_seconds = time.time()
+    total_ana_map_runtime_in_seconds = ana_map_stop_time_in_seconds - ana_map_start_time_in_seconds
+    total_ana_map_runtime_in_minutes = total_ana_map_runtime_in_seconds/60
+    total_ana_map_runtime_in_minutes_str = str(np.round(total_ana_map_runtime_in_minutes, 3))
+    print('total map-based runtime: ' + total_ana_map_runtime_in_minutes_str + ' minutes')
+
+    return [emp_stat_power, map_stat_power]
+
+
 if(__name__=='__main__'):
 
     monthly_mean_min    = 4
@@ -451,57 +520,34 @@ if(__name__=='__main__'):
     num_patients_per_dot            = 5000
     alpha                           = 0.05
 
-    hist_maps_folder = os.getcwd() + '/hist_maps_folder'
+    hist_maps_folder          = os.getcwd() + '/hist_maps_folder'
+    stat_power_storage_folder = '/Users/juanromero/Documents/Python_3_Files/useless_folder'
+    stat_power_estimate_index = 0
 
-    #-----------------------------------------------------------------------------------------------------------#
-    #-----------------------------------------------------------------------------------------------------------#
-    #-----------------------------------------------------------------------------------------------------------#
+    [emp_stat_power, map_stat_power] = \
+        estimate_empirical_and_map_stat_powers(monthly_mean_min,
+                                               monthly_mean_max, 
+                                               monthly_std_dev_min, 
+                                               monthly_std_dev_max,
+                                               num_baseline_months_per_patient,
+                                               num_testing_months_per_patient,
+                                               min_req_base_sz_count,
+                                               placebo_mu,
+                                               placebo_sigma,
+                                               drug_mu,
+                                               drug_sigma,
+                                               num_trials,
+                                               num_theo_patients_per_trial_arm,
+                                               num_patients_per_dot,
+                                               alpha,
+                                               hist_maps_folder,
+                                               stat_power_estimate_index)
 
-    num_baseline_days_per_patient = num_baseline_months_per_patient*28
-    num_testing_days_per_patient  = num_testing_months_per_patient*28
-    num_total_days_per_patient    = num_baseline_days_per_patient + num_testing_days_per_patient
+    if( not os.path.isdir(stat_power_storage_folder) ):
+        os.makedirs(stat_power_storage_folder)
+    stat_power_storage_file_path = stat_power_storage_folder + '/' + str(stat_power_estimate_index) + '.json'
+    with open(stat_power_storage_file_path, 'w+') as json_file:
+        json.dump([emp_stat_power, map_stat_power], json_file)
 
-    placebo_arm_patient_pop_monthly_param_set = \
-        generate_patient_pop_params(monthly_mean_min,
-                                    monthly_mean_max, 
-                                    monthly_std_dev_min, 
-                                    monthly_std_dev_max, 
-                                    num_theo_patients_per_trial_arm)
-    
-    drug_arm_patient_pop_monthly_param_set = \
-        generate_patient_pop_params(monthly_mean_min,
-                                    monthly_mean_max, 
-                                    monthly_std_dev_min, 
-                                    monthly_std_dev_max, 
-                                    num_theo_patients_per_trial_arm)
-
-    [emp_stat_power, semi_ana_stat_power] = \
-        calculate_empirical_and_semianalytical_statistical_power(placebo_arm_patient_pop_monthly_param_set,
-                                                                 drug_arm_patient_pop_monthly_param_set,
-                                                                 num_theo_patients_per_trial_arm,
-                                                                 num_baseline_days_per_patient,
-                                                                 num_testing_days_per_patient,
-                                                                 num_total_days_per_patient,
-                                                                 min_req_base_sz_count,
-                                                                 placebo_mu,
-                                                                 placebo_sigma,
-                                                                 drug_mu,
-                                                                 drug_sigma,
-                                                                 num_trials,
-                                                                 0)
-
-    map_stat_power = \
-        estimate_map_based_statistical_power(placebo_arm_patient_pop_monthly_param_set,
-                                             drug_arm_patient_pop_monthly_param_set, 
-                                             num_theo_patients_per_trial_arm,
-                                             num_patients_per_dot,
-                                             alpha,
-                                             hist_maps_folder)
-
-    print([emp_stat_power, semi_ana_stat_power, map_stat_power])
-
-    #-----------------------------------------------------------------------------------------------------------#
-    #-----------------------------------------------------------------------------------------------------------#
-    #-----------------------------------------------------------------------------------------------------------#
 
     
