@@ -521,8 +521,6 @@ if(__name__=='__main__'):
     num_patients_per_dot            =   int(sys.argv[14])
     alpha                           = float(sys.argv[15])
 
-    print([sys.argv[16], sys.argv[17]])
-
     hist_maps_folder          =     sys.argv[16]
     stat_power_storage_folder =     sys.argv[17]
     stat_power_estimate_index = int(sys.argv[18])
