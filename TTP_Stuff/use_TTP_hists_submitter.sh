@@ -56,7 +56,7 @@ for ((stat_power_estimate_index=1; stat_power_estimate_index<=$num_stat_power_es
 do
     inputs[17]=$stat_power_estimate_index
 
-    #sbatch use_TTP_hists_wrapper.sh ${inputs[@]}
-    bash use_TTP_hists_wrapper.sh ${inputs[@]}
+    sbatch use_TTP_hists_wrapper.sh ${inputs[@]}
+    #bash use_TTP_hists_wrapper.sh ${inputs[@]}
 
 done

@@ -1,4 +1,3 @@
-: '
 #!/usr/bin/bash
 
 #SBATCH -p short
@@ -10,7 +9,6 @@
 #SBATCH -o jmr95_%j.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
-'
 
 inputs[0]=$1
 inputs[1]=$2
@@ -37,7 +35,7 @@ module load conda2/4.2.13
 module load R/3.5.1
 source activate main_env
 
-#srun -c 1 python -u use_TTP_hists.py ${inputs[@]}
-python -u use_TTP_hists.py ${inputs[@]}
+srun -c 1 python -u use_TTP_hists.py ${inputs[@]}
+#python -u use_TTP_hists.py ${inputs[@]}
 
 
