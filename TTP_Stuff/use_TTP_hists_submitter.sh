@@ -9,12 +9,6 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
-module load gcc/6.2.0
-module load python/3.6.0
-module load conda2/4.2.13
-module load R/3.5.1
-source activate main_env
-
 monthly_mean_min=4
 monthly_mean_max=16
 monthly_std_dev_min=1
