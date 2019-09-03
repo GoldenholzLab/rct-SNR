@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 #SBATCH -p short
-#SBATCH --mem=50G
+#SBATCH --mem=80G
 #SBATCH -t 0-00:30
 #SBATCH -n 1
 #SBATCH -N 1
