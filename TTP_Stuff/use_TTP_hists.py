@@ -103,11 +103,11 @@ def estimate_map_based_statistical_power(placebo_arm_patient_pop_monthly_param_s
                                          num_theo_patients_per_trial_arm,
                                          num_patients_per_dot,
                                          alpha,
-                                         folder):
+                                         folder,
+                                         tmp_file_name):
 
     placebo_arm_str = 'placebo'
     drug_arm_str    = 'drug'
-    tmp_file_name   = 'tmp'
 
     [placebo_arm_TTP_times, 
      placebo_arm_TTP_observed_array] = \
@@ -490,7 +490,8 @@ def estimate_empirical_and_map_stat_powers(monthly_mean_min,
                                              num_theo_patients_per_trial_arm,
                                              num_patients_per_dot,
                                              alpha,
-                                             hist_maps_folder)
+                                             hist_maps_folder,
+                                             str(stat_power_estimate_index))
 
     ana_map_stop_time_in_seconds = time.time()
     total_ana_map_runtime_in_seconds = ana_map_stop_time_in_seconds - ana_map_start_time_in_seconds
