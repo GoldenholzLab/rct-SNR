@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 #SBATCH -p short
-#SBATCH --mem=100G
+#SBATCH --mem-per-cpu=100G
 #SBATCH -t 0-00:15
 #SBATCH -n 1
 #SBATCH -N 1
