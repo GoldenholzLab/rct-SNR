@@ -2,7 +2,7 @@
 
 #SBATCH -p short
 #SBATCH --mem-per-cpu=100G
-#SBATCH -t 0-00:15
+#SBATCH -t 0-02:45
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
