@@ -1,3 +1,4 @@
+: '
 #!/usr/bin/bash
 
 #SBATCH -p short
@@ -8,6 +9,7 @@
 #SBATCH -o jmr95_%j.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
+'
 
 monthly_mean_min=4
 monthly_mean_max=16
@@ -56,7 +58,7 @@ for ((stat_power_estimate_index=1; stat_power_estimate_index<=$num_stat_power_es
 do
     inputs[17]=$stat_power_estimate_index
 
-    #python -u use_TTP_hists.py ${inputs[@]}
-    sbatch use_TTP_hists_wrapper.sh ${inputs[@]}
+    #sbatch use_TTP_hists_wrapper.sh ${inputs[@]}
+    bash use_TTP_hists_wrapper.sh ${inputs[@]}
 
 done
