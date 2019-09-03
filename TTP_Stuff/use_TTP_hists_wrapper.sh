@@ -19,8 +19,10 @@ num_theo_patients_per_trial_arm=153
 num_patients_per_dot=5000
 alpha=0.05
 
-hist_maps_folder="$(pwd)/hist_maps_folder"
-stat_power_storage_folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
+#hist_maps_folder="$(pwd)/hist_maps_folder"
+#stat_power_storage_folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
+hist_maps_folder="$/n/scratch2/jmr95/rct-SNR-9_3_2019/hist_maps_folder"
+stat_power_storage_folder='/n/scratch2/jmr95/rct-SNR-9_3_2019/TTP_stat_power_estimates'
 num_stat_power_estimates=1000
 
 inputs[0]=$monthly_mean_min
