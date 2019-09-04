@@ -13,7 +13,7 @@ if(__name__=='__main__'):
 
     for stat_power_estimate_index in range(num_stat_power_estimates):
 
-        file_name = str(stat_power_estimate_index) + 1
+        file_name = stat_power_estimate_index + 1
         file_path = folder + '/' + file_name + '.json'
 
         if( os.path.isfile(file_path) ):
