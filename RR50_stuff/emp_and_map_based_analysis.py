@@ -55,10 +55,10 @@ def calculate_expected_RR50_responses_from_maps(num_theo_patients_per_trial_arm,
 
     '''
 
-    Was 1-D summation instead of 2-D summation a bad idea?
+    Was 1-D summation instead of 2-D summation a bad idea? Yes, yes it was.
 
     '''
-
+    
     expected_RR50_placebo_response_per_monthly_param_set = np.zeros(num_theo_patients_per_trial_arm)
     expected_RR50_drug_response_per_monthly_param_set    = np.zeros(num_theo_patients_per_trial_arm)
 
