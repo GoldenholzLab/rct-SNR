@@ -2,6 +2,8 @@ import sys
 import os
 import json
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 if(__name__=='__main__'):
 
@@ -28,3 +30,10 @@ if(__name__=='__main__'):
 
     TTP_stat_power_RMSE_str = str(np.round(np.sqrt(np.mean(np.power(TTP_error_array, 2))), 3))
     print(TTP_stat_power_RMSE_str)
+
+    plt.figure()
+    plt.hist(TTP_error_array, bins=50, density=True)
+    plt.ylabel('frequency of errors')
+    plt.xlabel('analytical statistical power estimate errors')
+    plt.title('histogram of Map_based Fisher Exact statistical power estimate errors')
+    plt.savefig(folder + '/histogram_of_statistical_power_estimate_errors.png')
