@@ -35,5 +35,5 @@ if(__name__=='__main__'):
     plt.hist(TTP_error_array, bins=50, density=True)
     plt.ylabel('frequency of errors')
     plt.xlabel('analytical statistical power estimate errors')
-    plt.title('histogram of Map_based Fisher Exact statistical power estimate errors')
+    plt.title('histogram of Cox Proportional Hazards statistical power estimate errors')
     plt.savefig(folder + '/histogram_of_statistical_power_estimate_errors.png')
