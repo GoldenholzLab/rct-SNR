@@ -6,6 +6,7 @@ import subprocess
 import sys
 import time
 
+
 def get_RR50_response_maps():
 
     expected_RR50_placebo_response_map_filename = 'expected_placebo_RR50_map_4'
@@ -47,36 +48,36 @@ def generate_patient_pop_params(monthly_mean_min,
     return patient_pop_monthly_param_sets
 
 
-def calculate_expected_RR50_responses_from_maps(num_theo_patients_per_trial_arm,
-                                                placebo_arm_patient_pop_monthly_param_sets,
+def calculate_expected_RR50_response_from_map(patient_pop_monthly_param_sets,
+                                              expected_RR50_placebo_response_map):
+
+    patient_pop_monthly_means    = patient_pop_monthly_param_sets[:, 0]
+    patient_pop_monthly_std_devs = patient_pop_monthly_param_sets[:, 1]
+
+    [patient_pop_hist, _, _] = np.histogram2d(patient_pop_monthly_means, 
+                                              patient_pop_monthly_std_devs, 
+                                              bins=[17, 17], range=[[0, 17], [0, 17]])
+    patient_pop_hist = np.flipud(np.transpose(patient_pop_hist))
+    patient_pop_hist = patient_pop_hist/np.sum(np.nansum(patient_pop_hist, 0))
+
+    expected_RR50_response = np.sum(np.nansum(np.multiply(expected_RR50_placebo_response_map, patient_pop_hist)))
+
+    return expected_RR50_response
+
+
+def calculate_expected_RR50_responses_from_maps(placebo_arm_patient_pop_monthly_param_sets,
                                                 drug_arm_patient_pop_monthly_param_sets,
                                                 expected_RR50_placebo_response_map,
                                                 expected_RR50_drug_response_map):
 
-    '''
+    expected_RR50_placebo_response = \
+        calculate_expected_RR50_response_from_map(placebo_arm_patient_pop_monthly_param_sets,
+                                                  expected_RR50_placebo_response_map)
 
-    Was 1-D summation instead of 2-D summation a bad idea? Yes, yes it was.
-
-    '''
+    expected_RR50_drug_response = \
+        calculate_expected_RR50_response_from_map(drug_arm_patient_pop_monthly_param_sets,
+                                                  expected_RR50_drug_response_map)
     
-    expected_RR50_placebo_response_per_monthly_param_set = np.zeros(num_theo_patients_per_trial_arm)
-    expected_RR50_drug_response_per_monthly_param_set    = np.zeros(num_theo_patients_per_trial_arm)
-
-    for patient_index in range(num_theo_patients_per_trial_arm):
-        
-        placebo_arm_monthly_mean    = int(placebo_arm_patient_pop_monthly_param_sets[patient_index, 0])
-        placebo_arm_monthly_std_dev = int(placebo_arm_patient_pop_monthly_param_sets[patient_index, 1])
-        drug_arm_monthly_mean       = int(drug_arm_patient_pop_monthly_param_sets[patient_index, 0])
-        drug_arm_monthly_std_dev    = int(drug_arm_patient_pop_monthly_param_sets[patient_index, 1])
-
-        expected_RR50_placebo_response_per_monthly_param_set[patient_index] = \
-            expected_RR50_placebo_response_map[16 - placebo_arm_monthly_std_dev, placebo_arm_monthly_mean]
-        expected_RR50_drug_response_per_monthly_param_set[patient_index] = \
-            expected_RR50_drug_response_map[16 - drug_arm_monthly_std_dev, drug_arm_monthly_mean]
-    
-    expected_RR50_placebo_response = np.mean(expected_RR50_placebo_response_per_monthly_param_set)
-    expected_RR50_drug_response    = np.mean(expected_RR50_drug_response_per_monthly_param_set)
-
     return [expected_RR50_placebo_response, expected_RR50_drug_response]
 
 
@@ -317,8 +318,7 @@ def calculate_analytical_statistical_power(num_theo_patients_per_trial_arm,
     [expected_RR50_placebo_response_map, expected_RR50_drug_response_map] = get_RR50_response_maps()
 
     [expected_RR50_placebo_response, expected_RR50_drug_response] = \
-        calculate_expected_RR50_responses_from_maps(num_theo_patients_per_trial_arm,
-                                                    placebo_arm_patient_pop_monthly_param_sets,
+        calculate_expected_RR50_responses_from_maps(placebo_arm_patient_pop_monthly_param_sets,
                                                     drug_arm_patient_pop_monthly_param_sets,
                                                     expected_RR50_placebo_response_map,
                                                     expected_RR50_drug_response_map)
