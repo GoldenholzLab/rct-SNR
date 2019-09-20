@@ -35,8 +35,8 @@ def generate_patient_pop_params(monthly_mean_min,
 
         while(not overdispersed):
 
-            monthly_mean    = np.random.randint(monthly_mean_min,    monthly_mean_max)
-            monthly_std_dev = np.random.randint(monthly_std_dev_min, monthly_std_dev_max)
+            monthly_mean    = np.random.randint(monthly_mean_min,    monthly_mean_max + 1)
+            monthly_std_dev = np.random.randint(monthly_std_dev_min, monthly_std_dev_max + 1)
 
             if(monthly_std_dev > np.sqrt(monthly_mean)):
 
@@ -49,7 +49,7 @@ def generate_patient_pop_params(monthly_mean_min,
 
 
 def calculate_expected_RR50_response_from_map(patient_pop_monthly_param_sets,
-                                              expected_RR50_placebo_response_map):
+                                              expected_RR50_response_map):
 
     patient_pop_monthly_means    = patient_pop_monthly_param_sets[:, 0]
     patient_pop_monthly_std_devs = patient_pop_monthly_param_sets[:, 1]
@@ -60,7 +60,7 @@ def calculate_expected_RR50_response_from_map(patient_pop_monthly_param_sets,
     patient_pop_hist = np.flipud(np.transpose(patient_pop_hist))
     patient_pop_hist = patient_pop_hist/np.sum(np.nansum(patient_pop_hist, 0))
 
-    expected_RR50_response = np.sum(np.nansum(np.multiply(expected_RR50_placebo_response_map, patient_pop_hist)))
+    expected_RR50_response = np.sum(np.nansum(np.multiply(expected_RR50_response_map, patient_pop_hist)))
 
     return expected_RR50_response
 
