@@ -1,66 +1,95 @@
 import numpy as np
-from seizure_diary_generation import generate_placebo_arm_seizure_diary
-from seizure_diary_generation import generate_drug_arm_seizure_diary
+import scipy.stats as stats
+from lifelines.statistics import logrank_test
 
 
-def calculate_percent_change(baseline_seizure_diary,
-                             testing_seizure_diary):
+def calculate_percent_changes(baseline_seizure_diaries,
+                              testing_seizure_diaries,
+                              num_patients_per_trial_arm):
 
-    baseline_seizure_frequency = np.mean(baseline_seizure_diary)
-    testing_seizure_frequency = np.mean(testing_seizure_diary)
+    baseline_seizure_frequencies = np.mean(baseline_seizure_diaries, 1)
+    testing_seizure_frequencies  = np.mean(testing_seizure_diaries, 1)
 
-    if(baseline_seizure_frequency == 0):
-        baseline_seizure_frequency = 0.00000001
+    for patient_index in range(num_patients_per_trial_arm):
+        if(baseline_seizure_frequencies[patient_index] == 0):
+            baseline_seizure_frequencies[patient_index] = 0.000001
 
-    percent_change = np.divide(baseline_seizure_frequency - testing_seizure_frequency, baseline_seizure_frequency)
+    percent_changes = np.divide(baseline_seizure_frequencies - testing_seizure_frequencies, baseline_seizure_frequencies)
 
-    return percent_change
+    return percent_changes
 
 
-if(__name__=='__main__'):
+def calculate_time_to_prerandomizations(monthly_baseline_seizure_diaries,
+                                        daily_testing_seizure_diaries,
+                                        num_patients_per_trial_arm,
+                                        num_testing_days):
 
-    monthly_mean = 28
-    monthly_std_dev = 5.3
-    num_baseline_months = 2
-    num_testing_months = 3
-    baseline_time_scaling_const = 28
-    testing_time_scaling_const = 28
-    minimum_required_baseline_seizure_count = 4
-    placebo_mu = 0
-    placebo_sigma = 0.05
-    drug_mu = 0.2
-    drug_sigma = 0.05
+    TTP_times      = np.zeros(num_patients_per_trial_arm)
+    observed_array = np.zeros(num_patients_per_trial_arm)
 
-    [placebo_arm_baseline_seizure_diary, placebo_arm_testing_seizure_diary] = \
-        generate_placebo_arm_seizure_diary(monthly_mean, 
-                                           monthly_std_dev,
-                                           num_baseline_months,
-                                           num_testing_months,
-                                           baseline_time_scaling_const,
-                                           testing_time_scaling_const,
-                                           minimum_required_baseline_seizure_count,
-                                           placebo_mu,
-                                           placebo_sigma)
+    baseline_monthly_seizure_frequencies = np.mean(monthly_baseline_seizure_diaries, 1)
 
-    [drug_arm_baseline_seizure_diary, drug_arm_testing_seizure_diary] = \
-        generate_drug_arm_seizure_diary(monthly_mean, 
-                                        monthly_std_dev,
-                                        num_baseline_months,
-                                        num_testing_months,
-                                        baseline_time_scaling_const,
-                                        testing_time_scaling_const,
-                                        minimum_required_baseline_seizure_count,
-                                        placebo_mu,
-                                        placebo_sigma,
-                                        drug_mu,
-                                        drug_sigma)
-    
-    placebo_arm_percent_change = \
-        calculate_percent_change(placebo_arm_baseline_seizure_diary,
-                                 placebo_arm_testing_seizure_diary)
-    
-    drug_arm_percent_change = \
-        calculate_percent_change(drug_arm_baseline_seizure_diary,
-                                 drug_arm_testing_seizure_diary)
+    for patient_index in range(num_patients_per_trial_arm):
 
-    print(100*np.array([placebo_arm_percent_change, drug_arm_percent_change]))
+        baseline_monthly_seizure_frequency = baseline_monthly_seizure_frequencies[patient_index]
+
+        daily_testing_seizure_diary = daily_testing_seizure_diaries[patient_index]
+
+        reached_count = False
+        day_index = 0
+        sum_count = 0
+
+        while(not reached_count):
+
+            sum_count = sum_count + daily_testing_seizure_diary[day_index]
+
+            reached_count = sum_count >= baseline_monthly_seizure_frequency
+            right_censored = day_index == (num_testing_days - 1)
+            reached_count = reached_count or right_censored
+
+            day_index = day_index + 1
+        
+        TTP_times[patient_index] = day_index
+        observed_array[patient_index] = not right_censored
+
+    return [TTP_times, observed_array]
+
+
+def calculate_fisher_exact_p_value(placebo_arm_percent_changes,
+                                   drug_arm_percent_changes):
+
+    num_placebo_arm_responders     = np.sum(placebo_arm_percent_changes > 0.5)
+    num_drug_arm_responders        = np.sum(drug_arm_percent_changes    > 0.5)
+    num_placebo_arm_non_responders = len(placebo_arm_percent_changes) - num_placebo_arm_responders
+    num_drug_arm_non_responders    = len(drug_arm_percent_changes)    - num_drug_arm_responders
+
+    table = np.array([[num_placebo_arm_responders, num_placebo_arm_non_responders], [num_drug_arm_responders, num_drug_arm_non_responders]])
+
+    [_, RR50_p_value] = stats.fisher_exact(table)
+
+    return RR50_p_value
+
+
+def calculate_Mann_Whitney_U_p_value(placebo_arm_percent_changes,
+                                     drug_arm_percent_changes):
+
+    [_, MPC_p_value] = stats.ranksums(placebo_arm_percent_changes, drug_arm_percent_changes)
+
+    return MPC_p_value
+
+
+def calculate_logrank_p_value(placebo_arm_TTP_times, 
+                              placebo_arm_observed_array, 
+                              drug_arm_TTP_times, 
+                              drug_arm_observed_array):
+
+    TTP_results = \
+        logrank_test(placebo_arm_TTP_times,
+                     drug_arm_TTP_times,
+                     placebo_arm_observed_array,
+                     drug_arm_observed_array)
+
+    TTP_p_value = TTP_results.p_value
+
+    return TTP_p_value
+
