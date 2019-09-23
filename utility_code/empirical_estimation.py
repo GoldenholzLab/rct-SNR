@@ -1,5 +1,4 @@
 import numpy as np
-from patient_population_generation import generate_theo_patient_pop_params
 from patient_population_generation import generate_heterogenous_placebo_arm_patient_pop
 from patient_population_generation import generate_heterogenous_drug_arm_patient_pop
 from endpoint_functions import calculate_percent_changes
@@ -226,6 +225,9 @@ if(__name__=='__main__'):
     drug_mu = 0.2
     drug_sigma = 0.05
 
+    from patient_population_generation import generate_theo_patient_pop_params
+    import time
+
     theo_placebo_arm_patient_pop_params = \
         generate_theo_patient_pop_params(monthly_mean_min,
                                          monthly_mean_max,
@@ -240,6 +242,8 @@ if(__name__=='__main__'):
                                          monthly_std_dev_max,
                                          num_theo_patients_per_trial_arm)
 
+    RR50_start_time_in_seconds = time.time()
+
     RR50_emp_stat_power = \
         empirically_estimate_RR50_statistical_power(theo_placebo_arm_patient_pop_params,
                                                     theo_drug_arm_patient_pop_params,
@@ -252,6 +256,13 @@ if(__name__=='__main__'):
                                                     drug_mu,
                                                     drug_sigma,
                                                     num_trials)
+    
+    RR50_stop_time_in_seconds = time.time()
+    RR50_total_runtime_in_minutes = (RR50_stop_time_in_seconds - RR50_start_time_in_seconds)/60
+    RR50_total_runtime_in_minutes_str = str(np.round(RR50_total_runtime_in_minutes, 3))
+    print('RR50: ' + RR50_total_runtime_in_minutes_str + ' minutes')
+
+    MPC_start_time_in_seconds = time.time()
 
     MPC_emp_stat_power = \
         empirically_estimate_MPC_statistical_power(theo_placebo_arm_patient_pop_params,
@@ -265,6 +276,13 @@ if(__name__=='__main__'):
                                                    drug_mu,
                                                    drug_sigma,
                                                    num_trials)
+    
+    MPC_stop_time_in_seconds = time.time()
+    MPC_total_runtime_in_minutes = (MPC_stop_time_in_seconds - MPC_start_time_in_seconds)/60
+    MPC_total_runtime_in_minutes_str = str(np.round(MPC_total_runtime_in_minutes, 3))
+    print(' MPC: ' +  MPC_total_runtime_in_minutes_str + ' minutes')
+
+    TTP_start_time_in_seconds = time.time()
 
     TTP_emp_stat_power = \
         empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_params,
@@ -278,4 +296,9 @@ if(__name__=='__main__'):
                                                    drug_mu,
                                                    drug_sigma,
                                                    num_trials)
+    
+    TTP_stop_time_in_seconds = time.time()
+    TTP_total_runtime_in_minutes = (TTP_stop_time_in_seconds - TTP_start_time_in_seconds)/60
+    TTP_total_runtime_in_minutes_str = str(np.round(TTP_total_runtime_in_minutes, 3))
+    print(' TTP: ' +  TTP_total_runtime_in_minutes_str + ' minutes')
 
