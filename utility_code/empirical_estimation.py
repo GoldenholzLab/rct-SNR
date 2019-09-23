@@ -260,7 +260,7 @@ if(__name__=='__main__'):
     RR50_stop_time_in_seconds = time.time()
     RR50_total_runtime_in_minutes = (RR50_stop_time_in_seconds - RR50_start_time_in_seconds)/60
     RR50_total_runtime_in_minutes_str = str(np.round(RR50_total_runtime_in_minutes, 3))
-    print('RR50: ' + RR50_total_runtime_in_minutes_str + ' minutes')
+    print('RR50:\n  power:   ' + str(100*RR50_emp_stat_power) + '\n  runtime: ' + RR50_total_runtime_in_minutes_str + ' minutes')
 
     MPC_start_time_in_seconds = time.time()
 
@@ -280,7 +280,7 @@ if(__name__=='__main__'):
     MPC_stop_time_in_seconds = time.time()
     MPC_total_runtime_in_minutes = (MPC_stop_time_in_seconds - MPC_start_time_in_seconds)/60
     MPC_total_runtime_in_minutes_str = str(np.round(MPC_total_runtime_in_minutes, 3))
-    print(' MPC: ' +  MPC_total_runtime_in_minutes_str + ' minutes')
+    print('MPC:\n  power:   ' + str(100*MPC_emp_stat_power) + '\n  runtime: ' + MPC_total_runtime_in_minutes_str + ' minutes')
 
     TTP_start_time_in_seconds = time.time()
 
@@ -300,5 +300,5 @@ if(__name__=='__main__'):
     TTP_stop_time_in_seconds = time.time()
     TTP_total_runtime_in_minutes = (TTP_stop_time_in_seconds - TTP_start_time_in_seconds)/60
     TTP_total_runtime_in_minutes_str = str(np.round(TTP_total_runtime_in_minutes, 3))
-    print(' TTP: ' +  TTP_total_runtime_in_minutes_str + ' minutes')
+    print('TTP:\n  power:   ' + str(100*TTP_emp_stat_power) + '\n  runtime: ' + TTP_total_runtime_in_minutes_str + ' minutes')
 
