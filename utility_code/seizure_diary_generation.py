@@ -59,19 +59,19 @@ def generate_seizure_diary_with_minimum_count(num_months,
 
     while(not acceptable_count):
 
-        baseline_seizure_diary = \
+        seizure_diary_with_min_count = \
             generate_seizure_diary(num_months, 
                                    monthly_mean, 
                                    monthly_std_dev, 
                                    time_scaling_const)
     
-        num_seizures = np.sum(baseline_seizure_diary)
+        num_seizures = np.sum(seizure_diary_with_min_count)
 
         if(num_seizures >= minimum_required_seizure_count):
 
             acceptable_count = True
     
-    return baseline_seizure_diary
+    return seizure_diary_with_min_count
 
 
 def generate_placebo_arm_seizure_diary(monthly_mean, 
