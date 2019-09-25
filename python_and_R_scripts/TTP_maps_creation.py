@@ -1,10 +1,11 @@
 import numpy as np
-from utility_code.patient_population_generation import generate_homogenous_drug_arm_patient_pop
-from utility_code.patient_population_generation import generate_homogenous_placebo_arm_patient_pop
-from utility_code.endpoint_functions import calculate_time_to_prerandomizations
+from patient_population_generation import generate_homogenous_drug_arm_patient_pop
+from patient_population_generation import generate_homogenous_placebo_arm_patient_pop
+from endpoint_functions import calculate_time_to_prerandomizations
 import json
 import os
 import time
+import psutil
 
 
 def create_placebo_arm_TTP_times_from_homogenous_pop(num_patients_per_map_location,
@@ -225,8 +226,15 @@ if(__name__=='__main__'):
     algorithm_total_runtime_in_seconds = algorithm_stop_time_in_seconds - algorithm_start_time_in_seconds
     algorithm_total_runtime_in_minutes = algorithm_total_runtime_in_seconds/60
     algorithm_total_runtime_in_minutes_str = str(np.round(algorithm_total_runtime_in_minutes, 3))
+
+    svem = psutil.virtual_memory()
+    total_mem_in_bytes = svem.total
+    available_mem_in_bytes = svem.available
+    used_mem_in_bytes = total_mem_in_bytes - available_mem_in_bytes
+    used_mem_in_gigabytes = used_mem_in_bytes/np.power(1024, 3)
+    used_mem_in_gigabytes_str = str(np.round(used_mem_in_gigabytes, 3))
     
-    print('\ntotal algorithm runtime: ' + algorithm_total_runtime_in_minutes_str + ' minutes\n')
+    print('\ntotal algorithm runtime: ' + algorithm_total_runtime_in_minutes_str + ' minutes\nnmemory used: ' + used_mem_in_gigabytes_str + ' GB\n')
 
     store_TTP_hists(folder, placebo_hist_array, drug_hist_array)
 
