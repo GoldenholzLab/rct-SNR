@@ -168,7 +168,7 @@ if(__name__=='__main__'):
     placebo_sigma = 0.05 
     drug_mu = 0.2
     drug_sigma = 0.05
-    num_trials = 5000
+    num_trials = 500
 
     theo_placebo_arm_patient_pop_params = \
         generate_theo_patient_pop_params(monthly_mean_min,
