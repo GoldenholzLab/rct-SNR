@@ -49,6 +49,10 @@ def generate_homogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                 placebo_mu,
                                                 placebo_sigma):
 
+    if(monthly_mean == 0):
+
+        raise ValueError('The true monthly mean of a homogenous patient population cannot be zero.')
+
     num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
     num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
 
@@ -87,6 +91,10 @@ def generate_homogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
                                              placebo_sigma,
                                              drug_mu,
                                              drug_sigma):
+
+    if(monthly_mean == 0):
+
+        raise ValueError('The true monthly mean of a homogenous patient population cannot be zero.')
 
     num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
     num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
