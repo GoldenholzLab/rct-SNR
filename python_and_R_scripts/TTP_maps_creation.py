@@ -3,7 +3,6 @@ from patient_population_generation import generate_homogenous_drug_arm_patient_p
 from patient_population_generation import generate_homogenous_placebo_arm_patient_pop
 from endpoint_functions import calculate_time_to_prerandomizations
 import json
-import os
 import time
 import psutil
 
@@ -202,6 +201,8 @@ if(__name__=='__main__'):
     placebo_sigma = 0.05
     drug_mu = 0.2
     drug_sigma = 0.05
+
+    import os
     folder = os.getcwd()
 
     algorithm_start_time_in_seconds = time.time()
