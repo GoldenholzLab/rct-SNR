@@ -14,11 +14,19 @@ def generate_theo_patient_pop_params(monthly_mean_min,
     for patient_index in range(num_theo_patients_per_trial_arm):
 
         overdispersed = False
+        non_zero_mean = False
         
-        while(not overdispersed):
+        while((not overdispersed) or (not non_zero_mean)):
+
+            overdispersed = False
+            non_zero_mean = False
 
             monthly_mean    = np.random.randint(monthly_mean_min,    monthly_mean_max    + 1)
             monthly_std_dev = np.random.randint(monthly_std_dev_min, monthly_std_dev_max + 1)
+
+            if(monthly_mean != 0):
+
+                non_zero_mean = True
 
             if(monthly_std_dev > np.sqrt(monthly_mean)):
 
