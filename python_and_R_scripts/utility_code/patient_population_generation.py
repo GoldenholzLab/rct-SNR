@@ -1,6 +1,6 @@
 import numpy as np
-from seizure_diary_generation import generate_placebo_arm_seizure_diary
-from seizure_diary_generation import generate_drug_arm_seizure_diary
+from .seizure_diary_generation import generate_placebo_arm_seizure_diary
+from .seizure_diary_generation import generate_drug_arm_seizure_diary
 
 
 def generate_theo_patient_pop_params(monthly_mean_min,
@@ -53,6 +53,10 @@ def generate_homogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
 
         raise ValueError('The true monthly mean of a homogenous patient population cannot be zero.')
 
+    if(monthly_std_dev <= np.sqrt(monthly_mean)):
+
+        raise ValueError('The monthly standard deviation must be greater than the square root of the monthly mean for a homogenous patient population.')
+
     num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
     num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
 
@@ -95,6 +99,10 @@ def generate_homogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
     if(monthly_mean == 0):
 
         raise ValueError('The true monthly mean of a homogenous patient population cannot be zero.')
+
+    if(monthly_std_dev <= np.sqrt(monthly_mean)):
+
+        raise ValueError('The monthly standard deviation must be greater than the square root of the monthly mean for a homogenous patient population.')
 
     num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
     num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
