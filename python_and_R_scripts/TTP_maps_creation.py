@@ -93,19 +93,19 @@ def store_TTP_times_and_observations(folder,
     if( not os.path.isdir(folder) ):
         os.makedirs(folder)
 
-    with open(folder + '/' + location_str + '_placebo_arm_TTP_times', 'w+') as json_file:
+    with open(folder + '/' + location_str + '_placebo_arm_TTP_times.json', 'w+') as json_file:
 
         json.dump(placebo_arm_TTP_times.tolist(), json_file)
 
-    with open(folder + '/' + location_str + '_placebo_arm_TTP_observations', 'w+') as json_file:
+    with open(folder + '/' + location_str + '_placebo_arm_TTP_observations.json', 'w+') as json_file:
 
         json.dump(placebo_arm_observed_array.tolist(), json_file)
     
-    with open(folder + '/' + location_str + '_drug_arm_TTP_times', 'w+') as json_file:
+    with open(folder + '/' + location_str + '_drug_arm_TTP_times.json', 'w+') as json_file:
 
         json.dump(drug_arm_TTP_times.tolist(), json_file)
     
-    with open(folder + '/' + location_str + '_drug_arm_TTP_observations', 'w+') as json_file:
+    with open(folder + '/' + location_str + '_drug_arm_TTP_observations.json', 'w+') as json_file:
 
         json.dump(drug_arm_observed_array.tolist(), json_file)
 
