@@ -3,6 +3,7 @@ from patient_population_generation import generate_homogenous_drug_arm_patient_p
 from patient_population_generation import generate_homogenous_placebo_arm_patient_pop
 from endpoint_functions import calculate_time_to_prerandomizations
 import json
+import os
 import time
 import psutil
 
@@ -79,20 +80,51 @@ def create_drug_arm_TTP_times_from_homogenous_pop(num_patients_per_map_location,
     return [drug_arm_TTP_times, drug_arm_observed_array]
 
 
-def create_TTP_hist_maps(monthly_mean_min, 
-                         monthly_mean_max,
-                         monthly_std_dev_min,
-                         monthly_std_dev_max,
-                         num_patients_per_map_location,
-                         num_baseline_months,
-                         num_testing_months,
-                         baseline_time_scaling_const,
-                         testing_time_scaling_const,
-                         minimum_required_baseline_seizure_count,
-                         placebo_mu,
-                         placebo_sigma,
-                         drug_mu,
-                         drug_sigma):
+def store_TTP_times_and_observations(folder,
+                                     monthly_mean,
+                                     monthly_std_dev,
+                                     placebo_arm_TTP_times, 
+                                     placebo_arm_observed_array,
+                                     drug_arm_TTP_times,
+                                     drug_arm_observed_array):
+
+    location_str = 'mean_' + str(np.int_(monthly_mean)) + '_std_' + str(monthly_std_dev)
+
+    if( not os.path.isdir(folder) ):
+        os.makedirs(folder)
+
+    with open(folder + '/' + location_str + '_placebo_arm_TTP_times', 'w+') as json_file:
+
+        json.dump(placebo_arm_TTP_times.tolist(), json_file)
+
+    with open(folder + '/' + location_str + '_placebo_arm_TTP_observations', 'w+') as json_file:
+
+        json.dump(placebo_arm_observed_array.tolist(), json_file)
+    
+    with open(folder + '/' + location_str + '_drug_arm_TTP_times', 'w+') as json_file:
+
+        json.dump(drug_arm_TTP_times.tolist(), json_file)
+    
+    with open(folder + '/' + location_str + '_drug_arm_TTP_observations', 'w+') as json_file:
+
+        json.dump(drug_arm_observed_array.tolist(), json_file)
+
+
+def create_TTP_times_and_observation_files(monthly_mean_min, 
+                                           monthly_mean_max,
+                                           monthly_std_dev_min,
+                                           monthly_std_dev_max,
+                                           num_patients_per_map_location,
+                                           num_baseline_months,
+                                           num_testing_months,
+                                           baseline_time_scaling_const,
+                                           testing_time_scaling_const,
+                                           minimum_required_baseline_seizure_count,
+                                           placebo_mu,
+                                           placebo_sigma,
+                                           drug_mu,
+                                           drug_sigma,
+                                           folder):
 
     monthly_mean_array    = np.arange(monthly_mean_min, monthly_mean_max + 1)
     monthly_std_dev_array = np.arange(monthly_std_dev_min, monthly_std_dev_max + 1)
@@ -100,9 +132,6 @@ def create_TTP_hist_maps(monthly_mean_min,
     num_monthly_means     = len(monthly_mean_array)
     num_monthly_std_devs  = len(monthly_std_dev_array)
     num_testing_days = num_testing_months*testing_time_scaling_const
-
-    placebo_hist_array    = np.zeros((num_monthly_std_devs, num_monthly_means, num_testing_days))
-    drug_hist_array       = np.zeros((num_monthly_std_devs, num_monthly_means, num_testing_days))
 
     for monthly_mean_index in range(num_monthly_means):
         for monthly_std_dev_index in range(num_monthly_std_devs):
@@ -114,7 +143,7 @@ def create_TTP_hist_maps(monthly_mean_min,
 
             try:
 
-                [placebo_arm_TTP_times, _] = \
+                [placebo_arm_TTP_times, placebo_arm_observed_array] = \
                     create_placebo_arm_TTP_times_from_homogenous_pop(num_patients_per_map_location,
                                                                      monthly_mean, 
                                                                      monthly_std_dev,
@@ -127,7 +156,7 @@ def create_TTP_hist_maps(monthly_mean_min,
                                                                      placebo_mu,
                                                                      placebo_sigma)
                 
-                [drug_arm_TTP_times, _] = \
+                [drug_arm_TTP_times, drug_arm_observed_array] = \
                     create_drug_arm_TTP_times_from_homogenous_pop(num_patients_per_map_location,
                                                                   monthly_mean, 
                                                                   monthly_std_dev,
@@ -141,13 +170,14 @@ def create_TTP_hist_maps(monthly_mean_min,
                                                                   placebo_sigma,
                                                                   drug_mu,
                                                                   drug_sigma)
-
-                [placebo_TTP_hist, _] = np.histogram(placebo_arm_TTP_times, bins=num_testing_days, range=[1, num_testing_days + 1])
-
-                [drug_TTP_hist, _] = np.histogram(drug_arm_TTP_times, bins=num_testing_days, range=[1, num_testing_days + 1])
-
-                placebo_hist_array[monthly_mean_index, monthly_std_dev_index, :] = placebo_TTP_hist
-                drug_hist_array[monthly_mean_index, monthly_std_dev_index, :] = drug_TTP_hist
+                
+                store_TTP_times_and_observations(folder,
+                                                 monthly_mean,
+                                                 monthly_std_dev,
+                                                 placebo_arm_TTP_times, 
+                                                 placebo_arm_observed_array,
+                                                 drug_arm_TTP_times,
+                                                 drug_arm_observed_array)
 
             except ValueError as error:
 
@@ -157,11 +187,6 @@ def create_TTP_hist_maps(monthly_mean_min,
                 if((not zero_value_mean) and (not no_overdispersion)):
 
                     raise
-
-                else:
-
-                    placebo_hist_array[monthly_mean_index, monthly_std_dev_index, :] = np.array(num_testing_days*[np.nan])
-                    drug_hist_array[monthly_mean_index, monthly_std_dev_index, :]    = np.array(num_testing_days*[np.nan])
             
             point_stop_time_in_seconds = time.time()
             point_total_runtime_in_seconds = point_stop_time_in_seconds - point_start_time_in_seconds
@@ -169,19 +194,6 @@ def create_TTP_hist_maps(monthly_mean_min,
             point_total_runtime_in_minutes_str = str(np.round(point_total_runtime_in_minutes, 3))
             
             print('\n[monthly mean, monthly standard deviation]: ' + str([monthly_mean, monthly_std_dev]) + '\npoint runtime: ' + point_total_runtime_in_minutes_str + ' minutes\n')
-
-    return [placebo_hist_array, drug_hist_array]
-
-
-def store_TTP_hists(folder, placebo_hist_array, drug_hist_array):
-
-    with open(folder + '/placebo_hist_array.json', 'w+') as json_file:
-
-        json.dump(placebo_hist_array.tolist(), json_file)
-
-    with open(folder + '/drug_hist_array.json', 'w+') as json_file:
-
-        json.dump(drug_hist_array.tolist(), json_file)
 
 
 if(__name__=='__main__'):
@@ -201,27 +213,25 @@ if(__name__=='__main__'):
     placebo_sigma = 0.05
     drug_mu = 0.2
     drug_sigma = 0.05
-
-    import os
-    folder = os.getcwd()
+    folder = os.getcwd() + '/test_folder'
 
     algorithm_start_time_in_seconds = time.time()
 
-    [placebo_hist_array, drug_hist_array] = \
-        create_TTP_hist_maps(monthly_mean_min, 
-                             monthly_mean_max,
-                             monthly_std_dev_min,
-                             monthly_std_dev_max,
-                             num_patients_per_map_location,
-                             num_baseline_months,
-                             num_testing_months,
-                             baseline_time_scaling_const,
-                             testing_time_scaling_const,
-                             minimum_required_baseline_seizure_count,
-                             placebo_mu,
-                             placebo_sigma,
-                             drug_mu,
-                             drug_sigma)
+    create_TTP_times_and_observation_files(monthly_mean_min, 
+                                           monthly_mean_max,
+                                           monthly_std_dev_min,
+                                           monthly_std_dev_max,
+                                           num_patients_per_map_location,
+                                           num_baseline_months,
+                                           num_testing_months,
+                                           baseline_time_scaling_const,
+                                           testing_time_scaling_const,
+                                           minimum_required_baseline_seizure_count,
+                                           placebo_mu,
+                                           placebo_sigma,
+                                           drug_mu,
+                                           drug_sigma,
+                                           folder)
     
     algorithm_stop_time_in_seconds = time.time()
     algorithm_total_runtime_in_seconds = algorithm_stop_time_in_seconds - algorithm_start_time_in_seconds
@@ -236,6 +246,4 @@ if(__name__=='__main__'):
     used_mem_in_gigabytes_str = str(np.round(used_mem_in_gigabytes, 3))
     
     print('\ntotal algorithm runtime: ' + algorithm_total_runtime_in_minutes_str + ' minutes\nnmemory used: ' + used_mem_in_gigabytes_str + ' GB\n')
-
-    store_TTP_hists(folder, placebo_hist_array, drug_hist_array)
 
