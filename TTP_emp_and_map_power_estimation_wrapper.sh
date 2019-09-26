@@ -1,25 +1,19 @@
 
-monthly_mean_min = 4
-monthly_mean_max = 16
-monthly_std_dev_min = 1
-monthly_std_dev_max = 8
-num_theo_patients_per_trial_arm = 153
-    
-num_baseline_months = 2
-num_testing_months = 3
-minimum_required_baseline_seizure_count = 4
-placebo_mu = 0
-placebo_sigma = 0.05 
-drug_mu = 0.2
-drug_sigma = 0.05
-num_trials = 500
+inputs[0]=$1
+inputs[1]=$2
+inputs[2]=$3
+inputs[3]=$4
+inputs[4]=$5
+inputs[5]=$6
+inputs[6]=$7
+inputs[7]=$8
+inputs[8]=$9
+inputs[9]=${10}
+inputs[10]=${11}
+inputs[11]=${12}
+inputs[12]=${13}
+inputs[13]=${14}
+inputs[14]=${15}
+inputs[15]=${16}
 
-num_patients_per_map_location = 5000
-alpha = 0.05
-
-folder = os.getcwd() + '/test_folder'
-RMSE_folder = os.getcwd()
-estim_iter = 1
-
-
-
+python -u python_and_R_scripts/TTP_emp_and_map_power_estimation.py ${inputs[@]}
