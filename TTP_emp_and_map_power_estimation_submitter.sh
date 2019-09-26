@@ -1,4 +1,18 @@
+#!/usr/bin/bash
 
+#SBATCH -p short
+#SBATCH -t 0-00:05
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -e jmr95_%j.err
+#SBATCH -o jmr95_%j.out
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jromero5@bidmc.harvard.edu
+
+module load gcc/6.2.0
+module load conda2/4.2.13
+module load python/3.6.0
+source activate main_env
 monthly_mean_min=4
 monthly_mean_max=16
 monthly_std_dev_min=1
@@ -44,6 +58,6 @@ for ((estim_iter=1; estim_iter<=num_iter; estim_iter=estim_iter+1))
 do
     inputs[17]=$estim_iter
 
-    bash TTP_emp_and_map_power_estimation_wrapper.sh ${inputs[@]}
+    sbatch TTP_emp_and_map_power_estimation_wrapper.sh ${inputs[@]}
 done
 
