@@ -18,7 +18,7 @@ num_trials=500
 num_patients_per_map_location=5000
 alpha=0.05
 
-folder=$(pwd)/test_folder_2
+folder=$(pwd)/RMSE_test_folder
 RMSE_folder=$(pwd)
 num_iter=10
 
