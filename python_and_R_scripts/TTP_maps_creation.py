@@ -188,22 +188,24 @@ def create_TTP_times_and_observation_files(monthly_mean_min,
 
 if(__name__=='__main__'):
 
-    monthly_mean_min    = 1
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
+    monthly_mean_min    = int(sys.argv[1])
+    monthly_mean_max    = int(sys.argv[2])
+    monthly_std_dev_min = int(sys.argv[3])
+    monthly_std_dev_max = int(sys.argv[4])
 
-    num_patients_per_map_location = 5000
-    num_baseline_months = 2
-    num_testing_months = 3
-    baseline_time_scaling_const = 1
-    testing_time_scaling_const = 28
-    minimum_required_baseline_seizure_count = 4
-    placebo_mu = 0
-    placebo_sigma = 0.05
-    drug_mu = 0.2
-    drug_sigma = 0.05
-    folder = os.getcwd() + '/test_folder'
+    num_patients_per_map_location = int(sys.argv[5])
+    num_baseline_months = int(sys.argv[6])
+    num_testing_months = int(sys.argv[7])
+    baseline_time_scaling_const = int(sys.argv[8])
+    testing_time_scaling_const = int(sys.argv[9])
+    minimum_required_baseline_seizure_count = int(sys.argv[10])
+
+    placebo_mu = float(sys.argv[11])
+    placebo_sigma = float(sys.argv[12])
+    drug_mu = float(sys.argv[13])
+    drug_sigma = float(sys.argv[14])
+    
+    folder = sys.argv[15]
 
     algorithm_start_time_in_seconds = time.time()
 
