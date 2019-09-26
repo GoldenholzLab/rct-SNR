@@ -32,8 +32,8 @@ num_trials=500
 num_patients_per_map_location=50
 alpha=0.05
 
-folder=$(pwd)/test_folder_2
-RMSE_folder=$(pwd)/RMSE_test_folder
+folder=/n/scratch2/jmr95/rct-SNR-data/TTP-data/TTP-mapsls
+RMSE_folder=/n/scratch2/jmr95/rct-SNR-data/TTP-data/TTP-power-estims
 num_iter=10
 
 inputs[0]=$monthly_mean_min
