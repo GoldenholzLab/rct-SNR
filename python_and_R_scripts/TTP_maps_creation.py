@@ -6,6 +6,7 @@ import json
 import os
 import time
 import psutil
+import sys
 
 
 def create_placebo_arm_TTP_times_from_homogenous_pop(num_patients_per_map_location,
@@ -13,9 +14,6 @@ def create_placebo_arm_TTP_times_from_homogenous_pop(num_patients_per_map_locati
                                                      monthly_std_dev,
                                                      num_baseline_months,
                                                      num_testing_months,
-                                                     num_testing_days,
-                                                     baseline_time_scaling_const,
-                                                     testing_time_scaling_const,
                                                      minimum_required_baseline_seizure_count,
                                                      placebo_mu,
                                                      placebo_sigma):
@@ -27,11 +25,13 @@ def create_placebo_arm_TTP_times_from_homogenous_pop(num_patients_per_map_locati
                                                      monthly_std_dev,
                                                      num_baseline_months,
                                                      num_testing_months,
-                                                     baseline_time_scaling_const,
-                                                     testing_time_scaling_const,
+                                                     1,
+                                                     28,
                                                      minimum_required_baseline_seizure_count,
                                                      placebo_mu,
                                                      placebo_sigma)
+    
+    num_testing_days = 28*num_testing_months
 
     [placebo_arm_TTP_times, placebo_arm_observed_array] = \
         calculate_time_to_prerandomizations(monthly_placebo_arm_baseline_seizure_diaries,
@@ -47,9 +47,6 @@ def create_drug_arm_TTP_times_from_homogenous_pop(num_patients_per_map_location,
                                                   monthly_std_dev,
                                                   num_baseline_months,
                                                   num_testing_months,
-                                                  num_testing_days,
-                                                  baseline_time_scaling_const,
-                                                  testing_time_scaling_const,
                                                   minimum_required_baseline_seizure_count,
                                                   placebo_mu,
                                                   placebo_sigma,
@@ -63,13 +60,15 @@ def create_drug_arm_TTP_times_from_homogenous_pop(num_patients_per_map_location,
                                                   monthly_std_dev,
                                                   num_baseline_months,
                                                   num_testing_months,
-                                                  baseline_time_scaling_const,
-                                                  testing_time_scaling_const,
+                                                  1,
+                                                  28,
                                                   minimum_required_baseline_seizure_count,
                                                   placebo_mu,
                                                   placebo_sigma,
                                                   drug_mu,
                                                   drug_sigma)
+    
+    num_testing_days = 28*num_testing_months
 
     [drug_arm_TTP_times, drug_arm_observed_array] = \
         calculate_time_to_prerandomizations(monthly_drug_arm_baseline_seizure_diaries,
@@ -117,8 +116,6 @@ def create_TTP_times_and_observation_files(monthly_mean_min,
                                            num_patients_per_map_location,
                                            num_baseline_months,
                                            num_testing_months,
-                                           baseline_time_scaling_const,
-                                           testing_time_scaling_const,
                                            minimum_required_baseline_seizure_count,
                                            placebo_mu,
                                            placebo_sigma,
@@ -131,7 +128,6 @@ def create_TTP_times_and_observation_files(monthly_mean_min,
 
     num_monthly_means     = len(monthly_mean_array)
     num_monthly_std_devs  = len(monthly_std_dev_array)
-    num_testing_days = num_testing_months*testing_time_scaling_const
 
     for monthly_mean_index in range(num_monthly_means):
         for monthly_std_dev_index in range(num_monthly_std_devs):
@@ -149,9 +145,6 @@ def create_TTP_times_and_observation_files(monthly_mean_min,
                                                                      monthly_std_dev,
                                                                      num_baseline_months,
                                                                      num_testing_months,
-                                                                     num_testing_days,
-                                                                     baseline_time_scaling_const,
-                                                                     testing_time_scaling_const,
                                                                      minimum_required_baseline_seizure_count,
                                                                      placebo_mu,
                                                                      placebo_sigma)
@@ -162,9 +155,6 @@ def create_TTP_times_and_observation_files(monthly_mean_min,
                                                                   monthly_std_dev,
                                                                   num_baseline_months,
                                                                   num_testing_months,
-                                                                  num_testing_days,
-                                                                  baseline_time_scaling_const,
-                                                                  testing_time_scaling_const,
                                                                   minimum_required_baseline_seizure_count,
                                                                   placebo_mu,
                                                                   placebo_sigma,
@@ -224,8 +214,6 @@ if(__name__=='__main__'):
                                            num_patients_per_map_location,
                                            num_baseline_months,
                                            num_testing_months,
-                                           baseline_time_scaling_const,
-                                           testing_time_scaling_const,
                                            minimum_required_baseline_seizure_count,
                                            placebo_mu,
                                            placebo_sigma,

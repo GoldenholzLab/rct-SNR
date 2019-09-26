@@ -31,7 +31,6 @@ if(__name__=='__main__'):
     folder = os.getcwd() + '/test_folder'
     RMSE_folder = os.getcwd()
     estim_iter = 1
-    tmp_file_name = str(estim_iter)
 
     theo_placebo_arm_patient_pop_params = \
         generate_theo_patient_pop_params(monthly_mean_min,
@@ -75,7 +74,7 @@ if(__name__=='__main__'):
         estimate_map_based_stat_power_for_one_pop(folder,
                                                   num_theo_patients_per_trial_arm,
                                                   num_patients_per_map_location,
-                                                  tmp_file_name,
+                                                  str(estim_iter),
                                                   alpha,
                                                   theo_placebo_arm_patient_pop_params,
                                                   theo_drug_arm_patient_pop_params)
