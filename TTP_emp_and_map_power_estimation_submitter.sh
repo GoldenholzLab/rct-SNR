@@ -15,7 +15,7 @@ drug_mu=0.2
 drug_sigma=0.05
 
 num_trials=500
-num_patients_per_map_location=5000
+num_patients_per_map_location=50
 alpha=0.05
 
 folder=$(pwd)/test_folder_2
