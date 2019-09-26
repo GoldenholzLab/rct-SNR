@@ -196,16 +196,14 @@ if(__name__=='__main__'):
     num_patients_per_map_location = int(sys.argv[5])
     num_baseline_months = int(sys.argv[6])
     num_testing_months = int(sys.argv[7])
-    baseline_time_scaling_const = int(sys.argv[8])
-    testing_time_scaling_const = int(sys.argv[9])
-    minimum_required_baseline_seizure_count = int(sys.argv[10])
+    minimum_required_baseline_seizure_count = int(sys.argv[9])
 
-    placebo_mu = float(sys.argv[11])
-    placebo_sigma = float(sys.argv[12])
-    drug_mu = float(sys.argv[13])
-    drug_sigma = float(sys.argv[14])
-    
-    folder = sys.argv[15]
+    placebo_mu = float(sys.argv[9])
+    placebo_sigma = float(sys.argv[10])
+    drug_mu = float(sys.argv[11])
+    drug_sigma = float(sys.argv[12])
+
+    folder = sys.argv[13]
 
     algorithm_start_time_in_seconds = time.time()
 
