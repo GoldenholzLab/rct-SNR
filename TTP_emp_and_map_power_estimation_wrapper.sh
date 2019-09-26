@@ -15,5 +15,7 @@ inputs[12]=${13}
 inputs[13]=${14}
 inputs[14]=${15}
 inputs[15]=${16}
+inputs[16]=${17}
+inputs[17]=${18}
 
 python -u python_and_R_scripts/TTP_emp_and_map_power_estimation.py ${inputs[@]}
