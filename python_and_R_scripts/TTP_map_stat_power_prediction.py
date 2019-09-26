@@ -1,6 +1,4 @@
 import numpy as np
-from patient_population_generation import generate_theo_patient_pop_params
-from empirical_estimation import empirically_estimate_TTP_statistical_power
 import json
 import pandas as pd
 import os
@@ -100,7 +98,7 @@ def estimate_map_based_statistical_power(num_theo_patients_per_trial_arm,
     command        = ['Rscript', 'python_and_R_scripts/calculate_cph_power.R', str(num_theo_patients_per_trial_arm), str(num_theo_patients_per_trial_arm), 
                       str(prob_fail_drug_arm), str(prob_fail_placebo_arm), str(np.exp(postulated_log_hazard_ratio)), str(alpha)]
     process        = subprocess.Popen(command, stdout=subprocess.PIPE)
-    map_stat_power = 100*float(process.communicate()[0].decode().split()[1])
+    map_stat_power = float(process.communicate()[0].decode().split()[1])
 
     return map_stat_power
 
@@ -147,63 +145,3 @@ def estimate_map_based_stat_power_for_one_pop(folder,
     
     return map_stat_power
 
-
-if(__name__=='__main__'):
-
-    monthly_mean_min = 1
-    monthly_mean_max = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
-    num_theo_patients_per_trial_arm = 153
-    
-    folder = os.getcwd() + '/test_folder'
-    num_patients_per_map_location = 5000
-    tmp_file_name = 'test'
-    alpha = 0.05
-
-    num_baseline_months = 2
-    num_testing_months = 3
-    minimum_required_baseline_seizure_count = 4
-    placebo_mu = 0
-    placebo_sigma = 0.05 
-    drug_mu = 0.2
-    drug_sigma = 0.05
-    num_trials = 500
-
-    theo_placebo_arm_patient_pop_params = \
-        generate_theo_patient_pop_params(monthly_mean_min,
-                                         monthly_mean_max,
-                                         monthly_std_dev_min,
-                                         monthly_std_dev_max,
-                                         num_theo_patients_per_trial_arm)
-    
-    theo_drug_arm_patient_pop_params = \
-        generate_theo_patient_pop_params(monthly_mean_min,
-                                         monthly_mean_max,
-                                         monthly_std_dev_min,
-                                         monthly_std_dev_max,
-                                         num_theo_patients_per_trial_arm)
-    
-    TTP_emp_stat_power = \
-        empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_params,
-                                                   theo_drug_arm_patient_pop_params,
-                                                   num_theo_patients_per_trial_arm,
-                                                   num_baseline_months,
-                                                   num_testing_months,
-                                                   minimum_required_baseline_seizure_count,
-                                                   placebo_mu,
-                                                   placebo_sigma,
-                                                   drug_mu,
-                                                   drug_sigma,
-                                                   num_trials)
-
-    map_stat_power = \
-        estimate_map_based_stat_power_for_one_pop(folder,
-                                                  num_theo_patients_per_trial_arm,
-                                                  num_patients_per_map_location,
-                                                  tmp_file_name,
-                                                  alpha,
-                                                  theo_placebo_arm_patient_pop_params,
-                                                  theo_drug_arm_patient_pop_params)
-    
-    print([map_stat_power, TTP_emp_stat_power])
