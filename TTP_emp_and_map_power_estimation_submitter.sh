@@ -34,7 +34,7 @@ alpha=0.05
 
 folder=/n/scratch2/jmr95/rct-SNR-data/TTP-data/TTP-mapsls
 RMSE_folder=/n/scratch2/jmr95/rct-SNR-data/TTP-data/TTP-power-estims
-num_iter=10
+num_iter=5
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
