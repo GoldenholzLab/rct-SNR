@@ -6,31 +6,33 @@ from empirical_estimation import empirically_estimate_TTP_statistical_power
 from TTP_map_stat_power_prediction import estimate_map_based_stat_power_for_one_pop
 import time
 import psutil
+import sys
 
 
 if(__name__=='__main__'):
 
-    monthly_mean_min = 4
-    monthly_mean_max = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 8
-    num_theo_patients_per_trial_arm = 153
-    
-    num_baseline_months = 2
-    num_testing_months = 3
-    minimum_required_baseline_seizure_count = 4
-    placebo_mu = 0
-    placebo_sigma = 0.05 
-    drug_mu = 0.2
-    drug_sigma = 0.05
-    num_trials = 500
+    monthly_mean_min = int(sys.argv[1])
+    monthly_mean_max = int(sys.argv[2])
+    monthly_std_dev_min = int(sys.argv[3])
+    monthly_std_dev_max = int(sys.argv[4])
 
-    num_patients_per_map_location = 5000
-    alpha = 0.05
+    num_theo_patients_per_trial_arm = int(sys.argv[5])
+    num_baseline_months = int(sys.argv[6])
+    num_testing_months = int(sys.argv[7])
+    minimum_required_baseline_seizure_count = int(sys.argv[8])
 
-    folder = os.getcwd() + '/test_folder'
-    RMSE_folder = os.getcwd()
-    estim_iter = 1
+    placebo_mu = float(sys.argv[9])
+    placebo_sigma = float(sys.argv[10])
+    drug_mu = float(sys.argv[11])
+    drug_sigma = float(sys.argv[12])
+
+    num_trials = int(sys.argv[13])
+    num_patients_per_map_location = int(sys.argv[14])
+    alpha = float(sys.argv[15])
+
+    folder = sys.argv[16]
+    RMSE_folder = sys.argv[17]
+    estim_iter = int(sys.argv[18])
 
     theo_placebo_arm_patient_pop_params = \
         generate_theo_patient_pop_params(monthly_mean_min,
