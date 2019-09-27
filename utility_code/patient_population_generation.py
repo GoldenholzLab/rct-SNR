@@ -1,6 +1,6 @@
 import numpy as np
-from seizure_diary_generation import generate_placebo_arm_seizure_diary
-from seizure_diary_generation import generate_drug_arm_seizure_diary
+from .seizure_diary_generation import generate_placebo_arm_seizure_diary
+from .seizure_diary_generation import generate_drug_arm_seizure_diary
 
 
 def generate_theo_patient_pop_params(monthly_mean_min,
