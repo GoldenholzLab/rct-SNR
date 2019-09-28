@@ -27,7 +27,7 @@ drug_sigma=0.05
 
 num_trials=10
 num_pops=5
-data_storage_folder=test_folder
+data_storage_folder_name=test_folder
 num_compute_iters=5
 
 inputs[0]=$monthly_mean_min
@@ -47,7 +47,7 @@ inputs[11]=$drug_sigma
 
 inputs[12]=$num_trials
 inputs[13]=$num_pops
-inputs[14]=$data_storage_folder
+inputs[14]=$data_storage_folder_name
 
 for ((compute_iter=1; compute_iter<num_compute_iters+1; compute_iter=compute_iter+1))
 do
