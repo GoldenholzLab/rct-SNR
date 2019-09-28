@@ -4,6 +4,9 @@
 # comma de-limited files
 *.csv
 
+# ignore stored deep learning models
+*.h5
+
 # ignore JSON files
 *.json
 
