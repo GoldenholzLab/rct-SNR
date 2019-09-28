@@ -53,6 +53,6 @@ for ((compute_iter=1; compute_iter<num_compute_iters+1; compute_iter=compute_ite
 do
     inputs[15]=$compute_iter
 
-    bash generate_data_wrapper.sh ${inputs[@]}
+    sbatch generate_data_wrapper.sh ${inputs[@]}
 
 done
