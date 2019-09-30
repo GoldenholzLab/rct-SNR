@@ -34,4 +34,4 @@ module load conda2/4.2.13
 module load python/3.6.0
 source activate working_env
 
-srun -c 1 python -u main_python_scripts/train_model.py ${inputs[@]}
+srun -c 1 python -u main_python_scripts/train_model.py ${inputs2[@]}
