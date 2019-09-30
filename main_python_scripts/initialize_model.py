@@ -1,6 +1,6 @@
 import os
 print(os.getcwd())
-print os.environ['CONDA_DEFAULT_ENV']
+print(os.environ['CONDA_DEFAULT_ENV'])
 help('modules')
 
 from keras import Input
