@@ -27,6 +27,7 @@ module load conda2/4.2.13
 module load python/3.6.0
 source activate main_env
 
+echo $CONDA_DEFAULT_ENV
 conda list
 
 srun -c 1 python -u main_python_scripts/initialize_model.py ${inputs[@]}
