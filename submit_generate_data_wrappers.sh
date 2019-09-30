@@ -27,7 +27,7 @@ drug_sigma=0.05
 
 num_trials=10
 num_pops=5
-data_storage_folder_name=test_folder
+data_storage_folder_name='test_folder'
 num_compute_iters=5
 
 inputs[0]=$monthly_mean_min

@@ -28,10 +28,10 @@ def build_model(num_monthly_means,
 
 def take_inputs_from_commmand_shell():
 
-    monthly_mean_min    = int(sys.argv[0])
-    monthly_mean_max    = int(sys.argv[1])
-    monthly_std_dev_min = int(sys.argv[2])
-    monthly_std_dev_max = int(sys.argv[3])
+    monthly_mean_min    = int(sys.argv[1])
+    monthly_mean_max    = int(sys.argv[2])
+    monthly_std_dev_min = int(sys.argv[3])
+    monthly_std_dev_max = int(sys.argv[4])
 
     RR50_stat_power_model_file_name = sys.argv[5]
 

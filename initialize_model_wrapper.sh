@@ -1,3 +1,14 @@
+#!/usr/bin/bash
+
+#SBATCH -p short
+#SBATCH --mem=10G
+#SBATCH -t 0-00:05
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -e jmr95_%j.err
+#SBATCH -o jmr95_%j.out
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
 monthly_mean_min=4
 monthly_mean_max=16
@@ -11,4 +22,4 @@ inputs[2]=$monthly_std_dev_min
 inputs[3]=$monthly_std_dev_max
 inputs[4]=$RR50_stat_power_model_file_name
 
-python -u initialize_model.py ${inputs[@]}
+srun -c 1 python -u initialize_model.py ${inputs[@]}
