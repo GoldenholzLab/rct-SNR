@@ -32,4 +32,4 @@ module load conda2/4.2.13
 module load python/3.6.0
 source activate main_env
 
-srun -c 1 python -u generate_data.py ${inputs[@]}
+srun -c 1 python -u main_python_scripts/generate_data.py ${inputs[@]}

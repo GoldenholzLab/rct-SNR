@@ -17,4 +17,4 @@ inputs[4]=$data_storage_folder_name
 inputs[5]=$num_compute_iters
 inputs[6]=$RR50_stat_power_model_file_name
 
-python -u train_model.py ${inputs[@]}
+python -u main_python_scripts/train_model.py ${inputs[@]}

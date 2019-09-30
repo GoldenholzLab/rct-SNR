@@ -11,4 +11,4 @@ inputs[2]=$monthly_std_dev_min
 inputs[3]=$monthly_std_dev_max
 inputs[4]=$RR50_stat_power_model_file_name
 
-python -u initialize_model.py ${inputs[@]}
+python -u main_python_scripts/initialize_model.py ${inputs[@]}

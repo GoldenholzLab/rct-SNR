@@ -1,11 +1,13 @@
+import numpy as np
+import json
+import time
+import sys
+import os
+sys.path.insert(0, os.getcwd())
 from utility_code.patient_population_generation import generate_theo_patient_pop_params
 from utility_code.patient_population_generation import convert_theo_pop_hist
 from utility_code.empirical_estimation import empirically_estimate_RR50_statistical_power
-import time
-import numpy as np
-import json
-import os
-import sys
+
 
 
 def generate_theo_trial_arm_patient_pops_and_hist(monthly_mean_min,

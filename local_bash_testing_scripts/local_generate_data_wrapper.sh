@@ -16,4 +16,4 @@ inputs[13]=${14}
 inputs[14]=${15}
 inputs[15]=${16}
 
-python -u generate_data.py ${inputs[@]}
+python -u main_python_scripts/generate_data.py ${inputs[@]}
