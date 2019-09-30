@@ -1,23 +1,27 @@
 import os
 import numpy as np
 from time import sleep
-
-'''
-
-Is this script even necessary?
-
-'''
+import subprocess
+import sys
 
 
 if(__name__=='__main__'):
 
-    data_storage_folder_name = 'test_folder'
-    num_compute_iters = 5
-    num_minutes_to_wait = 5
+    monthly_mean_min    = int(sys.argv[1])
+    monthly_mean_max    = int(sys.argv[2])
+    monthly_std_dev_min = int(sys.argv[3])
+    monthly_std_dev_max = int(sys.argv[4])
+
+    data_storage_folder_name        = sys.argv[5]
+    RR50_stat_power_model_file_name = sys.argv[6]
+    num_compute_iters           = int(sys.argv[7])
+        
+    #num_minutes_to_wait = 5
+    num_seconds_to_wait = 5
 
     data_storage_folder_file_path = './' + data_storage_folder_name
     all_iter_files_exist = False
-    num_seconds_to_wait = num_minutes_to_wait*60
+    #num_seconds_to_wait = num_minutes_to_wait*60
 
     while(not all_iter_files_exist):
 
@@ -44,3 +48,8 @@ if(__name__=='__main__'):
         all_iter_files_exist = np.all(each_iter_exists)
 
         sleep(num_seconds_to_wait)
+    
+    command = ['sbatch', 'train_model_wrapper.sh', 
+               str(monthly_mean_min), str(monthly_mean_max), str(monthly_std_dev_min), str(monthly_std_dev_max), 
+               data_storage_folder_name, RR50_stat_power_model_file_name, str(num_compute_iters)]
+    subprocess.call(command)
