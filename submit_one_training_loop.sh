@@ -58,6 +58,7 @@ do
 
 done
 
+: '
 inputs2[0]=$monthly_mean_min
 inputs2[1]=$monthly_mean_max
 inputs2[2]=$monthly_std_dev_min
@@ -73,3 +74,4 @@ module load python/3.6.0
 source activate main_env
 
 srun -c 1 python -u main_python_scripts/data_watcher.py ${inputs2[@]}
+'
