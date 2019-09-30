@@ -10,6 +10,15 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
+monthly_mean_min=4
+monthly_mean_max=16
+monthly_std_dev_min=1
+monthly_std_dev_max=8
+
+data_storage_folder_name='test_folder'
+RR50_stat_power_model_file_name='RR50_stat_power_model.h5'
+num_compute_iters=5
+
 inputs2[0]=$monthly_mean_min
 inputs2[1]=$monthly_mean_max
 inputs2[2]=$monthly_std_dev_min
