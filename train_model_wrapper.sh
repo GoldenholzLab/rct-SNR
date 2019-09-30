@@ -28,4 +28,9 @@ inputs[4]=$data_storage_folder_name
 inputs[5]=$num_compute_iters
 inputs[6]=$RR50_stat_power_model_file_name
 
+module load gcc/6.2.0
+module load conda2/4.2.13
+module load python/3.6.0
+source activate main_envs
+
 python -u train_model.py ${inputs[@]}

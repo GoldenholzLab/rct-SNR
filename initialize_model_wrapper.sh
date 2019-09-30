@@ -22,4 +22,9 @@ inputs[2]=$monthly_std_dev_min
 inputs[3]=$monthly_std_dev_max
 inputs[4]=$RR50_stat_power_model_file_name
 
+module load gcc/6.2.0
+module load conda2/4.2.13
+module load python/3.6.0
+source activate main_env
+
 srun -c 1 python -u initialize_model.py ${inputs[@]}
