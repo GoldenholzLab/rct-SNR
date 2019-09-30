@@ -64,8 +64,8 @@ inputs2[2]=$monthly_std_dev_min
 inputs2[3]=$monthly_std_dev_max
 
 inputs2[4]=$data_storage_folder_name
-inputs2[5]=$num_compute_iters
-inputs2[6]=$RR50_stat_power_model_file_name
+inputs2[5]=$RR50_stat_power_model_file_name
+inputs2[6]=$num_compute_iters
 
 module load gcc/6.2.0
 module load conda2/4.2.13

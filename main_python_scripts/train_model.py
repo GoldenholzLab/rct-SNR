@@ -78,8 +78,8 @@ def take_inputs_from_command_shell():
     monthly_std_dev_max = int(sys.argv[4])
 
     data_storage_folder_name = sys.argv[5]
-    num_compute_iters = int(sys.argv[6])
-    RR50_stat_power_model_file_name = sys.argv[7]
+    RR50_stat_power_model_file_name = sys.argv[6]
+    num_compute_iters = int(sys.argv[7])
 
     return [monthly_mean_min,    monthly_mean_max,
             monthly_std_dev_min, monthly_std_dev_max,
