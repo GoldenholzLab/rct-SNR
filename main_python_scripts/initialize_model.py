@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from keras import Input
 from keras.layers import Conv2D
 from keras.layers import concatenate
