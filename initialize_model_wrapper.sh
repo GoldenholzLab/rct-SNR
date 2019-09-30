@@ -25,9 +25,6 @@ inputs[4]=$RR50_stat_power_model_file_name
 module load gcc/6.2.0
 module load conda2/4.2.13
 module load python/3.6.0
-source activate main_env
-
-echo $CONDA_DEFAULT_ENV
-conda list
+source activate working_env
 
 srun -c 1 python -u main_python_scripts/initialize_model.py ${inputs[@]}

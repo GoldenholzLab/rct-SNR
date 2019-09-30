@@ -1,8 +1,3 @@
-import os
-print(os.getcwd())
-print(os.environ['CONDA_DEFAULT_ENV'])
-help('modules')
-
 from keras import Input
 from keras.layers import Conv2D
 from keras.layers import concatenate

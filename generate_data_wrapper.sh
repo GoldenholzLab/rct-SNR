@@ -30,6 +30,6 @@ inputs[15]=${16}
 module load gcc/6.2.0
 module load conda2/4.2.13
 module load python/3.6.0
-source activate main_env
+source activate working_env
 
 srun -c 1 python -u main_python_scripts/generate_data.py ${inputs[@]}
