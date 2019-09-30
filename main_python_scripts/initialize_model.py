@@ -1,3 +1,6 @@
+import os
+help('modules')
+
 from keras import Input
 from keras.layers import Conv2D
 from keras.layers import concatenate
