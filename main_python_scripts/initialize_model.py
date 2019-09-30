@@ -1,4 +1,5 @@
 import os
+print(os.getcwd())
 help('modules')
 
 from keras import Input
