@@ -1,5 +1,3 @@
-print('reached')
-
 import os
 import numpy as np
 from time import sleep
