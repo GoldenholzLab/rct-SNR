@@ -24,6 +24,6 @@ module load gcc/6.2.0
 module load conda2/4.2.13
 module load python/3.6.0
 module load cuda/9.0
-source activate main_env
+source activate working_env
 
 srun -c 1 python -u main_python_scripts/train_model.py ${inputs[@]}
