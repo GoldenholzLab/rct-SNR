@@ -72,9 +72,9 @@ for ((compute_iter=1; compute_iter<num_compute_iters+1; compute_iter=compute_ite
 do
     inputs[15]=$compute_iter
 
-    bash local_generate_data_wrapper.sh ${inputs[@]}
+    sbatch local_generate_data_wrapper.sh ${inputs[@]}
 
 done
 
-bash local_data_watcher_wrapper.sh ${inputs_two[@]}
-bash local_data_listener.sh ${inputs_three[@]}
+sbatch local_data_watcher_wrapper.sh ${inputs_two[@]}
+sbatch local_data_listener.sh ${inputs_three[@]}
