@@ -29,7 +29,7 @@ num_trials=10
 num_pops=5
 
 training_data_folder_name='training_data_folder'
-RR50_stat_power_model_file_name='RR50_stat_power_model.h5'
+RR50_stat_power_model_file_name='RR50_stat_power_model_1.h5'
 num_compute_iters=6
 
 inputs[0]=$monthly_mean_min
