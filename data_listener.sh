@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 #SBATCH -p short
-#SBATCH -t 0-00:10
+#SBATCH -t 0-00:15
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
