@@ -71,8 +71,6 @@ def collect_data_from_folder(num_monthly_means,
     
 
 def take_inputs_from_command_shell():
-    
-    print(sys.argv)
 
     monthly_mean_min    = int(sys.argv[1])
     monthly_mean_max    = int(sys.argv[2])
