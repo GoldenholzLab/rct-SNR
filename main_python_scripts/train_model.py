@@ -4,17 +4,17 @@ import keras.models as models
 import sys
 
 
-def load_iter_specific_files(data_storage_folder_name, compute_iter):
+def load_iter_specific_files(training_data_folder_name, compute_iter):
 
-    data_storage_folder_file_path = './' + data_storage_folder_name
+    training_data_folder_file_path = './' + data_storage_folder_name
 
     iter_specific_theo_placebo_arm_hists_file_name = 'theo_placebo_arm_hists_' + str(compute_iter) + '.json'
     iter_specific_theo_drug_arm_hists_file_name    = 'theo_drug_arm_hists_'    + str(compute_iter) + '.json'
     iter_specific_RR50_emp_stat_powers_file_name   = 'RR50_emp_stat_powers_'   + str(compute_iter) + '.json'
 
-    iter_specific_theo_placebo_arm_hists_file_path = data_storage_folder_file_path + '/' + iter_specific_theo_placebo_arm_hists_file_name
-    iter_specific_theo_drug_arm_hists_file_path    = data_storage_folder_file_path + '/' + iter_specific_theo_drug_arm_hists_file_name
-    iter_specific_RR50_emp_stat_powers_file_path   = data_storage_folder_file_path + '/' + iter_specific_RR50_emp_stat_powers_file_name
+    iter_specific_theo_placebo_arm_hists_file_path = training_data_folder_file_path + '/' + iter_specific_theo_placebo_arm_hists_file_name
+    iter_specific_theo_drug_arm_hists_file_path    = training_data_folder_file_path + '/' + iter_specific_theo_drug_arm_hists_file_name
+    iter_specific_RR50_emp_stat_powers_file_path   = training_data_folder_file_path + '/' + iter_specific_RR50_emp_stat_powers_file_name
 
     with open(iter_specific_theo_placebo_arm_hists_file_path, 'r') as json_file:
         iter_specific_theo_placebo_arm_hists = np.array(json.load(json_file))
