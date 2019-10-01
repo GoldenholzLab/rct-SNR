@@ -6,7 +6,7 @@ import sys
 
 def load_iter_specific_files(training_data_folder_name, compute_iter):
 
-    training_data_folder_file_path = './' + data_storage_folder_name
+    training_data_folder_file_path = './' + training_data_folder_name
 
     iter_specific_theo_placebo_arm_hists_file_name = 'theo_placebo_arm_hists_' + str(compute_iter) + '.json'
     iter_specific_theo_drug_arm_hists_file_name    = 'theo_drug_arm_hists_'    + str(compute_iter) + '.json'
