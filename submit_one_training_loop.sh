@@ -50,6 +50,7 @@ inputs[12]=$num_trials
 inputs[13]=$num_pops
 inputs[14]=$data_storage_folder_name
 
+inputs_two[0]=$monthly_mean_min
 inputs_two[1]=$monthly_mean_max
 inputs_two[2]=$monthly_std_dev_min
 inputs_two[3]=$monthly_std_dev_max
