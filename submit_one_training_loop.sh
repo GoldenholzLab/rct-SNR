@@ -50,6 +50,14 @@ inputs[12]=$num_trials
 inputs[13]=$num_pops
 inputs[14]=$data_storage_folder_name
 
+inputs_two[1]=$monthly_mean_max
+inputs_two[2]=$monthly_std_dev_min
+inputs_two[3]=$monthly_std_dev_max
+
+inputs_two[4]=$data_storage_folder_name
+inputs_two[5]=$RR50_stat_power_model_file_name
+inputs_two[6]=$num_compute_iters
+
 for ((compute_iter=1; compute_iter<num_compute_iters+1; compute_iter=compute_iter+1))
 do
     inputs[15]=$compute_iter
@@ -58,4 +66,4 @@ do
 
 done
 
-sbatch data_watcher_wrapper.sh ${inputs2[@]}
+sbatch data_watcher_wrapper.sh ${inputs_two[@]}
