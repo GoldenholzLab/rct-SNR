@@ -28,5 +28,5 @@ do
     sleep 1
 done
 
-echo ${inputs[@]}
+rm yodeling.txt
 sbatch train_model_wrapper.sh ${inputs[@]}
