@@ -28,7 +28,7 @@ drug_sigma=0.05
 num_trials=10
 num_pops=5
 
-data_storage_folder_name='training_data_folder'
+training_data_folder_name='training_data_folder'
 RR50_stat_power_model_file_name='RR50_stat_power_model.h5'
 num_compute_iters=6
 
