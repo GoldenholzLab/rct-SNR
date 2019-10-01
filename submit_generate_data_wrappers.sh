@@ -76,5 +76,5 @@ do
 
 done
 
-sbatch local_data_watcher_wrapper.sh ${inputs_two[@]}
-sbatch local_data_listener.sh ${inputs_three[@]}
+sbatch data_watcher_wrapper.sh ${inputs_two[@]}
+sbatch data_listener.sh ${inputs_three[@]}
