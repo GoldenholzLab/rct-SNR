@@ -27,9 +27,10 @@ drug_sigma=0.05
 
 num_trials=10
 num_pops=5
+
 data_storage_folder_name='test_folder'
 RR50_stat_power_model_file_name='RR50_stat_power_model.h5'
-num_compute_iters=5
+num_compute_iters=6
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
@@ -56,15 +57,24 @@ inputs_two[2]=$monthly_std_dev_min
 inputs_two[3]=$monthly_std_dev_max
 
 inputs_two[4]=$data_storage_folder_name
-inputs_two[5]=$RR50_stat_power_model_file_name
-inputs_two[6]=$num_compute_iters
+inputs_two[5]=$num_compute_iters
+
+inputs_three[0]=$monthly_mean_min
+inputs_three[1]=$monthly_mean_max
+inputs_three[2]=$monthly_std_dev_min
+inputs_three[3]=$monthly_std_dev_max
+
+inputs_three[4]=$data_storage_folder_name
+inputs_three[5]=$RR50_stat_power_model_file_name
+inputs_three[6]=$num_compute_iters
 
 for ((compute_iter=1; compute_iter<num_compute_iters+1; compute_iter=compute_iter+1))
 do
     inputs[15]=$compute_iter
 
-    sbatch generate_data_wrapper.sh ${inputs[@]}
+    bash local_generate_data_wrapper.sh ${inputs[@]}
 
 done
 
-sbatch data_watcher_wrapper.sh ${inputs_two[@]}
+bash local_data_watcher_wrapper.sh ${inputs_two[@]}
+bash local_data_listener.sh ${inputs_three[@]}

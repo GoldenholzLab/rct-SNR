@@ -6,6 +6,5 @@ inputs[3]=$4
 
 inputs[4]=$5
 inputs[5]=$6
-inputs[6]=$7
 
-python -u main_python_scripts/train_model.py ${inputs[@]}
+python -u main_python_scripts/data_watcher.py ${inputs[@]}

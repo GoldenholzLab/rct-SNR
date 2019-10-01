@@ -13,8 +13,7 @@ if(__name__=='__main__'):
     monthly_std_dev_max = int(sys.argv[4])
 
     data_storage_folder_name        = sys.argv[5]
-    RR50_stat_power_model_file_name = sys.argv[6]
-    num_compute_iters           = int(sys.argv[7])
+    num_compute_iters           = int(sys.argv[6])
         
     #num_minutes_to_wait = 5
     num_seconds_to_wait = 5
@@ -49,7 +48,5 @@ if(__name__=='__main__'):
 
         sleep(num_seconds_to_wait)
     
-    command = ['sbatch', 'train_model_wrapper.sh', 
-               str(monthly_mean_min), str(monthly_mean_max), str(monthly_std_dev_min), str(monthly_std_dev_max), 
-               data_storage_folder_name, RR50_stat_power_model_file_name, str(num_compute_iters)]
-    subprocess.call(command)
+    with open(os.getcwd() + '/yodeling.txt', 'w+') as text_file:
+        text_file.write('yodel')
