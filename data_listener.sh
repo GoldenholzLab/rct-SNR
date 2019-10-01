@@ -29,4 +29,4 @@ do
 done
 
 echo ${inputs[@]}
-sbatch local_train_model_wrapper.sh ${inputs[@]}
+sbatch train_model_wrapper.sh ${inputs[@]}
