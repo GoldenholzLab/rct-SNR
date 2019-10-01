@@ -2,7 +2,7 @@
 
 #SBATCH -p gpu
 #SBATCH --gres=gpu:1
-#SBATCH --mem=500M
+#SBATCH --mem=10G
 #SBATCH -t 0-00:05
 #SBATCH -n 1
 #SBATCH -N 1
