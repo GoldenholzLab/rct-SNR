@@ -84,10 +84,6 @@ inputs_four[4]=$testing_data_folder_name
 inputs_four[5]=$RR50_stat_power_model_file_name
 inputs_four[6]=$num_compute_testing_iters
 
-module load gcc/6.2.0
-module load conda2/4.2.13
-module load python/3.6.0
-source activate working_env
 
 sbatch submit_generate_data_wrappers.sh ${inputs[@]}
 #bash local_submit_generate_data_wrappers.sh ${inputs[@]}
@@ -96,7 +92,7 @@ all_training_files_exist='False'
 while [ "$all_training_files_exist" == "False" ]
 do
     sleep 1
-    all_training_files_exist=`python folder_checker.py $training_data_folder_name $num_compute_training_iters`
+    all_training_files_exist=`bash folder_checker_wrapper.sh $training_data_folder_name $num_compute_training_iters`
     if [ "$all_training_files_exist" == "True" ]
     then
         sbatch train_model_wrapper.sh ${inputs_two[@]}
@@ -111,7 +107,7 @@ all_testing_files_exist='False'
 while [ "$all_testing_files_exist" == "False" ]
 do
     sleep 1
-    all_testing_files_exist=`python folder_checker.py $testing_data_folder_name $num_compute_testing_iters`
+    all_testing_files_exist=`bash folder_checker_wrapper.sh $testing_data_folder_name $num_compute_testing_iters`
     if [ "$all_testing_files_exist" == "True" ]
     then
         sbatch test_model_wrapper.sh ${inputs_four[@]}
