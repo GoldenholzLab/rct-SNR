@@ -84,6 +84,11 @@ inputs_four[4]=$testing_data_folder_name
 inputs_four[5]=$RR50_stat_power_model_file_name
 inputs_four[6]=$num_compute_testing_iters
 
+module load gcc/6.2.0
+module load conda2/4.2.13
+module load python/3.6.0
+source activate working_env
+
 sbatch submit_generate_data_wrappers.sh ${inputs[@]}
 #bash local_submit_generate_data_wrappers.sh ${inputs[@]}
 
