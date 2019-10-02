@@ -20,4 +20,10 @@ inputs[4]=$5
 inputs[5]=$6
 inputs[6]=$7
 
+module load gcc/6.2.0
+module load conda2/4.2.13
+module load python/3.6.0
+module load cuda/9.0
+source activate working_env
+
 srun -c 1 python -u main_python_scripts/test_model.py ${inputs[@]}

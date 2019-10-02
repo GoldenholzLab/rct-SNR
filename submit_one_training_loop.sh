@@ -84,8 +84,8 @@ inputs_four[4]=$testing_data_folder_name
 inputs_four[5]=$RR50_stat_power_model_file_name
 inputs_four[6]=$num_compute_testing_iters
 
-#sbatch submit_generate_data_wrappers.sh ${inputs[@]}
-bash local_submit_generate_data_wrappers.sh ${inputs[@]}
+sbatch submit_generate_data_wrappers.sh ${inputs[@]}
+#bash local_submit_generate_data_wrappers.sh ${inputs[@]}
 
 all_training_files_exist='False'
 while [ "$all_training_files_exist" == "False" ]
@@ -94,13 +94,13 @@ do
     all_training_files_exist=`python folder_checker.py $training_data_folder_name $num_compute_training_iters`
     if [ "$all_training_files_exist" == "True" ]
     then
-        #sbatch train_model_wrapper.sh ${inputs_two[@]}
-        bash local_train_model_wrapper.sh ${inputs_two[@]}
+        sbatch train_model_wrapper.sh ${inputs_two[@]}
+        #bash local_train_model_wrapper.sh ${inputs_two[@]}
     fi
 done
 
-#sbatch submit_generate_data_wrappers.sh ${inputs[@]}
-bash local_submit_generate_data_wrappers.sh ${inputs_three[@]}
+sbatch submit_generate_data_wrappers.sh ${inputs_three[@]}
+#bash local_submit_generate_data_wrappers.sh ${inputs_three[@]}
 
 all_testing_files_exist='False'
 while [ "$all_testing_files_exist" == "False" ]
@@ -109,8 +109,8 @@ do
     all_testing_files_exist=`python folder_checker.py $testing_data_folder_name $num_compute_testing_iters`
     if [ "$all_testing_files_exist" == "True" ]
     then
-        #sbatch test_model_wrapper.sh ${inputs_two[@]}
-        bash local_test_model_wrapper.sh ${inputs_four[@]}
+        sbatch test_model_wrapper.sh ${inputs_four[@]}
+        #bash local_test_model_wrapper.sh ${inputs_four[@]}
     fi
 done
 

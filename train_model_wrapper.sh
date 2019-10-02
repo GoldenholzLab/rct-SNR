@@ -27,5 +27,3 @@ module load cuda/9.0
 source activate working_env
 
 srun -c 1 python -u main_python_scripts/train_model.py ${inputs[@]}
-
-rm -rf $5
