@@ -1,10 +1,11 @@
 import sys
 import os
+import keras.models as models
+import shutil
+import numpy as np
 sys.path.insert(0, os.getcwd())
 from main_python_scripts.file_collector import load_iter_specific_files
 from main_python_scripts.file_collector import collect_data_from_folder
-import keras.models as models
-import shutil
 
 
 def take_inputs_from_command_shell():
@@ -14,13 +15,13 @@ def take_inputs_from_command_shell():
     monthly_std_dev_min = int(sys.argv[3])
     monthly_std_dev_max = int(sys.argv[4])
 
-    training_data_folder_name = sys.argv[5]
+    testing_data_folder_name = sys.argv[5]
     RR50_stat_power_model_file_name = sys.argv[6]
     num_compute_iters = int(sys.argv[7])
 
     return [monthly_mean_min,    monthly_mean_max,
             monthly_std_dev_min, monthly_std_dev_max,
-            training_data_folder_name, num_compute_iters,
+            testing_data_folder_name, num_compute_iters,
             RR50_stat_power_model_file_name]
 
 
@@ -28,7 +29,7 @@ if(__name__=='__main__'):
 
     [monthly_mean_min,    monthly_mean_max,
      monthly_std_dev_min, monthly_std_dev_max,
-     training_data_folder_name, num_compute_iters,
+     testing_data_folder_name, num_compute_iters,
      RR50_stat_power_model_file_name] = \
           take_inputs_from_command_shell()
 
@@ -41,10 +42,11 @@ if(__name__=='__main__'):
          collect_data_from_folder(num_monthly_means,
                                   num_monthly_std_devs,
                                   num_compute_iters,
-                                  training_data_folder_name)
+                                  testing_data_folder_name)
     
-    RR50_stat_power_model = models.load_model(RR50_stat_power_model_file_name + '.h5')
-    RR50_stat_power_model.fit([theo_placebo_arm_hists, theo_drug_arm_hists], RR50_emp_stat_powers, epochs=3, batch_size=5)
-    RR50_stat_power_model.save(RR50_stat_power_model_file_name + '_trained.h5')
+    RR50_stat_power_model = models.load_model(RR50_stat_power_model_file_name + '_trained.h5')
+    RR50_MSE = RR50_stat_power_model.evaluate([theo_placebo_arm_hists, theo_drug_arm_hists], RR50_emp_stat_powers)
+    RR50_RMSE = np.sqrt(RR50_MSE)
+    print(RR50_RMSE)
     
-    shutil.rmtree(training_data_folder_name)
+    shutil.rmtree(testing_data_folder_name)

@@ -1,7 +1,9 @@
 #!/usr/bin/bash
 
-#SBATCH -p short
-#SBATCH -t 0-00:15
+#SBATCH -p gpu
+#SBATCH --gres=gpu:1
+#SBATCH --mem=10G
+#SBATCH -t 0-00:05
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
@@ -18,15 +20,4 @@ inputs[4]=$5
 inputs[5]=$6
 inputs[6]=$7
 
-a=1
-while [ "$a" -eq 1 ]
-do
-    if [ -f "yodeling.txt" ]
-    then
-        a=0
-    fi
-    sleep 1
-done
-
-rm yodeling.txt
-sbatch train_model_wrapper.sh ${inputs[@]}
+srun -c 1 python -u main_python_scripts/test_model.py ${inputs[@]}
