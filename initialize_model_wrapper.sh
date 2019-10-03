@@ -10,17 +10,12 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
-monthly_mean_min=4
-monthly_mean_max=16
-monthly_std_dev_min=1
-monthly_std_dev_max=8
-RR50_stat_power_model_file_name='RR50_stat_power_model.h5'
 
-inputs[0]=$monthly_mean_min
-inputs[1]=$monthly_mean_max
-inputs[2]=$monthly_std_dev_min
-inputs[3]=$monthly_std_dev_max
-inputs[4]=$RR50_stat_power_model_file_name
+inputs[0]=$1
+inputs[1]=$2
+inputs[2]=$3
+inputs[3]=$4
+inputs[4]=$5
 
 module load gcc/6.2.0
 module load conda2/4.2.13
