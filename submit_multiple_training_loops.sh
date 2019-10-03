@@ -66,7 +66,6 @@ sbatch initialize_model_wrapper.sh ${inputs[@]}
 while [ ! -f "$RR50_stat_power_model_file_name.h5" ]
 do
     sleep 1
-    echo 'still looping'
 done
 
 sbatch submit_one_training_loop.sh ${inputs_two[@]}
