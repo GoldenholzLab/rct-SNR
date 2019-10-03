@@ -1,9 +1,11 @@
 from keras import Input
 from keras.layers import Conv2D
-from keras.layers import concatenate
+from keras.layers import MaxPooling2D
 from keras.layers import Flatten
+from keras.layers import concatenate
 from keras.layers import Dense
 import keras.models as models
+from keras.utils import plot_model
 import sys
 
 
@@ -70,3 +72,5 @@ if(__name__=='__main__'):
                     num_monthly_std_devs)
     
     RR50_stat_power_model.save(RR50_stat_power_model_file_name)
+
+    plot_model(RR50_stat_power_model, to_file='RR50_stat_power_model.png')
