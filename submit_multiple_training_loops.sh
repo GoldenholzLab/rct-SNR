@@ -63,7 +63,7 @@ inputs_two[18]=$num_compute_testing_iters
 
 sbatch initialize_model_wrapper.sh ${inputs[@]}
 
-while [ ! -f $RR50_stat_power_model_file_name ]
+while [ ! -f "$RR50_stat_power_model_file_name.h5" ]
 do
     sleep 1
 done
