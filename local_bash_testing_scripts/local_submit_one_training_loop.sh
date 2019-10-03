@@ -112,4 +112,5 @@ do
             #sbatch test_model_wrapper.sh ${inputs_four[@]}
             bash local_test_model_wrapper.sh ${inputs_four[@]}
         fi
+    fi
 done
