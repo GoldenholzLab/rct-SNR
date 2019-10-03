@@ -2,7 +2,7 @@
 
 #SBATCH -p short
 #SBATCH --mem=500M
-#SBATCH -t 0-00:10
+#SBATCH -t 0-00:15
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
@@ -74,7 +74,7 @@ do
         x1=`ls training_data_folder/RR50_emp_stat_powers_*.json | wc -l`
         x2=`ls training_data_folder/RR50_emp_stat_powers_*.json | wc -l`
         x3=`ls training_data_folder/RR50_emp_stat_powers_*.json | wc -l`
-        if [ $x1 == $num_compute_training_iters ] && [ $x2 == $num_compute_training_iters ] && [ $x3 == $num_compute_training_iters ]
+        if [[ $x1 == $num_compute_training_iters && $x2 == $num_compute_training_iters && $x3 == $num_compute_training_iters ]]
         then
             all_training_files_exist='True'
             sbatch train_model_wrapper.sh ${inputs_two[@]}
@@ -95,7 +95,7 @@ do
         x1=`ls testing_data_folder/RR50_emp_stat_powers_*.json | wc -l`
         x2=`ls testing_data_folder/RR50_emp_stat_powers_*.json | wc -l`
         x3=`ls testing_data_folder/RR50_emp_stat_powers_*.json | wc -l`
-        if [ $x1 == $num_compute_testing_iters ] && [ $x2 == $num_compute_testing_iters ] && [ $x3 == $num_compute_testing_iters ] && [ -f "RR50_stat_power_model_trained.h5" ]
+        if [[ $x1 == $num_compute_testing_iters && $x2 == $num_compute_testing_iters && $x3 == $num_compute_testing_iters && -f "RR50_stat_power_model_trained.h5" ]]
         then
             all_testing_files_exist='True'
             sbatch test_model_wrapper.sh ${inputs_four[@]}
