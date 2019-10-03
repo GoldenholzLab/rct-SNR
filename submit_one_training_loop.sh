@@ -118,7 +118,7 @@ do
         x1=`ls testing_data_folder/RR50_emp_stat_powers_*.json | wc -l`
         x2=`ls testing_data_folder/RR50_emp_stat_powers_*.json | wc -l`
         x3=`ls testing_data_folder/RR50_emp_stat_powers_*.json | wc -l`
-        if [ $x1 == $num_compute_testing_iters ] && [ $x2 == $num_compute_testing_iters ] && [ $x3 == $num_compute_testing_iters ] && [ -f "RR50_stat_power_model_trained.h5" ]s
+        if [ $x1 == $num_compute_testing_iters ] && [ $x2 == $num_compute_testing_iters ] && [ $x3 == $num_compute_testing_iters ] && [ -f "RR50_stat_power_model_trained.h5" ]
         then
             all_testing_files_exist='True'
             sbatch test_model_wrapper.sh ${inputs_four[@]}
