@@ -80,9 +80,12 @@ all_training_files_exist='False'
 while [ "$all_training_files_exist" == "False" ]
 do
     sleep 1
-    all_training_files_exist=`python folder_checker.py $training_data_folder_name $num_compute_training_iters`
-    if [ "$all_training_files_exist" == "True" ]
+    x1=`ls training_data_folder/RR50_emp_stat_powers_*.json | wc -l`
+    x2=`ls training_data_folder/RR50_emp_stat_powers_*.json | wc -l`
+    x3=`ls training_data_folder/RR50_emp_stat_powers_*.json | wc -l`
+    if [ $x1 == $num_compute_training_iters ] && [ $x2 == $num_compute_training_iters ] && [ $x3 == $num_compute_training_iters ]
     then
+        all_training_files_exist='True'
         #sbatch train_model_wrapper.sh ${inputs_two[@]}
         bash local_train_model_wrapper.sh ${inputs_two[@]}
     fi
@@ -95,9 +98,12 @@ all_testing_files_exist='False'
 while [ "$all_testing_files_exist" == "False" ]
 do
     sleep 1
-    all_testing_files_exist=`python folder_checker.py $testing_data_folder_name $num_compute_testing_iters`
-    if [ "$all_testing_files_exist" == "True" ]
+    x1=`ls testing_data_folder/RR50_emp_stat_powers_*.json | wc -l`
+    x2=`ls testing_data_folder/RR50_emp_stat_powers_*.json | wc -l`
+    x3=`ls testing_data_folder/RR50_emp_stat_powers_*.json | wc -l`
+    if [ $x1 == $num_compute_testing_iters ] && [ $x2 == $num_compute_testing_iters ] && [ $x3 == $num_compute_testing_iters ] && [ -f "RR50_stat_power_model_trained.h5" ]
     then
+        all_testing_files_exist='True'
         #sbatch test_model_wrapper.sh ${inputs_four[@]}
         bash local_test_model_wrapper.sh ${inputs_four[@]}
     fi
