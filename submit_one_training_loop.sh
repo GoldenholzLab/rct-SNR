@@ -69,7 +69,7 @@ all_training_files_exist='False'
 while [ "$all_training_files_exist" == "False" ]
 do
     sleep 1
-    if [ -d $training_data_folder_name ]
+    if [ -d ${15} ]
     then
         x1=`ls ${15}/RR50_emp_stat_powers_*.json | wc -l`
         x2=`ls ${15}/theo_placebo_arm_hists_*.json | wc -l`
@@ -90,7 +90,7 @@ all_testing_files_exist='False'
 while [ "$all_testing_files_exist" == "False" ]
 do
     sleep 1
-    if [ -d $testing_data_folder_name ]
+    if [ -d ${16}]
     then
         x1=`ls ${16}/RR50_emp_stat_powers_*.json | wc -l`
         x2=`ls ${16}/theo_placebo_arm_hists_*.json | wc -l`
