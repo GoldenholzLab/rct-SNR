@@ -10,10 +10,10 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
-monthly_mean_min=4
+monthly_mean_min=1
 monthly_mean_max=16
 monthly_std_dev_min=1
-monthly_std_dev_max=8
+monthly_std_dev_max=16
 
 num_theo_patients_per_trial_arm=153
 num_baseline_months=2
