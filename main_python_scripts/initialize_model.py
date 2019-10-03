@@ -13,22 +13,22 @@ def build_model(num_monthly_means,
                 num_monthly_std_devs):
 
     placebo_arm_hist_input_tensor = Input(shape=(num_monthly_std_devs, num_monthly_means, 1))
-    placebo_arm_2D_conv_tensor    = Conv2D(32, (5,5), activation='relu')(placebo_arm_hist_input_tensor)
-    placebo_arm_2D_conv_tensor    = MaxPooling2D((3,3))(placebo_arm_2D_conv_tensor)
-    placebo_arm_2D_conv_tensor    = Conv2D(64, (3,3), activation='relu')(placebo_arm_2D_conv_tensor)
+    placebo_arm_2D_conv_tensor    = Conv2D(32, (2,2), activation='relu')(placebo_arm_hist_input_tensor)
+    placebo_arm_2D_conv_tensor    = MaxPooling2D((2,2))(placebo_arm_2D_conv_tensor)
+    placebo_arm_2D_conv_tensor    = Conv2D(64, (2,2), activation='relu')(placebo_arm_2D_conv_tensor)
     placebo_arm_2D_conv_tensor    = MaxPooling2D((2,2))(placebo_arm_2D_conv_tensor)
     placebo_arm_flattened_tensor  = Flatten()(placebo_arm_2D_conv_tensor)
-    placebo_arm_hidden_layer      = Dense(32, activation='relu')(placebo_arm_flattened_tensor)
-    placebo_arm_hidden_layer      = Dense(16, activation='relu')(placebo_arm_hidden_layer)
+    placebo_arm_hidden_layer      = Dense(64, activation='relu')(placebo_arm_flattened_tensor)
+    placebo_arm_hidden_layer      = Dense(32, activation='relu')(placebo_arm_hidden_layer)
     
     drug_arm_hist_input_tensor = Input(shape=(num_monthly_std_devs, num_monthly_means, 1))
-    drug_arm_2D_conv_tensor    = Conv2D(32, (5,5), activation='relu')(drug_arm_hist_input_tensor)
-    drug_arm_2D_conv_tensor    = MaxPooling2D((3,3))(drug_arm_2D_conv_tensor)
-    drug_arm_2D_conv_tensor    = Conv2D(64, (3,3), activation='relu')(drug_arm_2D_conv_tensor)
+    drug_arm_2D_conv_tensor    = Conv2D(32, (2,2), activation='relu')(drug_arm_hist_input_tensor)
+    drug_arm_2D_conv_tensor    = MaxPooling2D((2,2))(drug_arm_2D_conv_tensor)
+    drug_arm_2D_conv_tensor    = Conv2D(64, (2,2), activation='relu')(drug_arm_2D_conv_tensor)
     drug_arm_2D_conv_tensor    = MaxPooling2D((2,2))(drug_arm_2D_conv_tensor)
     drug_arm_flattened_tensor  = Flatten()(drug_arm_2D_conv_tensor)
-    drug_arm_hidden_layer      = Dense(32, activation='relu')(drug_arm_flattened_tensor)
-    drug_arm_hidden_layer      = Dense(16, activation='relu')(drug_arm_hidden_layer)
+    drug_arm_hidden_layer      = Dense(64, activation='relu')(drug_arm_flattened_tensor)
+    drug_arm_hidden_layer      = Dense(32, activation='relu')(drug_arm_hidden_layer)
 
     concatenated_placebo_and_drug_tensor = concatenate([placebo_arm_hidden_layer, drug_arm_hidden_layer])
     pseudo_power_output_tensor = Dense(32, activation='relu')(concatenated_placebo_and_drug_tensor)
@@ -73,4 +73,4 @@ if(__name__=='__main__'):
     
     RR50_stat_power_model.save(RR50_stat_power_model_file_name)
 
-    plot_model(RR50_stat_power_model, to_file='RR50_stat_power_model.png')
+    plot_model(RR50_stat_power_model, to_file='RR50_stat_power_model.png', show_shapes=True)
