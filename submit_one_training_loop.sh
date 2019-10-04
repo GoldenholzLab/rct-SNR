@@ -72,8 +72,16 @@ do
     then
         echo `pwd`
         echo `ls "${15}"`
+        echo ' ' 
         echo `ls "${15}/RR50_emp_stat_powers_"*`
+        echo ' ' 
         echo `ls "${15}/RR50_emp_stat_powers_*"`
+        echo ' ' 
+        echo `ls "${15}/RR50_emp_stat_powers_"*".json"`
+        echo ' ' 
+        echo `ls "${15}/RR50_emp_stat_powers_*.json"`
+        echo ' '
+        echo ' ' 
         x1=`ls -1 "${15}/RR50_emp_stat_powers_*.json" | wc -l`
         x2=`ls -1 "${15}/theo_placebo_arm_hists_*.json" | wc -l`
         x3=`ls -1 "${15}/theo_drug_arm_hists_*.json" | wc -l`
