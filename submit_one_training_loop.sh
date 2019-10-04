@@ -106,6 +106,8 @@ do
             all_training_files_exist='True'
             sbatch train_model_wrapper.sh ${inputs_two[@]}
             #bash local_train_model_wrapper.sh ${inputs_two[@]}
+        else
+            echo 'not reached'
         fi
     fi
 done
@@ -124,9 +126,12 @@ do
         #x3=`ls -1 "${16}/theo_drug_arm_hists_"* | wc -l`
         if [ $x1 = $num_compute_testing_iters ] && [ $x2 = $num_compute_testing_iters ] && [ $x3 = $num_compute_testing_iters ] && [ -f "RR50_stat_power_model_trained.h5" ]
         then
+            echo 'reached 2'
             all_testing_files_exist='True'
             sbatch test_model_wrapper.sh ${inputs_four[@]}
             #bash local_test_model_wrapper.sh ${inputs_four[@]}
+        else
+            echo 'not reached 2'
         fi
     fi
 done
