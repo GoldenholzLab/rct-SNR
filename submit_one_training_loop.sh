@@ -10,9 +10,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
-
-echo `pwd`
-exit
+cd '/home/jmr95/rct-SNR'
 
 inputs[0]=$1
 inputs[1]=$2
