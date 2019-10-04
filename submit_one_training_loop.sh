@@ -82,9 +82,9 @@ do
         echo `ls -1 "${15}/RR50_emp_stat_powers_*.json"`
         echo ' '
         echo ' ' 
-        x1=`ls -1 "${15}/RR50_emp_stat_powers_"*".json" | wc -l`
-        x2=`ls -1 "${15}/theo_placebo_arm_hists_"*".json" | wc -l`
-        x3=`ls -1 "${15}/theo_drug_arm_hists_"*".json" | wc -l`
+        x1=`ls -1 "${15}/RR50_emp_stat_powers_"* | wc -l`
+        x2=`ls -1 "${15}/theo_placebo_arm_hists_"* | wc -l`
+        x3=`ls -1 "${15}/theo_drug_arm_hists_"* | wc -l`
         if [[ $x1 == $num_compute_training_iters && $x2 == $num_compute_training_iters && $x3 == $num_compute_training_iters ]]
         then
             all_training_files_exist='True'
@@ -103,9 +103,9 @@ do
     sleep 1
     if [ -d ${16} ]
     then
-        x1=`ls -1 "${16}/RR50_emp_stat_powers_"*".json" | wc -l`
-        x2=`ls -1 "${16}/theo_placebo_arm_hists_"*".json" | wc -l`
-        x3=`ls -1 "${16}/theo_drug_arm_hists_"*".json" | wc -l`
+        x1=`ls -1 "${16}/RR50_emp_stat_powers_"* | wc -l`
+        x2=`ls -1 "${16}/theo_placebo_arm_hists_"* | wc -l`
+        x3=`ls -1 "${16}/theo_drug_arm_hists_"* | wc -l`
         if [[ $x1 == $num_compute_testing_iters && $x2 == $num_compute_testing_iters && $x3 == $num_compute_testing_iters && -f "RR50_stat_power_model_trained.h5" ]]
         then
             all_testing_files_exist='True'
