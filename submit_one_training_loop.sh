@@ -10,8 +10,6 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
-cd '/home/jmr95/rct-SNR'
-
 inputs[0]=$1
 inputs[1]=$2
 inputs[2]=$3
