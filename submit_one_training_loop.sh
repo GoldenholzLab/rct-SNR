@@ -70,6 +70,7 @@ do
     sleep 1
     if [ -d ${15} ]
     then
+        : '
         echo `pwd`
         echo `ls -1 "${15}"`
         echo ' ' 
@@ -87,6 +88,19 @@ do
         x3=`ls -1 "${15}/theo_drug_arm_hists_"* | wc -l`
         echo "${x1} ${x2} ${x3}"
         echo ' '
+        '
+        if [ "${x1}" = "$num_compute_training_iters" ]
+        then
+            echo '1'
+        fi
+        if [ "${x2}" = "$num_compute_training_iters" ]
+        then
+            echo '2'
+        fi
+        if [ "${x3}" = "$num_compute_training_iters" ]
+        then
+            echo '3'
+        fi
         if [ "${x1}" = "$num_compute_training_iters" ] && [ "${x2}" = "$num_compute_training_iters" ] && [ "${x3}" = "$num_compute_training_iters" ]
         then
             echo 'reached'
