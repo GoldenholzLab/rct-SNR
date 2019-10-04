@@ -103,7 +103,6 @@ do
         if [ "${x1}" = "$num_compute_training_iters" ] && [ "${x2}" = "$num_compute_training_iters" ] && [ "${x3}" = "$num_compute_training_iters" ]
         then
             echo 'reached'
-            echo ' '
             all_training_files_exist='True'
             sbatch train_model_wrapper.sh ${inputs_two[@]}
             #bash local_train_model_wrapper.sh ${inputs_two[@]}
