@@ -87,7 +87,7 @@ do
         x3=`ls -1 "${15}/theo_drug_arm_hists_"* | wc -l`
         echo "${x1} ${x2} ${x3}"
         echo ' '
-        if [$x1 == $num_compute_training_iters ] && [ $x2 == $num_compute_training_iters ] && [ $x3 == $num_compute_training_iters ]
+        if [ $x1 == $num_compute_training_iters ] && [ $x2 == $num_compute_training_iters ] && [ $x3 == $num_compute_training_iters ]
         then
             echo 'reached'
             echo ' '
