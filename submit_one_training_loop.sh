@@ -62,32 +62,16 @@ inputs_four[6]=${19}
 
 
 sbatch submit_generate_data_wrappers.sh ${inputs[@]}
-#bash local_submit_generate_data_wrappers.sh ${inputs[@]}
 
 all_training_files_exist='False'
 while [ "$all_training_files_exist" == "False" ]
 do
-    sleep 1
+    sleep 15
     if [ -d ${15} ]
     then
-        : '
-        echo `pwd`
-        echo `ls -1 "${15}"`
-        echo ' ' 
-        echo `ls -1 "${15}/RR50_emp_stat_powers_"*`
-        echo ' ' 
-        #echo `ls -1 "${15}/RR50_emp_stat_powers_*"`
-        #echo ' ' 
-        echo `ls -1 "${15}/RR50_emp_stat_powers_"*".json"`
-        echo ' ' 
-        #echo `ls -1 "${15}/RR50_emp_stat_powers_*.json"`
-        #echo ' '
-        echo ' '
-        '
         #x1=`ls -1 "${15}/RR50_emp_stat_powers_"* | wc -l`
         #x2=`ls -1 "${15}/theo_placebo_arm_hists_"* | wc -l`
         #x3=`ls -1 "${15}/theo_drug_arm_hists_"* | wc -l`
-        echo ' '
         if [ ${x1} = $num_compute_training_iters ]
         then
             echo '1'
@@ -105,7 +89,6 @@ do
             echo 'reached'
             all_training_files_exist='True'
             sbatch train_model_wrapper.sh ${inputs_two[@]}
-            #bash local_train_model_wrapper.sh ${inputs_two[@]}
         else
             echo 'not reached'
         fi
@@ -113,23 +96,37 @@ do
 done
 
 sbatch submit_generate_data_wrappers.sh ${inputs_three[@]}
-#bash local_submit_generate_data_wrappers.sh ${inputs_three[@]}
 
 all_testing_files_exist='False'
 while [ "$all_testing_files_exist" == "False" ]
 do
-    sleep 1
+    sleep 15
     if [ -d ${16} ]
     then
         #x1=`ls -1 "${16}/RR50_emp_stat_powers_"* | wc -l`
         #x2=`ls -1 "${16}/theo_placebo_arm_hists_"* | wc -l`
         #x3=`ls -1 "${16}/theo_drug_arm_hists_"* | wc -l`
+        if [ ${x1} = $num_compute_testing_iters ]
+        then
+            echo '1'
+        fi
+        if [ ${x2} == $num_compute_testing_iters ]
+        then
+            echo '2'
+        fi
+        if [ ${x3} == $num_compute_testing_iters ]
+        then
+            echo '3'
+        fi
+        if [ -f "RR50_stat_power_model_trained.h5" ]
+        then
+            echo 'trained mode exists'
+        fi
         if [ $x1 = $num_compute_testing_iters ] && [ $x2 = $num_compute_testing_iters ] && [ $x3 = $num_compute_testing_iters ] && [ -f "RR50_stat_power_model_trained.h5" ]
         then
             echo 'reached 2'
             all_testing_files_exist='True'
             sbatch test_model_wrapper.sh ${inputs_four[@]}
-            #bash local_test_model_wrapper.sh ${inputs_four[@]}
         else
             echo 'not reached 2'
         fi
