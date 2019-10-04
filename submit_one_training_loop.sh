@@ -75,12 +75,12 @@ do
         echo ' ' 
         echo `ls -1 "${15}/RR50_emp_stat_powers_"*`
         echo ' ' 
-        echo `ls -1 "${15}/RR50_emp_stat_powers_*"`
-        echo ' ' 
+        #echo `ls -1 "${15}/RR50_emp_stat_powers_*"`
+        #echo ' ' 
         echo `ls -1 "${15}/RR50_emp_stat_powers_"*".json"`
         echo ' ' 
-        echo `ls -1 "${15}/RR50_emp_stat_powers_*.json"`
-        echo ' '
+        #echo `ls -1 "${15}/RR50_emp_stat_powers_*.json"`
+        #echo ' '
         echo ' ' 
         x1=`ls -1 "${15}/RR50_emp_stat_powers_"* | wc -l`
         x2=`ls -1 "${15}/theo_placebo_arm_hists_"* | wc -l`
