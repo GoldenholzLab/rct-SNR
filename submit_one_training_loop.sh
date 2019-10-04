@@ -72,17 +72,17 @@ do
         #x1=`ls -1 "${15}/RR50_emp_stat_powers_"* | wc -l`
         #x2=`ls -1 "${15}/theo_placebo_arm_hists_"* | wc -l`
         #x3=`ls -1 "${15}/theo_drug_arm_hists_"* | wc -l`
-        if [ $x1 = $num_compute_training_iters ]
+        if [ $x1 == $num_compute_training_iters ]
         then
-            echo '1'
+            echo '$x1 1'
         fi
         if [ $x2 == $num_compute_training_iters ]
         then
-            echo '2'
+            echo '$x2 2'
         fi
         if [ $x3 == $num_compute_training_iters ]
         then
-            echo '3'
+            echo '$x3 3'
         fi
         if [ $x1 == $num_compute_training_iters ] && [ $x2 == $num_compute_training_iters ] && [ $x3 == $num_compute_training_iters ]
         then
@@ -106,17 +106,17 @@ do
         #x1=`ls -1 "${16}/RR50_emp_stat_powers_"* | wc -l`
         #x2=`ls -1 "${16}/theo_placebo_arm_hists_"* | wc -l`
         #x3=`ls -1 "${16}/theo_drug_arm_hists_"* | wc -l`
-        if [ $x1 = $num_compute_testing_iters ]
+        if [ $x1 == $num_compute_testing_iters ]
         then
-            echo '1'
+            echo '$x1 1'
         fi
         if [ $x2 == $num_compute_testing_iters ]
         then
-            echo '2'
+            echo '$x2 2'
         fi
         if [ $x3 == $num_compute_testing_iters ]
         then
-            echo '3'
+            echo '$x3 3'
         fi
         if [ -f "RR50_stat_power_model_trained.h5" ]
         then
