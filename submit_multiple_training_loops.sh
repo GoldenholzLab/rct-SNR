@@ -11,7 +11,7 @@
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
 echo `pwd`
-exit(1)
+exit
 monthly_mean_min=1
 monthly_mean_max=16
 monthly_std_dev_min=1
