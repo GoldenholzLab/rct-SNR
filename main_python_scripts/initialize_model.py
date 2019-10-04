@@ -1,9 +1,5 @@
 from keras import Input
-from keras.layers import Conv2D
-from keras.layers import MaxPooling2D
-from keras.layers import Flatten
-from keras.layers import concatenate
-from keras.layers import Dense, Dropout
+from keras.layers import Conv2D, MaxPooling2D, Flatten, concatenate, Dense, Dropout, PReLU
 import keras.models as models
 from keras.utils import plot_model
 import sys
