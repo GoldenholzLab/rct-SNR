@@ -82,13 +82,12 @@ do
         echo ' ' 
         #echo `ls -1 "${15}/RR50_emp_stat_powers_*.json"`
         #echo ' '
-        echo ' ' 
+        echo ' '
+        '
         x1=`ls -1 "${15}/RR50_emp_stat_powers_"* | wc -l`
         x2=`ls -1 "${15}/theo_placebo_arm_hists_"* | wc -l`
         x3=`ls -1 "${15}/theo_drug_arm_hists_"* | wc -l`
-        echo "${x1} ${x2} ${x3}"
         echo ' '
-        '
         if [ "${x1}" = "$num_compute_training_iters" ]
         then
             echo '1'
