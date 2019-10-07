@@ -51,4 +51,4 @@ if(__name__=='__main__'):
     RR50_RMSE = np.sqrt(RR50_MSE)
     print(RR50_RMSE)
     
-    shutil.rmtree(testing_data_folder_name)
+    shutil.rmtree(testing_data_folder_name + '_' + str(int(loop_iter)))
