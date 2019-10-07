@@ -75,4 +75,4 @@ do
     sleep 1
 done
 
-sbatch submit_one_training_loop.sh ${inputs_two[@]}
+sbatch submit_and_watch_one_training_loop.sh ${inputs_two[@]}
