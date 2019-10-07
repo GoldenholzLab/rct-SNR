@@ -96,21 +96,13 @@ do
     sleep 15
     if [ -d ${15} ]
     then
+        echo "${15}_${20}"
         x1=`ls -1 "${15}_${20}/RR50_emp_stat_powers_"* | wc -l`
         x2=`ls -1 "${15}_${20}/theo_placebo_arm_hists_"* | wc -l`
         x3=`ls -1 "${15}_${20}/theo_drug_arm_hists_"* | wc -l`
-        if [ $x1 == ${18} ]
-        then
-            echo "$x1 1"
-        fi
-        if [ $x2 == ${18} ]
-        then
-            echo "$x2 2"
-        fi
-        if [ $x3 == ${18} ]
-        then
-            echo "$x3 3"
-        fi
+        echo "$x1 1"
+        echo "$x2 2"
+        echo "$x3 3"
         if [ $x1 == ${18} ] && [ $x2 == ${18} ] && [ $x3 == ${18} ]
         then
             echo 'reached'
