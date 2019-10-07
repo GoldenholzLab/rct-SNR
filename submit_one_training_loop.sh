@@ -64,6 +64,28 @@ inputs_four[5]=${17}
 inputs_four[6]=${19}
 inputs_four[7]=${20}
 
+: '
+inputs_five[0]=$1
+inputs_five[1]=$2
+inputs_five[2]=$3
+inputs_five[3]=$4
+inputs_five[4]=$5
+inputs_five[5]=$6
+inputs_five[6]=$7
+inputs_five[7]=$8
+inputs_five[8]=$9
+inputs_five[9]=${10}
+inputs_five[10]=${11}
+inputs_five[11]=${12}
+inputs_five[12]=${13}
+inputs_five[13]=${14}
+inputs_five[14]=${15}
+inputs_five[15]=${16}
+inputs_five[16]=${17}
+inputs_five[17]=${18}
+inputs_five[18]=${19}
+inputs_five[19]=${20}}
+'
 
 sbatch submit_generate_data_wrappers.sh ${inputs[@]}
 
@@ -122,11 +144,11 @@ do
         then
             echo "$x3 6"
         fi
-        if [ -f "RR50_stat_power_model_trained.h5" ]
+        if [ -f "RR50_stat_power_model_trained_${20}.h5" ]
         then
             echo 'trained mode exists'
         fi
-        if [ $x1 = ${19}  ] && [ $x2 = ${19}  ] && [ $x3 = ${19}  ] && [ -f "RR50_stat_power_model_trained.h5" ]
+        if [ $x1 = ${19}  ] && [ $x2 = ${19}  ] && [ $x3 = ${19}  ] && [ -f "RR50_stat_power_model_trained_${20}.h5" ]
         then
             echo 'reached 2'
             all_testing_files_exist='True'
