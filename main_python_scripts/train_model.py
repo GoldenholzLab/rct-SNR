@@ -42,7 +42,8 @@ if(__name__=='__main__'):
          collect_data_from_folder(num_monthly_means,
                                   num_monthly_std_devs,
                                   num_compute_iters,
-                                  training_data_folder_name)
+                                  training_data_folder_name,
+                                  loop_iter)
     
     RR50_stat_power_model = models.load_model(RR50_stat_power_model_file_name + '_' + str(int(loop_iter)) + '.h5')
     RR50_stat_power_model.fit([theo_placebo_arm_hists, theo_drug_arm_hists], RR50_emp_stat_powers, epochs=3, batch_size=5)

@@ -2,9 +2,9 @@ import numpy as np
 import json
 
 
-def load_iter_specific_files(data_storage_folder_name, compute_iter):
+def load_iter_specific_files(data_storage_folder_name, loop_iter, compute_iter):
 
-    data_storage_folder_file_path = './' + data_storage_folder_name
+    data_storage_folder_file_path = './' + data_storage_folder_name + '_' + str(int(loop_iter))
 
     iter_specific_theo_placebo_arm_hists_file_name = 'theo_placebo_arm_hists_' + str(compute_iter) + '.json'
     iter_specific_theo_drug_arm_hists_file_name    = 'theo_drug_arm_hists_'    + str(compute_iter) + '.json'
@@ -31,7 +31,8 @@ def load_iter_specific_files(data_storage_folder_name, compute_iter):
 def collect_data_from_folder(num_monthly_means,
                              num_monthly_std_devs,
                              num_compute_iters,
-                             data_storage_folder_name):
+                             data_storage_folder_name,
+                             loop_iter):
 
     theo_placebo_arm_hists = np.array(num_monthly_std_devs*[num_monthly_means*[num_monthly_means*[]]])
     theo_drug_arm_hists    = np.array(num_monthly_std_devs*[num_monthly_means*[num_monthly_means*[]]])
@@ -44,7 +45,7 @@ def collect_data_from_folder(num_monthly_means,
         [iter_specific_theo_placebo_arm_hists,
          iter_specific_theo_drug_arm_hists,
          iter_specific_RR50_emp_stat_powers] = \
-             load_iter_specific_files(data_storage_folder_name, compute_iter)
+             load_iter_specific_files(data_storage_folder_name, loop_iter, compute_iter)
         
         theo_placebo_arm_hists = np.concatenate((theo_placebo_arm_hists, iter_specific_theo_placebo_arm_hists), 2)
         theo_drug_arm_hists    = np.concatenate((theo_drug_arm_hists,    iter_specific_theo_drug_arm_hists),    2)

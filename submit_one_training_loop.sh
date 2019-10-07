@@ -130,7 +130,7 @@ do
     sleep 15
 done
 
-sbatch submit_one_training_loop.sh ${inputs_five[@]}
+sbatch $0 ${inputs_five[@]}
 '
 
 all_testing_files_exist='False'
