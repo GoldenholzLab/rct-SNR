@@ -1,7 +1,6 @@
 #!/usr/bin/bash
 
-#SBATCH -p gpu
-#SBATCH --gres=gpu:1
+#SBATCH -p short
 #SBATCH --mem=10G
 #SBATCH -t 0-00:05
 #SBATCH -n 1
@@ -25,7 +24,7 @@ inputs[7]=$8
 module load gcc/6.2.0
 module load conda2/4.2.13
 module load python/3.6.0
-module load cuda/9.0
+#module load cuda/9.0
 source activate working_env
 
 srun -c 1 python -u main_python_scripts/train_model.py ${inputs[@]}
