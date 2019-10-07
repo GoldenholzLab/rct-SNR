@@ -20,6 +20,8 @@ inputs[4]=$5
 inputs[5]=$6
 inputs[6]=$7
 
+inputs[7]=$8
+
 module load gcc/6.2.0
 module load conda2/4.2.13
 module load python/3.6.0

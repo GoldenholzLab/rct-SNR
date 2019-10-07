@@ -33,6 +33,7 @@ testing_data_folder_name='testing_data_folder'
 RR50_stat_power_model_file_name='RR50_stat_power_model'
 num_compute_training_iters=6
 num_compute_testing_iters=3
+loop_iter=1
 
 
 inputs[0]=$monthly_mean_min
@@ -40,6 +41,7 @@ inputs[1]=$monthly_mean_max
 inputs[2]=$monthly_std_dev_min
 inputs[3]=$monthly_std_dev_max
 inputs[4]=$RR50_stat_power_model_file_name
+inputs[5]=$loop_iter
 
 inputs_two[0]=$monthly_mean_min
 inputs_two[1]=$monthly_mean_max
@@ -60,6 +62,7 @@ inputs_two[15]=$testing_data_folder_name
 inputs_two[16]=$RR50_stat_power_model_file_name
 inputs_two[17]=$num_compute_training_iters
 inputs_two[18]=$num_compute_testing_iters
+inputs_two[19]=$loop_iter
 
 sbatch initialize_model_wrapper.sh ${inputs[@]}
 

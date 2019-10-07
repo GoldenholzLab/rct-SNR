@@ -25,7 +25,8 @@ inputs[11]=${12}
 inputs[12]=${13}
 inputs[13]=${14}
 inputs[14]=${15}
-inputs[15]=${18}
+inputs[15]=${20}
+inputs[16]=${18}
 
 inputs_two[0]=$1
 inputs_two[1]=$2
@@ -34,6 +35,7 @@ inputs_two[3]=$4
 inputs_two[4]=${15}
 inputs_two[5]=${17}
 inputs_two[6]=${18}
+inputs_two[7]=${20}
 
 inputs_three[0]=$1
 inputs_three[1]=$2
@@ -50,7 +52,8 @@ inputs_three[11]=${12}
 inputs_three[12]=${13}
 inputs_three[13]=${14}
 inputs_three[14]=${16}
-inputs_three[15]=${19}
+inputs_three[15]=${20}
+inputs_three[16]=${19}
 
 inputs_four[0]=$1
 inputs_four[1]=$2
@@ -59,6 +62,7 @@ inputs_four[3]=$4
 inputs_four[4]=${16}
 inputs_four[5]=${17}
 inputs_four[6]=${19}
+inputs_two[7]=${20}
 
 
 sbatch submit_generate_data_wrappers.sh ${inputs[@]}

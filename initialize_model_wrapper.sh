@@ -16,6 +16,7 @@ inputs[1]=$2
 inputs[2]=$3
 inputs[3]=$4
 inputs[4]=$5
+inputs[5]=$6
 
 module load gcc/6.2.0
 module load conda2/4.2.13

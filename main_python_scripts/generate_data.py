@@ -121,9 +121,10 @@ def store_theo_pop_hists_and_emp_stat_powers(theo_placebo_arm_hists,
                                              theo_drug_arm_hists,
                                              RR50_emp_stat_powers,
                                              data_storage_folder_name,
-                                             compute_iter):
+                                             compute_iter,
+                                             loop_iter):
     
-    data_storage_folder_file_path = './' + data_storage_folder_name
+    data_storage_folder_file_path = './' + data_storage_folder_name + str(int(loop_iter))
 
     if( not os.path.isdir(data_storage_folder_file_path) ):
         os.makedirs(data_storage_folder_file_path)
@@ -166,13 +167,15 @@ def take_inputs_from_command_shell():
     num_trials      = int(sys.argv[13])
     num_pops        = int(sys.argv[14])
     data_storage_folder = sys.argv[15]
-    compute_iter    = int(sys.argv[16])
+    loop_iter       = int(sys.argv[16])
+    compute_iter    = int(sys.argv[17])
+
 
     return [monthly_mean_min, monthly_mean_max, monthly_std_dev_min, monthly_std_dev_max,
             num_theo_patients_per_trial_arm, num_baseline_months, num_testing_months, 
             minimum_required_baseline_seizure_count,
             placebo_mu, placebo_sigma, drug_mu, drug_sigma,
-            num_trials, num_pops, data_storage_folder, compute_iter]
+            num_trials, num_pops, data_storage_folder, loop_iter, compute_iter]
 
 
 if(__name__=='__main__'):
@@ -181,7 +184,7 @@ if(__name__=='__main__'):
      num_theo_patients_per_trial_arm, num_baseline_months, num_testing_months, 
      minimum_required_baseline_seizure_count,
      placebo_mu, placebo_sigma, drug_mu, drug_sigma,
-     num_trials, num_pops, data_storage_folder, compute_iter] = take_inputs_from_command_shell()
+     num_trials, num_pops, data_storage_folder, loop_iter, compute_iter] = take_inputs_from_command_shell()
 
     num_monthly_means    = monthly_mean_max - (monthly_mean_min - 1)
     num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)
@@ -217,4 +220,5 @@ if(__name__=='__main__'):
                                              theo_drug_arm_hists,
                                              RR50_emp_stat_powers,
                                              data_storage_folder,
-                                             compute_iter)
+                                             compute_iter,
+                                             loop_iter)
