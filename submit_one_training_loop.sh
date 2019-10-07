@@ -84,8 +84,9 @@ inputs_five[15]=${16}
 inputs_five[16]=${17}
 inputs_five[17]=${18}
 inputs_five[18]=${19}
-inputs_five[19]=${20}}
+inputs_five[19]=$((${20} + 1))
 '
+
 
 sbatch submit_generate_data_wrappers.sh ${inputs[@]}
 
@@ -95,9 +96,9 @@ do
     sleep 15
     if [ -d ${15} ]
     then
-        x1=`ls -1 "${15}/RR50_emp_stat_powers_"* | wc -l`
-        x2=`ls -1 "${15}/theo_placebo_arm_hists_"* | wc -l`
-        x3=`ls -1 "${15}/theo_drug_arm_hists_"* | wc -l`
+        x1=`ls -1 "${15}_${20}/RR50_emp_stat_powers_"* | wc -l`
+        x2=`ls -1 "${15}_${20}/theo_placebo_arm_hists_"* | wc -l`
+        x3=`ls -1 "${15}_${20}/theo_drug_arm_hists_"* | wc -l`
         if [ $x1 == ${18} ]
         then
             echo "$x1 1"
@@ -123,15 +124,24 @@ done
 
 sbatch submit_generate_data_wrappers.sh ${inputs_three[@]}
 
+: '
+while [ ! -f "${17}_${20}_trained.h5" ]
+do
+    sleep 15
+done
+
+sbatch submit_one_training_loop.sh ${inputs_five[@]}
+'
+
 all_testing_files_exist='False'
 while [ "$all_testing_files_exist" == "False" ]
 do
     sleep 15
     if [ -d ${16} ]
     then
-        x1=`ls -1 "${16}/RR50_emp_stat_powers_"* | wc -l`
-        x2=`ls -1 "${16}/theo_placebo_arm_hists_"* | wc -l`
-        x3=`ls -1 "${16}/theo_drug_arm_hists_"* | wc -l`
+        x1=`ls -1 "${16}_${20}/RR50_emp_stat_powers_"* | wc -l`
+        x2=`ls -1 "${16}_${20}/theo_placebo_arm_hists_"* | wc -l`
+        x3=`ls -1 "${16}_${20}/theo_drug_arm_hists_"* | wc -l`
         if [ $x1 == ${19} ]
         then
             echo "$x1 4"
@@ -144,11 +154,11 @@ do
         then
             echo "$x3 6"
         fi
-        if [ -f "RR50_stat_power_model_trained_${20}.h5" ]
+        if [ -f "${17}_${20}_trained.h5" ]
         then
-            echo 'trained mode exists'
+            echo 'trained model exists'
         fi
-        if [ $x1 = ${19}  ] && [ $x2 = ${19}  ] && [ $x3 = ${19}  ] && [ -f "RR50_stat_power_model_trained_${20}.h5" ]
+        if [ $x1 = ${19} ] && [ $x2 = ${19} ] && [ $x3 = ${19} ] $$ [ -f "${17}_${20}_trained.h5" ]
         then
             echo 'reached 2'
             all_testing_files_exist='True'
