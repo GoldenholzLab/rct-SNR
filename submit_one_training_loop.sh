@@ -62,7 +62,7 @@ inputs_four[3]=$4
 inputs_four[4]=${16}
 inputs_four[5]=${17}
 inputs_four[6]=${19}
-inputs_two[7]=${20}
+inputs_four[7]=${20}
 
 
 sbatch submit_generate_data_wrappers.sh ${inputs[@]}
