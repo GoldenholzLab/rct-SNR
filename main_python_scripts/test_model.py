@@ -57,6 +57,6 @@ if(__name__=='__main__'):
 
     with open(test_RMSEs_file_name + '.txt', 'a') as text_file:
 
-        text_file.write(RR50_RMSE)
+        text_file.write(str(RR50_RMSE))
     
     shutil.rmtree(testing_data_folder_name + '_' + str(int(loop_iter)))
