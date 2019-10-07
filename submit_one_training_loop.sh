@@ -140,11 +140,11 @@ all_testing_files_exist='False'
 while [ "$all_testing_files_exist" == "False" ]
 do
     sleep 15
-    if [ -d "${16}_${20}" ]
+    if [ -d "${16}_${next_loop_iter}" ]
     then
-        x1=`ls -1 "${16}_${20}/RR50_emp_stat_powers_"* | wc -l`
-        x2=`ls -1 "${16}_${20}/theo_placebo_arm_hists_"* | wc -l`
-        x3=`ls -1 "${16}_${20}/theo_drug_arm_hists_"* | wc -l`
+        x1=`ls -1 "${16}_${next_loop_iter}/RR50_emp_stat_powers_"* | wc -l`
+        x2=`ls -1 "${16}_${next_loop_iter}/theo_placebo_arm_hists_"* | wc -l`
+        x3=`ls -1 "${16}_${next_loop_iter}/theo_drug_arm_hists_"* | wc -l`
         if [ $x1 == ${19} ]
         then
             echo "$x1 4"
