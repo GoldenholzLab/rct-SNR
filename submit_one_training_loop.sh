@@ -69,9 +69,9 @@ do
     sleep 15
     if [ -d ${15} ]
     then
-        #x1=`ls -1 "${15}/RR50_emp_stat_powers_"* | wc -l`
-        #x2=`ls -1 "${15}/theo_placebo_arm_hists_"* | wc -l`
-        #x3=`ls -1 "${15}/theo_drug_arm_hists_"* | wc -l`
+        x1=`ls -1 "${15}/RR50_emp_stat_powers_"* | wc -l`
+        x2=`ls -1 "${15}/theo_placebo_arm_hists_"* | wc -l`
+        x3=`ls -1 "${15}/theo_drug_arm_hists_"* | wc -l`
         if [ $x1 == ${18} ]
         then
             echo "$x1 1"
@@ -103,9 +103,9 @@ do
     sleep 15
     if [ -d ${16} ]
     then
-        #x1=`ls -1 "${16}/RR50_emp_stat_powers_"* | wc -l`
-        #x2=`ls -1 "${16}/theo_placebo_arm_hists_"* | wc -l`
-        #x3=`ls -1 "${16}/theo_drug_arm_hists_"* | wc -l`
+        x1=`ls -1 "${16}/RR50_emp_stat_powers_"* | wc -l`
+        x2=`ls -1 "${16}/theo_placebo_arm_hists_"* | wc -l`
+        x3=`ls -1 "${16}/theo_drug_arm_hists_"* | wc -l`
         if [ $x1 == ${19} ]
         then
             echo "$x1 4"
