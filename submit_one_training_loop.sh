@@ -72,19 +72,19 @@ do
         #x1=`ls -1 "${15}/RR50_emp_stat_powers_"* | wc -l`
         #x2=`ls -1 "${15}/theo_placebo_arm_hists_"* | wc -l`
         #x3=`ls -1 "${15}/theo_drug_arm_hists_"* | wc -l`
-        if [ $x1 == $num_compute_training_iters ]
+        if [ $x1 == ${18} ]
         then
             echo "$x1 1"
         fi
-        if [ $x2 == $num_compute_training_iters ]
+        if [ $x2 == ${18} ]
         then
             echo "$x2 2"
         fi
-        if [ $x3 == $num_compute_training_iters ]
+        if [ $x3 == ${18} ]
         then
             echo "$x3 3"
         fi
-        if [ $x1 == $num_compute_training_iters ] && [ $x2 == $num_compute_training_iters ] && [ $x3 == $num_compute_training_iters ]
+        if [ $x1 == ${18} ] && [ $x2 == ${18} ] && [ $x3 == ${18} ]
         then
             echo 'reached'
             all_training_files_exist='True'
@@ -106,15 +106,15 @@ do
         #x1=`ls -1 "${16}/RR50_emp_stat_powers_"* | wc -l`
         #x2=`ls -1 "${16}/theo_placebo_arm_hists_"* | wc -l`
         #x3=`ls -1 "${16}/theo_drug_arm_hists_"* | wc -l`
-        if [ $x1 == $num_compute_testing_iters ]
+        if [ $x1 == ${19} ]
         then
             echo "$x1 4"
         fi
-        if [ $x2 == $num_compute_testing_iters ]
+        if [ $x2 == ${19}  ]
         then
             echo "$x2 5"
         fi
-        if [ $x3 == $num_compute_testing_iters ]
+        if [ $x3 == ${19}  ]
         then
             echo "$x3 6"
         fi
@@ -122,7 +122,7 @@ do
         then
             echo 'trained mode exists'
         fi
-        if [ $x1 = $num_compute_testing_iters ] && [ $x2 = $num_compute_testing_iters ] && [ $x3 = $num_compute_testing_iters ] && [ -f "RR50_stat_power_model_trained.h5" ]
+        if [ $x1 = ${19}  ] && [ $x2 = ${19}  ] && [ $x3 = ${19}  ] && [ -f "RR50_stat_power_model_trained.h5" ]
         then
             echo 'reached 2'
             all_testing_files_exist='True'
