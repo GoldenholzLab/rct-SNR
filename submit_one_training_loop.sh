@@ -54,7 +54,7 @@ inputs_three[11]=${12}
 inputs_three[12]=${13}
 inputs_three[13]=${14}
 inputs_three[14]=${16}
-inputs_three[15]=${20}
+inputs_three[15]=${next_loop_iter}
 inputs_three[16]=${19}
 
 inputs_four[0]=$1
@@ -128,7 +128,7 @@ done
 sbatch submit_generate_data_wrappers.sh ${inputs_three[@]}
 
 : '
-while [ ! -f "${17}_${20}_trained.h5" ]
+while [ ! -f "${17}_${next_loop_iter}.h5" ]
 do
     sleep 15
 done
