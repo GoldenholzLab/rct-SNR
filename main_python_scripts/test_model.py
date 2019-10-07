@@ -55,7 +55,7 @@ if(__name__=='__main__'):
     RR50_RMSE = np.sqrt(RR50_MSE)
     print(RR50_RMSE)
 
-    with open(test_RMSEs_file_name + '.txt', 'a+') as text_file:
+    with open(test_RMSEs_file_name + '.txt', 'a') as text_file:
 
         text_file.write(RR50_RMSE)
     
