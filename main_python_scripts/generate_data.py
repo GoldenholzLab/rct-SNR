@@ -124,7 +124,7 @@ def store_theo_pop_hists_and_emp_stat_powers(theo_placebo_arm_hists,
                                              compute_iter,
                                              loop_iter):
     
-    data_storage_folder_file_path = './' + data_storage_folder_name + str(int(loop_iter))
+    data_storage_folder_file_path = './' + data_storage_folder_name + '_' + str(int(loop_iter))
 
     if( not os.path.isdir(data_storage_folder_file_path) ):
         os.makedirs(data_storage_folder_file_path)
