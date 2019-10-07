@@ -130,7 +130,7 @@ do
     sleep 15
 done
 
-sbatch $0 ${inputs_five[@]}
+sbatch "$0" "${inputs_five[@]}"
 '
 
 all_testing_files_exist='False'
@@ -158,7 +158,7 @@ do
         then
             echo 'trained model exists'
         fi
-        if [ $x1 = ${19} ] && [ $x2 = ${19} ] && [ $x3 = ${19} ] $$ [ -f "${17}_${20}_trained.h5" ]
+        if [ $x1 = ${19} ] && [ $x2 = ${19} ] && [ $x3 = ${19} ] && [ -f "${17}_${20}_trained.h5" ]
         then
             echo 'reached 2'
             all_testing_files_exist='True'
