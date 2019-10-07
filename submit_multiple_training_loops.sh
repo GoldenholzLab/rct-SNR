@@ -31,10 +31,13 @@ num_pops=5
 training_data_folder_name='training_data_folder'
 testing_data_folder_name='testing_data_folder'
 RR50_stat_power_model_file_name='RR50_stat_power_model'
+test_RMSEs_file_name='test_RMSEs'
+
 num_compute_training_iters=6
 num_compute_testing_iters=3
 loop_iter=1
 
+touch "${test_RMSEs_file_name}.txt"
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
@@ -63,6 +66,7 @@ inputs_two[16]=$RR50_stat_power_model_file_name
 inputs_two[17]=$num_compute_training_iters
 inputs_two[18]=$num_compute_testing_iters
 inputs_two[19]=$loop_iter
+inputs_two[20]=$test_RMSEs_file_name
 
 sbatch initialize_model_wrapper.sh ${inputs[@]}
 

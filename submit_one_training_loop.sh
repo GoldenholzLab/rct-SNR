@@ -63,6 +63,7 @@ inputs_four[4]=${16}
 inputs_four[5]=${17}
 inputs_four[6]=${19}
 inputs_four[7]=${20}
+inputs_four[8]=${21}
 
 : '
 inputs_five[0]=$1
