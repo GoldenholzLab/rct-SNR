@@ -10,6 +10,8 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
+next_loop_iter=$((${20} + 1))
+
 inputs[0]=$1
 inputs[1]=$2
 inputs[2]=$3
@@ -62,7 +64,7 @@ inputs_four[3]=$4
 inputs_four[4]=${16}
 inputs_four[5]=${17}
 inputs_four[6]=${19}
-inputs_four[7]=${20}
+inputs_four[7]=${next_loop_iter}
 inputs_four[8]=${21}
 
 : '
@@ -85,7 +87,7 @@ inputs_five[15]=${16}
 inputs_five[16]=${17}
 inputs_five[17]=${18}
 inputs_five[18]=${19}
-inputs_five[19]=$((${20} + 1))
+inputs_five[19]=${next_loop_iter}
 '
 
 
@@ -155,11 +157,11 @@ do
         then
             echo "$x3 6"
         fi
-        if [ -f "${17}_${20}_trained.h5" ]
+        if [ -f "${17}_${next_loop_iter}.h5" ]
         then
             echo 'trained model exists'
         fi
-        if [ $x1 = ${19} ] && [ $x2 = ${19} ] && [ $x3 = ${19} ] && [ -f "${17}_${20}_trained.h5" ]
+        if [ $x1 = ${19} ] && [ $x2 = ${19} ] && [ $x3 = ${19} ] && [ -f "${17}_${next_loop_iter}.h5" ]
         then
             echo 'reached 2'
             all_testing_files_exist='True'

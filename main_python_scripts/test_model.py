@@ -50,7 +50,7 @@ if(__name__=='__main__'):
                                   testing_data_folder_name,
                                   loop_iter)
     
-    RR50_stat_power_model = models.load_model(RR50_stat_power_model_file_name + '_' + str(int(loop_iter)) + '_trained.h5')
+    RR50_stat_power_model = models.load_model(RR50_stat_power_model_file_name + '_' + str(int(loop_iter)) + '.h5')
     RR50_MSE = RR50_stat_power_model.evaluate([theo_placebo_arm_hists, theo_drug_arm_hists], RR50_emp_stat_powers)
     RR50_RMSE = np.sqrt(RR50_MSE)
     print(RR50_RMSE)
