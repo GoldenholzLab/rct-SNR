@@ -67,7 +67,6 @@ inputs_four[6]=${19}
 inputs_four[7]=${next_loop_iter}
 inputs_four[8]=${21}
 
-: '
 inputs_five[0]=$1
 inputs_five[1]=$2
 inputs_five[2]=$3
@@ -88,7 +87,6 @@ inputs_five[16]=${17}
 inputs_five[17]=${18}
 inputs_five[18]=${19}
 inputs_five[19]=${next_loop_iter}
-'
 
 
 sbatch submit_generate_data_wrappers.sh ${inputs[@]}
@@ -127,14 +125,14 @@ done
 
 sbatch submit_generate_data_wrappers.sh ${inputs_three[@]}
 
-: '
+
 while [ ! -f "${17}_${next_loop_iter}.h5" ]
 do
     sleep 15
 done
 
 sbatch "$0" "${inputs_five[@]}"
-'
+
 
 all_testing_files_exist='False'
 while [ "$all_testing_files_exist" == "False" ]
