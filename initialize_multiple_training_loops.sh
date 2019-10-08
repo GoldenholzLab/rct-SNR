@@ -24,16 +24,16 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=10
-num_pops=5
+num_trials=10000
+num_pops=1000
 
 training_data_folder_name='training_data_folder'
 testing_data_folder_name='testing_data_folder'
 RR50_stat_power_model_file_name='RR50_stat_power_model'
 test_RMSEs_file_name='test_RMSEs'
 
-num_compute_training_iters=6
-num_compute_testing_iters=3
+num_compute_training_iters=10
+num_compute_testing_iters=2
 loop_iter=0
 sleep_minutes=2
 
