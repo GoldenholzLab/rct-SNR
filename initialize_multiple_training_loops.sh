@@ -1,8 +1,7 @@
 #!/usr/bin/bash
 
 #SBATCH -p short
-#SBATCH --mem=500M
-#SBATCH -t 0-00:10
+#SBATCH -t 0-00:05
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
@@ -10,10 +9,10 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
-monthly_mean_min=1
+monthly_mean_min=4
 monthly_mean_max=16
 monthly_std_dev_min=1
-monthly_std_dev_max=16
+monthly_std_dev_max=8
 
 num_theo_patients_per_trial_arm=153
 num_baseline_months=2
