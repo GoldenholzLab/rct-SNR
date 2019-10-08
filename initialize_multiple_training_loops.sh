@@ -36,6 +36,7 @@ test_RMSEs_file_name='test_RMSEs'
 num_compute_training_iters=6
 num_compute_testing_iters=3
 loop_iter=1
+sleep_minutes=2
 
 touch "${test_RMSEs_file_name}.txt"
 
@@ -67,6 +68,7 @@ inputs_two[17]=$num_compute_training_iters
 inputs_two[18]=$num_compute_testing_iters
 inputs_two[19]=$loop_iter
 inputs_two[20]=$test_RMSEs_file_name
+inputs_two[21]=$sleep_seconds
 
 sbatch initialize_model_wrapper.sh ${inputs[@]}
 

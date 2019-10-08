@@ -11,6 +11,7 @@
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
 next_loop_iter=$((${20} + 1))
+sleep_seconds=$((${22} * 60))
 
 inputs[0]=$1
 inputs[1]=$2
@@ -95,7 +96,7 @@ sbatch submit_generate_data_wrappers.sh ${inputs[@]}
 all_training_files_exist='False'
 while [ "$all_training_files_exist" == "False" ]
 do
-    sleep 15
+    sleep "$sleep_seconds"
     if [ -d "${15}_${20}" ]
     then
         x1=`ls -1 "${15}_${20}/RR50_emp_stat_powers_"* | wc -l`
@@ -114,7 +115,7 @@ sbatch submit_generate_data_wrappers.sh ${inputs_three[@]}
 
 while [ ! -f "${17}_${next_loop_iter}.h5" ]
 do
-    sleep 15
+    sleep "$sleep_seconds"
 done
 
 sbatch "$0" "${inputs_five[@]}"
@@ -123,7 +124,7 @@ sbatch "$0" "${inputs_five[@]}"
 all_testing_files_exist='False'
 while [ "$all_testing_files_exist" == "False" ]
 do
-    sleep 15
+    sleep "$sleep_seconds"
     if [ -d "${16}_${next_loop_iter}" ]
     then
         x1=`ls -1 "${16}_${next_loop_iter}/RR50_emp_stat_powers_"* | wc -l`
