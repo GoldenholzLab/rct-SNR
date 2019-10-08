@@ -127,7 +127,10 @@ def store_theo_pop_hists_and_emp_stat_powers(theo_placebo_arm_hists,
     data_storage_folder_file_path = './' + data_storage_folder_name + '_' + str(int(loop_iter))
 
     if( not os.path.isdir(data_storage_folder_file_path) ):
-        os.makedirs(data_storage_folder_file_path)
+        try:
+            os.makedirs(data_storage_folder_file_path)
+        except FileExistsError as err:
+            print('\nran into timing hazard scenatio: \n' + err)
 
     theo_placebo_arm_hists_file_name = 'theo_placebo_arm_hists_' + str(compute_iter) + '.json'
     theo_drug_arm_hists_file_name    = 'theo_drug_arm_hists_'    + str(compute_iter) + '.json'
