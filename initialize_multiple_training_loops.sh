@@ -32,8 +32,8 @@ testing_data_folder_name='testing_data_folder'
 RR50_stat_power_model_file_name='RR50_stat_power_model'
 test_RMSEs_file_name='test_RMSEs'
 
-num_compute_training_iters=2000
-num_compute_testing_iters=400
+num_compute_training_iters=500
+num_compute_testing_iters=100
 loop_iter=0
 sleep_minutes=2
 
