@@ -11,7 +11,8 @@
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
 next_loop_iter=$((${20} + 1))
-sleep_seconds=$((${22} * 60))
+num_train_jobs_w_slack=$((${23} - ${18}))
+num_test_jobs_w_slack=$((${24} - ${19}))
 
 inputs[0]=$1
 inputs[1]=$2
@@ -89,6 +90,9 @@ inputs_five[17]=${18}
 inputs_five[18]=${19}
 inputs_five[19]=${next_loop_iter}
 inputs_five[20]=${21}
+inputs_five[21]=${22}
+inputs_five[21]=${23}
+inputs_five[21]=${24}
 
 
 sbatch submit_generate_data_wrappers.sh ${inputs[@]}
@@ -96,13 +100,13 @@ sbatch submit_generate_data_wrappers.sh ${inputs[@]}
 all_training_files_exist='False'
 while [ "$all_training_files_exist" == "False" ]
 do
-    sleep "$sleep_seconds"
+    sleep "${22}m"
     if [ -d "${15}_${20}" ]
     then
         x1=`ls -1 "${15}_${20}/RR50_emp_stat_powers_"* | wc -l`
         x2=`ls -1 "${15}_${20}/theo_placebo_arm_hists_"* | wc -l`
         x3=`ls -1 "${15}_${20}/theo_drug_arm_hists_"* | wc -l`
-        if [ $x1 == ${18} ] && [ $x2 == ${18} ] && [ $x3 == ${18} ]
+        if [ $x1 == ${num_train_jobs_w_slack} ] && [ $x2 == ${num_train_jobs_w_slack} ] && [ $x3 == ${num_train_jobs_w_slack} ]
         then
             all_training_files_exist='True'
             sbatch train_model_wrapper.sh ${inputs_two[@]}
@@ -115,7 +119,7 @@ sbatch submit_generate_data_wrappers.sh ${inputs_three[@]}
 
 while [ ! -f "${17}_${next_loop_iter}.h5" ]
 do
-    sleep "$sleep_seconds"
+    sleep "${22}m"
 done
 
 sbatch "$0" "${inputs_five[@]}"
@@ -124,13 +128,13 @@ sbatch "$0" "${inputs_five[@]}"
 all_testing_files_exist='False'
 while [ "$all_testing_files_exist" == "False" ]
 do
-    sleep "$sleep_seconds"
+    sleep "${22}m"
     if [ -d "${16}_${next_loop_iter}" ]
     then
         x1=`ls -1 "${16}_${next_loop_iter}/RR50_emp_stat_powers_"* | wc -l`
         x2=`ls -1 "${16}_${next_loop_iter}/theo_placebo_arm_hists_"* | wc -l`
         x3=`ls -1 "${16}_${next_loop_iter}/theo_drug_arm_hists_"* | wc -l`
-        if [ $x1 = ${19} ] && [ $x2 = ${19} ] && [ $x3 = ${19} ] && [ -f "${17}_${next_loop_iter}.h5" ]
+        if [ $x1 = ${num_test_jobs_w_slack} ] && [ $x2 = ${num_test_jobs_w_slack} ] && [ $x3 = ${num_test_jobs_w_slack} ] && [ -f "${17}_${next_loop_iter}.h5" ]
         then
             all_testing_files_exist='True'
             sbatch test_model_wrapper.sh ${inputs_four[@]}

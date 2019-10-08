@@ -37,6 +37,9 @@ num_compute_testing_iters=100
 loop_iter=0
 sleep_minutes=2
 
+training_slack=20
+testing_slack=10
+
 touch "${test_RMSEs_file_name}.txt"
 
 inputs[0]=$monthly_mean_min
@@ -68,6 +71,8 @@ inputs_two[18]=$num_compute_testing_iters
 inputs_two[19]=$loop_iter
 inputs_two[20]=$test_RMSEs_file_name
 inputs_two[21]=$sleep_seconds
+inputs_two[22]=$training_slack
+inputs_two[23]=$testing_slack
 
 sbatch initialize_model_wrapper.sh ${inputs[@]}
 
