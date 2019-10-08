@@ -1,8 +1,9 @@
 #!/usr/bin/bash
 
-#SBATCH -p short
+#SBATCH -p gpu
+#SBATCH --gres=gpu:1
 #SBATCH --mem=10G
-#SBATCH -t 0-00:05
+#SBATCH -t 0-01:00
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
