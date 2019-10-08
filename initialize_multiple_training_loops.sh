@@ -35,7 +35,7 @@ test_RMSEs_file_name='test_RMSEs'
 
 num_compute_training_iters=6
 num_compute_testing_iters=3
-loop_iter=1
+loop_iter=0
 sleep_minutes=2
 
 touch "${test_RMSEs_file_name}.txt"
