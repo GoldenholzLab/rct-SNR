@@ -101,25 +101,10 @@ do
         x1=`ls -1 "${15}_${20}/RR50_emp_stat_powers_"* | wc -l`
         x2=`ls -1 "${15}_${20}/theo_placebo_arm_hists_"* | wc -l`
         x3=`ls -1 "${15}_${20}/theo_drug_arm_hists_"* | wc -l`
-        if [ $x1 == ${18} ]
-        then
-            echo "$x1 1"
-        fi
-        if [ $x2 == ${18} ]
-        then
-            echo "$x2 2"
-        fi
-        if [ $x3 == ${18} ]
-        then
-            echo "$x3 3"
-        fi
         if [ $x1 == ${18} ] && [ $x2 == ${18} ] && [ $x3 == ${18} ]
         then
-            echo 'reached'
             all_training_files_exist='True'
             sbatch train_model_wrapper.sh ${inputs_two[@]}
-        else
-            echo 'not reached'
         fi
     fi
 done
@@ -144,29 +129,10 @@ do
         x1=`ls -1 "${16}_${next_loop_iter}/RR50_emp_stat_powers_"* | wc -l`
         x2=`ls -1 "${16}_${next_loop_iter}/theo_placebo_arm_hists_"* | wc -l`
         x3=`ls -1 "${16}_${next_loop_iter}/theo_drug_arm_hists_"* | wc -l`
-        if [ $x1 == ${19} ]
-        then
-            echo "$x1 4"
-        fi
-        if [ $x2 == ${19}  ]
-        then
-            echo "$x2 5"
-        fi
-        if [ $x3 == ${19}  ]
-        then
-            echo "$x3 6"
-        fi
-        if [ -f "${17}_${next_loop_iter}.h5" ]
-        then
-            echo 'trained model exists'
-        fi
         if [ $x1 = ${19} ] && [ $x2 = ${19} ] && [ $x3 = ${19} ] && [ -f "${17}_${next_loop_iter}.h5" ]
         then
-            echo 'reached 2'
             all_testing_files_exist='True'
             sbatch test_model_wrapper.sh ${inputs_four[@]}
-        else
-            echo 'not reached 2'
         fi
     fi
 done
