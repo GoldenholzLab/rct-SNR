@@ -91,8 +91,8 @@ inputs_five[18]=${19}
 inputs_five[19]=${next_loop_iter}
 inputs_five[20]=${21}
 inputs_five[21]=${22}
-inputs_five[21]=${23}
-inputs_five[21]=${24}
+inputs_five[22]=${23}
+inputs_five[23]=${24}
 
 
 sbatch submit_generate_data_wrappers.sh ${inputs[@]}
