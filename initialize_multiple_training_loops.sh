@@ -27,7 +27,7 @@ drug_sigma=0.05
 num_trials=100
 num_pops=5
 
-data_folder = '/n/scratch2/jmr95/rct-SNR-data'
+data_folder='/n/scratch2/jmr95/rct-SNR-data'
 generic_training_data_folder_name="${data_folder}/RR50_training_data_folder"
 generic_testing_data_folder_name="${data_folder}/RR50_testing_data_folder"
 RR50_stat_power_model_file_name='RR50_stat_power_model'
