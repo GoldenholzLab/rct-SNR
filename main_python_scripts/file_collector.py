@@ -42,14 +42,22 @@ def collect_data_from_folder(num_monthly_means,
 
         compute_iter = compute_iter_index + 1
 
-        [iter_specific_theo_placebo_arm_hists,
-         iter_specific_theo_drug_arm_hists,
-         iter_specific_RR50_emp_stat_powers] = \
-             load_iter_specific_files(data_storage_folder_name, loop_iter, compute_iter)
+        try:
+
+            [iter_specific_theo_placebo_arm_hists,
+             iter_specific_theo_drug_arm_hists,
+             iter_specific_RR50_emp_stat_powers] = \
+                 load_iter_specific_files(data_storage_folder_name, loop_iter, compute_iter)
         
-        theo_placebo_arm_hists = np.concatenate((theo_placebo_arm_hists, iter_specific_theo_placebo_arm_hists), 2)
-        theo_drug_arm_hists    = np.concatenate((theo_drug_arm_hists,    iter_specific_theo_drug_arm_hists),    2)
-        RR50_emp_stat_powers   = np.concatenate((RR50_emp_stat_powers,   iter_specific_RR50_emp_stat_powers),   0)
+            theo_placebo_arm_hists = np.concatenate((theo_placebo_arm_hists, iter_specific_theo_placebo_arm_hists), 2)
+            theo_drug_arm_hists    = np.concatenate((theo_drug_arm_hists,    iter_specific_theo_drug_arm_hists),    2)
+            RR50_emp_stat_powers   = np.concatenate((RR50_emp_stat_powers,   iter_specific_RR50_emp_stat_powers),   0)
+        
+        except FileNotFoundError as err:
+
+            print('\niter #' + str(compute_iter) + ' of loop #' + str(compute_iter) + \
+                  ' in either the testing or training data did not complete before the model was either tested or trained.\n' \
+                  + str(err))
     
     [num_monthly_std_devs, num_monthly_means, num_samples] = theo_placebo_arm_hists.shape
 
