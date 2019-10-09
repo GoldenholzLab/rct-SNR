@@ -14,10 +14,10 @@ if(__name__=='__main__'):
     monthly_std_dev_min = 1
     monthly_std_dev_max = 8
 
-    num_compute_iters    = 1
+    num_compute_iters    = 5
     data_storage_folder_name = 'RR50_testing_data_folder_1'
     RR50_stat_power_model_file_name = 'RR50_stat_power_model_1'
-    loop_iter = 4
+    loop_iter = 1
 
     num_monthly_means    = monthly_mean_max    - (monthly_mean_min    - 1)
     num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)
