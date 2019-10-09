@@ -11,8 +11,14 @@
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
 next_loop_iter=$((${20} + 1))
-num_train_jobs_w_slack=$((${18} - ${23}))
-num_test_jobs_w_slack=$((${19} - ${24}))
+if [ ${23} != 0 ]
+then
+    num_train_jobs_w_slack=$((${18} - ${23}))
+fi
+if [ ${24} != 0 ]
+then
+    num_test_jobs_w_slack=$((${19} - ${24}))
+fi
 
 inputs[0]=$1
 inputs[1]=$2

@@ -38,8 +38,8 @@ num_compute_testing_iters=10
 loop_iter=0
 sleep_minutes=2
 
-training_slack_iters=1
-testing_slack_iters=1
+training_slack_iters=0
+testing_slack_iters=0
 
 touch "${test_RMSEs_file_name}.txt"
 
