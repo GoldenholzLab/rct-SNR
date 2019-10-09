@@ -25,20 +25,20 @@ drug_mu=0.2
 drug_sigma=0.05
 
 num_trials=2000
-num_pops=5
+num_pops=10
 
 generic_training_data_folder_name='RR50_training_data_folder'
 generic_testing_data_folder_name='RR50_testing_data_folder'
 RR50_stat_power_model_file_name='RR50_stat_power_model'
 test_RMSEs_file_name='test_RMSEs'
 
-num_compute_training_iters=500
-num_compute_testing_iters=100
+num_compute_training_iters=100
+num_compute_testing_iters=20
 loop_iter=0
 sleep_minutes=2
 
-training_slack_iters=0
-testing_slack_iters=0
+training_slack_iters=10
+testing_slack_iters=4
 
 touch "${test_RMSEs_file_name}.txt"
 
