@@ -4,7 +4,7 @@ sys.path.insert(0, os.getcwd())
 from main_python_scripts.file_collector import load_iter_specific_files
 from main_python_scripts.file_collector import collect_data_from_folder
 import keras.models as models
-import shutil
+#import shutil
 
 
 def take_inputs_from_command_shell():
@@ -49,4 +49,4 @@ if(__name__=='__main__'):
     RR50_stat_power_model.fit([theo_placebo_arm_hists, theo_drug_arm_hists], RR50_emp_stat_powers, epochs=3, batch_size=5)
     RR50_stat_power_model.save(RR50_stat_power_model_file_name + '_' + str(int(loop_iter + 1)) + '.h5')
     
-    shutil.rmtree(training_data_folder_name + '_' + str(int(loop_iter)))
+    #shutil.rmtree(training_data_folder_name + '_' + str(int(loop_iter)))

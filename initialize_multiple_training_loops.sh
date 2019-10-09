@@ -24,11 +24,12 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=1000
+num_trials=100
 num_pops=5
 
-training_data_folder_name='training_data_folder'
-testing_data_folder_name='testing_data_folder'
+data_folder = '/n/scratch2/jmr95/rct-SNR-data'
+generic_training_data_folder_name="${data_folder}/RR50_training_data_folder"
+generic_testing_data_folder_name="${data_folder}/RR50_testing_data_folder"
 RR50_stat_power_model_file_name='RR50_stat_power_model'
 test_RMSEs_file_name='test_RMSEs'
 
@@ -63,8 +64,8 @@ inputs_two[10]=$drug_mu
 inputs_two[11]=$drug_sigma
 inputs_two[12]=$num_trials
 inputs_two[13]=$num_pops
-inputs_two[14]=$training_data_folder_name
-inputs_two[15]=$testing_data_folder_name
+inputs_two[14]=$generic_training_data_folder_name
+inputs_two[15]=$generic_testing_data_folder_name
 inputs_two[16]=$RR50_stat_power_model_file_name
 inputs_two[17]=$num_compute_training_iters
 inputs_two[18]=$num_compute_testing_iters

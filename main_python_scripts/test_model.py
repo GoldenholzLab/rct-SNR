@@ -1,7 +1,7 @@
 import sys
 import os
 import keras.models as models
-import shutil
+#import shutil
 import numpy as np
 sys.path.insert(0, os.getcwd())
 from main_python_scripts.file_collector import load_iter_specific_files
@@ -59,4 +59,4 @@ if(__name__=='__main__'):
 
         text_file.write(str(RR50_RMSE) + '\n')
     
-    shutil.rmtree(testing_data_folder_name + '_' + str(int(loop_iter)))
+    #shutil.rmtree(testing_data_folder_name + '_' + str(int(loop_iter)))
