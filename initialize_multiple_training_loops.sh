@@ -72,8 +72,8 @@ inputs_two[18]=$num_compute_testing_iters
 inputs_two[19]=$loop_iter
 inputs_two[20]=$test_RMSEs_file_name
 inputs_two[21]=$sleep_minutes
-inputs_two[22]=$training_slack
-inputs_two[23]=$testing_slack
+inputs_two[22]=$training_slack_iters
+inputs_two[23]=$testing_slack_iters
 
 sbatch initialize_model_wrapper.sh ${inputs[@]}
 
