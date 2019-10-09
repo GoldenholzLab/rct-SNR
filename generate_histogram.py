@@ -15,8 +15,8 @@ if(__name__=='__main__'):
     monthly_std_dev_max = 8
 
     num_compute_iters    = 5
-    data_storage_folder_name = 'RR50_testing_data_folder_1'
-    RR50_stat_power_model_file_name = 'RR50_stat_power_model_1'
+    data_storage_folder_name = 'RR50_testing_data_folder'
+    RR50_stat_power_model_file_name = 'RR50_stat_power_model'
     loop_iter = 1
 
     num_monthly_means    = monthly_mean_max    - (monthly_mean_min    - 1)
@@ -33,7 +33,7 @@ if(__name__=='__main__'):
                                   data_storage_folder_name,
                                   loop_iter)
 
-    RR50_stat_power_model = models.load_model(RR50_stat_power_model_file_name + '_' + str(int(loop_iter)) + '.h5')
+    RR50_stat_power_model = models.load_model(RR50_stat_power_model_file_path)
 
     num_inputs = len(RR50_emp_stat_powers)
     error_array = np.zeros(num_inputs)
