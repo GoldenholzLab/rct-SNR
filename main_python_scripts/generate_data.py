@@ -71,19 +71,19 @@ def estimate_statistical_power_per_placebo_and_drug_theo_pops(theo_placebo_arm_p
     return RR50_emp_stat_power
 
 
-def generate_theo_pop_hists_and_power(monthly_mean_min,
-                                      monthly_mean_max,
-                                      monthly_std_dev_min,
-                                      monthly_std_dev_max,
-                                      num_theo_patients_per_trial_arm,
-                                      num_baseline_months,
-                                      num_testing_months,
-                                      minimum_required_baseline_seizure_count,
-                                      placebo_mu,
-                                      placebo_sigma,
-                                      drug_mu,
-                                      drug_sigma,
-                                      num_trials):
+def generate_theo_pop_hists_and_power_per_pop(monthly_mean_min,
+                                              monthly_mean_max,
+                                              monthly_std_dev_min,
+                                              monthly_std_dev_max,
+                                              num_theo_patients_per_trial_arm,
+                                              num_baseline_months,
+                                              num_testing_months,
+                                              minimum_required_baseline_seizure_count,
+                                              placebo_mu,
+                                              placebo_sigma,
+                                              drug_mu,
+                                              drug_sigma,
+                                              num_trials):
 
     [theo_placebo_arm_patient_pop_params, 
      theo_placebo_arm_pop_hist            ] = \
@@ -115,6 +115,54 @@ def generate_theo_pop_hists_and_power(monthly_mean_min,
                                                                   num_trials)
     
     return [theo_placebo_arm_pop_hist, theo_drug_arm_pop_hist, RR50_emp_stat_power]
+
+
+def generate_theo_pop_hists_and_power(monthly_mean_min,
+                                      monthly_mean_max,
+                                      monthly_std_dev_min,
+                                      monthly_std_dev_max,
+                                      num_theo_patients_per_trial_arm,
+                                      num_baseline_months,
+                                      num_testing_months,
+                                      minimum_required_baseline_seizure_count,
+                                      placebo_mu,
+                                      placebo_sigma,
+                                      drug_mu,
+                                      drug_sigma,
+                                      num_trials,
+                                      num_pops):
+    
+    num_monthly_means    = monthly_mean_max - (monthly_mean_min - 1)
+    num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)
+
+    theo_placebo_arm_hists = np.zeros((num_monthly_std_devs, num_monthly_means, num_pops))
+    theo_drug_arm_hists    = np.zeros((num_monthly_std_devs, num_monthly_means, num_pops))
+    RR50_emp_stat_powers   = np.zeros(num_pops)
+    
+    for pop_index in range(num_pops):
+
+        [theo_placebo_arm_pop_hist, 
+         theo_drug_arm_pop_hist, 
+         RR50_emp_stat_power] = \
+             generate_theo_pop_hists_and_power_per_pop(monthly_mean_min,
+                                                       monthly_mean_max,
+                                                       monthly_std_dev_min,
+                                                       monthly_std_dev_max,
+                                                       num_theo_patients_per_trial_arm,
+                                                       num_baseline_months,
+                                                       num_testing_months,
+                                                       minimum_required_baseline_seizure_count,
+                                                       placebo_mu,
+                                                       placebo_sigma,
+                                                       drug_mu,
+                                                       drug_sigma,
+                                                       num_trials)
+    
+        theo_placebo_arm_hists[:, :, pop_index] = theo_placebo_arm_pop_hist
+        theo_drug_arm_hists[:, :, pop_index]    = theo_drug_arm_pop_hist
+        RR50_emp_stat_powers[pop_index]         = RR50_emp_stat_power
+    
+    return [theo_placebo_arm_hists, theo_drug_arm_hists, RR50_emp_stat_powers]
 
 
 def store_theo_pop_hists_and_emp_stat_powers(theo_placebo_arm_hists,
@@ -189,35 +237,23 @@ if(__name__=='__main__'):
      placebo_mu, placebo_sigma, drug_mu, drug_sigma,
      num_trials, num_pops, data_storage_folder, loop_iter, compute_iter] = take_inputs_from_command_shell()
 
-    num_monthly_means    = monthly_mean_max - (monthly_mean_min - 1)
-    num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)
-
-    theo_placebo_arm_hists = np.zeros((num_monthly_std_devs, num_monthly_means, num_pops))
-    theo_drug_arm_hists    = np.zeros((num_monthly_std_devs, num_monthly_means, num_pops))
-    RR50_emp_stat_powers   = np.zeros(num_pops)
-    
-    for pop_index in range(num_pops):
-
-        [theo_placebo_arm_pop_hist, 
-         theo_drug_arm_pop_hist, 
-         RR50_emp_stat_power] = \
-             generate_theo_pop_hists_and_power(monthly_mean_min,
-                                               monthly_mean_max,
-                                               monthly_std_dev_min,
-                                               monthly_std_dev_max,
-                                               num_theo_patients_per_trial_arm,
-                                               num_baseline_months,
-                                               num_testing_months,
-                                               minimum_required_baseline_seizure_count,
-                                               placebo_mu,
-                                               placebo_sigma,
-                                               drug_mu,
-                                               drug_sigma,
-                                               num_trials)
-    
-        theo_placebo_arm_hists[:, :, pop_index] = theo_placebo_arm_pop_hist
-        theo_drug_arm_hists[:, :, pop_index]    = theo_drug_arm_pop_hist
-        RR50_emp_stat_powers[pop_index]         = RR50_emp_stat_power
+    [theo_placebo_arm_hists, 
+     theo_drug_arm_hists, 
+     RR50_emp_stat_powers] = \
+         generate_theo_pop_hists_and_power(monthly_mean_min,
+                                           monthly_mean_max,
+                                           monthly_std_dev_min,
+                                           monthly_std_dev_max,
+                                           num_theo_patients_per_trial_arm,
+                                           num_baseline_months,
+                                           num_testing_months,
+                                           minimum_required_baseline_seizure_count,
+                                           placebo_mu,
+                                           placebo_sigma,
+                                           drug_mu,
+                                           drug_sigma,
+                                           num_trials,
+                                           num_pops)
     
     store_theo_pop_hists_and_emp_stat_powers(theo_placebo_arm_hists,
                                              theo_drug_arm_hists,
