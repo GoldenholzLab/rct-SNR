@@ -48,5 +48,5 @@ if(__name__=='__main__'):
 
     plt.figure()
     plt.hist(error_array)
-    plt.savefig()
+    plt.savefig('RR50_RMSE.png')
     
