@@ -1,3 +1,6 @@
+import tensorflow.python.util.deprecation as deprecation
+deprecation._PRINT_DEPRECATION_WARNINGS = False
+
 import sys
 import os
 import keras.models as models
