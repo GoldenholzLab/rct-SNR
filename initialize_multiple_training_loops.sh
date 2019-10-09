@@ -24,7 +24,7 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=5000
+num_trials=1000
 num_pops=5
 
 training_data_folder_name='training_data_folder'
