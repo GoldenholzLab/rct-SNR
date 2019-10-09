@@ -4,6 +4,7 @@ import json
 
 def load_iter_specific_files(data_storage_folder_name, loop_iter, compute_iter):
 
+    #absolute file path, not relative
     data_storage_folder_file_path = data_storage_folder_name + '_' + str(int(loop_iter))
 
     iter_specific_theo_placebo_arm_hists_file_name = 'theo_placebo_arm_hists_' + str(compute_iter) + '.json'
