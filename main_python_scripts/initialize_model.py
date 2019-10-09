@@ -1,6 +1,3 @@
-import tensorflow.python.util.deprecation as deprecation
-deprecation._PRINT_DEPRECATION_WARNINGS = False
-
 from keras import Input
 from keras.layers import Conv2D, MaxPooling2D, Flatten, concatenate, Dense, Dropout, PReLU
 import keras.models as models

@@ -1,6 +1,3 @@
-import tensorflow.python.util.deprecation as deprecation
-deprecation._PRINT_DEPRECATION_WARNINGS = False
-
 import sys
 import os
 sys.path.insert(0, os.getcwd())
