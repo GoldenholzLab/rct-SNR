@@ -1,3 +1,15 @@
+: '
+#!/usr/bin/bash
+
+#SBATCH -p short
+#SBATCH -t 0-00:05
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -e jmr95_%j.err
+#SBATCH -o jmr95_%j.out
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jromero5@bidmc.harvard.edu
+'
 
 monthly_mean_min=1
 monthly_mean_max=16
@@ -14,16 +26,17 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=100
-num_pops=5
+num_trials=2000
+num_pops=10
 
 data_storage_super_folder_path="/Users/juanromero/Documents/Python_3_Files/rct_SNR_test"
 RR50_training_loop_iter_specific_file_name="RR50_training_data"
 RR50_testing_loop_iter_specific_file_name="RR50_testing_data"
 
-num_training_loop_iters=3
-num_testing_loop_iters=2
-num_compute_iters_per_loop=3
+num_training_compute_iters_per_loop=10
+num_testing_compute_iters_per_loop=2
+num_loop_iters=20
+
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
@@ -60,9 +73,9 @@ inputs_two[14]=$data_storage_super_folder_path
 inputs_two[15]=$RR50_testing_loop_iter_specific_file_name
 
 
-for ((loop_iter=0; loop_iter<$num_training_loop_iters; loop_iter=loop_iter+1))
+for ((loop_iter=0; loop_iter<$num_loop_iters; loop_iter=loop_iter+1))
 do
-    for ((compute_iter=1; compute_iter<$num_compute_iters_per_loop+1; compute_iter=compute_iter+1))
+    for ((compute_iter=1; compute_iter<$num_training_compute_iters_per_loop+1; compute_iter=compute_iter+1))
     do
         inputs[16]=$loop_iter
         inputs[17]=$compute_iter
@@ -71,9 +84,9 @@ do
     done
 done
 
-for ((loop_iter=0; loop_iter<$num_testing_loop_iters; loop_iter=loop_iter+1))
+for ((loop_iter=0; loop_iter<$num_loop_iters; loop_iter=loop_iter+1))
 do
-    for ((compute_iter=1; compute_iter<$num_compute_iters_per_loop+1; compute_iter=compute_iter+1))
+    for ((compute_iter=1; compute_iter<$num_testing_compute_iters_per_loop+1; compute_iter=compute_iter+1))
     do
         inputs_two[16]=$loop_iter
         inputs_two[17]=$compute_iter
