@@ -54,7 +54,7 @@ do
         inputs[16]=$loop_iter
         inputs[17]=$compute_iter
 
-        bash submit_generate_data_wrappers.sh ${inputs[@]}
+        bash generate_data_wrapper.sh ${inputs[@]}
 
     done
 
