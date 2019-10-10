@@ -97,6 +97,8 @@ inputs_five[23]=${24}
 
 sbatch submit_generate_data_wrappers.sh ${inputs[@]}
 
+sbatch submit_generate_data_wrappers.sh ${inputs_three[@]}
+
 all_training_files_exist='False'
 while [ "$all_training_files_exist" == "False" ]
 do
@@ -113,9 +115,6 @@ do
         fi
     fi
 done
-
-sbatch submit_generate_data_wrappers.sh ${inputs_three[@]}
-
 
 while [ ! -f "${17}_${next_loop_iter}.h5" ]
 do
