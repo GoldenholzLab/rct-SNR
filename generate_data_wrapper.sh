@@ -31,4 +31,5 @@ inputs[15]=${16}
 inputs[16]=${17}
 inputs[17]=${18}
 
-srun -c 1 python -u main_python_scripts/generate_data.py ${inputs[@]}
+#srun -c 1 python -u main_python_scripts/generate_data.py ${inputs[@]}
+python -u main_python_scripts/generate_data.py ${inputs[@]}
