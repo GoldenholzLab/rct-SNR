@@ -57,7 +57,7 @@ inputs_two[11]=$drug_sigma
 inputs_two[12]=$num_trials
 inputs_two[13]=$num_pops
 inputs_two[14]=$data_storage_super_folder_path
-inputs_two[15]=$RR50_training_loop_iter_specific_file_name
+inputs_two[15]=$RR50_testing_loop_iter_specific_file_name
 
 
 for ((loop_iter=0; loop_iter<$num_training_loop_iters; loop_iter=loop_iter+1))
