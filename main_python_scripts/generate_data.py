@@ -168,11 +168,12 @@ def generate_theo_pop_hists_and_power(monthly_mean_min,
 def store_theo_pop_hists_and_emp_stat_powers(theo_placebo_arm_hists,
                                              theo_drug_arm_hists,
                                              RR50_emp_stat_powers,
-                                             data_storage_folder_name,
+                                             data_storage_super_folder_path,
+                                             loop_iter_specific_file_name,
                                              compute_iter,
                                              loop_iter):
                                              
-    data_storage_folder_file_path = './' + data_storage_folder_name + '_' + str(int(loop_iter))
+    data_storage_folder_file_path = data_storage_super_folder_path + '/' + loop_iter_specific_file_name + '_' + str(int(loop_iter))
 
     if( not os.path.isdir(data_storage_folder_file_path) ):
         try:
@@ -217,16 +218,20 @@ def take_inputs_from_command_shell():
 
     num_trials      = int(sys.argv[13])
     num_pops        = int(sys.argv[14])
-    data_storage_folder = sys.argv[15]
-    loop_iter       = int(sys.argv[16])
-    compute_iter    = int(sys.argv[17])
+
+    data_storage_super_folder_path = sys.argv[15]
+    loop_iter_specific_file_name   = sys.argv[16]
+
+    loop_iter    = int(sys.argv[17])
+    compute_iter = int(sys.argv[18])
 
 
     return [monthly_mean_min, monthly_mean_max, monthly_std_dev_min, monthly_std_dev_max,
             num_theo_patients_per_trial_arm, num_baseline_months, num_testing_months, 
             minimum_required_baseline_seizure_count,
             placebo_mu, placebo_sigma, drug_mu, drug_sigma,
-            num_trials, num_pops, data_storage_folder, loop_iter, compute_iter]
+            num_trials, num_pops, 
+            data_storage_super_folder_path, loop_iter_specific_file_name, loop_iter, compute_iter]
 
 
 if(__name__=='__main__'):
@@ -235,7 +240,9 @@ if(__name__=='__main__'):
      num_theo_patients_per_trial_arm, num_baseline_months, num_testing_months, 
      minimum_required_baseline_seizure_count,
      placebo_mu, placebo_sigma, drug_mu, drug_sigma,
-     num_trials, num_pops, data_storage_folder, loop_iter, compute_iter] = take_inputs_from_command_shell()
+     num_trials, num_pops, 
+     data_storage_super_folder_path, loop_iter_specific_file_name, loop_iter, compute_iter] = \
+         take_inputs_from_command_shell()
 
     [theo_placebo_arm_hists, 
      theo_drug_arm_hists, 
@@ -258,6 +265,7 @@ if(__name__=='__main__'):
     store_theo_pop_hists_and_emp_stat_powers(theo_placebo_arm_hists,
                                              theo_drug_arm_hists,
                                              RR50_emp_stat_powers,
-                                             data_storage_folder,
+                                             data_storage_super_folder_path,
+                                             loop_iter_specific_file_name,
                                              compute_iter,
                                              loop_iter)

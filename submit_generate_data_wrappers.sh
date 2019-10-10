@@ -1,40 +1,62 @@
-#!/usr/bin/bash
 
-#SBATCH -p short
-#SBATCH -t 0-00:05
-#SBATCH -n 1
-#SBATCH -N 1
-#SBATCH -e jmr95_%j.err
-#SBATCH -o jmr95_%j.out
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=jromero5@bidmc.harvard.edu
+monthly_mean_min=1
+monthly_mean_max=16
+monthly_std_dev_min=1
+monthly_std_dev_max=16
 
-inputs[0]=$1
-inputs[1]=$2
-inputs[2]=$3
-inputs[3]=$4
+num_theo_patients_per_trial_arm=153
+num_baseline_months=2
+num_testing_months=3
+minimum_required_baseline_seizure_count=4
 
-inputs[4]=$5
-inputs[5]=$6
-inputs[6]=$7
-inputs[7]=$8
+placebo_mu=0
+placebo_sigma=0.05
+drug_mu=0.2
+drug_sigma=0.05
 
-inputs[8]=$9
-inputs[9]=${10}
-inputs[10]=${11}
-inputs[11]=${12}
+num_trials=100
+num_pops=5
 
-inputs[12]=${13}
-inputs[13]=${14}
-inputs[14]=${15}
-inputs[15]=${16}
+data_storage_super_folder_path="/Users/juanromero/Documents/Python_3_Files/rct_SNR_test"
+loop_iter_specific_file_name="RR50_training_data"
 
-for ((compute_iter=1; compute_iter<${17}+1; compute_iter=compute_iter+1))
+num_loop_iters=3
+num_compute_iters_per_loop=3
+
+inputs[0]=$monthly_mean_min
+inputs[1]=$monthly_mean_max
+inputs[2]=$monthly_std_dev_min
+inputs[3]=$monthly_std_dev_max
+
+inputs[4]=$num_theo_patients_per_trial_arm
+inputs[5]=$num_baseline_months
+inputs[6]=$num_testing_months
+inputs[7]=$minimum_required_baseline_seizure_count
+
+inputs[8]=$placebo_mu
+inputs[9]=$placebo_sigma
+inputs[10]=$drug_mu
+inputs[11]=$drug_sigma
+
+inputs[12]=$num_trials
+inputs[13]=$num_pops
+
+inputs[14]=$data_storage_super_folder_path
+inputs[15]=$loop_iter_specific_file_name
+
+
+for ((loop_iter=0; loop_iter<$num_loop_iters; loop_iter=loop_iter+1))
 do
-    inputs[16]=$compute_iter
 
-    sbatch generate_data_wrapper.sh ${inputs[@]}
-    #bash local_generate_data_wrapper.sh ${inputs[@]}
+    for ((compute_iter=1; compute_iter<$num_compute_iters_per_loop+1; compute_iter=compute_iter+1))
+    do
+    
+        inputs[16]=$loop_iter
+        inputs[17]=$compute_iter
+
+        bash submit_generate_data_wrappers.sh ${inputs[@]}
+
+    done
 
 done
 
