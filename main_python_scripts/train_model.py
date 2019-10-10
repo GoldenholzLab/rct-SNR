@@ -46,7 +46,7 @@ if(__name__=='__main__'):
                                   loop_iter)
     
     RR50_stat_power_model = models.load_model(RR50_stat_power_model_file_name + '_' + str(int(loop_iter)) + '.h5')
-    RR50_stat_power_model.fit([theo_placebo_arm_hists, theo_drug_arm_hists], RR50_emp_stat_powers, epochs=3, batch_size=5)
+    RR50_stat_power_model.fit([theo_placebo_arm_hists, theo_drug_arm_hists], RR50_emp_stat_powers, epochs=20, batch_size=10)
     RR50_stat_power_model.save(RR50_stat_power_model_file_name + '_' + str(int(loop_iter + 1)) + '.h5')
     
     #shutil.rmtree(training_data_folder_name + '_' + str(int(loop_iter)))

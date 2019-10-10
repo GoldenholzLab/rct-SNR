@@ -28,4 +28,6 @@ module load python/3.6.0
 #module load cuda/9.0
 source activate working_env
 
+export HDF5_USE_FILE_LOCKING='FALSE'
+
 srun -c 1 python -u main_python_scripts/test_model.py ${inputs[@]}
