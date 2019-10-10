@@ -106,7 +106,7 @@ do
         x1=`ls -1 "${15}_${20}/RR50_emp_stat_powers_"* | wc -l`
         x2=`ls -1 "${15}_${20}/theo_placebo_arm_hists_"* | wc -l`
         x3=`ls -1 "${15}_${20}/theo_drug_arm_hists_"* | wc -l`
-        if (($x1 <= ${num_train_jobs_w_slack})) && (($x2 == ${num_train_jobs_w_slack})) && (($x3 == ${num_train_jobs_w_slack}))
+        if (($x1 <= ${num_train_jobs_w_slack})) && (($x2 <= ${num_train_jobs_w_slack})) && (($x3 <= ${num_train_jobs_w_slack}))
         then
             all_training_files_exist='True'
             sbatch train_model_wrapper.sh ${inputs_two[@]}
