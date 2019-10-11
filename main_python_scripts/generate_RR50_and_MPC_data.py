@@ -254,6 +254,8 @@ if(__name__=='__main__'):
      data_storage_super_folder_path, loop_iter_specific_file_name, loop_iter, compute_iter] = \
          take_inputs_from_command_shell()
 
+    print('\nloop #: ' + str(loop_iter) + '\ncompute #: ' + str(compute_iter) + '\n')
+
     [theo_placebo_arm_hists, theo_drug_arm_hists, 
      RR50_emp_stat_powers,   MPC_emp_stat_powers] = \
          generate_theo_pop_hists_and_powers(monthly_mean_min,
