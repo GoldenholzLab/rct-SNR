@@ -79,7 +79,7 @@ do
         inputs[16]=$loop_iter
         inputs[17]=$compute_iter
 
-        bash generate_data_wrapper.sh ${inputs[@]}
+        sbatch generate_data_wrapper.sh ${inputs[@]}
     done
 done
 
