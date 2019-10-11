@@ -90,6 +90,7 @@ do
         inputs_two[16]=$loop_iter
         inputs_two[17]=$compute_iter
 
-        bash generate_data_wrapper.sh ${inputs_two[@]}
+        #bash generate_data_wrapper.sh ${inputs_two[@]}
+        sbatch generate_data_wrapper.sh ${inputs_two[@]}
     done
 done
