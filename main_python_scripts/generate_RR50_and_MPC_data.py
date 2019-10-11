@@ -131,7 +131,7 @@ def generate_theo_pop_hists_and_powers(monthly_mean_min,
                                        placebo_sigma,
                                        drug_mu,
                                        drug_sigma,
-                                       num_trials,
+                                       num_trials_per_pop,
                                        num_pops):
     
     num_monthly_means    = monthly_mean_max - (monthly_mean_min - 1)
@@ -158,7 +158,7 @@ def generate_theo_pop_hists_and_powers(monthly_mean_min,
                                                         placebo_sigma,
                                                         drug_mu,
                                                         drug_sigma,
-                                                        num_trials)
+                                                        num_trials_per_pop)
     
         theo_placebo_arm_hists[:, :, pop_index] = theo_placebo_arm_pop_hist
         theo_drug_arm_hists[:, :, pop_index]    = theo_drug_arm_pop_hist
@@ -174,11 +174,11 @@ def store_theo_pop_hists_and_emp_stat_powers(theo_placebo_arm_hists,
                                              RR50_emp_stat_powers,
                                              MPC_emp_stat_powers,
                                              data_storage_super_folder_path,
-                                             loop_iter_specific_file_name,
+                                             block_generic_folder_name,
                                              compute_iter,
-                                             loop_iter):
+                                             block_num):
                                              
-    data_storage_folder_file_path = data_storage_super_folder_path + '/' + loop_iter_specific_file_name + '_' + str(int(loop_iter))
+    data_storage_folder_file_path = data_storage_super_folder_path + '/' + block_generic_folder_name + '_' + str(int(block_num))
 
     if( not os.path.isdir(data_storage_folder_file_path) ):
         try:
@@ -226,13 +226,13 @@ def take_inputs_from_command_shell():
     drug_mu       = float(sys.argv[11])
     drug_sigma    = float(sys.argv[12])
 
-    num_trials      = int(sys.argv[13])
-    num_pops        = int(sys.argv[14])
+    num_trials_per_pop = int(sys.argv[13])
+    num_pops = int(sys.argv[14])
 
     data_storage_super_folder_path = sys.argv[15]
-    loop_iter_specific_file_name   = sys.argv[16]
+    block_generic_folder_name = sys.argv[16]
 
-    loop_iter    = int(sys.argv[17])
+    block_num = int(sys.argv[17])
     compute_iter = int(sys.argv[18])
 
 
@@ -240,8 +240,8 @@ def take_inputs_from_command_shell():
             num_theo_patients_per_trial_arm, num_baseline_months, num_testing_months, 
             minimum_required_baseline_seizure_count,
             placebo_mu, placebo_sigma, drug_mu, drug_sigma,
-            num_trials, num_pops, 
-            data_storage_super_folder_path, loop_iter_specific_file_name, loop_iter, compute_iter]
+            num_trials_per_pop, num_pops, 
+            data_storage_super_folder_path, block_generic_folder_name, compute_iter, block_num]
 
 
 if(__name__=='__main__'):
@@ -250,11 +250,12 @@ if(__name__=='__main__'):
      num_theo_patients_per_trial_arm, num_baseline_months, num_testing_months, 
      minimum_required_baseline_seizure_count,
      placebo_mu, placebo_sigma, drug_mu, drug_sigma,
-     num_trials, num_pops, 
-     data_storage_super_folder_path, loop_iter_specific_file_name, loop_iter, compute_iter] = \
+     num_trials_per_pop, num_pops, 
+     data_storage_super_folder_path, block_generic_folder_name, compute_iter, block_num] = \
          take_inputs_from_command_shell()
+    
 
-    print('\nloop #: ' + str(loop_iter) + '\ncompute #: ' + str(compute_iter) + '\n')
+    print('\nblock #: ' + str(block_num) + '\ncompute #: ' + str(compute_iter) + '\n')
 
     [theo_placebo_arm_hists, theo_drug_arm_hists, 
      RR50_emp_stat_powers,   MPC_emp_stat_powers] = \
@@ -270,7 +271,7 @@ if(__name__=='__main__'):
                                             placebo_sigma,
                                             drug_mu,
                                             drug_sigma,
-                                            num_trials,
+                                            num_trials_per_pop,
                                             num_pops)
     
     store_theo_pop_hists_and_emp_stat_powers(theo_placebo_arm_hists,
@@ -278,6 +279,6 @@ if(__name__=='__main__'):
                                              RR50_emp_stat_powers,
                                              MPC_emp_stat_powers,
                                              data_storage_super_folder_path,
-                                             loop_iter_specific_file_name,
+                                             block_generic_folder_name,
                                              compute_iter,
-                                             loop_iter)
+                                             block_num)
