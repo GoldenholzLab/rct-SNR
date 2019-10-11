@@ -79,7 +79,8 @@ do
         inputs[16]=$loop_iter
         inputs[17]=$compute_iter
 
-        sbatch generate_data_wrapper.sh ${inputs[@]}
+        #bash generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
+        sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
     done
 done
 
@@ -90,7 +91,7 @@ do
         inputs_two[16]=$loop_iter
         inputs_two[17]=$compute_iter
 
-        #bash generate_data_wrapper.sh ${inputs_two[@]}
-        sbatch generate_data_wrapper.sh ${inputs_two[@]}
+        #bash generate_RR50_and_MPC_data_wrapper.sh ${inputs_two[@]}
+        sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs_two[@]}
     done
 done

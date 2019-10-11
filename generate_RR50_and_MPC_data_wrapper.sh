@@ -34,5 +34,5 @@ module load conda2/4.2.13
 module load python/3.6.0
 source activate working_env
 
-srun -c 1 python -u main_python_scripts/generate_data.py ${inputs[@]}
+srun -c 1 python -u main_python_scripts/generate_RR50_and_MPC_data.py ${inputs[@]}
 #python -u main_python_scripts/generate_data.py ${inputs[@]}
