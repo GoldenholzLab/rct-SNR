@@ -25,16 +25,16 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=10
+num_trials=2000
 num_pops=10
 
 data_storage_super_folder_path="/home/jmr95/rct-SNR"
 RR50_training_loop_iter_specific_file_name="RR50_training_data"
 RR50_testing_loop_iter_specific_file_name="RR50_testing_data"
 
-num_training_compute_iters_per_loop=5
-num_testing_compute_iters_per_loop=2
-num_loop_iters=3
+num_training_compute_iters_per_loop=100
+num_testing_compute_iters_per_loop=20
+num_loop_iters=25
 
 
 inputs[0]=$monthly_mean_min
