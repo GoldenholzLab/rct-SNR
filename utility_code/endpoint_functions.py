@@ -63,8 +63,8 @@ def calculate_time_to_prerandomizations(monthly_baseline_seizure_diaries,
 def calculate_fisher_exact_p_value(placebo_arm_percent_changes,
                                    drug_arm_percent_changes):
 
-    num_placebo_arm_responders     = np.sum(placebo_arm_percent_changes > 0.5)
-    num_drug_arm_responders        = np.sum(drug_arm_percent_changes    > 0.5)
+    num_placebo_arm_responders     = np.sum(placebo_arm_percent_changes >= 0.5)
+    num_drug_arm_responders        = np.sum(drug_arm_percent_changes    >= 0.5)
     num_placebo_arm_non_responders = len(placebo_arm_percent_changes) - num_placebo_arm_responders
     num_drug_arm_non_responders    = len(drug_arm_percent_changes)    - num_drug_arm_responders
 
