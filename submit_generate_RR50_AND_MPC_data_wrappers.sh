@@ -28,7 +28,6 @@ num_trials_per_pop=10
 num_pops=5
 
 data_storage_super_folder_path="/home/jmr95/rct-SNR"
-#data_storage_super_folder_path="/Users/juanromero/Documents/Python_3_Files/rct_SNR_test"
 block_generic_training_data_folder_name="training_data"
 block_generic_testing_data_folder_name="testing_data"
 
