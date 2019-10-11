@@ -59,28 +59,14 @@ def build_model(num_monthly_means,
     return RR50_stat_power_model
 
 
-def take_inputs_from_commmand_shell():
-
-    monthly_mean_min    = int(sys.argv[1])
-    monthly_mean_max    = int(sys.argv[2])
-    monthly_std_dev_min = int(sys.argv[3])
-    monthly_std_dev_max = int(sys.argv[4])
-
-    RR50_stat_power_model_file_name = sys.argv[5]
-
-    loop_iter = int(sys.argv[6])
-
-    return [monthly_mean_min,    monthly_mean_max,
-            monthly_std_dev_min, monthly_std_dev_max,
-            RR50_stat_power_model_file_name, loop_iter]
-
-
 if(__name__=='__main__'):
 
-    [monthly_mean_min,    monthly_mean_max,
-     monthly_std_dev_min, monthly_std_dev_max,
-     RR50_stat_power_model_file_name, loop_iter] = \
-         take_inputs_from_commmand_shell()
+    monthly_mean_min    = 4
+    monthly_mean_max    = 16
+    monthly_std_dev_min = 1
+    monthly_std_dev_max = 8
+
+    RR50_stat_power_model_file_name = "RR50_stat_power_model"
 
     num_monthly_means    = monthly_mean_max    - (monthly_mean_min    - 1)
     num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)
@@ -89,6 +75,6 @@ if(__name__=='__main__'):
         build_model(num_monthly_means,
                     num_monthly_std_devs)
     
-    RR50_stat_power_model.save(RR50_stat_power_model_file_name + '_' + str(int(loop_iter)) + '.h5')
+    RR50_stat_power_model.save(RR50_stat_power_model_file_name + '.h5')
 
-    plot_model(RR50_stat_power_model, to_file='RR50_stat_power_model.png', show_shapes=True)
+    #plot_model(RR50_stat_power_model, to_file='RR50_stat_power_model.png', show_shapes=True)
