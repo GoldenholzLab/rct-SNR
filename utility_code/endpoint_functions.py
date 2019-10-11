@@ -10,11 +10,16 @@ def calculate_percent_changes(baseline_seizure_diaries,
     baseline_seizure_frequencies = np.mean(baseline_seizure_diaries, 1)
     testing_seizure_frequencies  = np.mean(testing_seizure_diaries, 1)
 
+    '''
     for patient_index in range(num_patients_per_trial_arm):
         if(baseline_seizure_frequencies[patient_index] == 0):
             baseline_seizure_frequencies[patient_index] = 0.000001
 
     percent_changes = np.divide(baseline_seizure_frequencies - testing_seizure_frequencies, baseline_seizure_frequencies)
+    '''
+
+    baseline_seizure_frequencies[baseline_seizure_frequencies == 0] = 0.000001
+    percent_changes = (baseline_seizure_frequencies - testing_seizure_frequencies)/baseline_seizure_frequencies
 
     return percent_changes
 
