@@ -90,7 +90,7 @@ do
     do
         inputs_two[17]=$testing_compute_iter
 
-        bash generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
+        bash generate_RR50_and_MPC_data_wrapper.sh ${inputs_two[@]}
         #sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs_two[@]}
     done
 
