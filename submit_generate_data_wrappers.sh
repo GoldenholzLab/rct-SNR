@@ -28,7 +28,7 @@ drug_sigma=0.05
 num_trials=10
 num_pops=10
 
-data_storage_super_folder_path="/n/scratch2/jmr95/rct-SNR-data/RR50-data"
+data_storage_super_folder_path="/home/jmr95/rct-SNR"
 RR50_training_loop_iter_specific_file_name="RR50_training_data"
 RR50_testing_loop_iter_specific_file_name="RR50_testing_data"
 
