@@ -82,16 +82,16 @@ do
     do
         inputs[17]=$training_compute_iter
 
-        #bash generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
-        sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
+        bash generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
+        #sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
     done
 
     for ((testing_compute_iter=1; testing_compute_iter<$num_testing_compute_iters_per_loop+1; testing_compute_iter=testing_compute_iter+1))
     do
         inputs_two[17]=$testing_compute_iter
 
-        #bash generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
-        sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs_two[@]}
+        bash generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
+        #sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs_two[@]}
     done
 
 done
