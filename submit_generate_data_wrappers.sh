@@ -1,4 +1,3 @@
-: '
 #!/usr/bin/bash
 
 #SBATCH -p short
@@ -9,7 +8,7 @@
 #SBATCH -o jmr95_%j.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
-'
+
 
 monthly_mean_min=1
 monthly_mean_max=16
@@ -29,7 +28,7 @@ drug_sigma=0.05
 num_trials=2000
 num_pops=10
 
-data_storage_super_folder_path="/Users/juanromero/Documents/useless_folder"
+data_storage_super_folder_path="/n/scratch2/jmr95/rct-SNR-data/RR50-data"
 RR50_training_loop_iter_specific_file_name="RR50_training_data"
 RR50_testing_loop_iter_specific_file_name="RR50_testing_data"
 
