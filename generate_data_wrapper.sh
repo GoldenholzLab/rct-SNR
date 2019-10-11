@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
 #SBATCH -p short
-#SBATCH --mem=1G
-#SBATCH -t 0-00:10
+#SBATCH --mem=10G
+#SBATCH -t 0-01:00
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
