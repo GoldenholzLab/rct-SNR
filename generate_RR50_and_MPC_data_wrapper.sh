@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-#SBATCH -p short
+#SBATCH -p medium
 #SBATCH --mem-per-cpu=10G
 #SBATCH -t 0-01:00
 #SBATCH -n 1
