@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
-#SBATCH -p medium
+#SBATCH -p short
 #SBATCH --mem-per-cpu=1G
-#SBATCH -t 4-00:00
+#SBATCH -t 0-00:30
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
