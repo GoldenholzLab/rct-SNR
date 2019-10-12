@@ -83,6 +83,7 @@ do
 
         #bash generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
         sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
+        echo "submitted training iter #${training_compute_iter} for block #${block_num}"
     done
 
     for ((testing_compute_iter=1; testing_compute_iter<$num_testing_compute_iters_per_loop+1; testing_compute_iter=testing_compute_iter+1))
@@ -91,6 +92,7 @@ do
 
         #bash generate_RR50_and_MPC_data_wrapper.sh ${inputs_two[@]}
         sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs_two[@]}
+        echo "submitted testing iter #${testing_compute_iter} for block #${block_num}"
     done
 
     all_training_block_files_exist="False"
