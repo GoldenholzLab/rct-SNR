@@ -32,8 +32,8 @@ data_storage_super_folder_path="/home/jmr95/rct-SNR"
 block_generic_training_data_folder_name="training_data"
 block_generic_testing_data_folder_name="testing_data"
 
-num_training_compute_iters_per_loop=100
-num_testing_compute_iters_per_loop=20
+num_training_compute_iters_per_loop=10
+num_testing_compute_iters_per_loop=2
 num_blocks=10
 
 
@@ -93,25 +93,12 @@ do
         sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs_two[@]}
     done
 
-    
-    if [ -d "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}" ]
-    then
-        x1=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/RR50_emp_stat_powers_"* | wc -l`
-        x2=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/MPC_emp_stat_powers_"* | wc -l`
-        x3=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
-        x4=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
-    fi
-    if [ -d "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}" ]
-    then
-        x5=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/RR50_emp_stat_powers_"* | wc -l`
-        x6=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/MPC_emp_stat_powers_"* | wc -l`
-        x7=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
-        x8=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
-    fi
-
-    while [ $x1 != $num_training_compute_iters_per_loop ] || [ $x2 != $num_training_compute_iters_per_loop ] || [ $x3 != $num_training_compute_iters_per_loop ] || [ $x4 != $num_training_compute_iters_per_loop ] ||  [ $x5 != $num_testing_compute_iters_per_loop ] ||  [ $x6 != $num_testing_compute_iters_per_loop ] ||  [ $x7 != $num_testing_compute_iters_per_loop ] ||  [ $x8 != $num_testing_compute_iters_per_loop ]
+    all_training_block_files_exist="False"
+    all_testing_block_files_exist="False"
+    all_block_files_exist="False"
+    #while [ $x1 != $num_training_compute_iters_per_loop ] || [ $x2 != $num_training_compute_iters_per_loop ] || [ $x3 != $num_training_compute_iters_per_loop ] || [ $x4 != $num_training_compute_iters_per_loop ] ||  [ $x5 != $num_testing_compute_iters_per_loop ] ||  [ $x6 != $num_testing_compute_iters_per_loop ] ||  [ $x7 != $num_testing_compute_iters_per_loop ] ||  [ $x8 != $num_testing_compute_iters_per_loop ]
+    while [ all_block_files_exist == "False" ]
     do
-        echo 'sleeping'
         sleep 2s
         if [ -d "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}" ]
         then
@@ -119,6 +106,10 @@ do
             x2=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/MPC_emp_stat_powers_"* | wc -l`
             x3=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
             x4=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
+            if [ $x1 == $num_training_compute_iters_per_loop ] || [ $x2 == $num_training_compute_iters_per_loop ] || [ $x3 == $num_training_compute_iters_per_loop ] || [ $x4 == $num_training_compute_iters_per_loop ] 
+            then
+                all_training_block_files_exist="True"
+            fi
         fi
         if [ -d "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}" ]
         then
@@ -126,7 +117,21 @@ do
             x6=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/MPC_emp_stat_powers_"* | wc -l`
             x7=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
             x8=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
+            if [ $x1 == $num_testing_compute_iters_per_loop ] || [ $x2 == $num_testing_compute_iters_per_loop ] || [ $x3 == $num_testing_compute_iters_per_loop ] || [ $x4 == $num_testing_compute_iters_per_loop ]
+            then
+                all_testing_block_files_exist="True"
+            fi
         fi
+        if [ all_training_block_files_exist == "True" ] && [ all_testing_block_files_exist == "True" ]
+        then
+            all_block_files_exist="True"
+        else
+            all_training_block_files_exist="False"
+            all_testing_block_files_exist="False"
+        fi
+        echo "$all_training_block_files_exist"
+        echo "$all_testing_block_files_exist"
+        echo "$all_block_files_exist"
     done
 
 done
