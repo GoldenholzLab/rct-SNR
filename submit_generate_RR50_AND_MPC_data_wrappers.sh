@@ -34,7 +34,7 @@ block_generic_testing_data_folder_name="testing_data"
 
 num_training_compute_iters_per_loop=100
 num_testing_compute_iters_per_loop=20
-num_blocks=10
+num_blocks=75
 
 
 inputs[0]=$monthly_mean_min
