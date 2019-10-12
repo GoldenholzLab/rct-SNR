@@ -2,7 +2,7 @@
 
 #SBATCH -p short
 #SBATCH --mem-per-cpu=1G
-#SBATCH -t 0-00:30
+#SBATCH -t 4-00:00
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
@@ -25,15 +25,15 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials_per_pop=10
+num_trials_per_pop=2000
 num_pops=10
 
 data_storage_super_folder_path="/home/jmr95/rct-SNR"
 block_generic_training_data_folder_name="training_data"
 block_generic_testing_data_folder_name="testing_data"
 
-num_training_compute_iters_per_loop=5
-num_testing_compute_iters_per_loop=2
+num_training_compute_iters_per_loop=100
+num_testing_compute_iters_per_loop=20
 num_blocks=10
 
 
