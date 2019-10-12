@@ -25,7 +25,7 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials_per_pop=2000
+num_trials_per_pop=10
 num_pops=10
 
 data_storage_super_folder_path="/home/jmr95/rct-SNR"
@@ -34,7 +34,7 @@ block_generic_testing_data_folder_name="testing_data"
 
 num_training_compute_iters_per_loop=100
 num_testing_compute_iters_per_loop=20
-num_blocks=90
+num_blocks=10
 
 
 inputs[0]=$monthly_mean_min
