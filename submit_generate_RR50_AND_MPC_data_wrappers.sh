@@ -32,7 +32,7 @@ data_storage_super_folder_path="/home/jmr95/rct-SNR"
 block_generic_training_data_folder_name="training_data"
 block_generic_testing_data_folder_name="testing_data"
 
-num_training_compute_iters_per_loop=10
+num_training_compute_iters_per_loop=5
 num_testing_compute_iters_per_loop=2
 num_blocks=10
 
@@ -98,8 +98,7 @@ do
     all_training_block_files_exist="False"
     all_testing_block_files_exist="False"
     all_block_files_exist="False"
-    #while [ $x1 != $num_training_compute_iters_per_loop ] || [ $x2 != $num_training_compute_iters_per_loop ] || [ $x3 != $num_training_compute_iters_per_loop ] || [ $x4 != $num_training_compute_iters_per_loop ] ||  [ $x5 != $num_testing_compute_iters_per_loop ] ||  [ $x6 != $num_testing_compute_iters_per_loop ] ||  [ $x7 != $num_testing_compute_iters_per_loop ] ||  [ $x8 != $num_testing_compute_iters_per_loop ]
-    while [ all_block_files_exist == "False" ]
+    while [ $all_block_files_exist == "False" ]
     do
         sleep 2s
         if [ -d "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}" ]
@@ -124,7 +123,7 @@ do
                 all_testing_block_files_exist="True"
             fi
         fi
-        if [ all_training_block_files_exist == "True" ] && [ all_testing_block_files_exist == "True" ]
+        if [ $all_training_block_files_exist == "True" ] && [ $all_testing_block_files_exist == "True" ]
         then
             all_block_files_exist="True"
         else
