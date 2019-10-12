@@ -92,19 +92,40 @@ do
         sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs_two[@]}
     done
 
-    x1=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/RR50_emp_stat_powers_"* | wc -l`
-    x2=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/MPC_emp_stat_powers_"* | wc -l`
-    x3=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
-    x4=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
-    x5=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/RR50_emp_stat_powers_"* | wc -l`
-    x6=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/MPC_emp_stat_powers_"* | wc -l`
-    x7=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
-    x8=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
+    
+    if [ -d "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}" ]
+    then
+        x1=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/RR50_emp_stat_powers_"* | wc -l`
+        x2=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/MPC_emp_stat_powers_"* | wc -l`
+        x3=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
+        x4=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
+    fi
+    if [ -d "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}" ]
+    then
+        x5=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/RR50_emp_stat_powers_"* | wc -l`
+        x6=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/MPC_emp_stat_powers_"* | wc -l`
+        x7=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
+        x8=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
+    fi
 
     while [ $x1 != $num_training_compute_iters_per_loop ] || [ $x2 != $num_training_compute_iters_per_loop ] || [ $x3 != $num_training_compute_iters_per_loop ] || [ $x4 != $num_training_compute_iters_per_loop ] ||  [ $x5 != $num_testing_compute_iters_per_loop ] ||  [ $x6 != $num_testing_compute_iters_per_loop ] ||  [ $x7 != $num_testing_compute_iters_per_loop ] ||  [ $x8 != $num_testing_compute_iters_per_loop ]
     do
         echo 'sleeping'
         sleep 2s
+        if [ -d "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}" ]
+        then
+            x1=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/RR50_emp_stat_powers_"* | wc -l`
+            x2=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/MPC_emp_stat_powers_"* | wc -l`
+            x3=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
+            x4=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
+        fi
+        if [ -d "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}" ]
+        then
+            x5=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/RR50_emp_stat_powers_"* | wc -l`
+            x6=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/MPC_emp_stat_powers_"* | wc -l`
+            x7=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
+            x8=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
+        fi
     done
 
 done
