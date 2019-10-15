@@ -134,10 +134,10 @@ do
             all_training_block_files_exist="False"
             all_testing_block_files_exist="False"
         fi
-        echo "$block_num"
-        echo "$all_training_block_files_exist"
-        echo "$all_testing_block_files_exist"
-        echo "$all_block_files_exist"
+        #echo "$block_num"
+        #echo "$all_training_block_files_exist"
+        #echo "$all_testing_block_files_exist"
+        #echo "$all_block_files_exist"
     done
 
 done
