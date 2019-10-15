@@ -119,7 +119,7 @@ if(__name__=='__main__'):
      num_compute_iters, train_block_num] = \
          take_inputs_from_command_shell()
 
-    text_RMSEs_file_path            = text_RMSEs_file_name + ".txt"
+    text_RMSEs_file_path = text_RMSEs_file_name + ".txt"
     num_monthly_means    = monthly_mean_max - (monthly_mean_min - 1)
     num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)
 
