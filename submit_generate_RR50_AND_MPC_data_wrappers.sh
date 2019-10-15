@@ -111,7 +111,7 @@ do
             x2=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/MPC_emp_stat_powers_"* | wc -l`
             x3=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
             x4=`ls -1 "${data_storage_super_folder_path}/${block_generic_training_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
-            if [ $x1 == $num_actual_training_compute_iters_per_loop ] || [ $x2 == $num_actual_training_compute_iters_per_loop ] || [ $x3 == $num_actual_training_compute_iters_per_loop ] || [ $x4 == $num_actual_training_compute_iters_per_loop ] 
+            if [ $x1 >= $num_actual_training_compute_iters_per_loop ] || [ $x2 >= $num_actual_training_compute_iters_per_loop ] || [ $x3 >= $num_actual_training_compute_iters_per_loop ] || [ $x4 >= $num_actual_training_compute_iters_per_loop ] 
             then
                 all_training_block_files_exist="True"
             fi
@@ -122,7 +122,7 @@ do
             x6=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/MPC_emp_stat_powers_"* | wc -l`
             x7=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
             x8=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
-            if [ $x5 == $num_actual_testing_compute_iters_per_loop ] || [ $x6 == $num_actual_testing_compute_iters_per_loop ] || [ $x7 == $num_actual_testing_compute_iters_per_loop ] || [ $x8 == $num_actual_testing_compute_iters_per_loop ]
+            if [ $x5 >= $num_actual_testing_compute_iters_per_loop ] || [ $x6 >= $num_actual_testing_compute_iters_per_loop ] || [ $x7 >= $num_actual_testing_compute_iters_per_loop ] || [ $x8 >= $num_actual_testing_compute_iters_per_loop ]
             then
                 all_testing_block_files_exist="True"
             fi
