@@ -37,9 +37,10 @@ inputs_two[2]=$monthly_std_dev_min
 inputs_two[3]=$monthly_std_dev_max
 inputs_two[4]=$testing_data_folder_name
 inputs_two[5]=$RR50_stat_power_model_file_name
-inputs_two[6]=$num_compute_iters
-inputs_two[7]=$test_block_num
-inputs_two[8]=$num_bins
+inputs_two[6]=$text_RMSEs_file_name
+inputs_two[7]=$num_compute_iters
+inputs_two[8]=$test_block_num
+inputs_two[9]=$num_bins
 
 for ((train_block_num=0; train_block_num<=$num_train_blocks; train_block_num=train_block_num+1))
 do

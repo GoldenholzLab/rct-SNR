@@ -88,18 +88,19 @@ def take_inputs_from_command_shell():
     monthly_std_dev_min = int(sys.argv[3])
     monthly_std_dev_max = int(sys.argv[4])
 
-    testing_data_folder_name = sys.argv[5]
+    testing_data_folder_name        = sys.argv[5]
     RR50_stat_power_model_file_name = sys.argv[6]
+    text_RMSEs_file_name            = sys.argv[7]
 
-    num_compute_iters = int(sys.argv[7])
-    block_num         = int(sys.argv[8])
+    num_compute_iters = int(sys.argv[8])
+    block_num         = int(sys.argv[9])
 
-    num_bins = int(sys.argv[9])
+    num_bins = int(sys.argv[10])
 
     return [monthly_mean_min,    monthly_mean_max,
             monthly_std_dev_min, monthly_std_dev_max,
             testing_data_folder_name, RR50_stat_power_model_file_name, 
-            num_compute_iters, block_num, num_bins]
+            text_RMSEs_file_name, num_compute_iters, block_num, num_bins]
 
 
 if(__name__=='__main__'):
@@ -107,9 +108,10 @@ if(__name__=='__main__'):
     [monthly_mean_min,    monthly_mean_max,
      monthly_std_dev_min, monthly_std_dev_max,
      testing_data_folder_name, RR50_stat_power_model_file_name, 
-     num_compute_iters, block_num, num_bins] = \
+     text_RMSEs_file_name, num_compute_iters, block_num, num_bins] = \
          take_inputs_from_command_shell()
 
+    text_RMSEs_file_path = text_RMSEs_file_name + ".txt"
     num_monthly_means    = monthly_mean_max - (monthly_mean_min - 1)
     num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)
 
@@ -131,8 +133,9 @@ if(__name__=='__main__'):
     model_test_RMSE_str = str(np.round(model_test_RMSE, 3))
     model_percent_errors = 100*model_errors
 
-    print(model_test_RMSE_str)
+    with open(text_RMSEs_file_path, 'a') as text_file:
+         text_file.write('testing RMSE: ' + model_test_RMSE_str + ' %')
 
     plt.figure()
     plt.hist(model_percent_errors, bins=num_bins, density=True)
-    plt.show()
+    plt.savefig('RR50 statistical power prediction error histogram')
