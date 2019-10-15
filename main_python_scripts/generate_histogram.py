@@ -136,6 +136,7 @@ if(__name__=='__main__'):
     with open(text_RMSEs_file_path, 'a') as text_file:
          text_file.write('testing RMSE: ' + model_test_RMSE_str + ' %')
 
+    # the plan is to eventually out the plotting code into a separate script....
     plt.figure()
     plt.hist(model_percent_errors, bins=num_bins, density=True)
     plt.savefig('RR50 statistical power prediction error histogram')
