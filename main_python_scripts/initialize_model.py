@@ -59,14 +59,26 @@ def build_model(num_monthly_means,
     return RR50_stat_power_model
 
 
+def take_inputs_from_command_shell():
+    
+    monthly_mean_min    = int(sys.argv[1])
+    monthly_mean_max    = int(sys.argv[2])
+    monthly_std_dev_min = int(sys.argv[3])
+    monthly_std_dev_max = int(sys.argv[4])
+
+    RR50_stat_power_model_file_name = sys.argv[5]
+
+    return [monthly_mean_min,    monthly_mean_max,
+            monthly_std_dev_min, monthly_std_dev_max,
+            RR50_stat_power_model_file_name]
+
+
 if(__name__=='__main__'):
 
-    monthly_mean_min    = 4
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 8
-
-    RR50_stat_power_model_file_name = "RR50_stat_power_model"
+    [monthly_mean_min,    monthly_mean_max,
+     monthly_std_dev_min, monthly_std_dev_max,
+     RR50_stat_power_model_file_name] = \
+         take_inputs_from_command_shell()
 
     num_monthly_means    = monthly_mean_max    - (monthly_mean_min    - 1)
     num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)

@@ -92,15 +92,30 @@ def take_inputs_from_command_shell():
     RR50_stat_power_model_file_name = sys.argv[6]
     text_RMSEs_file_name            = sys.argv[7]
 
-    num_compute_iters = int(sys.argv[8])
-    block_num         = int(sys.argv[9])
+    num_test_compute_iters = int(sys.argv[8])
+    num_test_blocks   = int(sys.argv[9])
 
     num_bins = int(sys.argv[10])
+    '''
+    monthly_mean_min=4
+    monthly_mean_max=16
+    monthly_std_dev_min=1
+    monthly_std_dev_max=8
+
+    testing_data_folder_name="/Users/juanromero/Documents/Python_3_Files/rct-SNR_RR50_O2_cluster_data/RR50_testing_data"
+    RR50_stat_power_model_file_name="RR50_stat_power_model"
+    text_RMSEs_file_name="RMSE_per_block"
+
+    num_test_compute_iters=20
+    num_test_blocks=2
+
+    num_bins=100
+    '''
 
     return [monthly_mean_min,    monthly_mean_max,
             monthly_std_dev_min, monthly_std_dev_max,
             testing_data_folder_name, RR50_stat_power_model_file_name, 
-            text_RMSEs_file_name, num_compute_iters, block_num, num_bins]
+            text_RMSEs_file_name, num_test_compute_iters, num_test_blocks, num_bins]
 
 
 if(__name__=='__main__'):
@@ -108,35 +123,47 @@ if(__name__=='__main__'):
     [monthly_mean_min,    monthly_mean_max,
      monthly_std_dev_min, monthly_std_dev_max,
      testing_data_folder_name, RR50_stat_power_model_file_name, 
-     text_RMSEs_file_name, num_compute_iters, block_num, num_bins] = \
+     text_RMSEs_file_name, num_test_compute_iters, num_test_blocks, num_bins] = \
          take_inputs_from_command_shell()
 
     text_RMSEs_file_path = text_RMSEs_file_name + ".txt"
     num_monthly_means    = monthly_mean_max - (monthly_mean_min - 1)
     num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)
 
-    [testing_theo_placebo_arm_hists, 
-     testing_theo_drug_arm_hists, 
-     testing_RR50_emp_stat_powers   ] = \
-         collect_data_from_folder(num_monthly_means,
-                                  num_monthly_std_devs,
-                                  num_compute_iters,
-                                  testing_data_folder_name,
-                                  block_num)
-    
     RR50_stat_power_model = models.load_model(RR50_stat_power_model_file_name + '.h5')
-    predicted_RR50_emp_stat_powers = np.squeeze(RR50_stat_power_model.predict([testing_theo_placebo_arm_hists, testing_theo_drug_arm_hists]))
 
-    model_errors = predicted_RR50_emp_stat_powers - testing_RR50_emp_stat_powers
+    model_errors = np.array([])
+
+    for test_block_num in range(num_test_blocks):
+
+        [testing_theo_placebo_arm_hists, 
+         testing_theo_drug_arm_hists, 
+         testing_RR50_emp_stat_powers   ] = \
+             collect_data_from_folder(num_monthly_means,
+                                      num_monthly_std_devs,
+                                      num_test_compute_iters,
+                                      testing_data_folder_name,
+                                      test_block_num)
+        
+        predicted_RR50_emp_stat_powers = np.squeeze(RR50_stat_power_model.predict([testing_theo_placebo_arm_hists, testing_theo_drug_arm_hists]))
+
+        tmp_model_errors = predicted_RR50_emp_stat_powers - testing_RR50_emp_stat_powers
+        model_errors = np.concatenate([model_errors, tmp_model_errors])
+
     model_test_MSE = np.dot(model_errors, model_errors)/len(model_errors)
     model_test_RMSE = 100*np.sqrt(model_test_MSE)
     model_test_RMSE_str = str(np.round(model_test_RMSE, 3))
-    model_percent_errors = 100*model_errors
+
+    print(len(model_errors))
 
     with open(text_RMSEs_file_path, 'a') as text_file:
          text_file.write('testing RMSE: ' + model_test_RMSE_str + ' %')
 
     # the plan is to eventually out the plotting code into a separate script....
+    model_percent_errors = 100*model_errors
     plt.figure()
     plt.hist(model_percent_errors, bins=num_bins, density=True)
+    plt.xlabel('percent error')
+    plt.title('histogram of RR50 statistical power prediction error')
     plt.savefig('RR50 statistical power prediction error histogram')
+    

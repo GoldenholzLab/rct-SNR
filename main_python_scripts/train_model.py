@@ -95,7 +95,7 @@ def take_inputs_from_command_shell():
     RR50_stat_power_model_file_name = sys.argv[8]
     text_RMSEs_file_name            = sys.argv[9]
 
-    num_compute_iters = int(sys.argv[10])
+    num_train_compute_iters = int(sys.argv[10])
     train_block_num         = int(sys.argv[11])
 
     return [monthly_mean_min, monthly_mean_max, 
@@ -104,7 +104,7 @@ def take_inputs_from_command_shell():
             training_data_folder_name, 
             RR50_stat_power_model_file_name, 
             text_RMSEs_file_name,
-            num_compute_iters, train_block_num]
+            num_train_compute_iters, train_block_num]
 
 
 if(__name__=='__main__'):
@@ -116,7 +116,7 @@ if(__name__=='__main__'):
      training_data_folder_name, 
      RR50_stat_power_model_file_name, 
      text_RMSEs_file_name,
-     num_compute_iters, train_block_num] = \
+     num_train_compute_iters, train_block_num] = \
          take_inputs_from_command_shell()
 
     text_RMSEs_file_path = text_RMSEs_file_name + ".txt"
@@ -128,7 +128,7 @@ if(__name__=='__main__'):
      training_RR50_emp_stat_powers   ] = \
          collect_data_from_folder(num_monthly_means,
                                   num_monthly_std_devs,
-                                  num_compute_iters,
+                                  num_train_compute_iters,
                                   training_data_folder_name,
                                   train_block_num)
 
