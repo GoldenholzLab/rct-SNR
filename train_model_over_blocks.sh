@@ -44,7 +44,7 @@ inputs_two[9]=$num_bins
 
 for ((train_block_num=0; train_block_num<=$num_train_blocks; train_block_num=train_block_num+1))
 do
-    echo "training block #: $train_block_num"
+    echo "training block # $train_block_num"
     inputs[10]=$train_block_num
 
     python main_python_scripts/train_model.py ${inputs[@]}
