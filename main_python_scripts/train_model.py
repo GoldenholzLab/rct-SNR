@@ -155,5 +155,5 @@ if(__name__=='__main__'):
         f.close()
     
     with open(text_RMSEs_file_path, 'a') as text_file:
-        text_file.write('block #: ' + str(train_block_num) + ', RMSE: ' + str(np.round(percent_rmse_history[num_epochs-1], 3)) + ' %\n')
+        text_file.write('block #' + str(train_block_num) + ', RMSE: ' + str(np.round(percent_rmse_history[num_epochs-1], 3)) + ' %\n')
     
