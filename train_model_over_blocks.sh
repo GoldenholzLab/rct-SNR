@@ -7,16 +7,16 @@ monthly_std_dev_max=8
 num_epochs=30
 num_samples_per_batch=100
 
-training_data_folder_name="/Users/juanromero/Documents/Python_3_Files/rct-SNR_RR50_O2_cluster_data/RR50_training_data"
-testing_data_folder_name="/Users/juanromero/Documents/Python_3_Files/rct-SNR_RR50_O2_cluster_data/RR50_testing_data"
+training_data_folder_name="/Users/juanromero/Documents/rct-SNR_O2_generated_data/training_data"
+testing_data_folder_name="/Users/juanromero/Documents/rct-SNR_O2_generated_data/testing_data"
 RR50_stat_power_model_file_name="RR50_stat_power_model"
 text_RMSEs_file_name="RMSE_per_block"
 
 num_train_compute_iters=100
-num_train_blocks=18
+num_train_blocks=17
 
 num_test_compute_iters=20
-num_test_blocks=2
+num_test_blocks=17
 
 num_bins=50
 
@@ -51,7 +51,7 @@ inputs_three[9]=$num_bins
 
 python main_python_scripts/initialize_model.py ${inputs[@]}
 
-for ((train_block_num=0; train_block_num<=$num_train_blocks; train_block_num=train_block_num+1))
+for ((train_block_num=1; train_block_num<=$num_train_blocks; train_block_num=train_block_num+1))
 do
     echo "training block # $train_block_num"
     inputs_two[10]=$train_block_num
