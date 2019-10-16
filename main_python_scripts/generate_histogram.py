@@ -134,7 +134,7 @@ if(__name__=='__main__'):
 
     model_errors = np.array([])
 
-    for test_block_num in range(num_test_blocks):
+    for test_block_num in range(1, num_test_blocks + 1):
 
         [testing_theo_placebo_arm_hists, 
          testing_theo_drug_arm_hists, 
