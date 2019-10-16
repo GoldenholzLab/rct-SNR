@@ -53,10 +53,10 @@ def build_model(num_monthly_means,
     pseudo_power_output_tensor = Dropout(0.3)(pseudo_power_output_tensor)
     pseudo_power_output_tensor = Dense(1, activation='sigmoid')(pseudo_power_output_tensor)
 
-    RR50_stat_power_model = models.Model([placebo_arm_hist_input_tensor, drug_arm_hist_input_tensor], pseudo_power_output_tensor)
-    RR50_stat_power_model.compile(optimizer='rmsprop', loss='mean_squared_error')
+    stat_power_model = models.Model([placebo_arm_hist_input_tensor, drug_arm_hist_input_tensor], pseudo_power_output_tensor)
+    stat_power_model.compile(optimizer='rmsprop', loss='mean_squared_error')
 
-    return RR50_stat_power_model
+    return stat_power_model
 
 
 def take_inputs_from_command_shell():
@@ -66,27 +66,31 @@ def take_inputs_from_command_shell():
     monthly_std_dev_min = int(sys.argv[3])
     monthly_std_dev_max = int(sys.argv[4])
 
-    RR50_stat_power_model_file_name = sys.argv[5]
+    generic_stat_power_model_file_name = sys.argv[5]
+    endpoint_name                      = sys.argv[6]
 
     return [monthly_mean_min,    monthly_mean_max,
             monthly_std_dev_min, monthly_std_dev_max,
-            RR50_stat_power_model_file_name]
+            generic_stat_power_model_file_name,
+            endpoint_name]
 
 
 if(__name__=='__main__'):
 
     [monthly_mean_min,    monthly_mean_max,
      monthly_std_dev_min, monthly_std_dev_max,
-     RR50_stat_power_model_file_name] = \
+     generic_stat_power_model_file_name,
+     endpoint_name] = \
          take_inputs_from_command_shell()
 
     num_monthly_means    = monthly_mean_max    - (monthly_mean_min    - 1)
     num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)
+    stat_power_model_file_path = endpoint_name + '_' + generic_stat_power_model_file_name + '.h5'
 
-    RR50_stat_power_model = \
+    stat_power_model = \
         build_model(num_monthly_means,
                     num_monthly_std_devs)
     
-    RR50_stat_power_model.save(RR50_stat_power_model_file_name + '.h5')
+    stat_power_model.save(stat_power_model_file_path)
 
-    #plot_model(RR50_stat_power_model, to_file='RR50_stat_power_model.png', show_shapes=True)
+    #plot_model(stat_power_model, to_file='stat_power_model.png', show_shapes=True)
