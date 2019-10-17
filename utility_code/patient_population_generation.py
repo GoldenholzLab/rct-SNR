@@ -90,6 +90,27 @@ def convert_theo_pop_hist(monthly_mean_min,
     return theo_trial_arm_pop_hist
 
 
+def convert_theo_pop_hist_with_empty_regions(monthly_mean_lower_bound,
+                                             monthly_mean_upper_bound,
+                                             monthly_std_dev_lower_bound,
+                                             monthly_std_dev_upper_bound,
+                                             theo_trial_arm_patient_pop_params):
+
+    trial_arm_monthly_means    = theo_trial_arm_patient_pop_params[:, 0]
+    trial_arm_monthly_std_devs = theo_trial_arm_patient_pop_params[:, 1]
+
+    num_monthly_mean_bins    = monthly_mean_upper_bound    - (monthly_mean_lower_bound    - 1)
+    num_monthly_std_dev_bins = monthly_std_dev_upper_bound - (monthly_std_dev_lower_bound - 1)
+
+    hist_bins = [num_monthly_std_dev_bins, num_monthly_mean_bins]
+    hist_range = [[monthly_std_dev_lower_bound, num_monthly_std_dev_bins + monthly_std_dev_lower_bound], [monthly_mean_lower_bound, num_monthly_mean_bins + monthly_mean_lower_bound]]
+
+    [theo_trial_arm_pop_hist,_,_] = np.histogram2d(trial_arm_monthly_std_devs, trial_arm_monthly_means, bins=hist_bins, range=hist_range)
+    theo_trial_arm_pop_hist = np.flipud(theo_trial_arm_pop_hist)
+
+    return theo_trial_arm_pop_hist
+
+
 def generate_homogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                 monthly_mean, 
                                                 monthly_std_dev,

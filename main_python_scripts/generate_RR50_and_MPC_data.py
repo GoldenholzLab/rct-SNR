@@ -4,17 +4,27 @@ import time
 import sys
 import os
 sys.path.insert(0, os.getcwd())
+from utility_code.patient_population_generation import randomly_select_theo_patient_pop
 from utility_code.patient_population_generation import generate_theo_patient_pop_params
-from utility_code.patient_population_generation import convert_theo_pop_hist
+from utility_code.patient_population_generation import convert_theo_pop_hist_with_empty_regions
 from utility_code.empirical_estimation import empirically_estimate_RR50_and_MPC_statistical_power
 
 
 
-def generate_theo_trial_arm_patient_pops_and_hist(monthly_mean_min,
-                                                  monthly_mean_max,
-                                                  monthly_std_dev_min,
-                                                  monthly_std_dev_max,
+def generate_theo_trial_arm_patient_pops_and_hist(monthly_mean_lower_bound,
+                                                  monthly_mean_upper_bound,
+                                                  monthly_std_dev_lower_bound,
+                                                  monthly_std_dev_upper_bound,
                                                   num_theo_patients_per_trial_arm):
+
+    [monthly_mean_min, 
+     monthly_mean_max, 
+     monthly_std_dev_min, 
+     monthly_std_dev_max] = \
+         randomly_select_theo_patient_pop(monthly_mean_lower_bound,
+                                          monthly_mean_upper_bound,
+                                          monthly_std_dev_lower_bound,
+                                          monthly_std_dev_upper_bound)
 
     theo_trial_arm_patient_pop_params = \
         generate_theo_patient_pop_params(monthly_mean_min,
@@ -24,11 +34,11 @@ def generate_theo_trial_arm_patient_pops_and_hist(monthly_mean_min,
                                          num_theo_patients_per_trial_arm)
     
     theo_trial_arm_pop_hist = \
-        convert_theo_pop_hist(monthly_mean_min,
-                              monthly_mean_max,
-                              monthly_std_dev_min,
-                              monthly_std_dev_max,
-                              theo_trial_arm_patient_pop_params)
+        convert_theo_pop_hist_with_empty_regions(monthly_mean_lower_bound,
+                                                  monthly_mean_upper_bound,
+                                                  monthly_std_dev_lower_bound,
+                                                  monthly_std_dev_upper_bound,
+                                                  theo_trial_arm_patient_pop_params)
     
     return [theo_trial_arm_patient_pop_params, theo_trial_arm_pop_hist]
 
@@ -72,10 +82,10 @@ def estimate_statistical_powers_per_placebo_and_drug_theo_pops(theo_placebo_arm_
     return [RR50_emp_stat_power, MPC_emp_stat_power]
 
 
-def generate_theo_pop_hists_and_powers_per_pop(monthly_mean_min,
-                                               monthly_mean_max,
-                                               monthly_std_dev_min,
-                                               monthly_std_dev_max,
+def generate_theo_pop_hists_and_powers_per_pop(monthly_mean_lower_bound,
+                                               monthly_mean_upper_bound,
+                                               monthly_std_dev_lower_bound,
+                                               monthly_std_dev_upper_bound,
                                                num_theo_patients_per_trial_arm,
                                                num_baseline_months,
                                                num_testing_months,
@@ -88,19 +98,19 @@ def generate_theo_pop_hists_and_powers_per_pop(monthly_mean_min,
 
     [theo_placebo_arm_patient_pop_params, 
      theo_placebo_arm_pop_hist            ] = \
-     generate_theo_trial_arm_patient_pops_and_hist(monthly_mean_min,
-                                                   monthly_mean_max,
-                                                   monthly_std_dev_min,
-                                                   monthly_std_dev_max,
-                                                   num_theo_patients_per_trial_arm)
+         generate_theo_trial_arm_patient_pops_and_hist(monthly_mean_lower_bound,
+                                                       monthly_mean_upper_bound,
+                                                       monthly_std_dev_lower_bound,
+                                                       monthly_std_dev_upper_bound,
+                                                       num_theo_patients_per_trial_arm)
     
     [theo_drug_arm_patient_pop_params, 
      theo_drug_arm_pop_hist            ] = \
-     generate_theo_trial_arm_patient_pops_and_hist(monthly_mean_min,
-                                                   monthly_mean_max,
-                                                   monthly_std_dev_min,
-                                                   monthly_std_dev_max,
-                                                   num_theo_patients_per_trial_arm)
+         generate_theo_trial_arm_patient_pops_and_hist(monthly_mean_lower_bound,
+                                                       monthly_mean_upper_bound,
+                                                       monthly_std_dev_lower_bound,
+                                                       monthly_std_dev_upper_bound,
+                                                       num_theo_patients_per_trial_arm)
 
     [RR50_emp_stat_power, MPC_emp_stat_power] = \
         estimate_statistical_powers_per_placebo_and_drug_theo_pops(theo_placebo_arm_patient_pop_params,
@@ -119,10 +129,10 @@ def generate_theo_pop_hists_and_powers_per_pop(monthly_mean_min,
             RR50_emp_stat_power,       MPC_emp_stat_power     ]
 
 
-def generate_theo_pop_hists_and_powers(monthly_mean_min,
-                                       monthly_mean_max,
-                                       monthly_std_dev_min,
-                                       monthly_std_dev_max,
+def generate_theo_pop_hists_and_powers(monthly_mean_lower_bound,
+                                       monthly_mean_upper_bound,
+                                       monthly_std_dev_lower_bound,
+                                       monthly_std_dev_upper_bound,
                                        num_theo_patients_per_trial_arm,
                                        num_baseline_months,
                                        num_testing_months,
@@ -134,8 +144,8 @@ def generate_theo_pop_hists_and_powers(monthly_mean_min,
                                        num_trials_per_pop,
                                        num_pops):
     
-    num_monthly_means    = monthly_mean_max - (monthly_mean_min - 1)
-    num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)
+    num_monthly_means    = monthly_mean_upper_bound    - (monthly_mean_lower_bound    - 1)
+    num_monthly_std_devs = monthly_std_dev_upper_bound - (monthly_std_dev_lower_bound - 1)
 
     theo_placebo_arm_hists = np.zeros((num_monthly_std_devs, num_monthly_means, num_pops))
     theo_drug_arm_hists    = np.zeros((num_monthly_std_devs, num_monthly_means, num_pops))
@@ -146,10 +156,10 @@ def generate_theo_pop_hists_and_powers(monthly_mean_min,
 
         [theo_placebo_arm_pop_hist, theo_drug_arm_pop_hist, 
          RR50_emp_stat_power,       MPC_emp_stat_power     ] = \
-             generate_theo_pop_hists_and_powers_per_pop(monthly_mean_min,
-                                                        monthly_mean_max,
-                                                        monthly_std_dev_min,
-                                                        monthly_std_dev_max,
+             generate_theo_pop_hists_and_powers_per_pop(monthly_mean_lower_bound,
+                                                        monthly_mean_upper_bound,
+                                                        monthly_std_dev_lower_bound,
+                                                        monthly_std_dev_upper_bound,
                                                         num_theo_patients_per_trial_arm,
                                                         num_baseline_months,
                                                         num_testing_months,
@@ -211,10 +221,10 @@ def store_theo_pop_hists_and_emp_stat_powers(theo_placebo_arm_hists,
 
 def take_inputs_from_command_shell():
 
-    monthly_mean_min    = int(sys.argv[1])
-    monthly_mean_max    = int(sys.argv[2])
-    monthly_std_dev_min = int(sys.argv[3])
-    monthly_std_dev_max = int(sys.argv[4])
+    monthly_mean_lower_bound    = int(sys.argv[1])
+    monthly_mean_upper_bound    = int(sys.argv[2])
+    monthly_std_dev_lower_bound = int(sys.argv[3])
+    monthly_std_dev_upper_bound = int(sys.argv[4])
 
     num_theo_patients_per_trial_arm = int(sys.argv[5])
     num_baseline_months = int(sys.argv[6])
@@ -236,7 +246,8 @@ def take_inputs_from_command_shell():
     compute_iter = int(sys.argv[18])
 
 
-    return [monthly_mean_min, monthly_mean_max, monthly_std_dev_min, monthly_std_dev_max,
+    return [monthly_mean_lower_bound, monthly_mean_upper_bound, 
+            monthly_std_dev_lower_bound, monthly_std_dev_upper_bound,
             num_theo_patients_per_trial_arm, num_baseline_months, num_testing_months, 
             minimum_required_baseline_seizure_count,
             placebo_mu, placebo_sigma, drug_mu, drug_sigma,
@@ -246,7 +257,8 @@ def take_inputs_from_command_shell():
 
 if(__name__=='__main__'):
 
-    [monthly_mean_min, monthly_mean_max, monthly_std_dev_min, monthly_std_dev_max,
+    [monthly_mean_lower_bound, monthly_mean_upper_bound, 
+     monthly_std_dev_lower_bound, monthly_std_dev_upper_bound,
      num_theo_patients_per_trial_arm, num_baseline_months, num_testing_months, 
      minimum_required_baseline_seizure_count,
      placebo_mu, placebo_sigma, drug_mu, drug_sigma,
@@ -259,10 +271,10 @@ if(__name__=='__main__'):
 
     [theo_placebo_arm_hists, theo_drug_arm_hists, 
      RR50_emp_stat_powers,   MPC_emp_stat_powers] = \
-         generate_theo_pop_hists_and_powers(monthly_mean_min,
-                                            monthly_mean_max,
-                                            monthly_std_dev_min,
-                                            monthly_std_dev_max,
+         generate_theo_pop_hists_and_powers(monthly_mean_lower_bound,
+                                            monthly_mean_upper_bound,
+                                            monthly_std_dev_lower_bound,
+                                            monthly_std_dev_upper_bound,
                                             num_theo_patients_per_trial_arm,
                                             num_baseline_months,
                                             num_testing_months,
