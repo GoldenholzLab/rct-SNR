@@ -82,15 +82,15 @@ def collect_data_from_folder(num_monthly_means,
             emp_stat_powers]
 
 
-def generate_model_errors(monthly_mean_min,
-                          monthly_mean_max,
-                          monthly_std_dev_min,
-                          monthly_std_dev_max,
-                          generic_stat_power_model_file_name,
-                          endpoint_name,
-                          testing_data_folder_name,
-                          num_test_compute_iters,
-                          num_test_blocks):
+def generate_model_testing_loss_and_errors(monthly_mean_min,
+                                           monthly_mean_max,
+                                           monthly_std_dev_min,
+                                           monthly_std_dev_max,
+                                           generic_stat_power_model_file_name,
+                                           endpoint_name,
+                                           testing_data_folder_name,
+                                           num_test_compute_iters,
+                                           num_test_blocks):
 
     stat_power_model_file_path = endpoint_name + '_' + generic_stat_power_model_file_name + '.h5'
     num_monthly_means    = monthly_mean_max - (monthly_mean_min - 1)
@@ -124,7 +124,7 @@ def generate_model_errors(monthly_mean_min,
     model_test_RMSE = 100*np.sqrt(model_test_MSE)
     model_test_RMSE_str = str(np.round(model_test_RMSE, 3))
 
-    return model_errors
+    return [model_errors, model_test_RMSE_str]
     
 
 def take_inputs_from_command_shell():
@@ -164,8 +164,8 @@ if(__name__=='__main__'):
      num_test_blocks, num_bins] = \
          take_inputs_from_command_shell()
 
-    model_errors = \
-        generate_model_errors(monthly_mean_min,
+    [model_errors, model_test_RMSE_str] = \
+        generate_model_testing_loss(monthly_mean_min,
                               monthly_mean_max,
                               monthly_std_dev_min,
                               monthly_std_dev_max,
