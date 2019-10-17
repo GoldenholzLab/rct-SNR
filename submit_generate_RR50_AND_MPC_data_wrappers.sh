@@ -10,10 +10,10 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
-monthly_mean_min=1
-monthly_mean_max=16
-monthly_std_dev_min=1
-monthly_std_dev_max=16
+monthly_mean_lower_bound=1
+monthly_mean_upper_bound=16
+monthly_std_dev_lower_bound=1
+monthly_std_dev_upper_bound=16
 
 num_theo_patients_per_trial_arm=153
 num_baseline_months=2
@@ -41,10 +41,10 @@ num_blocks=75
 num_actual_training_compute_iters_per_loop=$(($num_training_compute_iters_per_loop - $training_iter_slack_per_loop))
 num_actual_testing_compute_iters_per_loop=$(($num_testing_compute_iters_per_loop - $testing_iter_slack_per_loop))
 
-inputs[0]=$monthly_mean_min
-inputs[1]=$monthly_mean_max
-inputs[2]=$monthly_std_dev_min
-inputs[3]=$monthly_std_dev_max
+inputs[0]=$monthly_mean_lower_bound
+inputs[1]=$monthly_mean_upper_bound
+inputs[2]=$monthly_std_dev_lower_bound
+inputs[3]=$monthly_std_dev_upper_bound
 inputs[4]=$num_theo_patients_per_trial_arm
 inputs[5]=$num_baseline_months
 inputs[6]=$num_testing_months
@@ -58,10 +58,10 @@ inputs[13]=$num_pops
 inputs[14]=$data_storage_super_folder_path
 inputs[15]=$block_generic_training_data_folder_name
 
-inputs_two[0]=$monthly_mean_min
-inputs_two[1]=$monthly_mean_max
-inputs_two[2]=$monthly_std_dev_min
-inputs_two[3]=$monthly_std_dev_max
+inputs_two[0]=$monthly_mean_lower_bound
+inputs_two[1]=$monthly_mean_upper_bound
+inputs_two[2]=$monthly_std_dev_lower_bound
+inputs_two[3]=$monthly_std_dev_upper_bound
 inputs_two[4]=$num_theo_patients_per_trial_arm
 inputs_two[5]=$num_baseline_months
 inputs_two[6]=$num_testing_months
