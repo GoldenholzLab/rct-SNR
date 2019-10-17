@@ -57,7 +57,7 @@ python main_python_scripts/initialize_model.py ${inputs[@]}
 
 for ((train_block_num=1; train_block_num<=$num_train_blocks; train_block_num=train_block_num+1))
 do
-    echo "training on block # $train_block_num"
+    echo "training on block #$train_block_num"
     inputs_two[11]=$train_block_num
 
     python main_python_scripts/train_model.py ${inputs_two[@]}

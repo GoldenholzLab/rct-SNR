@@ -22,7 +22,7 @@ def build_model(num_monthly_means,
     placebo_arm_hidden_layer      = Dense(32)(placebo_arm_hidden_layer)
     placebo_arm_hidden_layer      = PReLU()(placebo_arm_hidden_layer)
     placebo_arm_hidden_layer      = Dropout(0.3)(placebo_arm_hidden_layer)
-    
+
     drug_arm_hist_input_tensor = Input(shape=(num_monthly_std_devs, num_monthly_means, 1))
     drug_arm_2D_conv_tensor    = Conv2D(32, (2,2))(drug_arm_hist_input_tensor)
     drug_arm_2D_conv_tensor    = PReLU()(drug_arm_2D_conv_tensor)
@@ -54,7 +54,7 @@ def build_model(num_monthly_means,
     pseudo_power_output_tensor = Dense(1, activation='sigmoid')(pseudo_power_output_tensor)
 
     stat_power_model = models.Model([placebo_arm_hist_input_tensor, drug_arm_hist_input_tensor], pseudo_power_output_tensor)
-    stat_power_model.compile(optimizer='rmsprop', loss='mse')
+    stat_power_model.compile(optimizer='rmsprop', loss='mean_squared_error')
 
     return stat_power_model
 
