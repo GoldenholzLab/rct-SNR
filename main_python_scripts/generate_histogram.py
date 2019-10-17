@@ -98,13 +98,14 @@ def generate_model_errors(monthly_mean_min,
 
     stat_power_model = models.load_model(stat_power_model_file_path)
 
-    model_errors = np.array([])
+    testing_emp_stat_powers = np.array([])
+    predicted_emp_stat_powers = np.array([])
 
     for test_block_num in range(1, num_test_blocks + 1):
 
         [testing_theo_placebo_arm_hists, 
          testing_theo_drug_arm_hists, 
-         testing_emp_stat_powers   ] = \
+         tmp_testing_emp_stat_powers   ] = \
              collect_data_from_folder(num_monthly_means,
                                       num_monthly_std_devs,
                                       num_test_compute_iters,
@@ -112,13 +113,19 @@ def generate_model_errors(monthly_mean_min,
                                       test_block_num,
                                       endpoint_name)
         
-        predicted_emp_stat_powers = np.squeeze(stat_power_model.predict([testing_theo_placebo_arm_hists, testing_theo_drug_arm_hists]))
+        tmp_predicted_emp_stat_powers = np.squeeze(stat_power_model.predict([testing_theo_placebo_arm_hists, testing_theo_drug_arm_hists]))
 
-        tmp_model_errors = predicted_emp_stat_powers - testing_emp_stat_powers
-        model_errors = np.concatenate([model_errors, tmp_model_errors])
+        testing_emp_stat_powers   = np.concatenate([testing_emp_stat_powers,   tmp_testing_emp_stat_powers])
+        predicted_emp_stat_powers = np.concatenate([predicted_emp_stat_powers, tmp_predicted_emp_stat_powers])
+
+    model_errors = predicted_emp_stat_powers - testing_emp_stat_powers
+
+    model_test_MSE = np.dot(model_errors, model_errors)/len(model_errors)
+    model_test_RMSE = 100*np.sqrt(model_test_MSE)
+    model_test_RMSE_str = str(np.round(model_test_RMSE, 3))
 
     return model_errors
-
+    
 
 def take_inputs_from_command_shell():
 
@@ -167,12 +174,6 @@ if(__name__=='__main__'):
                               testing_data_folder_name,
                               num_test_compute_iters,
                               num_test_blocks)
-
-    model_test_MSE = np.dot(model_errors, model_errors)/len(model_errors)
-    model_test_RMSE = 100*np.sqrt(model_test_MSE)
-    model_test_RMSE_str = str(np.round(model_test_RMSE, 3))
-
-    print(len(model_errors))
 
     text_RMSEs_file_path = endpoint_name + '_' + generic_text_RMSEs_file_name + ".txt"
     with open(text_RMSEs_file_path, 'a') as text_file:

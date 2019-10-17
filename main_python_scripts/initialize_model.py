@@ -54,7 +54,7 @@ def build_model(num_monthly_means,
     pseudo_power_output_tensor = Dense(1, activation='sigmoid')(pseudo_power_output_tensor)
 
     stat_power_model = models.Model([placebo_arm_hist_input_tensor, drug_arm_hist_input_tensor], pseudo_power_output_tensor)
-    stat_power_model.compile(optimizer='rmsprop', loss='mean_squared_error')
+    stat_power_model.compile(optimizer='rmsprop', loss='mse')
 
     return stat_power_model
 
