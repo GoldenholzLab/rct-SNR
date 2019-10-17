@@ -165,15 +165,15 @@ if(__name__=='__main__'):
          take_inputs_from_command_shell()
 
     [model_errors, model_test_RMSE_str] = \
-        generate_model_testing_loss(monthly_mean_min,
-                              monthly_mean_max,
-                              monthly_std_dev_min,
-                              monthly_std_dev_max,
-                              generic_stat_power_model_file_name,
-                              endpoint_name,
-                              testing_data_folder_name,
-                              num_test_compute_iters,
-                              num_test_blocks)
+        generate_model_testing_loss_and_errors(monthly_mean_min,
+                                               monthly_mean_max,
+                                               monthly_std_dev_min,
+                                               monthly_std_dev_max,
+                                               generic_stat_power_model_file_name,
+                                               endpoint_name,
+                                               testing_data_folder_name,
+                                               num_test_compute_iters,
+                                               num_test_blocks)
 
     text_RMSEs_file_path = endpoint_name + '_' + generic_text_RMSEs_file_name + ".txt"
     with open(text_RMSEs_file_path, 'a') as text_file:
