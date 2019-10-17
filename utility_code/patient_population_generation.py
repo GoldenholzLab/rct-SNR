@@ -3,6 +3,37 @@ from .seizure_diary_generation import generate_placebo_arm_seizure_diary
 from .seizure_diary_generation import generate_drug_arm_seizure_diary
 
 
+def randomly_select_theo_patient_pop(monthly_mean_lower_bound,
+                                     monthly_mean_upper_bound,
+                                     monthly_std_dev_lower_bound,
+                                     monthly_std_dev_upper_bound):
+
+    monthly_mean_min    = 0
+    monthly_mean_max    = 0
+    monthly_std_dev_min = 0
+    monthly_std_dev_max = 0
+
+    monthly_mean_axis_makes_sense    =    monthly_mean_min < monthly_mean_max
+    monthly_std_dev_axis_makes_sense = monthly_std_dev_min < monthly_std_dev_max
+    overdispersed_patients_allowed   = monthly_std_dev_max > np.sqrt(monthly_mean_min)
+    patient_pop_window_makes_sense = monthly_mean_axis_makes_sense and monthly_std_dev_axis_makes_sense and overdispersed_patients_allowed
+
+    while(not patient_pop_window_makes_sense):
+
+        monthly_mean_min = np.random.randint(monthly_mean_lower_bound,     monthly_mean_upper_bound - 1)
+        monthly_mean_max = np.random.randint(monthly_mean_lower_bound + 1, monthly_mean_upper_bound    )
+    
+        monthly_std_dev_min = np.random.randint(monthly_std_dev_lower_bound,     monthly_std_dev_upper_bound - 1)
+        monthly_std_dev_max = np.random.randint(monthly_std_dev_lower_bound + 1, monthly_std_dev_upper_bound    )
+    
+        monthly_mean_axis_makes_sense    =    monthly_mean_min < monthly_mean_max
+        monthly_std_dev_axis_makes_sense = monthly_std_dev_min < monthly_std_dev_max
+        overdispersed_patients_allowed   = monthly_std_dev_max > np.sqrt(monthly_mean_min)
+        patient_pop_window_makes_sense = monthly_mean_axis_makes_sense and monthly_std_dev_axis_makes_sense and overdispersed_patients_allowed
+    
+    return [monthly_mean_min, monthly_mean_max, monthly_std_dev_min, monthly_std_dev_max]
+
+
 def generate_theo_patient_pop_params(monthly_mean_min,
                                      monthly_mean_max,
                                      monthly_std_dev_min,

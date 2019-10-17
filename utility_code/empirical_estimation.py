@@ -1,4 +1,6 @@
 import numpy as np
+from .patient_population_generation import randomly_select_theo_patient_pop
+from .patient_population_generation import generate_theo_patient_pop_params
 from .patient_population_generation import generate_heterogenous_placebo_arm_patient_pop
 from .patient_population_generation import generate_heterogenous_drug_arm_patient_pop
 from .endpoint_functions import calculate_percent_changes
@@ -282,10 +284,11 @@ def empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_para
 
 if(__name__=='__main__'):
 
-    monthly_mean_min    = 4
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 8
+    monthly_mean_lower_bound    = 1
+    monthly_mean_upper_bound    = 16
+    monthly_std_dev_lower_bound = 1
+    monthly_std_dev_upper_bound = 16
+
     num_theo_patients_per_trial_arm = 153
     num_trials = 500
 
@@ -297,8 +300,12 @@ if(__name__=='__main__'):
     drug_mu = 0.2
     drug_sigma = 0.05
 
-    from patient_population_generation import generate_theo_patient_pop_params
-    import time
+    [monthly_mean_min,    monthly_mean_max, 
+     monthly_std_dev_min, monthly_std_dev_max] = \
+         randomly_select_theo_patient_pop(monthly_mean_lower_bound,
+                                          monthly_mean_upper_bound,
+                                          monthly_std_dev_lower_bound,
+                                          monthly_std_dev_upper_bound)
 
     theo_placebo_arm_patient_pop_params = \
         generate_theo_patient_pop_params(monthly_mean_min,
@@ -306,13 +313,17 @@ if(__name__=='__main__'):
                                          monthly_std_dev_min,
                                          monthly_std_dev_max,
                                          num_theo_patients_per_trial_arm)
-
+    
     theo_drug_arm_patient_pop_params = \
         generate_theo_patient_pop_params(monthly_mean_min,
                                          monthly_mean_max,
                                          monthly_std_dev_min,
                                          monthly_std_dev_max,
                                          num_theo_patients_per_trial_arm)
+
+    print(np.array([[monthly_mean_min, monthly_mean_max], [monthly_std_dev_min, monthly_std_dev_max]]))
+
+    import time
 
     RR50_start_time_in_seconds = time.time()
 
