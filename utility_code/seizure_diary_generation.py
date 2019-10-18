@@ -74,6 +74,79 @@ def generate_seizure_diary_with_minimum_count(num_months,
     return seizure_diary_with_min_count
 
 
+def generate_baseline_seizure_diary(monthly_mean, 
+                                    monthly_std_dev,
+                                    num_baseline_months,
+                                    baseline_time_scaling_const,
+                                    minimum_required_baseline_seizure_count):
+
+    baseline_seizure_diary = \
+        generate_seizure_diary_with_minimum_count(num_baseline_months, 
+                                                  monthly_mean, 
+                                                  monthly_std_dev, 
+                                                  baseline_time_scaling_const,
+                                                  minimum_required_baseline_seizure_count)
+    
+    return baseline_seizure_diary
+
+
+def generate_placebo_arm_testing_seizure_diary(num_testing_months, 
+                                               monthly_mean, 
+                                               monthly_std_dev, 
+                                               testing_time_scaling_const,
+                                               placebo_mu, 
+                                               placebo_sigma):
+
+    placebo_arm_testing_seizure_diary = \
+        generate_seizure_diary(num_testing_months, 
+                               monthly_mean, 
+                               monthly_std_dev, 
+                               testing_time_scaling_const)
+    
+    placebo_effect = np.random.normal(placebo_mu, placebo_sigma)
+
+    placebo_arm_testing_seizure_diary = \
+        apply_effect(placebo_arm_testing_seizure_diary,
+                     num_testing_months,
+                     testing_time_scaling_const,
+                     placebo_effect)
+
+    return placebo_arm_testing_seizure_diary
+
+
+def generate_drug_arm_testing_seizure_diary(num_testing_months, 
+                                            monthly_mean, 
+                                            monthly_std_dev, 
+                                            testing_time_scaling_const,
+                                            placebo_mu, 
+                                            placebo_sigma,
+                                            drug_mu, 
+                                            drug_sigma):
+
+    drug_arm_testing_seizure_diary = \
+        generate_seizure_diary(num_testing_months, 
+                               monthly_mean, 
+                               monthly_std_dev, 
+                               testing_time_scaling_const)
+    
+    placebo_effect = np.random.normal(placebo_mu, placebo_sigma)
+    drug_effect    = np.random.normal(drug_mu,    drug_sigma)
+
+    drug_arm_testing_seizure_diary = \
+        apply_effect(drug_arm_testing_seizure_diary,
+                     num_testing_months,
+                     testing_time_scaling_const,
+                     placebo_effect)
+    
+    drug_arm_testing_seizure_diary = \
+        apply_effect(drug_arm_testing_seizure_diary,
+                     num_testing_months,
+                     testing_time_scaling_const,
+                     drug_effect)
+    
+    return drug_arm_testing_seizure_diary
+
+
 def generate_placebo_arm_seizure_diary(monthly_mean, 
                                        monthly_std_dev,
                                        num_baseline_months,
@@ -84,32 +157,20 @@ def generate_placebo_arm_seizure_diary(monthly_mean,
                                        placebo_mu,
                                        placebo_sigma):
 
-    placebo_effect = np.random.normal(placebo_mu, placebo_sigma)
-
     placebo_arm_baseline_seizure_diary = \
-        generate_seizure_diary_with_minimum_count(num_baseline_months, 
-                                                  monthly_mean, 
-                                                  monthly_std_dev, 
-                                                  baseline_time_scaling_const,
-                                                  minimum_required_baseline_seizure_count)
+        generate_baseline_seizure_diary(monthly_mean, 
+                                        monthly_std_dev,
+                                        num_baseline_months,
+                                        baseline_time_scaling_const,
+                                        minimum_required_baseline_seizure_count)
     
-    placebo_arm_baseline_seizure_diary = \
-        apply_effect(placebo_arm_baseline_seizure_diary,
-                     num_baseline_months,
-                     baseline_time_scaling_const,
-                     placebo_effect)
-
     placebo_arm_testing_seizure_diary = \
-        generate_seizure_diary(num_testing_months, 
-                               monthly_mean, 
-                               monthly_std_dev, 
-                               testing_time_scaling_const)
-
-    placebo_arm_testing_seizure_diary = \
-        apply_effect(placebo_arm_testing_seizure_diary,
-                     num_testing_months,
-                     testing_time_scaling_const,
-                     placebo_effect)
+        generate_placebo_arm_testing_seizure_diary(num_testing_months, 
+                                                   monthly_mean, 
+                                                   monthly_std_dev, 
+                                                   testing_time_scaling_const,
+                                                   placebo_mu, 
+                                                   placebo_sigma)
     
     return [placebo_arm_baseline_seizure_diary, placebo_arm_testing_seizure_diary]
 
@@ -126,39 +187,22 @@ def generate_drug_arm_seizure_diary(monthly_mean,
                                     drug_mu,
                                     drug_sigma):
 
-    placebo_effect = np.random.normal(placebo_mu, placebo_sigma)
-    drug_effect = np.random.normal(drug_mu, drug_sigma)
-
     drug_arm_baseline_seizure_diary = \
-        generate_seizure_diary_with_minimum_count(num_baseline_months, 
-                                                  monthly_mean, 
-                                                  monthly_std_dev, 
-                                                  baseline_time_scaling_const,
-                                                  minimum_required_baseline_seizure_count)
-
-    drug_arm_baseline_seizure_diary = \
-        apply_effect(drug_arm_baseline_seizure_diary,
-                     num_baseline_months,
-                     baseline_time_scaling_const,
-                     placebo_effect)
+        generate_baseline_seizure_diary(monthly_mean, 
+                                        monthly_std_dev,
+                                        num_baseline_months,
+                                        baseline_time_scaling_const,
+                                        minimum_required_baseline_seizure_count)
     
     drug_arm_testing_seizure_diary = \
-        generate_seizure_diary(num_testing_months, 
-                               monthly_mean, 
-                               monthly_std_dev, 
-                               testing_time_scaling_const)
-    
-    drug_arm_testing_seizure_diary = \
-        apply_effect(drug_arm_testing_seizure_diary,
-                     num_testing_months,
-                     testing_time_scaling_const,
-                     placebo_effect)
-    
-    drug_arm_testing_seizure_diary = \
-        apply_effect(drug_arm_testing_seizure_diary,
-                     num_testing_months,
-                     testing_time_scaling_const,
-                     drug_effect)
+        generate_drug_arm_testing_seizure_diary(num_testing_months, 
+                                                monthly_mean, 
+                                                monthly_std_dev, 
+                                                testing_time_scaling_const,
+                                                placebo_mu, 
+                                                placebo_sigma,
+                                                drug_mu, 
+                                                drug_sigma)
     
     return [drug_arm_baseline_seizure_diary, drug_arm_testing_seizure_diary]
 
