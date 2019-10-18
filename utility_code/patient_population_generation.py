@@ -121,7 +121,8 @@ def generate_homogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                 testing_time_scaling_const,
                                                 minimum_required_baseline_seizure_count,
                                                 placebo_mu,
-                                                placebo_sigma):
+                                                placebo_sigma,
+                                                periods_to_generate):
 
     if(monthly_mean == 0):
 
@@ -131,34 +132,70 @@ def generate_homogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
 
         raise ValueError('The monthly standard deviation must be greater than the square root of the monthly mean for a homogenous patient population.')
 
-    num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
-    num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
+    if(periods_to_generate == 'entire'):
 
-    placebo_arm_baseline_seizure_diaries = np.zeros((num_theo_patients_per_trial_arm, num_baseline_scaled_time_units))
-    placebo_arm_testing_seizure_diaries  = np.zeros((num_theo_patients_per_trial_arm, num_testing_scaled_time_units))
+        generate_baseline = True
+        generate_testing  = True
+
+    elif(periods_to_generate == 'baseline'):
+
+        generate_baseline = True
+        generate_testing  = False
+    
+    elif(periods_to_generate == 'testing'):
+
+        generate_baseline = False
+        generate_testing  = True
+    
+    else:
+
+        raise ValueError('The inputted periods_to_generate variable should either be \'entire\', \'baseline\', or \'testing\'')
+
+    if(generate_baseline == True):
+        num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
+        placebo_arm_baseline_seizure_diaries = np.zeros((num_theo_patients_per_trial_arm, num_baseline_scaled_time_units))
+
+    if(generate_testing == True):
+        num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
+        placebo_arm_testing_seizure_diaries  = np.zeros((num_theo_patients_per_trial_arm, num_testing_scaled_time_units))
 
     for theo_patient_index in range(num_theo_patients_per_trial_arm):
 
-        placebo_arm_baseline_seizure_diary = \
-            generate_baseline_seizure_diary(monthly_mean, 
-                                            monthly_std_dev,
-                                            num_baseline_months,
-                                            baseline_time_scaling_const,
-                                            minimum_required_baseline_seizure_count)
+        if(generate_baseline == True):
 
-        placebo_arm_testing_seizure_diary = \
-            generate_placebo_arm_testing_seizure_diary(num_testing_months, 
-                                                       monthly_mean, 
-                                                       monthly_std_dev, 
-                                                       testing_time_scaling_const,
-                                                       placebo_mu, 
-                                                       placebo_sigma)
+            placebo_arm_baseline_seizure_diary = \
+                generate_baseline_seizure_diary(monthly_mean, 
+                                                monthly_std_dev,
+                                                num_baseline_months,
+                                                baseline_time_scaling_const,
+                                                minimum_required_baseline_seizure_count)
+
+            placebo_arm_baseline_seizure_diaries[theo_patient_index, :] = placebo_arm_baseline_seizure_diary
+
+        if(generate_testing == True):
+
+            placebo_arm_testing_seizure_diary = \
+                generate_placebo_arm_testing_seizure_diary(num_testing_months, 
+                                                           monthly_mean, 
+                                                           monthly_std_dev, 
+                                                           testing_time_scaling_const,
+                                                           placebo_mu, 
+                                                           placebo_sigma)
         
-        placebo_arm_baseline_seizure_diaries[theo_patient_index, :] = placebo_arm_baseline_seizure_diary
-        placebo_arm_testing_seizure_diaries[theo_patient_index, :]  = placebo_arm_testing_seizure_diary
+            placebo_arm_testing_seizure_diaries[theo_patient_index, :]  = placebo_arm_testing_seizure_diary
 
-    return [placebo_arm_baseline_seizure_diaries, 
-            placebo_arm_testing_seizure_diaries  ]
+    if(periods_to_generate == 'entire'):
+
+        return [placebo_arm_baseline_seizure_diaries, 
+                placebo_arm_testing_seizure_diaries  ]
+    
+    elif(periods_to_generate == 'baseline'):
+
+        return placebo_arm_baseline_seizure_diaries
+
+    elif(periods_to_generate == 'testing'):
+
+        return placebo_arm_testing_seizure_diaries
 
 
 def generate_homogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
@@ -172,7 +209,8 @@ def generate_homogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
                                              placebo_mu,
                                              placebo_sigma,
                                              drug_mu,
-                                             drug_sigma):
+                                             drug_sigma,
+                                             periods_to_generate):
 
     if(monthly_mean == 0):
 
@@ -182,36 +220,72 @@ def generate_homogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
 
         raise ValueError('The monthly standard deviation must be greater than the square root of the monthly mean for a homogenous patient population.')
 
-    num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
-    num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
+    if(periods_to_generate == 'entire'):
 
-    drug_arm_baseline_seizure_diaries = np.zeros((num_theo_patients_per_trial_arm, num_baseline_scaled_time_units))
-    drug_arm_testing_seizure_diaries  = np.zeros((num_theo_patients_per_trial_arm, num_testing_scaled_time_units))
+        generate_baseline = True
+        generate_testing  = True
+
+    elif(periods_to_generate == 'baseline'):
+
+        generate_baseline = True
+        generate_testing  = False
+    
+    elif(periods_to_generate == 'testing'):
+
+        generate_baseline = False
+        generate_testing  = True
+    
+    else:
+
+        raise ValueError('The inputted periods_to_generate variable should either be \'entire\', \'baseline\', or \'testing\'')
+
+    if(generate_baseline == True):
+        num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
+        drug_arm_baseline_seizure_diaries = np.zeros((num_theo_patients_per_trial_arm, num_baseline_scaled_time_units))
+
+    if(generate_testing == True):
+        num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
+        drug_arm_testing_seizure_diaries  = np.zeros((num_theo_patients_per_trial_arm, num_testing_scaled_time_units))
 
     for theo_patient_index in range(num_theo_patients_per_trial_arm):
 
-        drug_arm_baseline_seizure_diary = \
-            generate_baseline_seizure_diary(monthly_mean, 
-                                            monthly_std_dev,
-                                            num_baseline_months,
-                                            baseline_time_scaling_const,
-                                            minimum_required_baseline_seizure_count)
+        if(generate_baseline == True):
 
-        drug_arm_testing_seizure_diary = \
-            generate_drug_arm_testing_seizure_diary(num_testing_months, 
-                                                    monthly_mean, 
-                                                    monthly_std_dev, 
-                                                    testing_time_scaling_const,
-                                                    placebo_mu, 
-                                                    placebo_sigma,
-                                                    drug_mu, 
-                                                    drug_sigma)
+            drug_arm_baseline_seizure_diary = \
+                generate_baseline_seizure_diary(monthly_mean, 
+                                                monthly_std_dev,
+                                                num_baseline_months,
+                                                baseline_time_scaling_const,
+                                                minimum_required_baseline_seizure_count)
+    
+            drug_arm_baseline_seizure_diaries[theo_patient_index, :] = drug_arm_baseline_seizure_diary
+
+        if(generate_testing == True):
+
+            drug_arm_testing_seizure_diary = \
+                generate_drug_arm_testing_seizure_diary(num_testing_months, 
+                                                        monthly_mean, 
+                                                        monthly_std_dev, 
+                                                        testing_time_scaling_const,
+                                                        placebo_mu, 
+                                                        placebo_sigma,
+                                                        drug_mu, 
+                                                        drug_sigma)
         
-        drug_arm_baseline_seizure_diaries[theo_patient_index, :] = drug_arm_baseline_seizure_diary
-        drug_arm_testing_seizure_diaries[theo_patient_index, :]  = drug_arm_testing_seizure_diary
+            drug_arm_testing_seizure_diaries[theo_patient_index, :]  = drug_arm_testing_seizure_diary
 
-    return [drug_arm_baseline_seizure_diaries, 
-            drug_arm_testing_seizure_diaries  ]
+    if(periods_to_generate == 'entire'):
+
+        return [drug_arm_baseline_seizure_diaries, 
+                drug_arm_testing_seizure_diaries  ]
+    
+    elif(periods_to_generate == 'baseline'):
+
+        return drug_arm_baseline_seizure_diaries
+    
+    elif(periods_to_generate == 'testing'):
+
+        return drug_arm_testing_seizure_diaries
 
 
 def generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
@@ -222,39 +296,76 @@ def generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_ar
                                                   testing_time_scaling_const,
                                                   minimum_required_baseline_seizure_count,
                                                   placebo_mu,
-                                                  placebo_sigma):
+                                                  placebo_sigma,
+                                                  periods_to_generate):
 
-    num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
-    num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
+    if(periods_to_generate == 'entire'):
 
-    placebo_arm_baseline_seizure_diaries = np.zeros((num_theo_patients_per_trial_arm, num_baseline_scaled_time_units))
-    placebo_arm_testing_seizure_diaries  = np.zeros((num_theo_patients_per_trial_arm, num_testing_scaled_time_units))
+        generate_baseline = True
+        generate_testing  = True
+
+    elif(periods_to_generate == 'baseline'):
+
+        generate_baseline = True
+        generate_testing  = False
+    
+    elif(periods_to_generate == 'testing'):
+
+        generate_baseline = False
+        generate_testing  = True
+    
+    else:
+
+        raise ValueError('The inputted periods_to_generate variable should either be \'entire\', \'baseline\', or \'testing\'')
+
+    if(generate_baseline == True):
+        num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
+        placebo_arm_baseline_seizure_diaries = np.zeros((num_theo_patients_per_trial_arm, num_baseline_scaled_time_units))
+    
+    if(generate_testing == True):
+        num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
+        placebo_arm_testing_seizure_diaries  = np.zeros((num_theo_patients_per_trial_arm, num_testing_scaled_time_units))
 
     for theo_patient_index in range(num_theo_patients_per_trial_arm):
 
         monthly_mean    = theo_placebo_arm_patient_pop_params[theo_patient_index, 0]
         monthly_std_dev = theo_placebo_arm_patient_pop_params[theo_patient_index, 1]
 
-        placebo_arm_baseline_seizure_diary = \
-            generate_baseline_seizure_diary(monthly_mean, 
-                                            monthly_std_dev,
-                                            num_baseline_months,
-                                            baseline_time_scaling_const,
-                                            minimum_required_baseline_seizure_count)
-        
-        placebo_arm_testing_seizure_diary = \
-            generate_placebo_arm_testing_seizure_diary(num_testing_months, 
-                                                       monthly_mean, 
-                                                       monthly_std_dev, 
-                                                       testing_time_scaling_const,
-                                                       placebo_mu, 
-                                                       placebo_sigma)
-        
-        placebo_arm_baseline_seizure_diaries[theo_patient_index, :] = placebo_arm_baseline_seizure_diary
-        placebo_arm_testing_seizure_diaries[theo_patient_index, :]  = placebo_arm_testing_seizure_diary
+        if(generate_baseline == True):
 
-    return [placebo_arm_baseline_seizure_diaries, 
-            placebo_arm_testing_seizure_diaries  ]
+            placebo_arm_baseline_seizure_diary = \
+                generate_baseline_seizure_diary(monthly_mean, 
+                                                monthly_std_dev,
+                                                num_baseline_months,
+                                                baseline_time_scaling_const,
+                                                minimum_required_baseline_seizure_count)
+            
+            placebo_arm_baseline_seizure_diaries[theo_patient_index, :] = placebo_arm_baseline_seizure_diary
+        
+        if(generate_testing == True):
+
+            placebo_arm_testing_seizure_diary = \
+                generate_placebo_arm_testing_seizure_diary(num_testing_months, 
+                                                           monthly_mean, 
+                                                           monthly_std_dev, 
+                                                           testing_time_scaling_const,
+                                                           placebo_mu, 
+                                                           placebo_sigma)
+        
+            placebo_arm_testing_seizure_diaries[theo_patient_index, :]  = placebo_arm_testing_seizure_diary
+
+    if(periods_to_generate == 'entire'):
+
+        return [placebo_arm_baseline_seizure_diaries, 
+                placebo_arm_testing_seizure_diaries  ]
+    
+    elif(periods_to_generate == 'baseline'):
+
+        return placebo_arm_baseline_seizure_diaries
+
+    elif(periods_to_generate == 'testing'):
+
+        return placebo_arm_testing_seizure_diaries
 
 
 def generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
@@ -267,39 +378,77 @@ def generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                placebo_mu,
                                                placebo_sigma,
                                                drug_mu,
-                                               drug_sigma):
+                                               drug_sigma,
+                                               periods_to_generate):
 
-    num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
-    num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
+    if(periods_to_generate == 'entire'):
 
-    drug_arm_baseline_seizure_diaries = np.zeros((num_theo_patients_per_trial_arm, num_baseline_scaled_time_units))
-    drug_arm_testing_seizure_diaries  = np.zeros((num_theo_patients_per_trial_arm, num_testing_scaled_time_units))
+        generate_baseline = True
+        generate_testing  = True
+
+    elif(periods_to_generate == 'baseline'):
+
+        generate_baseline = True
+        generate_testing  = False
+    
+    elif(periods_to_generate == 'testing'):
+
+        generate_baseline = False
+        generate_testing  = True
+    
+    else:
+
+        raise ValueError('The inputted periods_to_generate variable should either be \'entire\', \'baseline\', or \'testing\'')
+
+
+    if(generate_baseline == True):
+        num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
+        drug_arm_baseline_seizure_diaries = np.zeros((num_theo_patients_per_trial_arm, num_baseline_scaled_time_units))
+
+    if(generate_testing == True):
+        num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
+        drug_arm_testing_seizure_diaries  = np.zeros((num_theo_patients_per_trial_arm, num_testing_scaled_time_units))
 
     for theo_patient_index in range(num_theo_patients_per_trial_arm):
 
         monthly_mean    = theo_drug_arm_patient_pop_params[theo_patient_index, 0]
         monthly_std_dev = theo_drug_arm_patient_pop_params[theo_patient_index, 1]
 
-        drug_arm_baseline_seizure_diary = \
-            generate_baseline_seizure_diary(monthly_mean, 
-                                            monthly_std_dev,
-                                            num_baseline_months,
-                                            baseline_time_scaling_const,
-                                            minimum_required_baseline_seizure_count)
+        if(generate_baseline == True):
 
-        drug_arm_testing_seizure_diary = \
-            generate_drug_arm_testing_seizure_diary(num_testing_months, 
-                                                    monthly_mean, 
-                                                    monthly_std_dev, 
-                                                    testing_time_scaling_const,
-                                                    placebo_mu, 
-                                                    placebo_sigma,
-                                                    drug_mu, 
-                                                    drug_sigma)
+            drug_arm_baseline_seizure_diary = \
+                generate_baseline_seizure_diary(monthly_mean, 
+                                                monthly_std_dev,
+                                                num_baseline_months,
+                                                baseline_time_scaling_const,
+                                                minimum_required_baseline_seizure_count)
+
+            drug_arm_baseline_seizure_diaries[theo_patient_index, :] = drug_arm_baseline_seizure_diary
+
+        if(generate_testing == True):
+
+            drug_arm_testing_seizure_diary = \
+                generate_drug_arm_testing_seizure_diary(num_testing_months, 
+                                                        monthly_mean, 
+                                                        monthly_std_dev, 
+                                                        testing_time_scaling_const,
+                                                        placebo_mu, 
+                                                        placebo_sigma,
+                                                        drug_mu, 
+                                                        drug_sigma)
         
-        drug_arm_baseline_seizure_diaries[theo_patient_index, :] = drug_arm_baseline_seizure_diary
-        drug_arm_testing_seizure_diaries[theo_patient_index, :]  = drug_arm_testing_seizure_diary
+            drug_arm_testing_seizure_diaries[theo_patient_index, :]  = drug_arm_testing_seizure_diary
 
-    return [drug_arm_baseline_seizure_diaries, 
-            drug_arm_testing_seizure_diaries  ]
+    if(periods_to_generate == 'entire'):
+
+        return [drug_arm_baseline_seizure_diaries, 
+                drug_arm_testing_seizure_diaries  ]
+
+    elif(periods_to_generate == 'baseline'):
+
+        return drug_arm_baseline_seizure_diaries
+
+    elif(periods_to_generate == 'testing'):
+
+        return drug_arm_testing_seizure_diaries
 
