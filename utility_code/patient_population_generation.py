@@ -1,6 +1,7 @@
 import numpy as np
-from .seizure_diary_generation import generate_placebo_arm_seizure_diary
-from .seizure_diary_generation import generate_drug_arm_seizure_diary
+from .seizure_diary_generation import generate_baseline_seizure_diary
+from .seizure_diary_generation import generate_placebo_arm_testing_seizure_diary
+from .seizure_diary_generation import generate_drug_arm_testing_seizure_diary
 
 
 def randomly_select_theo_patient_pop(monthly_mean_lower_bound,
@@ -138,16 +139,20 @@ def generate_homogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
 
     for theo_patient_index in range(num_theo_patients_per_trial_arm):
 
-        [placebo_arm_baseline_seizure_diary, placebo_arm_testing_seizure_diary] = \
-            generate_placebo_arm_seizure_diary(monthly_mean, 
-                                               monthly_std_dev,
-                                               num_baseline_months,
-                                               num_testing_months,
-                                               baseline_time_scaling_const,
-                                               testing_time_scaling_const,
-                                               minimum_required_baseline_seizure_count,
-                                               placebo_mu,
-                                               placebo_sigma)
+        placebo_arm_baseline_seizure_diary = \
+            generate_baseline_seizure_diary(monthly_mean, 
+                                            monthly_std_dev,
+                                            num_baseline_months,
+                                            baseline_time_scaling_const,
+                                            minimum_required_baseline_seizure_count)
+
+        placebo_arm_testing_seizure_diary = \
+            generate_placebo_arm_testing_seizure_diary(num_testing_months, 
+                                                       monthly_mean, 
+                                                       monthly_std_dev, 
+                                                       testing_time_scaling_const,
+                                                       placebo_mu, 
+                                                       placebo_sigma)
         
         placebo_arm_baseline_seizure_diaries[theo_patient_index, :] = placebo_arm_baseline_seizure_diary
         placebo_arm_testing_seizure_diaries[theo_patient_index, :]  = placebo_arm_testing_seizure_diary
@@ -185,18 +190,22 @@ def generate_homogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
 
     for theo_patient_index in range(num_theo_patients_per_trial_arm):
 
-        [drug_arm_baseline_seizure_diary, drug_arm_testing_seizure_diary] = \
-            generate_drug_arm_seizure_diary(monthly_mean, 
-                                               monthly_std_dev,
-                                               num_baseline_months,
-                                               num_testing_months,
-                                               baseline_time_scaling_const,
-                                               testing_time_scaling_const,
-                                               minimum_required_baseline_seizure_count,
-                                               placebo_mu,
-                                               placebo_sigma,
-                                               drug_mu,
-                                               drug_sigma)
+        drug_arm_baseline_seizure_diary = \
+            generate_baseline_seizure_diary(monthly_mean, 
+                                            monthly_std_dev,
+                                            num_baseline_months,
+                                            baseline_time_scaling_const,
+                                            minimum_required_baseline_seizure_count)
+
+        drug_arm_testing_seizure_diary = \
+            generate_drug_arm_testing_seizure_diary(num_testing_months, 
+                                                    monthly_mean, 
+                                                    monthly_std_dev, 
+                                                    testing_time_scaling_const,
+                                                    placebo_mu, 
+                                                    placebo_sigma,
+                                                    drug_mu, 
+                                                    drug_sigma)
         
         drug_arm_baseline_seizure_diaries[theo_patient_index, :] = drug_arm_baseline_seizure_diary
         drug_arm_testing_seizure_diaries[theo_patient_index, :]  = drug_arm_testing_seizure_diary
@@ -226,16 +235,20 @@ def generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_ar
         monthly_mean    = theo_placebo_arm_patient_pop_params[theo_patient_index, 0]
         monthly_std_dev = theo_placebo_arm_patient_pop_params[theo_patient_index, 1]
 
-        [placebo_arm_baseline_seizure_diary, placebo_arm_testing_seizure_diary] = \
-            generate_placebo_arm_seizure_diary(monthly_mean, 
-                                               monthly_std_dev,
-                                               num_baseline_months,
-                                               num_testing_months,
-                                               baseline_time_scaling_const,
-                                               testing_time_scaling_const,
-                                               minimum_required_baseline_seizure_count,
-                                               placebo_mu,
-                                               placebo_sigma)
+        placebo_arm_baseline_seizure_diary = \
+            generate_baseline_seizure_diary(monthly_mean, 
+                                            monthly_std_dev,
+                                            num_baseline_months,
+                                            baseline_time_scaling_const,
+                                            minimum_required_baseline_seizure_count)
+        
+        placebo_arm_testing_seizure_diary = \
+            generate_placebo_arm_testing_seizure_diary(num_testing_months, 
+                                                       monthly_mean, 
+                                                       monthly_std_dev, 
+                                                       testing_time_scaling_const,
+                                                       placebo_mu, 
+                                                       placebo_sigma)
         
         placebo_arm_baseline_seizure_diaries[theo_patient_index, :] = placebo_arm_baseline_seizure_diary
         placebo_arm_testing_seizure_diaries[theo_patient_index, :]  = placebo_arm_testing_seizure_diary
@@ -267,18 +280,22 @@ def generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
         monthly_mean    = theo_drug_arm_patient_pop_params[theo_patient_index, 0]
         monthly_std_dev = theo_drug_arm_patient_pop_params[theo_patient_index, 1]
 
-        [drug_arm_baseline_seizure_diary, drug_arm_testing_seizure_diary] = \
-            generate_drug_arm_seizure_diary(monthly_mean, 
+        drug_arm_baseline_seizure_diary = \
+            generate_baseline_seizure_diary(monthly_mean, 
                                             monthly_std_dev,
                                             num_baseline_months,
-                                            num_testing_months,
                                             baseline_time_scaling_const,
-                                            testing_time_scaling_const,
-                                            minimum_required_baseline_seizure_count,
-                                            placebo_mu,
-                                            placebo_sigma,
-                                            drug_mu,
-                                            drug_sigma)
+                                            minimum_required_baseline_seizure_count)
+
+        drug_arm_testing_seizure_diary = \
+            generate_drug_arm_testing_seizure_diary(num_testing_months, 
+                                                    monthly_mean, 
+                                                    monthly_std_dev, 
+                                                    testing_time_scaling_const,
+                                                    placebo_mu, 
+                                                    placebo_sigma,
+                                                    drug_mu, 
+                                                    drug_sigma)
         
         drug_arm_baseline_seizure_diaries[theo_patient_index, :] = drug_arm_baseline_seizure_diary
         drug_arm_testing_seizure_diaries[theo_patient_index, :]  = drug_arm_testing_seizure_diary
