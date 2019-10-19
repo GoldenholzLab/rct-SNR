@@ -20,6 +20,8 @@ num_baseline_months=2
 num_testing_months=3
 minimum_required_baseline_seizure_count=4
 
+periods_to_generate="entire"
+
 placebo_mu=0
 placebo_sigma=0.05
 drug_mu=0.2
@@ -57,6 +59,7 @@ inputs[12]=$num_trials_per_pop
 inputs[13]=$num_pops
 inputs[14]=$data_storage_super_folder_path
 inputs[15]=$block_generic_training_data_folder_name
+inputs[16]=$periods_to_generate
 
 inputs_two[0]=$monthly_mean_lower_bound
 inputs_two[1]=$monthly_mean_upper_bound
@@ -74,16 +77,17 @@ inputs_two[12]=$num_trials_per_pop
 inputs_two[13]=$num_pops
 inputs_two[14]=$data_storage_super_folder_path
 inputs_two[15]=$block_generic_testing_data_folder_name
+inputs_two[16]=$periods_to_generate
 
 
 for ((block_num=1; block_num<=$num_blocks; block_num=block_num+1))
 do
-    inputs[16]=$block_num
-    inputs_two[16]=$block_num
+    inputs[17]=$block_num
+    inputs_two[17]=$block_num
 
     for ((training_compute_iter=1; training_compute_iter<$num_training_compute_iters_per_loop+1; training_compute_iter=training_compute_iter+1))
     do
-        inputs[17]=$training_compute_iter
+        inputs[18]=$training_compute_iter
 
         #bash generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
         sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs[@]}
@@ -92,7 +96,7 @@ do
 
     for ((testing_compute_iter=1; testing_compute_iter<$num_testing_compute_iters_per_loop+1; testing_compute_iter=testing_compute_iter+1))
     do
-        inputs_two[17]=$testing_compute_iter
+        inputs_two[18]=$testing_compute_iter
 
         #bash generate_RR50_and_MPC_data_wrapper.sh ${inputs_two[@]}
         sbatch generate_RR50_and_MPC_data_wrapper.sh ${inputs_two[@]}

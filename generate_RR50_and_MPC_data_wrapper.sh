@@ -29,6 +29,7 @@ inputs[14]=${15}
 inputs[15]=${16}
 inputs[16]=${17}
 inputs[17]=${18}
+inputs[18]=${19}
 
 module load gcc/6.2.0
 module load conda2/4.2.13
