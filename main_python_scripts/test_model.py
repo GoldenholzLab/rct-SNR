@@ -66,19 +66,21 @@ def collect_data_from_folder(num_monthly_means,
     
     [num_monthly_std_devs, num_monthly_means, num_samples] = theo_placebo_arm_hists.shape
 
-    reshaped_theo_placebo_arm_hists = np.zeros((num_samples, num_monthly_std_devs, num_monthly_means, 1))
-    reshaped_theo_drug_arm_hists    = np.zeros((num_samples, num_monthly_std_devs, num_monthly_means, 1))
+    keras_formatted_theo_placebo_arm_hists = np.zeros((num_samples, num_monthly_std_devs, num_monthly_means, 1))
+    keras_formatted_theo_drug_arm_hists    = np.zeros((num_samples, num_monthly_std_devs, num_monthly_means, 1))
 
     for sample_index in range(num_samples):
 
-        reshaped_theo_placebo_arm_hists[sample_index, :, :, 0] = theo_placebo_arm_hists[:, :, sample_index]
-        reshaped_theo_drug_arm_hists[sample_index, :, :, 0]    =    theo_drug_arm_hists[:, :, sample_index]
+        keras_formatted_theo_placebo_arm_hists[sample_index, :, :, 0] = theo_placebo_arm_hists[:, :, sample_index]
+        keras_formatted_theo_drug_arm_hists[sample_index, :, :, 0]    =    theo_drug_arm_hists[:, :, sample_index]
 
-    theo_placebo_arm_hists = reshaped_theo_placebo_arm_hists
-    theo_drug_arm_hists    = reshaped_theo_drug_arm_hists
+    #theo_placebo_arm_hists = keras_formatted_theo_placebo_arm_hists
+    #theo_drug_arm_hists    = keras_formatted_theo_drug_arm_hists
 
-    return [theo_placebo_arm_hists, 
-            theo_drug_arm_hists, 
+    return [keras_formatted_theo_placebo_arm_hists, 
+            keras_formatted_theo_drug_arm_hists,
+            theo_placebo_arm_hists,
+            theo_drug_arm_hists,
             emp_stat_powers]
 
 
@@ -98,14 +100,18 @@ def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
 
     stat_power_model = models.load_model(stat_power_model_file_path)
 
-    testing_emp_stat_powers = np.array([])
+    testing_emp_stat_powers   = np.array([])
     predicted_emp_stat_powers = np.array([])
+    theo_placebo_arm_hists    = np.array(num_monthly_std_devs*[num_monthly_means*[num_monthly_means*[]]])
+    theo_drug_arm_hists       = np.array(num_monthly_std_devs*[num_monthly_means*[num_monthly_means*[]]])
 
     for test_block_num in range(1, num_test_blocks + 1):
 
-        [testing_theo_placebo_arm_hists, 
-         testing_theo_drug_arm_hists, 
-         tmp_testing_emp_stat_powers   ] = \
+        [keras_formatted_testing_theo_placebo_arm_hists, 
+         keras_formatted_testing_theo_drug_arm_hists,
+         tmp_theo_placebo_arm_hists,
+         tmp_theo_drug_arm_hists,
+         tmp_testing_emp_stat_powers] = \
              collect_data_from_folder(num_monthly_means,
                                       num_monthly_std_devs,
                                       num_test_compute_iters,
@@ -113,10 +119,13 @@ def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
                                       test_block_num,
                                       endpoint_name)
         
-        tmp_predicted_emp_stat_powers = np.squeeze(stat_power_model.predict([testing_theo_placebo_arm_hists, testing_theo_drug_arm_hists]))
+        tmp_predicted_emp_stat_powers = np.squeeze(stat_power_model.predict([keras_formatted_testing_theo_placebo_arm_hists, keras_formatted_testing_theo_drug_arm_hists]))
 
         testing_emp_stat_powers   = np.concatenate([testing_emp_stat_powers,   tmp_testing_emp_stat_powers])
         predicted_emp_stat_powers = np.concatenate([predicted_emp_stat_powers, tmp_predicted_emp_stat_powers])
+
+        theo_placebo_arm_hists = np.concatenate([theo_placebo_arm_hists, tmp_theo_placebo_arm_hists])
+        theo_drug_arm_hists    = np.concatenate([theo_drug_arm_hists,    tmp_theo_drug_arm_hists])
 
     model_errors = predicted_emp_stat_powers - testing_emp_stat_powers
 
@@ -124,7 +133,8 @@ def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
     model_test_RMSE = 100*np.sqrt(model_test_MSE)
     model_test_RMSE_str = str(np.round(model_test_RMSE, 3))
 
-    return [model_errors, model_test_RMSE_str]
+    return [model_errors, model_test_RMSE_str,
+            theo_placebo_arm_hists, theo_drug_arm_hists]
     
 
 def take_inputs_from_command_shell():
@@ -171,20 +181,21 @@ if(__name__=='__main__'):
      num_test_blocks] = \
          take_inputs_from_command_shell()
 
-    [model_errors, model_test_RMSE_str] = \
-        generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
-                                               monthly_mean_upper_bound,
-                                               monthly_std_dev_lower_bound,
-                                               monthly_std_dev_upper_bound,
-                                               generic_stat_power_model_file_name,
-                                               endpoint_name,
-                                               testing_data_folder_name,
-                                               num_test_compute_iters,
-                                               num_test_blocks)
+    [model_errors, model_test_RMSE_str,
+     theo_placebo_arm_hists, theo_drug_arm_hists] = \
+         generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
+                                                monthly_mean_upper_bound,
+                                                monthly_std_dev_lower_bound,
+                                                monthly_std_dev_upper_bound,
+                                                generic_stat_power_model_file_name,
+                                                endpoint_name,
+                                                testing_data_folder_name,
+                                                num_test_compute_iters,
+                                                num_test_blocks)
 
     text_RMSEs_file_path = endpoint_name + '_' + generic_text_RMSEs_file_name + ".txt"
     with open(text_RMSEs_file_path, 'a') as text_file:
          text_file.write('testing RMSE: ' + model_test_RMSE_str + ' %')
 
-    with open(endpoint_name + '_' + model_errors_file_name + '.txt', 'w+') as json_file:
+    with open(endpoint_name + '_' + model_errors_file_name + '.json', 'w+') as json_file:
         json.dump(model_errors.tolist(), json_file)
