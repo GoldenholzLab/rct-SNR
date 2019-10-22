@@ -82,10 +82,10 @@ def collect_data_from_folder(num_monthly_means,
             emp_stat_powers]
 
 
-def generate_model_testing_loss_and_errors(monthly_mean_min,
-                                           monthly_mean_max,
-                                           monthly_std_dev_min,
-                                           monthly_std_dev_max,
+def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
+                                           monthly_mean_upper_bound,
+                                           monthly_std_dev_lower_bound,
+                                           monthly_std_dev_upper_bound,
                                            generic_stat_power_model_file_name,
                                            endpoint_name,
                                            testing_data_folder_name,
@@ -93,8 +93,8 @@ def generate_model_testing_loss_and_errors(monthly_mean_min,
                                            num_test_blocks):
 
     stat_power_model_file_path = endpoint_name + '_' + generic_stat_power_model_file_name + '.h5'
-    num_monthly_means    = monthly_mean_max - (monthly_mean_min - 1)
-    num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)
+    num_monthly_means    = monthly_mean_upper_bound    - (monthly_mean_lower_bound    - 1)
+    num_monthly_std_devs = monthly_std_dev_upper_bound - (monthly_std_dev_lower_bound - 1)
 
     stat_power_model = models.load_model(stat_power_model_file_path)
 
@@ -130,10 +130,10 @@ def generate_model_testing_loss_and_errors(monthly_mean_min,
 
 def take_inputs_from_command_shell():
 
-    monthly_mean_min    = int(sys.argv[1])
-    monthly_mean_max    = int(sys.argv[2])
-    monthly_std_dev_min = int(sys.argv[3])
-    monthly_std_dev_max = int(sys.argv[4])
+    monthly_mean_lower_bound    = int(sys.argv[1])
+    monthly_mean_upper_bound    = int(sys.argv[2])
+    monthly_std_dev_lower_bound = int(sys.argv[3])
+    monthly_std_dev_upper_bound = int(sys.argv[4])
 
     testing_data_folder_name           = sys.argv[5]
     generic_stat_power_model_file_name = sys.argv[6]
@@ -145,8 +145,10 @@ def take_inputs_from_command_shell():
 
     num_bins = int(sys.argv[10])
 
-    return [monthly_mean_min,    monthly_mean_max,
-            monthly_std_dev_min, monthly_std_dev_max,
+    return [monthly_mean_lower_bound,    
+            monthly_mean_upper_bound,
+            monthly_std_dev_lower_bound, 
+            monthly_std_dev_upper_bound,
             testing_data_folder_name, 
             generic_stat_power_model_file_name, 
             generic_text_RMSEs_file_name,
@@ -156,8 +158,10 @@ def take_inputs_from_command_shell():
 
 if(__name__=='__main__'):
 
-    [monthly_mean_min,    monthly_mean_max,
-     monthly_std_dev_min, monthly_std_dev_max,
+    [monthly_mean_lower_bound,    
+     monthly_mean_upper_bound,
+     monthly_std_dev_lower_bound, 
+     monthly_std_dev_upper_bound,
      testing_data_folder_name, 
      generic_stat_power_model_file_name, 
      generic_text_RMSEs_file_name,
@@ -166,10 +170,10 @@ if(__name__=='__main__'):
          take_inputs_from_command_shell()
 
     [model_errors, model_test_RMSE_str] = \
-        generate_model_testing_loss_and_errors(monthly_mean_min,
-                                               monthly_mean_max,
-                                               monthly_std_dev_min,
-                                               monthly_std_dev_max,
+        generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
+                                               monthly_mean_upper_bound,
+                                               monthly_std_dev_lower_bound,
+                                               monthly_std_dev_upper_bound,
                                                generic_stat_power_model_file_name,
                                                endpoint_name,
                                                testing_data_folder_name,

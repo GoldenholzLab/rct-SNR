@@ -123,10 +123,10 @@ def save_loss_data(generic_text_RMSEs_file_name,
 
 def take_inputs_from_command_shell():
 
-    monthly_mean_min    = int(sys.argv[1])
-    monthly_mean_max    = int(sys.argv[2])
-    monthly_std_dev_min = int(sys.argv[3])
-    monthly_std_dev_max = int(sys.argv[4])
+    monthly_mean_lower_bound    = int(sys.argv[1])
+    monthly_mean_upper_bound    = int(sys.argv[2])
+    monthly_std_dev_lower_bound = int(sys.argv[3])
+    monthly_std_dev_upper_bound = int(sys.argv[4])
 
     num_epochs            = int(sys.argv[5])
     num_samples_per_batch = int(sys.argv[6])
@@ -139,8 +139,10 @@ def take_inputs_from_command_shell():
     num_train_compute_iters = int(sys.argv[11])
     train_block_num         = int(sys.argv[12])
 
-    return [monthly_mean_min, monthly_mean_max, 
-            monthly_std_dev_min, monthly_std_dev_max,
+    return [monthly_mean_lower_bound,    
+            monthly_mean_upper_bound, 
+            monthly_std_dev_lower_bound, 
+            monthly_std_dev_upper_bound,
             num_epochs, num_samples_per_batch,
             training_data_folder_name, 
             generic_stat_power_model_file_name, 
@@ -153,8 +155,10 @@ def take_inputs_from_command_shell():
 if(__name__=='__main__'):
 
 
-    [monthly_mean_min, monthly_mean_max, 
-     monthly_std_dev_min, monthly_std_dev_max,
+    [monthly_mean_lower_bound,    
+     monthly_mean_upper_bound, 
+     monthly_std_dev_lower_bound, 
+     monthly_std_dev_upper_bound,
      num_epochs, num_samples_per_batch,
      training_data_folder_name, 
      generic_stat_power_model_file_name, 
@@ -165,8 +169,8 @@ if(__name__=='__main__'):
          take_inputs_from_command_shell()
     
 
-    num_monthly_means    = monthly_mean_max - (monthly_mean_min - 1)
-    num_monthly_std_devs = monthly_std_dev_max - (monthly_std_dev_min - 1)
+    num_monthly_means    = monthly_mean_upper_bound    - (monthly_mean_lower_bound - 1)
+    num_monthly_std_devs = monthly_std_dev_upper_bound - (monthly_std_dev_lower_bound - 1)
 
     [training_theo_placebo_arm_hists, 
      training_theo_drug_arm_hists, 
