@@ -14,10 +14,10 @@ generic_text_RMSEs_file_name="RMSE_per_block"
 endpoint_name="RR50"
 
 num_train_compute_iters=100
-num_train_blocks=17
+num_train_blocks=25
 
 num_test_compute_iters=20
-num_test_blocks=17
+num_test_blocks=25
 
 num_bins=50
 
