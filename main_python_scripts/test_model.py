@@ -138,12 +138,11 @@ def take_inputs_from_command_shell():
     testing_data_folder_name           = sys.argv[5]
     generic_stat_power_model_file_name = sys.argv[6]
     generic_text_RMSEs_file_name       = sys.argv[7]
-    endpoint_name                      = sys.argv[8]
+    model_errors_file_name             = sys.argv[8]
+    endpoint_name                      = sys.argv[9]
 
-    num_test_compute_iters = int(sys.argv[9])
-    num_test_blocks        = int(sys.argv[10])
-
-    num_bins = int(sys.argv[10])
+    num_test_compute_iters = int(sys.argv[10])
+    num_test_blocks        = int(sys.argv[11])
 
     return [monthly_mean_lower_bound,    
             monthly_mean_upper_bound,
@@ -152,8 +151,10 @@ def take_inputs_from_command_shell():
             testing_data_folder_name, 
             generic_stat_power_model_file_name, 
             generic_text_RMSEs_file_name,
-            endpoint_name, num_test_compute_iters, 
-            num_test_blocks, num_bins]
+            model_errors_file_name,
+            endpoint_name, 
+            num_test_compute_iters, 
+            num_test_blocks]
 
 
 if(__name__=='__main__'):
@@ -165,8 +166,10 @@ if(__name__=='__main__'):
      testing_data_folder_name, 
      generic_stat_power_model_file_name, 
      generic_text_RMSEs_file_name,
-     endpoint_name, num_test_compute_iters, 
-     num_test_blocks, num_bins] = \
+     model_errors_file_name,
+     endpoint_name, 
+     num_test_compute_iters, 
+     num_test_blocks] = \
          take_inputs_from_command_shell()
 
     [model_errors, model_test_RMSE_str] = \
@@ -184,10 +187,5 @@ if(__name__=='__main__'):
     with open(text_RMSEs_file_path, 'a') as text_file:
          text_file.write('testing RMSE: ' + model_test_RMSE_str + ' %')
 
-    # the plan is to eventually out the plotting code into a separate script....
-    model_percent_errors = 100*model_errors
-    plt.figure()
-    plt.hist(model_percent_errors, bins=num_bins, density=True)
-    plt.xlabel('percent error')
-    plt.title('histogram of ' + endpoint_name + ' statistical power prediction error')
-    plt.savefig(endpoint_name + ' statistical power prediction error histogram')
+    with open(model_errors_file_name + '.txt', 'w+') as json_file:
+        json.dump(model_errors.tolist(), json_file)
