@@ -241,6 +241,7 @@ def take_inputs_from_command_shell():
             num_trials_per_pop, num_pops, 
             data_storage_super_folder_path, block_generic_folder_name, compute_iter, block_num]
 
+
 if(__name__=='__main__'):
 
     [monthly_mean_lower_bound, monthly_mean_upper_bound, 
