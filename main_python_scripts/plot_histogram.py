@@ -9,8 +9,8 @@ if(__name__=='__main__'):
     model_errors_file_name =     sys.argv[1]
     num_bins               = int(sys.argv[2])
     endpoint_name          =     sys.argv[3]
-    
-    with open(model_errors_file_name + '.json', 'r') as json_file:
+
+    with open(endpoint_name + '_' + model_errors_file_name + '.txt', 'r') as json_file:
         model_errors = np.array(json.load(json_file))
 
     model_percent_errors = 100*model_errors

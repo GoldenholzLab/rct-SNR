@@ -123,7 +123,6 @@ def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
     model_test_MSE = np.dot(model_errors, model_errors)/len(model_errors)
     model_test_RMSE = 100*np.sqrt(model_test_MSE)
     model_test_RMSE_str = str(np.round(model_test_RMSE, 3))
-    #model_test_MAPE_str = str(np.round(100*np.mean(np.absolute(np.divide(testing_emp_stat_powers - predicted_emp_stat_powers, testing_emp_stat_powers))), 3))
 
     return [model_errors, model_test_RMSE_str]
     
@@ -187,5 +186,5 @@ if(__name__=='__main__'):
     with open(text_RMSEs_file_path, 'a') as text_file:
          text_file.write('testing RMSE: ' + model_test_RMSE_str + ' %')
 
-    with open(model_errors_file_name + '.txt', 'w+') as json_file:
+    with open(endpoint_name + '_' + model_errors_file_name + '.txt', 'w+') as json_file:
         json.dump(model_errors.tolist(), json_file)

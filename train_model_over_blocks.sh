@@ -11,15 +11,14 @@ training_data_folder_name="/Users/juanromero/Documents/rct-SNR_O2_generated_data
 testing_data_folder_name="/Users/juanromero/Documents/rct-SNR_O2_generated_data/randomized_theo_pops_10-22-2019/testing_data"
 generic_stat_power_model_file_name="stat_power_model"
 generic_text_RMSEs_file_name="RMSE_per_block"
-endpoint_name="RR50"
+model_errors_file_name="model_errors"
+endpoint_name="MPC"
 
 num_train_compute_iters=100
 num_train_blocks=25
 
 num_test_compute_iters=20
 num_test_blocks=25
-
-num_bins=50
 
 
 inputs[0]=$monthly_mean_lower_bound
@@ -48,10 +47,10 @@ inputs_three[3]=$monthly_std_dev_upper_bound
 inputs_three[4]=$testing_data_folder_name
 inputs_three[5]=$generic_stat_power_model_file_name
 inputs_three[6]=$generic_text_RMSEs_file_name
-inputs_three[7]=$endpoint_name
-inputs_three[8]=$num_test_compute_iters
-inputs_three[9]=$num_test_blocks
-inputs_three[10]=$num_bins
+inputs_three[7]=$model_errors_file_name
+inputs_three[8]=$endpoint_name
+inputs_three[9]=$num_test_compute_iters
+inputs_three[10]=$num_test_blocks
 
 python main_python_scripts/initialize_model.py ${inputs[@]}
 
@@ -63,4 +62,4 @@ do
     python main_python_scripts/train_model.py ${inputs_two[@]}
 done
 
-python main_python_scripts/generate_histogram.py ${inputs_three[@]}
+python main_python_scripts/test_model.py ${inputs_three[@]}
