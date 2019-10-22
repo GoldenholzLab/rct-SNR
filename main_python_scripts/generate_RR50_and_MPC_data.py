@@ -53,8 +53,7 @@ def estimate_statistical_powers_per_placebo_and_drug_theo_pops(theo_placebo_arm_
                                                                placebo_sigma,
                                                                drug_mu,
                                                                drug_sigma,
-                                                               num_trials,
-                                                               periods_to_generate):
+                                                               num_trials):
 
     empirical_estimation_start_time_in_seconds = time.time()
 
@@ -69,8 +68,7 @@ def estimate_statistical_powers_per_placebo_and_drug_theo_pops(theo_placebo_arm_
                                                             placebo_sigma,
                                                             drug_mu,
                                                             drug_sigma,
-                                                            num_trials,
-                                                            periods_to_generate)
+                                                            num_trials)
     
     RR50_emp_stat_power_str = 'RR50 statistical power: ' + str(np.round(100*RR50_emp_stat_power, 3)) + ' %'
     MPC_emp_stat_power_str  = 'MPC  statistical power: ' + str(np.round(100*MPC_emp_stat_power,  3)) + ' %'
@@ -96,8 +94,7 @@ def generate_theo_pop_hists_and_powers_per_pop(monthly_mean_lower_bound,
                                                placebo_sigma,
                                                drug_mu,
                                                drug_sigma,
-                                               num_trials,
-                                               periods_to_generate):
+                                               num_trials):
 
     [theo_placebo_arm_patient_pop_params, 
      theo_placebo_arm_pop_hist            ] = \
@@ -126,8 +123,7 @@ def generate_theo_pop_hists_and_powers_per_pop(monthly_mean_lower_bound,
                                                                    placebo_sigma,
                                                                    drug_mu,
                                                                    drug_sigma,
-                                                                   num_trials,
-                                                                   periods_to_generate)
+                                                                   num_trials)
     
     return [theo_placebo_arm_pop_hist, theo_drug_arm_pop_hist, 
             RR50_emp_stat_power,       MPC_emp_stat_power     ]
@@ -146,8 +142,7 @@ def generate_theo_pop_hists_and_powers(monthly_mean_lower_bound,
                                        drug_mu,
                                        drug_sigma,
                                        num_trials_per_pop,
-                                       num_pops,
-                                       periods_to_generate):
+                                       num_pops):
     
     num_monthly_means    = monthly_mean_upper_bound    - (monthly_mean_lower_bound    - 1)
     num_monthly_std_devs = monthly_std_dev_upper_bound - (monthly_std_dev_lower_bound - 1)
@@ -173,8 +168,7 @@ def generate_theo_pop_hists_and_powers(monthly_mean_lower_bound,
                                                         placebo_sigma,
                                                         drug_mu,
                                                         drug_sigma,
-                                                        num_trials_per_pop,
-                                                        periods_to_generate)
+                                                        num_trials_per_pop)
     
         theo_placebo_arm_hists[:, :, pop_index] = theo_placebo_arm_pop_hist
         theo_drug_arm_hists[:, :, pop_index]    = theo_drug_arm_pop_hist
@@ -251,8 +245,6 @@ def take_inputs_from_command_shell():
     block_num = int(sys.argv[17])
     compute_iter = int(sys.argv[18])
 
-    periods_to_generate = sys.argv[19]
-
 
     return [monthly_mean_lower_bound, monthly_mean_upper_bound, 
             monthly_std_dev_lower_bound, monthly_std_dev_upper_bound,
@@ -260,8 +252,7 @@ def take_inputs_from_command_shell():
             minimum_required_baseline_seizure_count,
             placebo_mu, placebo_sigma, drug_mu, drug_sigma,
             num_trials_per_pop, num_pops, 
-            data_storage_super_folder_path, block_generic_folder_name, 
-            compute_iter, block_num, periods_to_generate]
+            data_storage_super_folder_path, block_generic_folder_name, compute_iter, block_num]
 
 
 if(__name__=='__main__'):
@@ -272,8 +263,7 @@ if(__name__=='__main__'):
      minimum_required_baseline_seizure_count,
      placebo_mu, placebo_sigma, drug_mu, drug_sigma,
      num_trials_per_pop, num_pops, 
-     data_storage_super_folder_path, block_generic_folder_name,
-     compute_iter, block_num, periods_to_generate] = \
+     data_storage_super_folder_path, block_generic_folder_name, compute_iter, block_num] = \
          take_inputs_from_command_shell()
     
 
@@ -294,8 +284,7 @@ if(__name__=='__main__'):
                                             drug_mu,
                                             drug_sigma,
                                             num_trials_per_pop,
-                                            num_pops, 
-                                            periods_to_generate)
+                                            num_pops)
     
     store_theo_pop_hists_and_emp_stat_powers(theo_placebo_arm_hists,
                                              theo_drug_arm_hists,
