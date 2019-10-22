@@ -20,8 +20,7 @@ def empirically_estimate_RR50_statistical_power(theo_placebo_arm_patient_pop_par
                                                 placebo_sigma,
                                                 drug_mu,
                                                 drug_sigma,
-                                                num_trials,
-                                                periods_to_generate):
+                                                num_trials):
 
     RR50_p_values = np.zeros(num_trials)
     baseline_time_scaling_const = 1
@@ -39,8 +38,7 @@ def empirically_estimate_RR50_statistical_power(theo_placebo_arm_patient_pop_par
                                                            testing_time_scaling_const,
                                                            minimum_required_baseline_seizure_count,
                                                            placebo_mu,
-                                                           placebo_sigma,
-                                                           periods_to_generate)
+                                                           placebo_sigma)
     
         [drug_arm_baseline_seizure_diaries, 
          drug_arm_testing_seizure_diaries  ] = \
@@ -54,8 +52,7 @@ def empirically_estimate_RR50_statistical_power(theo_placebo_arm_patient_pop_par
                                                         placebo_mu,
                                                         placebo_sigma,
                                                         drug_mu,
-                                                        drug_sigma,
-                                                        periods_to_generate)
+                                                        drug_sigma)
 
         placebo_arm_percent_changes = \
             calculate_percent_changes(placebo_arm_baseline_seizure_diaries,
@@ -88,8 +85,7 @@ def empirically_estimate_MPC_statistical_power(theo_placebo_arm_patient_pop_para
                                                placebo_sigma,
                                                drug_mu,
                                                drug_sigma,
-                                               num_trials,
-                                               periods_to_generate):
+                                               num_trials):
     
     MPC_p_values = np.zeros(num_trials)
     baseline_time_scaling_const = 1
@@ -107,8 +103,7 @@ def empirically_estimate_MPC_statistical_power(theo_placebo_arm_patient_pop_para
                                                            testing_time_scaling_const,
                                                            minimum_required_baseline_seizure_count,
                                                            placebo_mu,
-                                                           placebo_sigma,
-                                                           periods_to_generate)
+                                                           placebo_sigma)
     
         [drug_arm_baseline_seizure_diaries, 
          drug_arm_testing_seizure_diaries  ] = \
@@ -122,8 +117,7 @@ def empirically_estimate_MPC_statistical_power(theo_placebo_arm_patient_pop_para
                                                         placebo_mu,
                                                         placebo_sigma,
                                                         drug_mu,
-                                                        drug_sigma,
-                                                        periods_to_generate)
+                                                        drug_sigma)
 
         placebo_arm_percent_changes = \
             calculate_percent_changes(placebo_arm_baseline_seizure_diaries,
@@ -156,8 +150,7 @@ def empirically_estimate_RR50_and_MPC_statistical_power(theo_placebo_arm_patient
                                                         placebo_sigma,
                                                         drug_mu,
                                                         drug_sigma,
-                                                        num_trials,
-                                                        periods_to_generate):
+                                                        num_trials):
 
     RR50_p_values = np.zeros(num_trials)
     MPC_p_values = np.zeros(num_trials)
@@ -176,8 +169,7 @@ def empirically_estimate_RR50_and_MPC_statistical_power(theo_placebo_arm_patient
                                                            testing_time_scaling_const,
                                                            minimum_required_baseline_seizure_count,
                                                            placebo_mu,
-                                                           placebo_sigma,
-                                                           periods_to_generate)
+                                                           placebo_sigma)
     
         [drug_arm_baseline_seizure_diaries, 
          drug_arm_testing_seizure_diaries  ] = \
@@ -191,8 +183,7 @@ def empirically_estimate_RR50_and_MPC_statistical_power(theo_placebo_arm_patient
                                                         placebo_mu,
                                                         placebo_sigma,
                                                         drug_mu,
-                                                        drug_sigma,
-                                                        periods_to_generate)
+                                                        drug_sigma)
 
         placebo_arm_percent_changes = \
             calculate_percent_changes(placebo_arm_baseline_seizure_diaries,
@@ -231,8 +222,7 @@ def empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_para
                                                placebo_sigma,
                                                drug_mu,
                                                drug_sigma,
-                                               num_trials,
-                                               periods_to_generate):
+                                               num_trials):
 
     TTP_p_values = np.zeros(num_trials)
     baseline_time_scaling_const = 1
@@ -251,8 +241,7 @@ def empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_para
                                                            testing_time_scaling_const,
                                                            minimum_required_baseline_seizure_count,
                                                            placebo_mu,
-                                                           placebo_sigma,
-                                                           periods_to_generate)
+                                                           placebo_sigma)
     
         [drug_arm_monthly_baseline_seizure_diaries, 
          drug_arm_daily_testing_seizure_diaries    ] = \
@@ -266,8 +255,7 @@ def empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_para
                                                         placebo_mu,
                                                         placebo_sigma,
                                                         drug_mu,
-                                                        drug_sigma,
-                                                        periods_to_generate)
+                                                        drug_sigma)
 
         [placebo_arm_TTP_times, placebo_arm_observed_array] = \
             calculate_time_to_prerandomizations(placebo_arm_monthly_baseline_seizure_diaries,
@@ -312,8 +300,6 @@ if(__name__=='__main__'):
     drug_mu = 0.2
     drug_sigma = 0.05
 
-    periods_to_generate = 'entire'
-
     [monthly_mean_min,    monthly_mean_max, 
      monthly_std_dev_min, monthly_std_dev_max] = \
          randomly_select_theo_patient_pop(monthly_mean_lower_bound,
@@ -352,8 +338,7 @@ if(__name__=='__main__'):
                                                     placebo_sigma,
                                                     drug_mu,
                                                     drug_sigma,
-                                                    num_trials,
-                                                    periods_to_generate)
+                                                    num_trials)
     
     RR50_stop_time_in_seconds = time.time()
     RR50_total_runtime_in_minutes = (RR50_stop_time_in_seconds - RR50_start_time_in_seconds)/60
@@ -373,8 +358,7 @@ if(__name__=='__main__'):
                                                    placebo_sigma,
                                                    drug_mu,
                                                    drug_sigma,
-                                                   num_trials,
-                                                   periods_to_generate)
+                                                   num_trials)
     
     MPC_stop_time_in_seconds = time.time()
     MPC_total_runtime_in_minutes = (MPC_stop_time_in_seconds - MPC_start_time_in_seconds)/60
@@ -394,8 +378,7 @@ if(__name__=='__main__'):
                                                    placebo_sigma,
                                                    drug_mu,
                                                    drug_sigma,
-                                                   num_trials,
-                                                   periods_to_generate)
+                                                   num_trials)
     
     TTP_stop_time_in_seconds = time.time()
     TTP_total_runtime_in_minutes = (TTP_stop_time_in_seconds - TTP_start_time_in_seconds)/60
