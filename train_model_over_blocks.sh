@@ -7,8 +7,8 @@ monthly_std_dev_upper_bound=16
 num_epochs=30
 num_samples_per_batch=100
 
-training_data_folder_name="/Users/juanromero/Documents/rct-SNR_O2_generated_data/randomized_theo_pops_10-22-2019/training_data"
-testing_data_folder_name="/Users/juanromero/Documents/rct-SNR_O2_generated_data/randomized_theo_pops_10-22-2019/testing_data"
+training_data_folder_name="/Users/juanromero/Documents/randomized_theo_pops_10-22-2019/training_data"
+testing_data_folder_name="/Users/juanromero/Documents/randomized_theo_pops_10-22-2019/testing_data"
 generic_stat_power_model_file_name="stat_power_model"
 generic_text_RMSEs_file_name="RMSE_per_block"
 model_errors_file_name="model_errors"

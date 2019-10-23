@@ -5,6 +5,9 @@ import json
 import keras.models as models
 import matplotlib.pyplot as plt
 
+# the nrxt two lines were put in to make sure this code works on mac laptops
+import os
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 def load_iter_specific_files(endpoint_name, data_storage_folder_name, block_num, compute_iter):
 
@@ -124,8 +127,8 @@ def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
         testing_emp_stat_powers   = np.concatenate([testing_emp_stat_powers,   tmp_testing_emp_stat_powers])
         predicted_emp_stat_powers = np.concatenate([predicted_emp_stat_powers, tmp_predicted_emp_stat_powers])
 
-        theo_placebo_arm_hists = np.concatenate([theo_placebo_arm_hists, tmp_theo_placebo_arm_hists])
-        theo_drug_arm_hists    = np.concatenate([theo_drug_arm_hists,    tmp_theo_drug_arm_hists])
+        #theo_placebo_arm_hists = np.concatenate([theo_placebo_arm_hists, tmp_theo_placebo_arm_hists])
+        #theo_drug_arm_hists    = np.concatenate([theo_drug_arm_hists,    tmp_theo_drug_arm_hists])
 
     model_errors = predicted_emp_stat_powers - testing_emp_stat_powers
 
@@ -133,8 +136,7 @@ def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
     model_test_RMSE = 100*np.sqrt(model_test_MSE)
     model_test_RMSE_str = str(np.round(model_test_RMSE, 3))
 
-    return [model_errors, model_test_RMSE_str,
-            theo_placebo_arm_hists, theo_drug_arm_hists]
+    return [model_errors, model_test_RMSE_str]
     
 
 def take_inputs_from_command_shell():
@@ -181,8 +183,7 @@ if(__name__=='__main__'):
      num_test_blocks] = \
          take_inputs_from_command_shell()
 
-    [model_errors, model_test_RMSE_str,
-     theo_placebo_arm_hists, theo_drug_arm_hists] = \
+    [model_errors, model_test_RMSE_str] = \
          generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
                                                 monthly_mean_upper_bound,
                                                 monthly_std_dev_lower_bound,
