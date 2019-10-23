@@ -1,3 +1,15 @@
+#!/usr/bin/bash
+
+#SBATCH -p short
+#SBATCH --mem-per-cpu=1G
+#SBATCH -t 0-00:15
+#SBATCH -n 1
+#SBATCH -N 1
+#SBATCH -e jmr95_%j.err
+#SBATCH -o jmr95_%j.out
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=jromero5@bidmc.harvard.edu
+
 monthly_mean_lower_bound=1
 monthly_mean_upper_bound=16
 monthly_std_dev_lower_bound=1 
@@ -124,5 +136,5 @@ do
         echo "$all_testing_block_files_exist"
         echo "$all_block_files_exist"
     done
-    
+
 done
