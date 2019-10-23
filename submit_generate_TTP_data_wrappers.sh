@@ -26,7 +26,7 @@ drug_mu=0.2
 drug_sigma=0.05
 
 num_trials_per_pop=20
-num_pops=10
+num_pops=2
 
 data_storage_super_folder_path="/home/jmr95/rct-SNR"
 block_generic_training_data_folder_name="training_data"
