@@ -32,11 +32,11 @@ data_storage_super_folder_path="/home/jmr95/rct-SNR"
 block_generic_training_data_folder_name="training_data"
 block_generic_testing_data_folder_name="testing_data"
 
-num_training_compute_iters_per_loop=10
-num_testing_compute_iters_per_loop=5
-training_iter_slack_per_loop=2
-testing_iter_slack_per_loop=2
-num_blocks=10
+num_training_compute_iters_per_loop=100
+num_testing_compute_iters_per_loop=20
+training_iter_slack_per_loop=10
+testing_iter_slack_per_loop=4
+num_blocks=75
 
 num_actual_training_compute_iters_per_loop=$(($num_training_compute_iters_per_loop - $training_iter_slack_per_loop))
 num_actual_testing_compute_iters_per_loop=$(($num_testing_compute_iters_per_loop - $testing_iter_slack_per_loop))
