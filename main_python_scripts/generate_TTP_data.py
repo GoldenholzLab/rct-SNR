@@ -190,7 +190,7 @@ def store_theo_pop_hists_and_emp_stat_powers(theo_placebo_arm_hists,
 
     theo_placebo_arm_hists_file_name = 'theo_placebo_arm_hists_' + str(compute_iter) + '.json'
     theo_drug_arm_hists_file_name    = 'theo_drug_arm_hists_'    + str(compute_iter) + '.json'
-    TTP_emp_stat_powers_file_name    = 'TPP_emp_stat_powers_'    + str(compute_iter) + '.json'
+    TTP_emp_stat_powers_file_name    = 'TTP_emp_stat_powers_'    + str(compute_iter) + '.json'
     
     theo_placebo_arm_hists_file_path = data_storage_folder_file_path + '/' + theo_placebo_arm_hists_file_name
     theo_drug_arm_hists_file_path    = data_storage_folder_file_path + '/' + theo_drug_arm_hists_file_name
