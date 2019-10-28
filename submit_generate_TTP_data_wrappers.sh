@@ -116,7 +116,7 @@ do
         fi
         if [ -d "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}" ]
         then
-            x4=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/RR50_emp_stat_powers_"* | wc -l`
+            x4=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/TTP_emp_stat_powers_"* | wc -l`
             x5=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_placebo_arm_hists_"* | wc -l`
             x6=`ls -1 "${data_storage_super_folder_path}/${block_generic_testing_data_folder_name}_${block_num}/theo_drug_arm_hists_"* | wc -l`
             if (($x4 >= $num_actual_testing_compute_iters_per_loop)) || (($x5 >= $num_actual_testing_compute_iters_per_loop)) || (($x6 >= $num_actual_testing_compute_iters_per_loop))
