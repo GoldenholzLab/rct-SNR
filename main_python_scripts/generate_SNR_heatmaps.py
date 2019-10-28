@@ -196,7 +196,7 @@ def generate_SNRs_for_loc(monthly_mean_min,
                           current_monthly_std_dev,
                           num_theo_patients_per_trial_arm,
                           num_theo_patients_per_trial_arm_in_loc,
-                          RR50_stat_power_model):
+                          stat_power_model):
 
     [keras_formatted_theo_placebo_arm_trial_arm_pop_wo_loc_hists,
      keras_formatted_theo_drug_arm_trial_arm_pop_wo_loc_hists,
@@ -212,18 +212,97 @@ def generate_SNRs_for_loc(monthly_mean_min,
                                         num_theo_patients_per_trial_arm,
                                         num_theo_patients_per_trial_arm_in_loc)
     
-    RR50_stat_power_predictions_wo_loc = \
-        np.squeeze(RR50_stat_power_model.predict([keras_formatted_theo_placebo_arm_trial_arm_pop_wo_loc_hists, 
-                                              keras_formatted_theo_drug_arm_trial_arm_pop_wo_loc_hists]))
-    RR50_stat_power_predictions_with_loc = \
-        np.squeeze(RR50_stat_power_model.predict([keras_formatted_theo_placebo_arm_trial_arm_pop_with_loc_hists, 
-                                                  keras_formatted_theo_drug_arm_trial_arm_pop_with_loc_hists]))
+    stat_power_predictions_wo_loc = \
+        np.squeeze(stat_power_model.predict([keras_formatted_theo_placebo_arm_trial_arm_pop_wo_loc_hists, 
+                                             keras_formatted_theo_drug_arm_trial_arm_pop_wo_loc_hists]))
+    stat_power_predictions_with_loc = \
+        np.squeeze(stat_power_model.predict([keras_formatted_theo_placebo_arm_trial_arm_pop_with_loc_hists, 
+                                             keras_formatted_theo_drug_arm_trial_arm_pop_with_loc_hists]))
 
-    RR50_stat_power_wo_loc   = 100*np.mean(RR50_stat_power_predictions_wo_loc)
-    RR50_stat_power_with_loc = 100*np.mean(RR50_stat_power_predictions_with_loc)
-    RR50_SNR_at_loc = 100*np.mean(RR50_stat_power_predictions_with_loc - RR50_stat_power_predictions_wo_loc)
+    stat_power_wo_loc   = 100*np.mean(stat_power_predictions_wo_loc)
+    stat_power_with_loc = 100*np.mean(stat_power_predictions_with_loc)
+    SNR_at_loc = 100*np.mean(stat_power_predictions_with_loc - stat_power_predictions_wo_loc)
 
-    return [RR50_SNR_at_loc, RR50_stat_power_with_loc, RR50_stat_power_wo_loc]
+    return [SNR_at_loc, stat_power_with_loc, stat_power_wo_loc]
+
+
+def generate_SNR_map(monthly_mean_min,
+                     monthly_mean_max,
+                     monthly_std_dev_min,
+                     monthly_std_dev_max,
+                     num_hists_per_trial_arm,
+                     num_theo_patients_per_trial_arm,
+                     num_theo_patients_per_trial_arm_in_loc,
+                     endpoint_name):
+
+    stat_power_model = models.load_model(endpoint_name + '_stat_power_model.h5')
+
+    SNR_map = np.zeros((16, 16))
+
+    for monthly_mean_index in range(16):
+        for monthly_std_dev_index in range(16):
+
+            monthly_std_dev =  monthly_std_dev_index + 1
+            monthly_mean = monthly_mean_index + 1
+
+            if(monthly_std_dev > np.sqrt(monthly_mean)):
+
+                [SNR_at_loc, 
+                 stat_power_with_loc, 
+                 stat_power_wo_loc] = \
+                     generate_SNRs_for_loc(monthly_mean_min,
+                                           monthly_mean_max,
+                                           monthly_std_dev_min,
+                                           monthly_std_dev_max,
+                                           num_hists_per_trial_arm,
+                                           monthly_mean,
+                                           monthly_std_dev,
+                                           num_theo_patients_per_trial_arm,
+                                           num_theo_patients_per_trial_arm_in_loc,
+                                           stat_power_model)
+                
+                print('[' + str(monthly_mean) + ', ' + str(monthly_std_dev) + ']: ' + str(np.round(SNR_at_loc, 3)) + \
+                      ', ' + str(np.round(stat_power_with_loc, 3))  + ', ' + str(np.round(stat_power_wo_loc, 3)))    
+                
+
+                SNR_map[15 - monthly_std_dev_index, monthly_mean_index] = SNR_at_loc
+    
+    return SNR_map
+
+
+def plot_SNR_map(x_axis_start,
+                 x_axis_stop,
+                 x_axis_step,
+                 x_tick_spacing,
+                 y_axis_start,
+                 y_axis_stop,
+                 y_axis_step,
+                 y_tick_spacing,
+                 SNR_map,
+                 endpoint_name):
+    
+    x_tick_labels = np.arange(x_axis_start, x_axis_stop + x_tick_spacing, x_tick_spacing)
+    y_tick_labels = np.arange(y_axis_start, y_axis_stop + y_tick_spacing, y_tick_spacing)
+
+    x_ticks = x_tick_labels/x_axis_step + 0.5 - 1
+    y_ticks = y_tick_labels/y_axis_step + 0.5 - 1
+
+    y_ticks = np.flip(y_ticks, 0)
+
+    fig = plt.figure()
+
+    ax = sns.heatmap(SNR_map, cmap='RdBu_r')
+    plt.xlabel('monthly seizure count mean')
+    plt.ylabel('monthly seizure count standard deviation')
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_tick_labels, rotation='horizontal')
+    ax.set_yticks(y_ticks)
+    ax.set_yticklabels(y_tick_labels, rotation='horizontal')
+
+    fig.savefig(endpoint_name + '_SNR_map.png')
+    #import pandas as pd
+    #print(pd.DataFrame(SNR_map).to_string())
+    plt.show()
 
 
 if (__name__=="__main__"):
@@ -248,60 +327,25 @@ if (__name__=="__main__"):
     y_axis_step    = 1
     y_tick_spacing = 1
 
-    RR50_stat_power_model = models.load_model('RR50_stat_power_model.h5')
+    endpoint_name = 'MPC'
 
-    SNR_map = np.zeros((16, 16))
+    SNR_map = \
+        generate_SNR_map(monthly_mean_min,
+                         monthly_mean_max,
+                         monthly_std_dev_min,
+                         monthly_std_dev_max,
+                         num_hists_per_trial_arm,
+                         num_theo_patients_per_trial_arm,
+                         num_theo_patients_per_trial_arm_in_loc,
+                         endpoint_name)
 
-    for monthly_mean_index in range(16):
-        for monthly_std_dev_index in range(16):
-
-            monthly_std_dev =  monthly_std_dev_index + 1
-            monthly_mean = monthly_mean_index + 1
-
-            if(monthly_std_dev > np.sqrt(monthly_mean)):
-
-                [RR50_SNR_at_loc, 
-                 RR50_stat_power_with_loc, 
-                 RR50_stat_power_wo_loc] = \
-                     generate_SNRs_for_loc(monthly_mean_min,
-                                           monthly_mean_max,
-                                           monthly_std_dev_min,
-                                           monthly_std_dev_max,
-                                           num_hists_per_trial_arm,
-                                           monthly_mean,
-                                           monthly_std_dev,
-                                           num_theo_patients_per_trial_arm,
-                                           num_theo_patients_per_trial_arm_in_loc,
-                                           RR50_stat_power_model)
-                
-                print('[' + str(monthly_mean) + ', ' + str(monthly_std_dev) + ']: ' + str(np.round(RR50_SNR_at_loc, 3)) + \
-                      ', ' + str(np.round(RR50_stat_power_with_loc, 3))  + ', ' + str(np.round(RR50_stat_power_wo_loc, 3)))    
-                
-
-                SNR_map[15 - monthly_std_dev_index, monthly_mean_index] = RR50_SNR_at_loc
-
-    x_tick_labels = np.arange(x_axis_start, x_axis_stop + x_tick_spacing, x_tick_spacing)
-    y_tick_labels = np.arange(y_axis_start, y_axis_stop + y_tick_spacing, y_tick_spacing)
-
-    num_x_tick_labels = len(x_tick_labels)
-    num_y_tick_labels = len(y_tick_labels)
-
-    x_ticks = x_tick_labels/x_axis_step + 0.5 - 1
-    y_ticks = y_tick_labels/y_axis_step + 0.5 - 1
-
-    y_ticks = np.flip(y_ticks, 0)
-
-    fig = plt.figure()
-
-    ax = sns.heatmap(SNR_map, cmap='RdBu_r')
-    plt.xlabel('monthly seizure count mean')
-    plt.ylabel('monthly seizure count standard deviation')
-    ax.set_xticks(x_ticks)
-    ax.set_xticklabels(x_tick_labels, rotation='horizontal')
-    ax.set_yticks(y_ticks)
-    ax.set_yticklabels(y_tick_labels, rotation='horizontal')
-
-    fig.savefig('RR50_SNR_map.png')
-    #import pandas as pd
-    #print(pd.DataFrame(SNR_map).to_string())
-    plt.show()
+    plot_SNR_map(x_axis_start,
+                 x_axis_stop,
+                 x_axis_step,
+                 x_tick_spacing,
+                 y_axis_start,
+                 y_axis_stop,
+                 y_axis_step,
+                 y_tick_spacing,
+                 SNR_map,
+                 endpoint_name)
