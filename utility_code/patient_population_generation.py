@@ -21,6 +21,8 @@ def randomly_select_theo_patient_pop(monthly_mean_lower_bound,
 
     while(not patient_pop_window_makes_sense):
 
+        # forgot that randint() is [low, high)
+
         monthly_mean_min = np.random.randint(monthly_mean_lower_bound,     monthly_mean_upper_bound - 1)
         monthly_mean_max = np.random.randint(monthly_mean_lower_bound + 1, monthly_mean_upper_bound    )
     
