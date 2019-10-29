@@ -292,9 +292,10 @@ def plot_SNR_map(x_axis_start,
 
     fig = plt.figure()
 
-    ax = sns.heatmap(SNR_map, cmap='RdBu_r')
+    ax = sns.heatmap(SNR_map, cmap='RdBu_r', cbar_kws={'label':'SNR of location'})
     plt.xlabel('monthly seizure count mean')
     plt.ylabel('monthly seizure count standard deviation')
+    plt.title(endpoint_name + ' SNR map')
     ax.set_xticks(x_ticks)
     ax.set_xticklabels(x_tick_labels, rotation='horizontal')
     ax.set_yticks(y_ticks)
