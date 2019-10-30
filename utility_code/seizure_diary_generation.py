@@ -26,7 +26,7 @@ def generate_seizure_diary(num_months,
     time_scaling_const parameter can be set to 4 (since there are 4 weeks in a month), and then an array of
     12 numbers representing 3 months' worth of weekly seizure counts will be returned instead. For daily 
     seizure counts, the time_scaling_const parameter can be set to 28 (28 days in a month), and then an array
-    of 84 numbers (2 months' worth of daily seizure counts) will be returned.
+    of 84 numbers (3 months' worth of daily seizure counts) will be returned.
 
     Inputs:
         1) num_months:
@@ -195,9 +195,9 @@ def generate_baseline_seizure_diary(monthly_mean,
                                     minimum_required_baseline_seizure_count):
     '''
 
-    This function generates the portion of a seizure diary which corresponds to the baseline period.
-    The seizure diary can be generated such that it fulfills the eligibility criteria of having a 
-    minimum seizure count in the baseline period.
+    This function is a wrapper function which generates the portion of a seizure diary that 
+    corresponds to the baseline period. The seizure diary can be generated such that it 
+    fulfills the eligibility criteria of having a minimum seizure count in the baseline period.
 
     There are two main advantages to generating the baseline and testing periods of a seizure diary
     seperately: firstly, calculation of endpoints are typically calculated separately over the 
@@ -284,18 +284,22 @@ def generate_placebo_arm_testing_seizure_diary(num_testing_months,
     Outputs:
 
         1) placebo_arm_testing_seizure_diary:
-            (1D Numpy array) - an array consisting of seizure counts from the testing period of a 
-                               seizure diary
+            (1D Numpy array) - an array consisting of seizure counts representing the testing period of a 
+                               seizure diary randomized to the placebo arm
 
     '''
+
+    # generate the testing period of a seizure diary which was randomized to the placebo arm
     placebo_arm_testing_seizure_diary = \
         generate_seizure_diary(num_testing_months, 
                                monthly_mean, 
                                monthly_std_dev, 
                                testing_time_scaling_const)
     
+    # generate this individual seizure diary's placebo effect according to the normal distribution
     placebo_effect = np.random.normal(placebo_mu, placebo_sigma)
 
+    # apply the placebo effect to the testing period
     placebo_arm_testing_seizure_diary = \
         apply_effect(placebo_arm_testing_seizure_diary,
                      num_testing_months,
@@ -313,22 +317,66 @@ def generate_drug_arm_testing_seizure_diary(num_testing_months,
                                             placebo_sigma,
                                             drug_mu, 
                                             drug_sigma):
+    '''
 
+    This function generates the testing period of a seizure diary for a patient
+    who's been randomized to the drug arm of a clinical trial.
+
+    The placebo effect is applied first to a seizure diary. After that, the drug effect
+    is then sequentially applied as well. All effects are generated via gaussian distributions
+    whose parameters are passed on to this function as inputs. Botht the drug effect and the
+    placebo effect are implemented via the apply_effect() function.
+
+    Inputs:
+
+        1) num_testing_months:
+            (int) - the number of months in the testing seizure diary to be generated
+        2) monthly_mean:
+            (float) - the true monthly mean for the testing seizure diary to be generated
+        3) monthly_std_dev:
+            (float) - the true monthly standard deviation for the testing seizure diary to be generated
+        4) testing_time_scaling_const:
+            (int) - the time-scaling factor which determines whether or not the testing seizure diary 
+                    will either be generated on a monthly time scale, or if will be generated on a 
+                    smaller time scale instead.
+        5) placebo_mu:
+            (float) - the mean of the normally distributed placebo effect, expressed as a percentage
+        6) placebo_sigma:
+            (float) - the standard deviation of the normally distributed placebo effect, expressed as 
+                      a percentage
+        7) drug_mu:
+            (float) - the mean of the normally distributed drug effect, expressed as a percentage
+        8) drug_sigma:
+            (float) - the standard deviation of the normally distributed drug effect, expressed as 
+                      a percentage
+    
+    Outputs:
+
+        1) drug_arm_testing_seizure_diary
+            (1D Numpy array) - an array consisting of seizure counts representing the testing period of a 
+                               seizure diary randomized to the drug arm
+
+    '''
+
+    # generate the testing period of a seizure diary which was randomized to the drug arm
     drug_arm_testing_seizure_diary = \
         generate_seizure_diary(num_testing_months, 
                                monthly_mean, 
                                monthly_std_dev, 
                                testing_time_scaling_const)
-    
+
+    # generate this individual seizure diary's placebo effect and drug effect, both generated according to the normal distribution
     placebo_effect = np.random.normal(placebo_mu, placebo_sigma)
     drug_effect    = np.random.normal(drug_mu,    drug_sigma)
 
+    # apply the placebo effect to the testing period
     drug_arm_testing_seizure_diary = \
         apply_effect(drug_arm_testing_seizure_diary,
                      num_testing_months,
                      testing_time_scaling_const,
                      placebo_effect)
     
+    # apply the drug effect to the testing period
     drug_arm_testing_seizure_diary = \
         apply_effect(drug_arm_testing_seizure_diary,
                      num_testing_months,
