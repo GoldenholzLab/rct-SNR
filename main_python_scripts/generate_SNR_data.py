@@ -2,9 +2,7 @@ import numpy as np
 import sys
 import os
 import keras.models as models
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
+import json
 sys.path.insert(0, os.getcwd())
 from utility_code.patient_population_generation import generate_theo_patient_pop_params
 from utility_code.patient_population_generation import convert_theo_pop_hist
@@ -271,42 +269,6 @@ def generate_SNR_map(monthly_mean_min,
     return SNR_map
 
 
-def plot_SNR_map(x_axis_start,
-                 x_axis_stop,
-                 x_axis_step,
-                 x_tick_spacing,
-                 y_axis_start,
-                 y_axis_stop,
-                 y_axis_step,
-                 y_tick_spacing,
-                 SNR_map,
-                 endpoint_name):
-    
-    x_tick_labels = np.arange(x_axis_start, x_axis_stop + x_tick_spacing, x_tick_spacing)
-    y_tick_labels = np.arange(y_axis_start, y_axis_stop + y_tick_spacing, y_tick_spacing)
-
-    x_ticks = x_tick_labels/x_axis_step + 0.5 - 1
-    y_ticks = y_tick_labels/y_axis_step + 0.5 - 1
-
-    y_ticks = np.flip(y_ticks, 0)
-
-    fig = plt.figure()
-
-    ax = sns.heatmap(SNR_map, cmap='RdBu_r', cbar_kws={'label':'SNR of location'})
-    plt.xlabel('monthly seizure count mean')
-    plt.ylabel('monthly seizure count standard deviation')
-    plt.title(endpoint_name + ' SNR map')
-    ax.set_xticks(x_ticks)
-    ax.set_xticklabels(x_tick_labels, rotation='horizontal')
-    ax.set_yticks(y_ticks)
-    ax.set_yticklabels(y_tick_labels, rotation='horizontal')
-
-    fig.savefig(endpoint_name + '_SNR_map.png')
-    #import pandas as pd
-    #print(pd.DataFrame(SNR_map).to_string())
-    #plt.show()
-
-
 if (__name__=="__main__"):
 
     monthly_mean_min    = 2
@@ -319,16 +281,6 @@ if (__name__=="__main__"):
 
     num_hists_per_trial_arm = 500
 
-    x_axis_start   = 1
-    x_axis_stop    = 15
-    x_axis_step    = 1
-    x_tick_spacing = 1
-
-    y_axis_start   = 1
-    y_axis_stop    = 15
-    y_axis_step    = 1
-    y_tick_spacing = 1
-
     endpoint_name = 'MPC'
 
     SNR_map = \
@@ -340,14 +292,7 @@ if (__name__=="__main__"):
                          num_theo_patients_per_trial_arm,
                          num_theo_patients_per_trial_arm_in_loc,
                          endpoint_name)
+    
+    with open(endpoint_name + '_SNR_data.json', 'w+') as json_file:
+        json.dump(SNR_map.tolist(), json_file)
 
-    plot_SNR_map(x_axis_start,
-                 x_axis_stop,
-                 x_axis_step,
-                 x_tick_spacing,
-                 y_axis_start,
-                 y_axis_stop,
-                 y_axis_step,
-                 y_tick_spacing,
-                 SNR_map,
-                 endpoint_name)
