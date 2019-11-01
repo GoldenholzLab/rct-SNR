@@ -72,6 +72,48 @@ def generate_theo_patient_pop_params(monthly_mean_min,
     return theo_patient_pop_params
 
 
+def generate_NV_model_patient_pop_params(num_theo_patients_per_trial_arm,
+                                         one_or_two):
+
+    if(one_or_two == 'one'):
+
+        shape = 24.143
+        scale = 297.366
+        alpha = 284.024
+        beta  = 369.628
+    
+    elif(one_or_two == 'two'):
+
+        shape = 111.313
+        scale = 296.728
+        alpha = 296.339
+        beta  = 243.719
+    
+    else:
+
+        raise ValueError('the \'one_or_two\' parameter in the genarate_NV_model_patient_pop() function is supposed to take one of two values: \'one\' or \'two\'')
+
+    NV_model_patient_pop_params = np.zeros((num_theo_patients_per_trial_arm, 2))
+
+    for patient_index in range(num_theo_patients_per_trial_arm):
+
+        daily_n = np.random.gamma(shape, 1/scale)
+        daily_p = np.random.beta(alpha, beta)
+
+        odds_ratio = (1 - daily_p)/daily_p
+
+        daily_mean    = daily_n*odds_ratio
+        daily_std_dev = np.sqrt(daily_mean/daily_p)
+
+        monthly_mean    = np.round(       28*daily_mean       )
+        monthly_std_dev = np.round( np.sqrt(28)*daily_std_dev )
+
+        NV_model_patient_pop_params[patient_index, 0] = monthly_mean
+        NV_model_patient_pop_params[patient_index, 1] = monthly_std_dev
+
+    return NV_model_patient_pop_params
+
+
 def convert_theo_pop_hist(monthly_mean_min,
                           monthly_mean_max,
                           monthly_std_dev_min,
