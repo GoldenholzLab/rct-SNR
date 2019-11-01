@@ -91,7 +91,7 @@ def generate_NV_model_patient_pop_params(num_theo_patients_per_trial_arm,
     
     else:
 
-        raise ValueError('the \'one_or_two\' parameter in the genarate_NV_model_patient_pop() function is supposed to take one of two values: \'one\' or \'two\'')
+        raise ValueError('the \'one_or_two\' parameter in the generate_NV_model_patient_pop() function is supposed to take one of two values: \'one\' or \'two\'')
 
     NV_model_patient_pop_params = np.zeros((num_theo_patients_per_trial_arm, 2))
 

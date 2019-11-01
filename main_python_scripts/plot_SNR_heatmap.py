@@ -4,9 +4,23 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def retrieve_SNR_map(endpoint_name):
+def retrieve_SNR_map(endpoint_name,
+                     one_or_two):
 
-    with open(endpoint_name + '_SNR_data.json', 'r') as json_file:
+    if(one_or_two == False):
+
+        partial_file_name = 'SNR_data'
+
+    else:
+        if(one_or_two == 'one' or one_or_two == 'two'):
+
+            partial_file_name = 'NV_model_' + one_or_two + '_SNR_data'
+
+        else:
+
+            raise ValueError('the \'one_or_two\' parameter in the retrieve_SNR_map() function should either be a boolean False, \'one\', or \'two\'')
+
+    with open(endpoint_name + '_' + partial_file_name + '.json', 'r') as json_file:
 
         SNR_map = np.array(json.load(json_file))
     
@@ -55,8 +69,24 @@ def plot_SNR_map(monthly_mean_axis_start,
                  max_power_law_slope,
                  power_law_slope_spacing,
                  SNR_map,
-                 endpoint_name):
+                 endpoint_name,
+                 one_or_two):
     
+    if(one_or_two == False):
+
+        title = 'SNR map'
+        partial_file_name = 'SNR_map'
+
+    else:
+        if(one_or_two == 'one' or one_or_two == 'two'):
+
+            title = 'NV model ' + one_or_two + ' SNR map'
+            partial_file_name = 'NV_model_' + one_or_two + '_SNR_map'
+
+        else:
+
+            raise ValueError('the \'one_or_two\' parameter in the retrieve_SNR_map() function should either be a boolean False, \'one\', or \'two\'')
+
     monthly_mean_tick_labels = np.arange(monthly_mean_axis_start, monthly_mean_axis_stop + monthly_mean_tick_spacing, monthly_mean_tick_spacing)
     monthly_std_dev_tick_labels = np.arange(monthly_std_dev_axis_start, monthly_std_dev_axis_stop + monthly_std_dev_tick_spacing, monthly_std_dev_tick_spacing)
 
@@ -70,7 +100,7 @@ def plot_SNR_map(monthly_mean_axis_start,
     ax = sns.heatmap(SNR_map, cmap='RdBu_r', cbar_kws={'label':'SNR of location'})
     plt.xlabel('monthly seizure count mean')
     plt.ylabel('monthly seizure count standard deviation')
-    plt.title(endpoint_name + ' SNR map')
+    plt.title(endpoint_name + ' ' + title)
     ax.set_xticks(monthly_mean_ticks)
     ax.set_xticklabels(monthly_mean_tick_labels, rotation='horizontal')
     ax.set_yticks(monthly_std_dev_ticks)
@@ -86,7 +116,7 @@ def plot_SNR_map(monthly_mean_axis_start,
                                monthly_std_dev_axis_stop, 
                                monthly_std_dev_axis_step)
 
-    fig.savefig(endpoint_name + '_SNR_map.png', dpi=300, bbox_inches='tight')
+    fig.savefig(endpoint_name + '_' + partial_file_name + '.png', dpi=300, bbox_inches='tight')
     #import pandas as pd
     #print(pd.DataFrame(SNR_map).to_string())
     #plt.show()
@@ -94,7 +124,8 @@ def plot_SNR_map(monthly_mean_axis_start,
 
 if(__name__=='__main__'):
 
-    endpoint_name = 'TTP'
+    endpoint_name = 'MPC'
+    one_or_two = 'two'
 
     monthly_mean_axis_start   = 1
     monthly_mean_axis_stop    = 15
@@ -110,7 +141,8 @@ if(__name__=='__main__'):
     max_power_law_slope     = 1.9
     power_law_slope_spacing = 0.2
 
-    SNR_map = retrieve_SNR_map(endpoint_name)
+    SNR_map = retrieve_SNR_map(endpoint_name,
+                               one_or_two)
 
     plot_SNR_map(monthly_mean_axis_start,
                  monthly_mean_axis_stop,
@@ -124,5 +156,6 @@ if(__name__=='__main__'):
                  max_power_law_slope,
                  power_law_slope_spacing,
                  SNR_map,
-                 endpoint_name)
+                 endpoint_name,
+                 one_or_two)
     
