@@ -270,7 +270,37 @@ def generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                placebo_sigma,
                                                drug_mu,
                                                drug_sigma):
+    '''
 
+    Inputs:
+
+        1) num_theo_patients_per_trial_arm:
+            (int)  - 
+        2) theo_drug_arm_patient_pop_params:
+            (2D Numpy array)  - 
+        3) num_baseline_months:
+            (int) - 
+        4) num_testing_months:
+            (int) - 
+        5) baseline_time_scaling_const:
+            (int) - 
+        6) testing_time_scaling_const:
+            (int)  - 
+        7) minimum_required_baseline_seizure_count:
+            (int) - 
+        8) placebo_mu:
+            (float) - the mean of the normally distributed placebo effect, expressed as a percentage
+        9) placebo_sigma:
+            (float) - the standard deviation of the normally distributed placebo effect, expressed as 
+                      a percentage
+        10) drug_mu:
+            (float) - the mean of the normally distributed drug effect, expressed as a percentage
+        11) drug_sigma:
+            (float) - the standard deviation of the normally distributed drug effect, expressed as 
+                      a percentage
+
+    '''
+    
     num_baseline_scaled_time_units = num_baseline_months*baseline_time_scaling_const
     num_testing_scaled_time_units  = num_testing_months*testing_time_scaling_const
 

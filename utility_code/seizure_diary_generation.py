@@ -39,6 +39,10 @@ def generate_seizure_diary(num_months,
             (int) - the time-scaling factor which determines whether or not the seizure diary will either be 
                     generated on a monthly time scale, or if will be generated on a smaller time scale instead
 
+                                monthly time scale --> testing_time_scaling_const = 1
+                                weekly time scale  --> testing_time_scaling_const = 4  (4 weeks in a month)
+                                daily time scale   --> testing_time_scaling_const = 28 (28 days in a month)
+
     Outputs:
         1) seizure_diary:
             (1D Numpy array) - an array of numbers representing a seziure diary
@@ -150,6 +154,11 @@ def generate_seizure_diary_with_minimum_count(num_months,
             (int) - the time-scaling factor which determines whether or not the seizure diary will either be 
                     generated on a monthly time scale, or if will be generated on a smaller time scale instead.
                     Affects the length of the seizure diary (see generate_seizure_diary for more details)
+
+                                monthly time scale --> testing_time_scaling_const = 1
+                                weekly time scale  --> testing_time_scaling_const = 4  (4 weeks in a month)
+                                daily time scale   --> testing_time_scaling_const = 28 (28 days in a month)
+
         5) minimum_required_seizure_count:
             (int) - the minimum number of seizures that the diary will be generated with: the seizures
                     will be distributed over the seizure counts
@@ -224,6 +233,11 @@ def generate_baseline_seizure_diary(monthly_mean,
             (int) - the time-scaling factor which determines whether or not the baseline seizure diary 
                     will either be generated on a monthly time scale, or if will be generated on a 
                     smaller time scale instead.
+
+                                monthly time scale --> testing_time_scaling_const = 1
+                                weekly time scale  --> testing_time_scaling_const = 4  (4 weeks in a month)
+                                daily time scale   --> testing_time_scaling_const = 28 (28 days in a month)
+
         5) minimum_required_baseline_seizure_count:
             (int) - the minimum number of seizures that the diary will be generated with: the seizures
                     will be distributed over the seizure counts
@@ -275,6 +289,11 @@ def generate_placebo_arm_testing_seizure_diary(num_testing_months,
             (int) - the time-scaling factor which determines whether or not the testing seizure diary 
                     will either be generated on a monthly time scale, or if will be generated on a 
                     smaller time scale instead.
+
+                                monthly time scale --> testing_time_scaling_const = 1
+                                weekly time scale  --> testing_time_scaling_const = 4  (4 weeks in a month)
+                                daily time scale   --> testing_time_scaling_const = 28 (28 days in a month)
+
         5) placebo_mu:
             (float) - the mean of the normally distributed placebo effect, expressed as a percentage
         6) placebo_sigma:
@@ -339,6 +358,11 @@ def generate_drug_arm_testing_seizure_diary(num_testing_months,
             (int) - the time-scaling factor which determines whether or not the testing seizure diary 
                     will either be generated on a monthly time scale, or if will be generated on a 
                     smaller time scale instead.
+
+                                monthly time scale --> testing_time_scaling_const = 1
+                                weekly time scale  --> testing_time_scaling_const = 4  (4 weeks in a month)
+                                daily time scale   --> testing_time_scaling_const = 28 (28 days in a month)
+
         5) placebo_mu:
             (float) - the mean of the normally distributed placebo effect, expressed as a percentage
         6) placebo_sigma:
