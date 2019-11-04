@@ -2,6 +2,7 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import sys
 
 
 def retrieve_SNR_map(endpoint_name):
@@ -94,7 +95,9 @@ def plot_SNR_map(monthly_mean_axis_start,
 
 if(__name__=='__main__'):
 
-    endpoint_name = 'TTP'
+    #endpoint_name = 'RR50'
+    endpoint_name = sys.argv[0]
+    
     monthly_mean_axis_start   = 1
     monthly_mean_axis_stop    = 15
     monthly_mean_axis_step    = 1
@@ -107,7 +110,7 @@ if(__name__=='__main__'):
 
     min_power_law_slope     = 0.3
     max_power_law_slope     = 1.9
-    power_law_slope_spacing = 0.2
+    power_law_slope_spacing = 0.1
 
     SNR_map = retrieve_SNR_map(endpoint_name)
 
