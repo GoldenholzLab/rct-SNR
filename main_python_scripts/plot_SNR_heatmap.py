@@ -94,7 +94,7 @@ def plot_SNR_map(monthly_mean_axis_start,
 
 if(__name__=='__main__'):
 
-    endpoint_name = 'MPC'
+    endpoint_name = 'TTP'
     monthly_mean_axis_start   = 1
     monthly_mean_axis_stop    = 15
     monthly_mean_axis_step    = 1

@@ -281,7 +281,7 @@ if (__name__=="__main__"):
 
     num_hists_per_trial_arm = 500
 
-    endpoint_name = 'RR50'
+    endpoint_name = 'TTP'
 
     SNR_map = \
         generate_SNR_map(monthly_mean_min,
