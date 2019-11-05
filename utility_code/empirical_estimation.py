@@ -75,6 +75,72 @@ def empirically_estimate_RR50_statistical_power(theo_placebo_arm_patient_pop_par
     return RR50_emp_stat_power
 
 
+def empirically_estimate_imbalanced_RR50_statistical_power(theo_placebo_arm_patient_pop_params,
+                                                           theo_drug_arm_patient_pop_params,
+                                                           num_theo_patients_in_placebo_arm,
+                                                           num_theo_patients_in_drug_arm,
+                                                           num_baseline_months,
+                                                           num_testing_months,
+                                                           minimum_required_baseline_seizure_count,
+                                                           placebo_mu,
+                                                           placebo_sigma,
+                                                           drug_mu,
+                                                           drug_sigma,
+                                                           num_trials):
+
+    RR50_p_values = np.zeros(num_trials)
+    baseline_time_scaling_const = 1
+    testing_time_scaling_const  = 1
+
+    for trial_index in range(num_trials):
+        
+        [placebo_arm_baseline_seizure_diaries, 
+         placebo_arm_testing_seizure_diaries  ] = \
+             generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_in_placebo_arm,
+                                                           theo_placebo_arm_patient_pop_params,
+                                                           num_baseline_months,
+                                                           num_testing_months,
+                                                           baseline_time_scaling_const,
+                                                           testing_time_scaling_const,
+                                                           minimum_required_baseline_seizure_count,
+                                                           placebo_mu,
+                                                           placebo_sigma)
+    
+        [drug_arm_baseline_seizure_diaries, 
+         drug_arm_testing_seizure_diaries  ] = \
+             generate_heterogenous_drug_arm_patient_pop(num_theo_patients_in_drug_arm,
+                                                        theo_drug_arm_patient_pop_params,
+                                                        num_baseline_months,
+                                                        num_testing_months,
+                                                        baseline_time_scaling_const,
+                                                        testing_time_scaling_const,
+                                                        minimum_required_baseline_seizure_count,
+                                                        placebo_mu,
+                                                        placebo_sigma,
+                                                        drug_mu,
+                                                        drug_sigma)
+
+        placebo_arm_percent_changes = \
+            calculate_percent_changes(placebo_arm_baseline_seizure_diaries,
+                                      placebo_arm_testing_seizure_diaries,
+                                      num_theo_patients_in_placebo_arm)
+    
+        drug_arm_percent_changes = \
+            calculate_percent_changes(drug_arm_baseline_seizure_diaries,
+                                      drug_arm_testing_seizure_diaries,
+                                      num_theo_patients_in_drug_arm)
+
+        RR50_p_value = \
+            calculate_fisher_exact_p_value(placebo_arm_percent_changes,
+                                           drug_arm_percent_changes)
+        
+        RR50_p_values[trial_index] = RR50_p_value
+    
+    RR50_emp_stat_power = np.sum(RR50_p_values < 0.05)/num_trials
+
+    return RR50_emp_stat_power
+
+
 def empirically_estimate_MPC_statistical_power(theo_placebo_arm_patient_pop_params,
                                                theo_drug_arm_patient_pop_params,
                                                num_theo_patients_per_trial_arm,
@@ -281,7 +347,7 @@ def empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_para
 
     return TTP_emp_stat_power
 
-
+'''
 if(__name__=='__main__'):
 
     monthly_mean_lower_bound    = 1
@@ -384,4 +450,4 @@ if(__name__=='__main__'):
     TTP_total_runtime_in_minutes = (TTP_stop_time_in_seconds - TTP_start_time_in_seconds)/60
     TTP_total_runtime_in_minutes_str = str(np.round(TTP_total_runtime_in_minutes, 3))
     print('TTP:\n  power:   ' + str(100*TTP_emp_stat_power) + ' %\n  runtime: ' + TTP_total_runtime_in_minutes_str + ' minutes')
-
+'''
