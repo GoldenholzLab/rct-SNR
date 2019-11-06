@@ -3,7 +3,6 @@ import os
 import json
 import numpy as np
 import time
-from pathlib import Path
 #import keras.models as models
 sys.path.insert(0, os.getcwd())
 from utility_code.seizure_diary_generation import generate_seizure_diary
@@ -335,23 +334,28 @@ def dumb_algorithm(monthly_mean_min,
 
 def save_results(num_theo_patients,
                  endpoint_name,
-                 smart_or_dumb):
+                 smart_or_dumb,
+                 index):
     
-    text_file_path = endpoint_name + '_' + smart_or_dumb + '.txt'
+    folder = os.getcwd() + '/' + endpoint_name + '_' + smart_or_dumb
 
-    if( not os.path.isfile(text_file_path) ):
+    if( not os.path.isdir(folder) ):
 
-        Path(text_file_path).touch()
+        os.mkdir(folder)
+    
+    file_path = folder + '/' + str(index) + '.txt'
 
-    with open(text_file_path, 'a') as text_file:
+    with open(file_path, 'w+') as text_file:
 
-        text_file.write(str(num_theo_patients) + '\n')
-        
+        text_file.write(str(num_theo_patients))
+
 
 if(__name__=='__main__'):
 
     endpoint_name = sys.argv[1]
     smart_or_dumb = sys.argv[2]
+    index         = sys.argv[3]
+
 
     monthly_mean_min    = 1
     monthly_mean_max    = 15
@@ -413,5 +417,6 @@ if(__name__=='__main__'):
 
     save_results(num_theo_patients,
                  endpoint_name,
-                 smart_or_dumb)
-    
+                 smart_or_dumb,
+                 index)
+
