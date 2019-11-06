@@ -485,6 +485,74 @@ def empirically_estimate_imbalanced_TTP_statistical_power(theo_placebo_arm_patie
     return TTP_emp_stat_power
 
 
+def estimate_expected_imbalanced_placebo_and_drug_arm_TTPs(theo_placebo_arm_patient_pop_params,
+                                                           theo_drug_arm_patient_pop_params,
+                                                           num_theo_patients_in_placebo_arm,
+                                                           num_theo_patients_in_drug_arm,
+                                                           num_baseline_months,
+                                                           num_testing_months,
+                                                           minimum_required_baseline_seizure_count,
+                                                           placebo_mu,
+                                                           placebo_sigma,
+                                                           drug_mu,
+                                                           drug_sigma,
+                                                           num_trials):
+
+    average_placebo_arm_TTP_array = np.zeros(num_trials)
+    average_drug_arm_TTP_array    = np.zeros(num_trials)
+
+    baseline_time_scaling_const = 1
+    testing_time_scaling_const = 28
+    num_testing_days = num_testing_months*testing_time_scaling_const
+
+    for trial_index in range(num_trials):
+
+        [placebo_arm_monthly_baseline_seizure_diaries, 
+         placebo_arm_daily_testing_seizure_diaries    ] = \
+             generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_in_placebo_arm,
+                                                           theo_placebo_arm_patient_pop_params,
+                                                           num_baseline_months,
+                                                           num_testing_months,
+                                                           baseline_time_scaling_const,
+                                                           testing_time_scaling_const,
+                                                           minimum_required_baseline_seizure_count,
+                                                           placebo_mu,
+                                                           placebo_sigma)
+    
+        [drug_arm_monthly_baseline_seizure_diaries, 
+         drug_arm_daily_testing_seizure_diaries    ] = \
+             generate_heterogenous_drug_arm_patient_pop(num_theo_patients_in_drug_arm,
+                                                        theo_drug_arm_patient_pop_params,
+                                                        num_baseline_months,
+                                                        num_testing_months,
+                                                        baseline_time_scaling_const,
+                                                        testing_time_scaling_const,
+                                                        minimum_required_baseline_seizure_count,
+                                                        placebo_mu,
+                                                        placebo_sigma,
+                                                        drug_mu,
+                                                        drug_sigma)
+
+        [placebo_arm_TTP_times, _] = \
+            calculate_time_to_prerandomizations(placebo_arm_monthly_baseline_seizure_diaries,
+                                                placebo_arm_daily_testing_seizure_diaries,
+                                                num_theo_patients_in_placebo_arm,
+                                                num_testing_days)
+    
+        [drug_arm_TTP_times, _] = \
+            calculate_time_to_prerandomizations(drug_arm_monthly_baseline_seizure_diaries,
+                                                drug_arm_daily_testing_seizure_diaries,
+                                                num_theo_patients_in_drug_arm,
+                                                num_testing_days)
+        
+        average_placebo_arm_TTP_array[trial_index] = np.mean(placebo_arm_TTP_times)
+        average_drug_arm_TTP_array[trial_index]    = np.mean(drug_arm_TTP_times)
+
+    expected_placebo_arm_TTP = np.mean(average_placebo_arm_TTP_array)
+    expected_drug_arm_TTP    = np.mean(average_drug_arm_TTP_array)
+
+    return [expected_placebo_arm_TTP, expected_drug_arm_TTP]
+
 '''
 if(__name__=='__main__'):
 
