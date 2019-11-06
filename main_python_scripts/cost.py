@@ -345,7 +345,7 @@ def save_results(num_theo_patients,
 
     with open(text_file_path, 'a') as text_file:
 
-        text_file.write(str(num_theo_patients))
+        text_file.write(str(num_theo_patients) + '\n')
         
 
 if(__name__=='__main__'):
