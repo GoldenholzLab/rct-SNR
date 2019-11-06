@@ -8,8 +8,6 @@ sys.path.insert(0, os.getcwd())
 from utility_code.seizure_diary_generation import generate_seizure_diary
 from utility_code.empirical_estimation import empirically_estimate_imbalanced_RR50_statistical_power
 from utility_code.empirical_estimation import empirically_estimate_imbalanced_MPC_statistical_power
-from utility_code.empirical_estimation import empirically_estimate_imbalanced_TTP_statistical_power
-from utility_code.empirical_estimation import estimate_expected_imbalanced_placebo_and_drug_arm_TTPs
 
 
 def retrieve_SNR_map(endpoint_name):
