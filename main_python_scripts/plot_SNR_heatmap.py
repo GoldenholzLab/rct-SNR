@@ -96,7 +96,7 @@ def plot_SNR_map(monthly_mean_axis_start,
 if(__name__=='__main__'):
 
     #endpoint_name = 'RR50'
-    endpoint_name = sys.argv[0]
+    endpoint_name = sys.argv[1]
     
     monthly_mean_axis_start   = 1
     monthly_mean_axis_stop    = 15
