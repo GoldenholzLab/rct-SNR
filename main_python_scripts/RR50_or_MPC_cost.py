@@ -141,25 +141,9 @@ def estimate_emp_stat_power(theo_placebo_arm_patient_pop_params,
                                                                   drug_sigma,
                                                                   num_trials)
     
-    elif(endpoint_name == 'TTP'):
-
-        emp_stat_power = \
-            empirically_estimate_imbalanced_MPC_statistical_power(theo_placebo_arm_patient_pop_params,
-                                                                  theo_drug_arm_patient_pop_params,
-                                                                  num_theo_patients_in_placebo_arm,
-                                                                  num_theo_patients_in_drug_arm,
-                                                                  num_baseline_months,
-                                                                  num_testing_months,
-                                                                  minimum_required_baseline_seizure_count,
-                                                                  placebo_mu,
-                                                                  placebo_sigma,
-                                                                  drug_mu,
-                                                                  drug_sigma,
-                                                                  num_trials)
-    
     else:
 
-        raise ValueError('The \'endpoint_name\' parameter must either be \'RR50\', \'MPC\', or \'TTP\'')
+        raise ValueError('The \'endpoint_name\' parameter must either be \'RR50\', \'MPC\'')
 
     return emp_stat_power
 
@@ -251,23 +235,6 @@ def smart_algorithm(monthly_mean_min,
                              str(total_runtime_in_seconds) + ' seconds, ' + 
                              str(np.round((time.time() - algorithm_start_time_in_seconds)/60, 3)) + ' minutes\n')
     
-    if(endpoint_name == 'TTP'):
-
-        [expected_placebo_arm_TTP, expected_drug_arm_TTP] = \
-            estimate_expected_imbalanced_placebo_and_drug_arm_TTPs(np.array(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                   np.array(theo_drug_arm_patient_pop_params_hat_list),
-                                                                   len(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                   len(theo_drug_arm_patient_pop_params_hat_list),
-                                                                   num_baseline_months,
-                                                                   num_testing_months,
-                                                                   minimum_required_baseline_seizure_count,
-                                                                   placebo_mu,
-                                                                   placebo_sigma,
-                                                                   drug_mu,
-                                                                   drug_sigma,
-                                                                   num_trials)
-        
-        return [num_theo_patients, expected_placebo_arm_TTP, expected_drug_arm_TTP]
 
     return num_theo_patients
 
@@ -354,24 +321,6 @@ def dumb_algorithm(monthly_mean_min,
                          str(total_runtime_in_seconds) + ' seconds, ' + 
                          str(np.round((time.time() - algorithm_start_time_in_seconds)/60, 3)) + ' minutes\n')
 
-    if(endpoint_name == 'TTP'):
-
-        [expected_placebo_arm_TTP, expected_drug_arm_TTP] = \
-            estimate_expected_imbalanced_placebo_and_drug_arm_TTPs(np.array(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                   np.array(theo_drug_arm_patient_pop_params_hat_list),
-                                                                   len(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                   len(theo_drug_arm_patient_pop_params_hat_list),
-                                                                   num_baseline_months,
-                                                                   num_testing_months,
-                                                                   minimum_required_baseline_seizure_count,
-                                                                   placebo_mu,
-                                                                   placebo_sigma,
-                                                                   drug_mu,
-                                                                   drug_sigma,
-                                                                   num_trials)
-        
-        return [num_theo_patients, expected_placebo_arm_TTP, expected_drug_arm_TTP]
-
     return num_theo_patients
 
 
@@ -391,25 +340,6 @@ def save_results(num_theo_patients,
     with open(file_path, 'w+') as text_file:
 
         text_file.write(str(num_theo_patients))
-
-
-def save_TTP_results(num_theo_patients,
-                     expected_placebo_arm_TTP, 
-                     expected_drug_arm_TTP,
-                     smart_or_dumb,
-                     index):
-    
-    folder = os.getcwd() + '/TTP_' + smart_or_dumb
-
-    if( not os.path.isdir(folder) ):
-
-        os.mkdir(folder)
-    
-    file_path = folder + '/' + index + '.txt'
-
-    with open(file_path, 'w+') as text_file:
-
-        text_file.write(str(num_theo_patients) + ',' + str(expected_placebo_arm_TTP) + ',' + str(expected_drug_arm_TTP))
 
 
 if(__name__=='__main__'):
@@ -441,108 +371,46 @@ if(__name__=='__main__'):
 
     if(smart_or_dumb == 'smart'):
 
-        if(endpoint_name != 'TTP'):
-
-            num_theo_patients = \
-                smart_algorithm(monthly_mean_min,
-                                monthly_mean_max,
-                                monthly_std_dev_min,
-                                monthly_std_dev_max,
-                                num_baseline_months,
-                                num_testing_months,
-                                minimum_required_baseline_seizure_count,
-                                placebo_mu,
-                                placebo_sigma,
-                                drug_mu,
-                                drug_sigma,
-                                num_trials,
-                                endpoint_name,
-                                target_stat_power)
+        num_theo_patients = \
+            smart_algorithm(monthly_mean_min,
+                            monthly_mean_max,
+                            monthly_std_dev_min,
+                            monthly_std_dev_max,
+                            num_baseline_months,
+                            num_testing_months,
+                            minimum_required_baseline_seizure_count,
+                            placebo_mu,
+                            placebo_sigma,
+                            drug_mu,
+                            drug_sigma,
+                            num_trials,
+                            endpoint_name,
+                            target_stat_power)
             
-            save_results(num_theo_patients,
-                         endpoint_name,
-                         smart_or_dumb,
-                         index)
-
-        else:
-
-            [num_theo_patients, 
-             expected_placebo_arm_TTP, 
-             expected_drug_arm_TTP] = \
-                 smart_algorithm(monthly_mean_min,
-                                 monthly_mean_max,
-                                 monthly_std_dev_min,
-                                 monthly_std_dev_max,
-                                 num_baseline_months,
-                                 num_testing_months,
-                                 minimum_required_baseline_seizure_count,
-                                 placebo_mu,
-                                 placebo_sigma,
-                                 drug_mu,
-                                 drug_sigma,
-                                 num_trials,
-                                 endpoint_name,
-                                 target_stat_power)
-            
-            save_TTP_results(num_theo_patients,
-                             expected_placebo_arm_TTP, 
-                             expected_drug_arm_TTP,
-                             smart_or_dumb,
-                             index)
 
     elif(smart_or_dumb == 'dumb'):
 
-        if(endpoint_name != 'TTP'):
-
-            num_theo_patients = \
-                dumb_algorithm(monthly_mean_min,
-                               monthly_mean_max,
-                               monthly_std_dev_min,
-                               monthly_std_dev_max,
-                               num_baseline_months,
-                               num_testing_months,
-                               minimum_required_baseline_seizure_count,
-                               placebo_mu,
-                               placebo_sigma,
-                               drug_mu,
-                               drug_sigma,
-                               num_trials,
-                               endpoint_name,
-                               target_stat_power)
-            
-            save_results(num_theo_patients,
-                         endpoint_name,
-                         smart_or_dumb,
-                         index)
-        
-        else:
-
-            [num_theo_patients, 
-             expected_placebo_arm_TTP, 
-             expected_drug_arm_TTP] = \
-                dumb_algorithm(monthly_mean_min,
-                               monthly_mean_max,
-                               monthly_std_dev_min,
-                               monthly_std_dev_max,
-                               num_baseline_months,
-                               num_testing_months,
-                               minimum_required_baseline_seizure_count,
-                               placebo_mu,
-                               placebo_sigma,
-                               drug_mu,
-                               drug_sigma,
-                               num_trials,
-                               endpoint_name,
-                               target_stat_power)
-            
-            save_TTP_results(num_theo_patients,
-                             expected_placebo_arm_TTP, 
-                             expected_drug_arm_TTP,
-                             smart_or_dumb,
-                             index)
+        num_theo_patients = \
+            dumb_algorithm(monthly_mean_min,
+                           monthly_mean_max,
+                           monthly_std_dev_min,
+                           monthly_std_dev_max,
+                           num_baseline_months,
+                           num_testing_months,
+                           minimum_required_baseline_seizure_count,
+                           placebo_mu,
+                           placebo_sigma,
+                           drug_mu,
+                           drug_sigma,
+                           num_trials,
+                           endpoint_name,
+                           target_stat_power)
     
     else:
 
         raise ValueError('The \'smart_or_dumb\' parameter to cost.py from the command shell should either be \'smart\' or \'dumb\'')
 
-
+    save_results(num_theo_patients,
+                 endpoint_name,
+                 smart_or_dumb,
+                 index)
