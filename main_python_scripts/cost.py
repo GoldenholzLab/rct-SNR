@@ -3,6 +3,7 @@ import os
 import json
 import numpy as np
 import time
+from pathlib import Path
 #import keras.models as models
 sys.path.insert(0, os.getcwd())
 from utility_code.seizure_diary_generation import generate_seizure_diary
@@ -106,19 +107,59 @@ def estimate_emp_stat_power(theo_placebo_arm_patient_pop_params_hat_list,
                             num_trials,
                             endpoint_name):
 
-    emp_stat_power = \
-        empirically_estimate_imbalanced_MPC_statistical_power(np.array(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                       np.array(theo_drug_arm_patient_pop_params_hat_list),
-                                                                       len(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                       len(theo_drug_arm_patient_pop_params_hat_list),
-                                                                       num_baseline_months,
-                                                                       num_testing_months,
-                                                                       minimum_required_baseline_seizure_count,
-                                                                       placebo_mu,
-                                                                       placebo_sigma,
-                                                                       drug_mu,
-                                                                       drug_sigma,
-                                                                       num_trials)
+    if(endpoint_name == 'RR50'):
+
+        emp_stat_power = \
+            empirically_estimate_imbalanced_RR50_statistical_power(np.array(theo_placebo_arm_patient_pop_params_hat_list),
+                                                                            np.array(theo_drug_arm_patient_pop_params_hat_list),
+                                                                            len(theo_placebo_arm_patient_pop_params_hat_list),
+                                                                            len(theo_drug_arm_patient_pop_params_hat_list),
+                                                                            num_baseline_months,
+                                                                            num_testing_months,
+                                                                            minimum_required_baseline_seizure_count,
+                                                                            placebo_mu,
+                                                                            placebo_sigma,
+                                                                            drug_mu,
+                                                                            drug_sigma,
+                                                                            num_trials)
+
+    elif(endpoint_name == 'MPC'):
+
+        emp_stat_power = \
+            empirically_estimate_imbalanced_MPC_statistical_power(np.array(theo_placebo_arm_patient_pop_params_hat_list),
+                                                                           np.array(theo_drug_arm_patient_pop_params_hat_list),
+                                                                           len(theo_placebo_arm_patient_pop_params_hat_list),
+                                                                           len(theo_drug_arm_patient_pop_params_hat_list),
+                                                                           num_baseline_months,
+                                                                           num_testing_months,
+                                                                           minimum_required_baseline_seizure_count,
+                                                                           placebo_mu,
+                                                                           placebo_sigma,
+                                                                           drug_mu,
+                                                                           drug_sigma,
+                                                                           num_trials)
+    
+    elif(endpoint_name == 'TTP'):
+
+        emp_stat_power = \
+            empirically_estimate_imbalanced_MPC_statistical_power(np.array(theo_placebo_arm_patient_pop_params_hat_list),
+                                                                           np.array(theo_drug_arm_patient_pop_params_hat_list),
+                                                                           len(theo_placebo_arm_patient_pop_params_hat_list),
+                                                                           len(theo_drug_arm_patient_pop_params_hat_list),
+                                                                           num_baseline_months,
+                                                                           num_testing_months,
+                                                                           minimum_required_baseline_seizure_count,
+                                                                           placebo_mu,
+                                                                           placebo_sigma,
+                                                                           drug_mu,
+                                                                           drug_sigma,
+                                                                           num_trials)
+    
+    else:
+
+        raise ValueError('The \'endpoint_name\' parameter must either be \'RR50\', \'MPC\', or \'TTP\'')
+
+    return emp_stat_power
 
 
 def smart_algorithm(monthly_mean_min,
@@ -133,7 +174,8 @@ def smart_algorithm(monthly_mean_min,
                     drug_mu,
                     drug_sigma,
                     num_trials,
-                    SNR_map):
+                    endpoint_name,
+                    target_stat_power):
 
     theo_placebo_arm_patient_pop_params_hat_list = []
     theo_drug_arm_patient_pop_params_hat_list    = []
@@ -142,7 +184,7 @@ def smart_algorithm(monthly_mean_min,
     placebo_arm_or_drug_arm = 'placebo'
     num_theo_patients = 0
 
-    MPC_emp_stat_power = 0
+    SNR_map = retrieve_SNR_map(endpoint_name)
 
     algorithm_start_time_in_seconds = time.time()
 
@@ -180,28 +222,27 @@ def smart_algorithm(monthly_mean_min,
 
                 start_time_in_seconds = time.time()
 
-                MPC_emp_stat_power = \
-                    empirically_estimate_imbalanced_MPC_statistical_power(np.array(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                          np.array(theo_drug_arm_patient_pop_params_hat_list),
-                                                                          len(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                          len(theo_drug_arm_patient_pop_params_hat_list),
-                                                                          num_baseline_months,
-                                                                          num_testing_months,
-                                                                          minimum_required_baseline_seizure_count,
-                                                                          placebo_mu,
-                                                                          placebo_sigma,
-                                                                          drug_mu,
-                                                                          drug_sigma,
-                                                                          num_trials)
+                emp_stat_power = \
+                    estimate_emp_stat_power(theo_placebo_arm_patient_pop_params_hat_list,
+                                            theo_drug_arm_patient_pop_params_hat_list,
+                                            num_baseline_months,
+                                            num_testing_months,
+                                            minimum_required_baseline_seizure_count,
+                                            placebo_mu,
+                                            placebo_sigma,
+                                            drug_mu,
+                                            drug_sigma,
+                                            num_trials,
+                                            endpoint_name)
                 
                 stop_time_in_seconds = time.time()
                 total_runtime_in_seconds = np.round(stop_time_in_seconds - start_time_in_seconds, 3)
 
-                if(MPC_emp_stat_power > 0.9):
+                if(emp_stat_power >= target_stat_power):
 
                     reached_target_stat_power = True
                 
-                print('\n' + str(np.round(100*MPC_emp_stat_power, 3)) + ' %, ' + 
+                print('\n' + str(np.round(100*emp_stat_power, 3)) + ' %, ' + 
                              str(num_theo_patients) + ' patients, '   + 
                              str(total_runtime_in_seconds) + ' seconds, ' + 
                              str(np.round((time.time() - algorithm_start_time_in_seconds)/60, 3)) + ' minutes\n')
@@ -220,7 +261,9 @@ def dumb_algorithm(monthly_mean_min,
                    placebo_sigma,
                    drug_mu,
                    drug_sigma,
-                   num_trials):
+                   num_trials,
+                   endpoint_name,
+                   target_stat_power):
 
     theo_placebo_arm_patient_pop_params_hat_list = []
     theo_drug_arm_patient_pop_params_hat_list    = []
@@ -228,8 +271,6 @@ def dumb_algorithm(monthly_mean_min,
     reached_target_stat_power = False
     placebo_arm_or_drug_arm = 'placebo'
     num_theo_patients = 0
-
-    MPC_emp_stat_power = 0
 
     algorithm_start_time_in_seconds = time.time()
 
@@ -264,35 +305,49 @@ def dumb_algorithm(monthly_mean_min,
 
             start_time_in_seconds = time.time()
 
-            MPC_emp_stat_power = \
-                empirically_estimate_imbalanced_MPC_statistical_power(np.array(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                      np.array(theo_drug_arm_patient_pop_params_hat_list),
-                                                                      len(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                      len(theo_drug_arm_patient_pop_params_hat_list),
-                                                                      num_baseline_months,
-                                                                      num_testing_months,
-                                                                      minimum_required_baseline_seizure_count,
-                                                                      placebo_mu,
-                                                                      placebo_sigma,
-                                                                      drug_mu,
-                                                                      drug_sigma,
-                                                                      num_trials)
+            emp_stat_power = \
+                estimate_emp_stat_power(theo_placebo_arm_patient_pop_params_hat_list,
+                                        theo_drug_arm_patient_pop_params_hat_list,
+                                        num_baseline_months,
+                                        num_testing_months,
+                                        minimum_required_baseline_seizure_count,
+                                        placebo_mu,
+                                        placebo_sigma,
+                                        drug_mu,
+                                        drug_sigma,
+                                        num_trials,
+                                        endpoint_name)
                 
             stop_time_in_seconds = time.time()
             total_runtime_in_seconds = np.round(stop_time_in_seconds - start_time_in_seconds, 3)
 
-            if(MPC_emp_stat_power > 0.9):
+            if(emp_stat_power >= target_stat_power):
 
                 reached_target_stat_power = True
                 
-            print('\n' + str(np.round(100*MPC_emp_stat_power, 3)) + ' %, ' + 
+            print('\n' + str(np.round(100*emp_stat_power, 3)) + ' %, ' + 
                          str(num_theo_patients) + ' patients, '   + 
                          str(total_runtime_in_seconds) + ' seconds, ' + 
                          str(np.round((time.time() - algorithm_start_time_in_seconds)/60, 3)) + ' minutes\n')
 
     return num_theo_patients
 
-'''
+
+def save_results(num_theo_patients,
+                 endpoint_name,
+                 smart_or_dumb):
+    
+    text_file_path = endpoint_name + '_' + smart_or_dumb + '.txt'
+
+    if( not os.path.isfile(text_file_path) ):
+
+        Path(text_file_path).touch()
+
+    with open(text_file_path, 'a') as text_file:
+
+        text_file.write(str(num_theo_patients))
+        
+
 if(__name__=='__main__'):
 
     endpoint_name = sys.argv[1]
@@ -314,7 +369,7 @@ if(__name__=='__main__'):
     
     num_trials = 2000
 
-    SNR_map = retrieve_SNR_map(endpoint_name)
+    target_stat_power = 0.1
 
     if(smart_or_dumb == 'smart'):
 
@@ -331,7 +386,8 @@ if(__name__=='__main__'):
                             drug_mu,
                             drug_sigma,
                             num_trials,
-                            SNR_map)
+                            endpoint_name,
+                            target_stat_power)
 
     elif(smart_or_dumb == 'dumb'):
 
@@ -347,11 +403,15 @@ if(__name__=='__main__'):
                            placebo_sigma,
                            drug_mu,
                            drug_sigma,
-                           num_trials)
+                           num_trials,
+                           endpoint_name,
+                           target_stat_power)
     
     else:
 
-        raise ValueError('The first parameter to MPC_cost.py from the command shell should either be \'smart\' or \'dumb\'')
-'''
-    
+        raise ValueError('The \'smart_or_dumb\' parameter to cost.py from the command shell should either be \'smart\' or \'dumb\'')
+
+    save_results(num_theo_patients,
+                 endpoint_name,
+                 smart_or_dumb)
     
