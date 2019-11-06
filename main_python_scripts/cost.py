@@ -6,7 +6,9 @@ import time
 #import keras.models as models
 sys.path.insert(0, os.getcwd())
 from utility_code.seizure_diary_generation import generate_seizure_diary
+from utility_code.empirical_estimation import empirically_estimate_imbalanced_RR50_statistical_power
 from utility_code.empirical_estimation import empirically_estimate_imbalanced_MPC_statistical_power
+from utility_code.empirical_estimation import empirically_estimate_imbalanced_TTP_statistical_power
 
 
 def retrieve_SNR_map(endpoint_name):
@@ -90,6 +92,33 @@ def estimate_patient_loc(monthly_mean_min,
         estims_within_SNR_map = monthly_mean_hat_within_SNR_map and monthly_std_dev_hat_within_SNR_map and estimated_location_overdispersed
     
     return [monthly_mean_hat, monthly_std_dev_hat]
+
+
+def estimate_emp_stat_power(theo_placebo_arm_patient_pop_params_hat_list,
+                            theo_drug_arm_patient_pop_params_hat_list,
+                            num_baseline_months,
+                            num_testing_months,
+                            minimum_required_baseline_seizure_count,
+                            placebo_mu,
+                            placebo_sigma,
+                            drug_mu,
+                            drug_sigma,
+                            num_trials,
+                            endpoint_name):
+
+    emp_stat_power = \
+        empirically_estimate_imbalanced_MPC_statistical_power(np.array(theo_placebo_arm_patient_pop_params_hat_list),
+                                                                       np.array(theo_drug_arm_patient_pop_params_hat_list),
+                                                                       len(theo_placebo_arm_patient_pop_params_hat_list),
+                                                                       len(theo_drug_arm_patient_pop_params_hat_list),
+                                                                       num_baseline_months,
+                                                                       num_testing_months,
+                                                                       minimum_required_baseline_seizure_count,
+                                                                       placebo_mu,
+                                                                       placebo_sigma,
+                                                                       drug_mu,
+                                                                       drug_sigma,
+                                                                       num_trials)
 
 
 def smart_algorithm(monthly_mean_min,
@@ -263,10 +292,11 @@ def dumb_algorithm(monthly_mean_min,
 
     return num_theo_patients
 
-
+'''
 if(__name__=='__main__'):
 
-    smart_or_dumb = sys.argv[1]
+    endpoint_name = sys.argv[1]
+    smart_or_dumb = sys.argv[2]
 
     monthly_mean_min    = 1
     monthly_mean_max    = 15
@@ -283,8 +313,6 @@ if(__name__=='__main__'):
     drug_sigma    = 0.05
     
     num_trials = 2000
-
-    endpoint_name = 'MPC'
 
     SNR_map = retrieve_SNR_map(endpoint_name)
 
@@ -305,7 +333,7 @@ if(__name__=='__main__'):
                             num_trials,
                             SNR_map)
 
-    if(smart_or_dumb == 'dumb'):
+    elif(smart_or_dumb == 'dumb'):
 
         num_theo_patients = \
             dumb_algorithm(monthly_mean_min,
@@ -324,4 +352,6 @@ if(__name__=='__main__'):
     else:
 
         raise ValueError('The first parameter to MPC_cost.py from the command shell should either be \'smart\' or \'dumb\'')
+'''
+    
     
