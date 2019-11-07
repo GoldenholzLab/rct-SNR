@@ -1,3 +1,4 @@
+: '
 #!/usr/bin/bash
 
 #SBATCH -p short
@@ -19,3 +20,9 @@ module load python/3.6.0
 source activate working_env
 
 srun -c 1 python -u main_python_scripts/TTP_cost.py ${inputs[@]}
+'
+
+inputs[0]=$1
+inputs[1]=$2
+
+python main_python_scripts/TTP_cost.py ${inputs[@]}
