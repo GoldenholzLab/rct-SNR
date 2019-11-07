@@ -13,20 +13,20 @@ num_estims=100
 
 for ((x=1; x<=$num_estims; x=x+1))
 do
-    if [ -f RR50_smart/$x.txt ]
+    if [ ! -f RR50_smart/$x.txt ]
     then
         sbatch RR50_or_MPC_cost_wrapper.sh RR50 smart $x
     fi
-    if [ -f MPC_smart/$x.txt ]
+    if [ ! -f MPC_smart/$x.txt ]
     then
         sbatch RR50_or_MPC_cost_wrapper.sh MPC  smart $x
     fi
     #sbatch TTP_cost_wrapper.sh              smart $x
-    if [ -f RR50_dumb/$x.txt ]
+    if [ ! -f RR50_dumb/$x.txt ]
     then
         sbatch RR50_or_MPC_cost_wrapper.sh RR50 dumb  $x
     fi
-    if [ -f MPC_dumb/$x.txt ]
+    if [ ! -f MPC_dumb/$x.txt ]
     then
         sbatch RR50_or_MPC_cost_wrapper.sh MPC  dumb  $x
     fi
