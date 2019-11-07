@@ -115,4 +115,4 @@ if(__name__=='__main__'):
 
         [smart_cost, dumb_cost] = calculate_cost_of_TTP(endpoint_name, num_baseline_months)
 
-    print([smart_cost, dumb_cost])
+    print('\nsmart algorithm cost: ' + str(smart_cost) + ' $\n dumb algorithm cost: ' + str(dumb_cost) + ' $\n')
