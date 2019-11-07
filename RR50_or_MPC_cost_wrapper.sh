@@ -19,4 +19,4 @@ module load conda2/4.2.13
 module load python/3.6.0
 source activate working_env
 
-python main_python_scripts/RR50_or_MPC_cost.py ${inputs[@]}
+srun -c 1 python -u main_python_scripts/RR50_or_MPC_cost.py ${inputs[@]}
