@@ -363,7 +363,7 @@ if(__name__=='__main__'):
     
     num_trials = 2000
 
-    target_stat_power = 0.1
+    target_stat_power = 0.9
 
     print('\n' + endpoint_name + ' ' + smart_or_dumb + ' ' + index + '\n')
 
