@@ -21,16 +21,6 @@ do
     #sbatch TTP_cost_wrapper.sh              dumb  $x
 done
 
-for ((x=1; x<=7; x=x+1))
-do
-    sbatch RR50_or_MPC_cost_wrapper.sh MPC smart  $x
-done
-
-for ((x=1; x<=27; x=x+1))
-do
-    sbatch RR50_or_MPC_cost_wrapper.sh MPC  dumb  $x
-done
-
 : '
 num_estims=10
 
