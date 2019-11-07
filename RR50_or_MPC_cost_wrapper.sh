@@ -21,6 +21,7 @@ source activate working_env
 
 srun -c 1 python -u main_python_scripts/RR50_or_MPC_cost.py ${inputs[@]}
 
+
 : '
 inputs[0]=$1
 inputs[1]=$2
