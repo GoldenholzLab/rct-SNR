@@ -71,7 +71,7 @@ def generate_theo_patient_pop_params(monthly_mean_min,
     
     return theo_patient_pop_params
 
-'''
+
 def generate_NV_model_patient_pop_params(num_theo_patients_per_trial_arm,
                                          one_or_two):
 
@@ -112,7 +112,7 @@ def generate_NV_model_patient_pop_params(num_theo_patients_per_trial_arm,
         NV_model_patient_pop_params[patient_index, 1] = monthly_std_dev
 
     return NV_model_patient_pop_params
-'''
+
 
 def convert_theo_pop_hist(monthly_mean_min,
                           monthly_mean_max,
