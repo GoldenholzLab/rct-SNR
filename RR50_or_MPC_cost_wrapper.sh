@@ -2,7 +2,7 @@
 
 #SBATCH -p short
 #SBATCH --mem-per-cpu=10G
-#SBATCH -t 0-01:00
+#SBATCH -t 0-02:30
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
@@ -20,7 +20,6 @@ module load python/3.6.0
 source activate working_env
 
 srun -c 1 python -u main_python_scripts/RR50_or_MPC_cost.py ${inputs[@]}
-
 
 : '
 inputs[0]=$1

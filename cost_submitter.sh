@@ -13,12 +13,22 @@ num_estims=100
 
 for ((x=1; x<=$num_estims; x=x+1))
 do
-    #sbatch RR50_or_MPC_cost_wrapper.sh RR50 smart $x
-    sbatch RR50_or_MPC_cost_wrapper.sh MPC  smart $x
+    sbatch RR50_or_MPC_cost_wrapper.sh RR50 smart $x
+    #sbatch RR50_or_MPC_cost_wrapper.sh MPC  smart $x
     #sbatch TTP_cost_wrapper.sh              smart $x
-    #sbatch RR50_or_MPC_cost_wrapper.sh RR50 dumb  $x
-    sbatch RR50_or_MPC_cost_wrapper.sh MPC  dumb  $x
+    sbatch RR50_or_MPC_cost_wrapper.sh RR50 dumb  $x
+    #sbatch RR50_or_MPC_cost_wrapper.sh MPC  dumb  $x
     #sbatch TTP_cost_wrapper.sh              dumb  $x
+done
+
+for ((x=1; x<=7; x=x+1))
+do
+    sbatch RR50_or_MPC_cost_wrapper.sh MPC smart  $x
+done
+
+for ((x=1; x<=27; x=x+1))
+do
+    sbatch RR50_or_MPC_cost_wrapper.sh MPC  dumb  $x
 done
 
 : '
