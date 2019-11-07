@@ -1,4 +1,3 @@
-: '
 #!/usr/bin/bash
 
 #SBATCH -p short
@@ -21,7 +20,7 @@ do
     sbatch RR50_or_MPC_cost_wrapper.sh MPC  dumb  $x
     #sbatch TTP_cost_wrapper.sh              dumb  $x
 done
-'
+
 : '
 num_estims=10
 
