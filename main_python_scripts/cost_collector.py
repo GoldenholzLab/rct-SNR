@@ -60,7 +60,7 @@ def calculate_cost_of_RR50_or_MPC(endpoint_name,
     smart_cost = smart_num_patients*(num_baseline_months + num_testing_months)*1295
     dumb_cost  =  dumb_num_patients*(num_baseline_months + num_testing_months)*1295
 
-    return [smart_cost, dumb_cost]
+    return [smart_num_patients, dumb_num_patients, smart_cost, dumb_cost]
 
 
 def calculate_cost_of_TTP(endpoint_name, num_baseline_months):
@@ -78,6 +78,9 @@ def calculate_cost_of_TTP(endpoint_name, num_baseline_months):
      dumb_expected_drug_arm_TTP_array] = \
          retrive_num_patients_from_TTP(endpoint_name_dumb_folder_name)
     
+    smart_num_patients = np.int_(np.round(np.mean(smart_num_patients_array)))
+    dumb_num_patients  = np.int_(np.round(np.mean(dumb_num_patients_array)))
+
     smart_num_patients_per_trial_arm = np.int_(np.round(np.mean(smart_num_patients_array)/2))
     dumb_num_patients_per_trial_arm  = np.int_(np.round(np.mean(dumb_num_patients_array)/2))
 
@@ -94,7 +97,7 @@ def calculate_cost_of_TTP(endpoint_name, num_baseline_months):
     smart_cost = np.int_(np.round(smart_placebo_cost + smart_drug_cost))
     dumb_cost  = np.int_(np.round(dumb_placebo_cost  + dumb_drug_cost))
 
-    return [smart_cost, dumb_cost]
+    return [smart_num_patients, dumb_num_patients, smart_cost, dumb_cost]
 
 
 if(__name__=='__main__'):
@@ -106,13 +109,23 @@ if(__name__=='__main__'):
     
     if(endpoint_name == 'RR50' or endpoint_name == 'MPC'):
 
-        [smart_cost, dumb_cost] = \
-            calculate_cost_of_RR50_or_MPC(endpoint_name,
-                                          num_baseline_months,
-                                          num_testing_months)
+        [smart_num_patients, 
+         dumb_num_patients, 
+         smart_cost, 
+         dumb_cost] = \
+             calculate_cost_of_RR50_or_MPC(endpoint_name,
+                                           num_baseline_months,
+                                           num_testing_months)
     
     elif(endpoint_name == 'TTP'):
 
-        [smart_cost, dumb_cost] = calculate_cost_of_TTP(endpoint_name, num_baseline_months)
+        [smart_num_patients, 
+         dumb_num_patients, 
+         smart_cost, 
+         dumb_cost] = \
+             calculate_cost_of_TTP(endpoint_name, num_baseline_months)
 
-    print('\nsmart algorithm cost: ' + str(smart_cost) + ' $\n dumb algorithm cost: ' + str(dumb_cost) + ' $\n')
+    print(  '\nnumber of patients, smart algorithm: ' + str(smart_num_patients) + \
+            '\nnumber of patients,  dumb algorithm: ' + str(dumb_num_patients)  + \
+            '\nsmart algorithm cost: ' + str(smart_cost) + \
+          ' $\n dumb algorithm cost: ' + str(dumb_cost)  + ' $\n')
