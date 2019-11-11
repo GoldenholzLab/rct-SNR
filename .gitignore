@@ -1,6 +1,8 @@
 # Apple Files
 *.DS_store
 
+*.ipynb
+
 # comma de-limited files
 *.csv
 
