@@ -88,15 +88,15 @@ def generate_seizure_diaries_per_trial_arm(num_theo_patients_per_trial_arm,
             drug_arm_testing_monthly_seizure_diaries]
 
 
-def p_value_calculations(num_testing_months,
-                         testing_time_scaling_const,
-                         num_theo_patients_per_trial_arm,
-                         placebo_arm_baseline_monthly_seizure_diaries,
-                         placebo_arm_testing_monthly_seizure_diaries,
-                         placebo_arm_testing_daily_seizure_diaries,
-                         drug_arm_baseline_monthly_seizure_diaries,
-                         drug_arm_testing_monthly_seizure_diaries,
-                         drug_arm_testing_daily_seizure_diaries):
+def calculate_endpoints(num_testing_months,
+                        testing_time_scaling_const,
+                        num_theo_patients_per_trial_arm,
+                        placebo_arm_baseline_monthly_seizure_diaries,
+                        placebo_arm_testing_monthly_seizure_diaries,
+                        placebo_arm_testing_daily_seizure_diaries,
+                        drug_arm_baseline_monthly_seizure_diaries,
+                        drug_arm_testing_monthly_seizure_diaries,
+                        drug_arm_testing_daily_seizure_diaries):
 
     num_testing_days = num_testing_months*testing_time_scaling_const
 
@@ -122,6 +122,7 @@ def p_value_calculations(num_testing_months,
                                                 num_theo_patients_per_trial_arm,
                                                 num_testing_days)
     
+    '''
     RR50_p_value = \
             calculate_fisher_exact_p_value(placebo_arm_percent_changes,
                                            drug_arm_percent_changes)
@@ -135,8 +136,11 @@ def p_value_calculations(num_testing_months,
                                       placebo_arm_observed_array, 
                                       drug_arm_TTP_times, 
                                       drug_arm_observed_array)
+    '''
     
-    return [RR50_p_value, MPC_p_value, TTP_p_value]
+    return [placebo_arm_percent_changes, drug_arm_percent_changes,
+            placebo_arm_TTP_times,       placebo_arm_observed_array,
+            drug_arm_TTP_times,          drug_arm_observed_array]
 
 
 if(__name__=='__main__'):
@@ -146,8 +150,8 @@ if(__name__=='__main__'):
     monthly_std_dev_min = 1
     monthly_std_dev_max = 8
 
-    max_theo_patients_per_trial_arm  = 14
-    theo_patients_per_trial_arm_step = 2
+    max_theo_patients_per_trial_arm  = 50
+    theo_patients_per_trial_arm_step = 10
 
     num_baseline_months = 2
     num_testing_months  = 3
@@ -172,6 +176,8 @@ if(__name__=='__main__'):
 
     patient_nums = np.arange(theo_patients_per_trial_arm_step, max_theo_patients_per_trial_arm + theo_patients_per_trial_arm_step, theo_patients_per_trial_arm_step)
 
+    RR50_p_value_matrix = np.zeros((np.int_(max_theo_patients_per_trial_arm/theo_patients_per_trial_arm_step), num_trials))
+
     for trial_index in range(num_trials):
 
         [placebo_arm_baseline_monthly_seizure_diaries,
@@ -192,15 +198,36 @@ if(__name__=='__main__'):
                                                     drug_mu,
                                                     drug_sigma)
 
+        [placebo_arm_percent_changes, drug_arm_percent_changes,
+         placebo_arm_TTP_times,       placebo_arm_observed_array,
+         drug_arm_TTP_times,          drug_arm_observed_array] = \
+             calculate_endpoints(num_testing_months,
+                                 testing_time_scaling_const,
+                                 max_theo_patients_per_trial_arm,
+                                 placebo_arm_baseline_monthly_seizure_diaries,
+                                 placebo_arm_testing_monthly_seizure_diaries,
+                                 placebo_arm_testing_daily_seizure_diaries,
+                                 drug_arm_baseline_monthly_seizure_diaries,
+                                 drug_arm_testing_monthly_seizure_diaries,
+                                 drug_arm_testing_daily_seizure_diaries)
+        
         for patient_num in patient_nums:
-            
-            [RR50_p_value, MPC_p_value, TTP_p_value] = \
-                p_value_calculations(num_testing_months,
-                                     testing_time_scaling_const,
-                                     patient_num,
-                                     placebo_arm_baseline_monthly_seizure_diaries,
-                                     placebo_arm_testing_monthly_seizure_diaries,
-                                     placebo_arm_testing_daily_seizure_diaries,
-                                     drug_arm_baseline_monthly_seizure_diaries,
-                                     drug_arm_testing_monthly_seizure_diaries,
-                                     drug_arm_testing_daily_seizure_diaries)
+
+            RR50_p_value = \
+                calculate_fisher_exact_p_value(placebo_arm_percent_changes,
+                                               drug_arm_percent_changes)
+
+            MPC_p_value = \
+                calculate_Mann_Whitney_U_p_value(placebo_arm_percent_changes,
+                                                 drug_arm_percent_changes)
+    
+            TTP_p_value = \
+                calculate_logrank_p_value(placebo_arm_TTP_times, 
+                                          placebo_arm_observed_array, 
+                                          drug_arm_TTP_times, 
+                                          drug_arm_observed_array)
+
+            RR50_p_value_matrix[patient_num - 1, trial_index] = RR50_p_value
+
+    import pandas as pd
+    print(pd.DataFrame(RR50_p_value_matrix).to_string())
