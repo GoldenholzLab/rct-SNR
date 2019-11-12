@@ -19,7 +19,7 @@ theo_patients_per_trial_arm_step=50
 
 num_baseline_months=2
 num_testing_months=3
-baseline_time_scaling_const=1∂
+baseline_time_scaling_const=1
 testing_time_scaling_const=28
 minimum_required_baseline_seizure_count=4
 
@@ -30,7 +30,7 @@ drug_sigma=0.05
 
 num_trials=20
 
-folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
+folder='/home/jmr95/rct-SNR/test_algo'
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
