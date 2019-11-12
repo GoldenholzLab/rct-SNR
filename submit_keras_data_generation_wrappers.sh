@@ -32,10 +32,10 @@ num_trials=20
 
 folder='/home/jmr95/rct-SNR/test_algo'
 
-inputs[0]=$monthly_mean_min
-inputs[1]=$monthly_mean_max
-inputs[2]=$monthly_std_dev_min
-inputs[3]=$monthly_std_dev_max
+inputs[0]=$monthly_mean_lower_bound
+inputs[1]=$monthly_mean_upper_bound
+inputs[2]=$monthly_std_dev_lower_bound
+inputs[3]=$monthly_std_dev_upper_bound
 
 inputs[4]=$max_theo_patients_per_trial_arm
 inputs[5]=$theo_patients_per_trial_arm_step
