@@ -339,31 +339,59 @@ def store_powers_and_histograms(folder,
         json.dump(theo_drug_arm_patient_pop_hists.tolist(), json_file)
 
 
+def take_input_arguments_from_command_shell():
+
+    monthly_mean_min    = int(sys.argv[1])
+    monthly_mean_max    = int(sys.argv[2])
+    monthly_std_dev_min = int(sys.argv[3])
+    monthly_std_dev_max = int(sys.argv[4])
+
+    max_theo_patients_per_trial_arm  = int(sys.argv[5])
+    theo_patients_per_trial_arm_step = int(sys.argv[6])
+
+    num_baseline_months = int(sys.argv[7])
+    num_testing_months  = int(sys.argv[8])
+    baseline_time_scaling_const = int(sys.argv[9])
+    testing_time_scaling_const  = int(sys.argv[10])
+    minimum_required_baseline_seizure_count = int(sys.argv[11])
+
+    placebo_mu    = float(sys.argv[12])
+    placebo_sigma = float(sys.argv[13])
+    drug_mu       = float(sys.argv[14])
+    drug_sigma    = float(sys.argv[15])
+
+    num_trials = int(sys.argv[16])
+
+    folder = sys.argv[17]
+    file_index = sys.argv[18]
+
+    return [monthly_mean_min,    monthly_mean_max,
+            monthly_std_dev_min, monthly_std_dev_max,
+            max_theo_patients_per_trial_arm,
+            theo_patients_per_trial_arm_step,
+            num_baseline_months, num_testing_months,
+            baseline_time_scaling_const,
+            testing_time_scaling_const,
+            minimum_required_baseline_seizure_count,
+            placebo_mu, placebo_sigma,
+            drug_mu,    drug_sigma,
+            num_trials, folder, file_index]
+
+
 if(__name__=='__main__'):
 
-    monthly_mean_min    = 4
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 8
-
-    max_theo_patients_per_trial_arm  = 300
-    theo_patients_per_trial_arm_step = 50
-
-    num_baseline_months = 2
-    num_testing_months  = 3
-    baseline_time_scaling_const = 1
-    testing_time_scaling_const  = 28
-    minimum_required_baseline_seizure_count = 4
-
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
-
-    num_trials = 20
-
-    file_index = '1'
-    folder = '/Users/juanromero/Documents/Python_3_Files/useless_folder'
+    [monthly_mean_min,    monthly_mean_max,
+     monthly_std_dev_min, monthly_std_dev_max,
+     max_theo_patients_per_trial_arm,
+     theo_patients_per_trial_arm_step,
+     num_baseline_months, num_testing_months,
+     baseline_time_scaling_const,
+     testing_time_scaling_const,
+     minimum_required_baseline_seizure_count,
+     placebo_mu, placebo_sigma,
+     drug_mu,    drug_sigma,
+     num_trials, folder, file_index] = \
+         take_input_arguments_from_command_shell()
 
     [RR50_stat_powers, MPC_stat_powers, TTP_stat_powers, 
      theo_placebo_arm_patient_pop_hists, 
