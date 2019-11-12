@@ -170,30 +170,22 @@ def calculate_trial_successes(patient_num,
     return [RR50_p_value, MPC_p_value, TTP_p_value]
 
 
-if(__name__=='__main__'):
-
-    monthly_mean_min    = 4
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 8
-
-    max_theo_patients_per_trial_arm  = 300
-    theo_patients_per_trial_arm_step = 50
-
-    num_baseline_months = 2
-    num_testing_months  = 3
-    baseline_time_scaling_const = 1
-    testing_time_scaling_const  = 28
-    minimum_required_baseline_seizure_count = 4
-
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
-
-    num_trials = 200
-
-    algorithm_estim_start_time_in_seconds = time.time()
+def generate_powers_and_histograms(monthly_mean_min,
+                                   monthly_mean_max,
+                                   monthly_std_dev_min,
+                                   monthly_std_dev_max,
+                                   max_theo_patients_per_trial_arm,
+                                   theo_patients_per_trial_arm_step,
+                                   num_baseline_months,
+                                   num_testing_months,
+                                   baseline_time_scaling_const,
+                                   testing_time_scaling_const,
+                                   minimum_required_baseline_seizure_count,
+                                   placebo_mu,
+                                   placebo_sigma,
+                                   drug_mu,
+                                   drug_sigma,
+                                   num_trials):
 
     [theo_placebo_arm_patient_pop_params, 
      theo_drug_arm_patient_pop_params] = \
@@ -204,11 +196,11 @@ if(__name__=='__main__'):
                                                         max_theo_patients_per_trial_arm)
 
     patient_nums = np.arange(theo_patients_per_trial_arm_step, max_theo_patients_per_trial_arm + theo_patients_per_trial_arm_step, theo_patients_per_trial_arm_step)
-    num_trial_sizes = len(patient_nums)
+    num_trial_arm_sizes = len(patient_nums)
 
-    RR50_p_value_matrix = np.zeros((num_trial_sizes, num_trials))
-    MPC_p_value_matrix  = np.zeros((num_trial_sizes, num_trials))
-    TTP_p_value_matrix  = np.zeros((num_trial_sizes, num_trials))
+    RR50_p_value_matrix = np.zeros((num_trial_arm_sizes, num_trials))
+    MPC_p_value_matrix  = np.zeros((num_trial_arm_sizes, num_trials))
+    TTP_p_value_matrix  = np.zeros((num_trial_arm_sizes, num_trials))
 
     for trial_index in range(num_trials):
 
@@ -249,7 +241,7 @@ if(__name__=='__main__'):
         endpoint_calc_runtime_in_seconds_str = str(np.round(endpoint_stop_time_in_seconds - endpoint_start_time_in_seconds, 3))
         print( 'trial # ' + str(trial_index) + ' runtime: ' + endpoint_calc_runtime_in_seconds_str + ' seconds')
         
-        for patient_num_index in range(num_trial_sizes):
+        for patient_num_index in range(num_trial_arm_sizes):
 
             patient_num = patient_nums[patient_num_index]
 
@@ -266,7 +258,7 @@ if(__name__=='__main__'):
             
             p_value_calc_stop_time = time.time()
             p_value_calc_runtime_in_seconds_str = str(np.round(p_value_calc_stop_time - p_value_calc_start_time, 3))
-            print( 'trial size ' + str(patient_num) + ' runtime: ' + p_value_calc_runtime_in_seconds_str + ' seconds')
+            print( 'trial arm size ' + str(patient_num) + ' runtime: ' + p_value_calc_runtime_in_seconds_str + ' seconds')
 
             RR50_p_value_matrix[patient_num_index, trial_index] = RR50_p_value < 0.05
             MPC_p_value_matrix[patient_num_index, trial_index]  = MPC_p_value  < 0.05
@@ -276,34 +268,74 @@ if(__name__=='__main__'):
     MPC_stat_powers  = np.mean(MPC_p_value_matrix,  1)
     TTP_stat_powers  = np.mean(TTP_p_value_matrix,  1)
 
-    algorithm_estim_stop_time_in_seconds = time.time()
+    num_monthly_std_devs = monthly_std_dev_max - monthly_std_dev_min + 1
+    num_monthly_means    = monthly_mean_max - monthly_mean_min + 1
+    theo_placebo_arm_patient_pop_hists = np.zeros((num_monthly_std_devs, num_monthly_means, num_trial_arm_sizes))
+    theo_drug_arm_patient_pop_hists    = np.zeros((num_monthly_std_devs, num_monthly_means, num_trial_arm_sizes))
 
-    import pandas as pd
-
-    for patient_num_index in range(num_trial_sizes):
+    for patient_num_index in range(num_trial_arm_sizes):
 
         patient_num = patient_nums[patient_num_index]
 
-        theo_placebo_arm_patient_pop_hist = \
+        theo_placebo_arm_patient_pop_hists[:, :, patient_num_index] = \
             convert_theo_pop_hist(monthly_mean_min,
                                   monthly_mean_max,
                                   monthly_std_dev_min,
                                   monthly_std_dev_max,
                                   theo_placebo_arm_patient_pop_params[0:patient_num])
         
-        theo_drug_arm_patient_pop_hist = \
+        theo_drug_arm_patient_pop_hists[:, :, patient_num_index] = \
             convert_theo_pop_hist(monthly_mean_min,
                                   monthly_mean_max,
                                   monthly_std_dev_min,
                                   monthly_std_dev_max,
                                   theo_drug_arm_patient_pop_params[0:patient_num])
-        
-        print('\n\ntrial size: '            + str(patient_num)                                           + ' patients\n'
-               '\nRR50 statistical power: ' + str(np.round(100*RR50_stat_powers[patient_num_index], 3))  + ' %\n'   + \
-               '\n MPC statistical power: ' + str(np.round(100*MPC_stat_powers[patient_num_index],  3))  + ' %\n'   + \
-               '\n TTP statistical power: ' + str(np.round(100*TTP_stat_powers[patient_num_index],  3))  + ' %\n\n' + \
-               pd.DataFrame(theo_placebo_arm_patient_pop_hist).to_string()             +   '\n\n' + \
-               pd.DataFrame(theo_drug_arm_patient_pop_hist).to_string()                +   '\n')
     
-    print('algorithm runtime: ' + str(np.round(algorithm_estim_stop_time_in_seconds - algorithm_estim_start_time_in_seconds, 3)) + ' seconds')
+    return [RR50_stat_powers, MPC_stat_powers, TTP_stat_powers, 
+            theo_placebo_arm_patient_pop_hists, 
+            theo_drug_arm_patient_pop_hists]
+
+
+if(__name__=='__main__'):
+
+    monthly_mean_min    = 4
+    monthly_mean_max    = 16
+    monthly_std_dev_min = 1
+    monthly_std_dev_max = 8
+
+    max_theo_patients_per_trial_arm  = 300
+    theo_patients_per_trial_arm_step = 50
+
+    num_baseline_months = 2
+    num_testing_months  = 3
+    baseline_time_scaling_const = 1
+    testing_time_scaling_const  = 28
+    minimum_required_baseline_seizure_count = 4
+
+    placebo_mu    = 0
+    placebo_sigma = 0.05
+    drug_mu       = 0.2
+    drug_sigma    = 0.05
+
+    num_trials = 2000
+
+    [RR50_stat_powers, MPC_stat_powers, TTP_stat_powers, 
+     theo_placebo_arm_patient_pop_hists, 
+     theo_drug_arm_patient_pop_hists] = \
+         generate_powers_and_histograms(monthly_mean_min,
+                                        monthly_mean_max,
+                                        monthly_std_dev_min,
+                                        monthly_std_dev_max,
+                                        max_theo_patients_per_trial_arm,
+                                        theo_patients_per_trial_arm_step,
+                                        num_baseline_months,
+                                        num_testing_months,
+                                        baseline_time_scaling_const,
+                                        testing_time_scaling_const,
+                                        minimum_required_baseline_seizure_count,
+                                        placebo_mu,
+                                        placebo_sigma,
+                                        drug_mu,
+                                        drug_sigma,
+                                        num_trials)
 
