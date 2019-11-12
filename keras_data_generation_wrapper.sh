@@ -57,4 +57,9 @@ inputs[15]=${16}
 inputs[16]=${17}
 inputs[17]=${18}
 
+module load gcc/6.2.0
+module load conda2/4.2.13
+module load python/3.6.0
+source activate working_env
+
 python -u main_python_scripts/keras_data_generation.py ${inputs[@]}
