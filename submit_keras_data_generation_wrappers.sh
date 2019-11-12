@@ -1,3 +1,4 @@
+: '
 #!/usr/bin/bash
 
 #SBATCH -p short
@@ -8,6 +9,7 @@
 #SBATCH -o jmr95_%j.out
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
+'
 
 monthly_mean_min=4
 monthly_mean_max=16
@@ -31,6 +33,7 @@ drug_sigma=0.05
 num_trials=20
 
 folder='/home/jmr95/rct-SNR/test_algo'
+#folder='/Users/juanromero/Documents/Python_3_Files/useless_folder'
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
@@ -64,7 +67,8 @@ for ((file_index=1; file_index<=10; file_index=file_index+1))
 do
     inputs[17]=$file_index
 
-    sbatch keras_data_generation_wrapper.sh ${inputs[@]}
+    #sbatch keras_data_generation_wrapper.sh ${inputs[@]}
+    bash keras_data_generation_wrapper.sh ${inputs[@]}
 
 done
 
@@ -74,7 +78,8 @@ for ((file_index=1; file_index<=2; file_index=file_index+1))
 do
     inputs[17]=$file_index
 
-    sbatch keras_data_generation_wrapper.sh ${inputs[@]}
+    #sbatch keras_data_generation_wrapper.sh ${inputs[@]}
+    bash keras_data_generation_wrapper.sh ${inputs[@]}
 
 done
 
