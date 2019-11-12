@@ -2,15 +2,17 @@ import numpy as np
 import time
 import json
 import os
-from patient_population_generation import generate_theo_patient_pop_params
-from patient_population_generation import generate_heterogenous_placebo_arm_patient_pop
-from patient_population_generation import generate_heterogenous_drug_arm_patient_pop
-from patient_population_generation import convert_theo_pop_hist
-from endpoint_functions import calculate_percent_changes
-from endpoint_functions import calculate_time_to_prerandomizations
-from endpoint_functions import calculate_fisher_exact_p_value
-from endpoint_functions import calculate_Mann_Whitney_U_p_value
-from endpoint_functions import calculate_logrank_p_value
+import sys
+sys.path.insert(0, os.getcwd())
+from utility_code.patient_population_generation import generate_theo_patient_pop_params
+from utility_code.patient_population_generation import generate_heterogenous_placebo_arm_patient_pop
+from utility_code.patient_population_generation import generate_heterogenous_drug_arm_patient_pop
+from utility_code.patient_population_generation import convert_theo_pop_hist
+from utility_code.endpoint_functions import calculate_percent_changes
+from utility_code.endpoint_functions import calculate_time_to_prerandomizations
+from utility_code.endpoint_functions import calculate_fisher_exact_p_value
+from utility_code.endpoint_functions import calculate_Mann_Whitney_U_p_value
+from utility_code.endpoint_functions import calculate_logrank_p_value
 
 
 def generate_theo_patient_pop_params_per_trial_arm(monthly_mean_min,
@@ -189,6 +191,8 @@ def generate_powers_and_histograms(monthly_mean_min,
                                    drug_sigma,
                                    num_trials):
 
+    algorithm_start_time_in_seconds = time.time()
+
     [theo_placebo_arm_patient_pop_params, 
      theo_drug_arm_patient_pop_params] = \
          generate_theo_patient_pop_params_per_trial_arm(monthly_mean_min,
@@ -241,7 +245,7 @@ def generate_powers_and_histograms(monthly_mean_min,
         
         endpoint_stop_time_in_seconds = time.time()
         endpoint_calc_runtime_in_seconds_str = str(np.round(endpoint_stop_time_in_seconds - endpoint_start_time_in_seconds, 3))
-        print( 'trial # ' + str(trial_index) + ' runtime: ' + endpoint_calc_runtime_in_seconds_str + ' seconds')
+        print( 'trial # ' + str(trial_index + 1) + ' runtime: ' + endpoint_calc_runtime_in_seconds_str + ' seconds')
         
         for patient_num_index in range(num_trial_arm_sizes):
 
@@ -293,6 +297,10 @@ def generate_powers_and_histograms(monthly_mean_min,
                                   monthly_std_dev_max,
                                   theo_drug_arm_patient_pop_params[0:patient_num])
     
+    algorithm_stop_time_in_seconds = time.time()
+    algorithm_runtime_in_minutes_str = str(np.round((algorithm_stop_time_in_seconds - algorithm_start_time_in_seconds)/60, 3))
+    print('algorithm runtime: ' + algorithm_runtime_in_minutes_str + ' minutes')
+
     return [RR50_stat_powers, MPC_stat_powers, TTP_stat_powers, 
             theo_placebo_arm_patient_pop_hists, 
             theo_drug_arm_patient_pop_hists]
