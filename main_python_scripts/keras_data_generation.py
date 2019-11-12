@@ -4,6 +4,7 @@ import json
 import os
 import sys
 sys.path.insert(0, os.getcwd())
+from utility_code.patient_population_generation import randomly_select_theo_patient_pop
 from utility_code.patient_population_generation import generate_theo_patient_pop_params
 from utility_code.patient_population_generation import generate_heterogenous_placebo_arm_patient_pop
 from utility_code.patient_population_generation import generate_heterogenous_drug_arm_patient_pop
@@ -13,6 +14,7 @@ from utility_code.endpoint_functions import calculate_time_to_prerandomizations
 from utility_code.endpoint_functions import calculate_fisher_exact_p_value
 from utility_code.endpoint_functions import calculate_Mann_Whitney_U_p_value
 from utility_code.endpoint_functions import calculate_logrank_p_value
+
 
 
 def generate_theo_patient_pop_params_per_trial_arm(monthly_mean_min,
@@ -174,10 +176,10 @@ def calculate_trial_successes(patient_num,
     return [RR50_p_value, MPC_p_value, TTP_p_value]
 
 
-def generate_powers_and_histograms(monthly_mean_min,
-                                   monthly_mean_max,
-                                   monthly_std_dev_min,
-                                   monthly_std_dev_max,
+def generate_powers_and_histograms(monthly_mean_lower_bound,
+                                   monthly_mean_upper_bound,
+                                   monthly_std_dev_lower_bound,
+                                   monthly_std_dev_upper_bound,
                                    max_theo_patients_per_trial_arm,
                                    theo_patients_per_trial_arm_step,
                                    num_baseline_months,
@@ -192,6 +194,15 @@ def generate_powers_and_histograms(monthly_mean_min,
                                    num_trials):
 
     algorithm_start_time_in_seconds = time.time()
+
+    [monthly_mean_min, 
+     monthly_mean_max,
+     monthly_std_dev_min, 
+     monthly_std_dev_max] = \
+         randomly_select_theo_patient_pop(monthly_mean_lower_bound,
+                                          monthly_mean_upper_bound,
+                                          monthly_std_dev_lower_bound,
+                                          monthly_std_dev_upper_bound)
 
     [theo_placebo_arm_patient_pop_params, 
      theo_drug_arm_patient_pop_params] = \
@@ -341,10 +352,10 @@ def store_powers_and_histograms(folder,
 
 def take_input_arguments_from_command_shell():
 
-    monthly_mean_min    = int(sys.argv[1])
-    monthly_mean_max    = int(sys.argv[2])
-    monthly_std_dev_min = int(sys.argv[3])
-    monthly_std_dev_max = int(sys.argv[4])
+    monthly_mean_lower_bound    = int(sys.argv[1])
+    monthly_mean_upper_bound    = int(sys.argv[2])
+    monthly_std_dev_lower_bound = int(sys.argv[3])
+    monthly_std_dev_upper_bound = int(sys.argv[4])
 
     max_theo_patients_per_trial_arm  = int(sys.argv[5])
     theo_patients_per_trial_arm_step = int(sys.argv[6])
@@ -365,8 +376,10 @@ def take_input_arguments_from_command_shell():
     folder = sys.argv[17]
     file_index = sys.argv[18]
 
-    return [monthly_mean_min,    monthly_mean_max,
-            monthly_std_dev_min, monthly_std_dev_max,
+    return [monthly_mean_lower_bound,    
+            monthly_mean_upper_bound,
+            monthly_std_dev_lower_bound, 
+            monthly_std_dev_upper_bound,
             max_theo_patients_per_trial_arm,
             theo_patients_per_trial_arm_step,
             num_baseline_months, num_testing_months,
@@ -380,8 +393,10 @@ def take_input_arguments_from_command_shell():
 
 if(__name__=='__main__'):
 
-    [monthly_mean_min,    monthly_mean_max,
-     monthly_std_dev_min, monthly_std_dev_max,
+    [monthly_mean_lower_bound,    
+     monthly_mean_upper_bound,
+     monthly_std_dev_lower_bound, 
+     monthly_std_dev_upper_bound,
      max_theo_patients_per_trial_arm,
      theo_patients_per_trial_arm_step,
      num_baseline_months, num_testing_months,
@@ -396,10 +411,10 @@ if(__name__=='__main__'):
     [RR50_stat_powers, MPC_stat_powers, TTP_stat_powers, 
      theo_placebo_arm_patient_pop_hists, 
      theo_drug_arm_patient_pop_hists] = \
-         generate_powers_and_histograms(monthly_mean_min,
-                                        monthly_mean_max,
-                                        monthly_std_dev_min,
-                                        monthly_std_dev_max,
+         generate_powers_and_histograms(monthly_mean_lower_bound,
+                                        monthly_mean_upper_bound,
+                                        monthly_std_dev_lower_bound,
+                                        monthly_std_dev_upper_bound,
                                         max_theo_patients_per_trial_arm,
                                         theo_patients_per_trial_arm_step,
                                         num_baseline_months,
