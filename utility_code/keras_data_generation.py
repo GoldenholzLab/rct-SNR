@@ -1,5 +1,7 @@
 import numpy as np
 import time
+import json
+import os
 from patient_population_generation import generate_theo_patient_pop_params
 from patient_population_generation import generate_heterogenous_placebo_arm_patient_pop
 from patient_population_generation import generate_heterogenous_drug_arm_patient_pop
@@ -296,6 +298,39 @@ def generate_powers_and_histograms(monthly_mean_min,
             theo_drug_arm_patient_pop_hists]
 
 
+def store_powers_and_histograms(folder,
+                                file_index,
+                                RR50_stat_powers,
+                                MPC_stat_powers,
+                                TTP_stat_powers,
+                                theo_placebo_arm_patient_pop_hists,
+                                theo_drug_arm_patient_pop_hists):
+
+    if( not os.path.isdir(folder) ):
+
+        os.mkdir(folder)
+
+    with open(folder + '/RR50_emp_stat_powers_' + file_index + '.json', 'w+') as json_file:
+
+        json.dump(RR50_stat_powers.tolist(), json_file)
+    
+    with open(folder + '/MPC_emp_stat_powers_' + file_index + '.json', 'w+') as json_file:
+
+        json.dump(MPC_stat_powers.tolist(), json_file)
+    
+    with open(folder + '/TTP_emp_stat_powers_' + file_index + '.json', 'w+') as json_file:
+
+        json.dump(TTP_stat_powers.tolist(), json_file)
+    
+    with open(folder + '/theo_placebo_arm_hists_' + file_index + '.json', 'w+') as json_file:
+
+        json.dump(theo_placebo_arm_patient_pop_hists.tolist(), json_file)
+    
+    with open(folder + '/theo_drug_arm_hists_' + file_index + '.json', 'w+') as json_file:
+
+        json.dump(theo_drug_arm_patient_pop_hists.tolist(), json_file)
+
+
 if(__name__=='__main__'):
 
     monthly_mean_min    = 4
@@ -317,7 +352,10 @@ if(__name__=='__main__'):
     drug_mu       = 0.2
     drug_sigma    = 0.05
 
-    num_trials = 2000
+    num_trials = 20
+
+    file_index = '1'
+    folder = '/Users/juanromero/Documents/Python_3_Files/useless_folder'
 
     [RR50_stat_powers, MPC_stat_powers, TTP_stat_powers, 
      theo_placebo_arm_patient_pop_hists, 
@@ -338,4 +376,12 @@ if(__name__=='__main__'):
                                         drug_mu,
                                         drug_sigma,
                                         num_trials)
+    
+    store_powers_and_histograms(folder,
+                                file_index,
+                                RR50_stat_powers,
+                                MPC_stat_powers,
+                                TTP_stat_powers,
+                                theo_placebo_arm_patient_pop_hists,
+                                theo_drug_arm_patient_pop_hists)
 
