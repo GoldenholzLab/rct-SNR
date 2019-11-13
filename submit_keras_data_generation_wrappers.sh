@@ -31,7 +31,7 @@ drug_sigma=0.05
 num_trials=20
 
 num_blocks=3
-num_training_files_per_block=3
+num_training_files_per_block=10
 num_testing_files_per_block=2
 
 data_storage_folder_name='/home/jmr95/rct-SNR/test_algo'
