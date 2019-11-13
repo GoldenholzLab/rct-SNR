@@ -15,7 +15,7 @@ monthly_std_dev_lower_bound=1
 monthly_std_dev_upper_bound=16
 
 max_theo_patients_per_trial_arm=300
-theo_patients_per_trial_arm_step=50
+theo_patients_per_trial_arm_step=5
 
 num_baseline_months=2
 num_testing_months=3
@@ -28,11 +28,11 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=20
+num_trials=2000
 
-num_blocks=3
-num_training_files_per_block=10
-num_testing_files_per_block=2
+num_blocks=25
+num_training_files_per_block=15
+num_testing_files_per_block=5
 
 data_storage_folder_name='/home/jmr95/rct-SNR/test_algo'
 
