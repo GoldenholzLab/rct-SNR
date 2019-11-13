@@ -317,35 +317,38 @@ def generate_powers_and_histograms(monthly_mean_lower_bound,
             theo_drug_arm_patient_pop_hists]
 
 
-def store_powers_and_histograms(folder,
-                                file_index,
+def store_powers_and_histograms(data_storage_folder_name,
+                                file_index_str,
+                                block_num_str,
                                 RR50_stat_powers,
                                 MPC_stat_powers,
                                 TTP_stat_powers,
                                 theo_placebo_arm_patient_pop_hists,
                                 theo_drug_arm_patient_pop_hists):
 
+    folder = data_storage_folder_name + '_' + block_num_str
+
     if( not os.path.isdir(folder) ):
 
         os.mkdir(folder)
 
-    with open(folder + '/RR50_emp_stat_powers_' + file_index + '.json', 'w+') as json_file:
+    with open(folder + '/RR50_emp_stat_powers_' + file_index_str + '.json', 'w+') as json_file:
 
         json.dump(RR50_stat_powers.tolist(), json_file)
     
-    with open(folder + '/MPC_emp_stat_powers_' + file_index + '.json', 'w+') as json_file:
+    with open(folder + '/MPC_emp_stat_powers_' + file_index_str + '.json', 'w+') as json_file:
 
         json.dump(MPC_stat_powers.tolist(), json_file)
     
-    with open(folder + '/TTP_emp_stat_powers_' + file_index + '.json', 'w+') as json_file:
+    with open(folder + '/TTP_emp_stat_powers_' + file_index_str + '.json', 'w+') as json_file:
 
         json.dump(TTP_stat_powers.tolist(), json_file)
     
-    with open(folder + '/theo_placebo_arm_hists_' + file_index + '.json', 'w+') as json_file:
+    with open(folder + '/theo_placebo_arm_hists_' + file_index_str + '.json', 'w+') as json_file:
 
         json.dump(theo_placebo_arm_patient_pop_hists.tolist(), json_file)
     
-    with open(folder + '/theo_drug_arm_hists_' + file_index + '.json', 'w+') as json_file:
+    with open(folder + '/theo_drug_arm_hists_' + file_index_str + '.json', 'w+') as json_file:
 
         json.dump(theo_drug_arm_patient_pop_hists.tolist(), json_file)
 
@@ -373,8 +376,9 @@ def take_input_arguments_from_command_shell():
 
     num_trials = int(sys.argv[16])
 
-    folder = sys.argv[17]
-    file_index = sys.argv[18]
+    block_num_str  = sys.argv[17]
+    data_storage_folder_name = sys.argv[18]
+    file_index_str = sys.argv[19]
 
     return [monthly_mean_lower_bound,    
             monthly_mean_upper_bound,
@@ -388,7 +392,8 @@ def take_input_arguments_from_command_shell():
             minimum_required_baseline_seizure_count,
             placebo_mu, placebo_sigma,
             drug_mu,    drug_sigma,
-            num_trials, folder, file_index]
+            num_trials, block_num_str, 
+            data_storage_folder_name, file_index_str]
 
 
 if(__name__=='__main__'):
@@ -405,8 +410,11 @@ if(__name__=='__main__'):
      minimum_required_baseline_seizure_count,
      placebo_mu, placebo_sigma,
      drug_mu,    drug_sigma,
-     num_trials, folder, file_index] = \
+     num_trials, block_num_str, 
+     data_storage_folder_name, file_index_str] = \
          take_input_arguments_from_command_shell()
+
+    print('\n' + data_storage_folder_name + '\n\nblock #' + block_num_str + '\n')
 
     [RR50_stat_powers, MPC_stat_powers, TTP_stat_powers, 
      theo_placebo_arm_patient_pop_hists, 
@@ -428,8 +436,9 @@ if(__name__=='__main__'):
                                         drug_sigma,
                                         num_trials)
     
-    store_powers_and_histograms(folder,
-                                file_index,
+    store_powers_and_histograms(data_storage_folder_name,
+                                file_index_str,
+                                block_num_str,
                                 RR50_stat_powers,
                                 MPC_stat_powers,
                                 TTP_stat_powers,

@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
 #SBATCH -p short
-#SBATCH --mem-per-cpu=500M
-#SBATCH -t 0-00:10
+#SBATCH --mem-per-cpu=10G
+#SBATCH -t 0-01:45
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
@@ -28,6 +28,7 @@ inputs[14]=${15}
 inputs[15]=${16}
 inputs[16]=${17}
 inputs[17]=${18}
+inputs[18]=${19}
 
 module load gcc/6.2.0
 module load conda2/4.2.13
@@ -35,3 +36,5 @@ module load python/3.6.0
 source activate working_env
 
 srun -c 1 python -u main_python_scripts/keras_data_generation.py ${inputs[@]}
+
+python -u main_python_scripts/keras_data_generation.py ${inputs[@]}

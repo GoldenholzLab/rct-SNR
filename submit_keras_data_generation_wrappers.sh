@@ -30,10 +30,11 @@ drug_sigma=0.05
 
 num_trials=20
 
-num_training_files=10
-num_testing_files=2
+num_blocks=3
+num_training_files_per_block=3
+num_testing_files_per_block=2
 
-folder='/home/jmr95/rct-SNR/test_algo'
+data_storage_folder_name='/home/jmr95/rct-SNR/test_algo'
 
 inputs[0]=$monthly_mean_lower_bound
 inputs[1]=$monthly_mean_upper_bound
@@ -56,28 +57,34 @@ inputs[14]=$drug_sigma
 
 inputs[15]=$num_trials
 
-if [ ! -d $folder ]
+if [ ! -d $data_storage_folder_name ]
 then
-    mkdir $folder
+    mkdir $data_storage_folder_name
 fi
 
-inputs[16]="${folder}/training_data"
-
-for ((file_index=1; file_index<=$num_training_files; file_index=file_index+1))
+for ((block_num=1; block_num<=$num_blocks; block_num=block_num+1))
 do
-    inputs[17]=$file_index
 
-    sbatch keras_data_generation_wrapper.sh ${inputs[@]}
+    inputs[16]=$block_num
+
+    inputs[17]="${data_storage_folder_name}/training_data"
+
+    for ((file_index=1; file_index<=$num_training_files_per_block; file_index=file_index+1))
+    do
+        inputs[18]=$file_index
+
+        sbatch keras_data_generation_wrapper.sh ${inputs[@]}
+
+    done
+
+    inputs[17]="${data_storage_folder_name}/testing_data"
+
+    for ((file_index=1; file_index<=$num_testing_files_per_block; file_index=file_index+1))
+    do
+        inputs[18]=$file_index
+
+        sbatch keras_data_generation_wrapper.sh ${inputs[@]}
+
+    done
 
 done
-
-inputs[16]="${folder}/testing_data"
-
-for ((file_index=1; file_index<=$num_testing_files; file_index=file_index+1))
-do
-    inputs[17]=$file_index
-
-    sbatch keras_data_generation_wrapper.sh ${inputs[@]}
-
-done
-
