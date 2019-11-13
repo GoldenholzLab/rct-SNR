@@ -53,7 +53,7 @@ inputs[14]=$drug_sigma
 
 inputs[15]=$num_trials
 
-if [ ! -f $folder ]
+if [ ! -d $folder ]
 then
     mkdir $folder
 fi
