@@ -30,6 +30,9 @@ drug_sigma=0.05
 
 num_trials=20
 
+num_training_files=10
+num_testing_files=2
+
 folder='/home/jmr95/rct-SNR/test_algo'
 
 inputs[0]=$monthly_mean_lower_bound
@@ -60,7 +63,7 @@ fi
 
 inputs[16]="${folder}/training_data"
 
-for ((file_index=1; file_index<=10; file_index=file_index+1))
+for ((file_index=1; file_index<=$num_training_files; file_index=file_index+1))
 do
     inputs[17]=$file_index
 
@@ -70,7 +73,7 @@ done
 
 inputs[16]="${folder}/testing_data"
 
-for ((file_index=1; file_index<=2; file_index=file_index+1))
+for ((file_index=1; file_index<=$num_testing_files; file_index=file_index+1))
 do
     inputs[17]=$file_index
 
