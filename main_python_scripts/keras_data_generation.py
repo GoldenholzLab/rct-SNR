@@ -280,13 +280,17 @@ def generate_powers_and_histograms(monthly_mean_lower_bound,
             RR50_p_value_matrix[patient_num_index, trial_index] = RR50_p_value < 0.05
             MPC_p_value_matrix[patient_num_index, trial_index]  = MPC_p_value  < 0.05
             TTP_p_value_matrix[patient_num_index, trial_index]  = TTP_p_value  < 0.05
+
+        algorithm_stop_time_in_seconds = time.time()
+        algorithm_cumulative_runtime_in_minutes_str = str(np.round((algorithm_stop_time_in_seconds - algorithm_start_time_in_seconds)/60, 3))
+        print('algorithm cumulative runtime: ' + algorithm_cumulative_runtime_in_minutes_str + ' minutes')
     
     RR50_stat_powers = np.mean(RR50_p_value_matrix, 1)
     MPC_stat_powers  = np.mean(MPC_p_value_matrix,  1)
     TTP_stat_powers  = np.mean(TTP_p_value_matrix,  1)
 
     num_monthly_std_devs = monthly_std_dev_max - monthly_std_dev_min + 1
-    num_monthly_means    = monthly_mean_max - monthly_mean_min + 1
+    num_monthly_means    = monthly_mean_max    - monthly_mean_min + 1
     theo_placebo_arm_patient_pop_hists = np.zeros((num_monthly_std_devs, num_monthly_means, num_trial_arm_sizes))
     theo_drug_arm_patient_pop_hists    = np.zeros((num_monthly_std_devs, num_monthly_means, num_trial_arm_sizes))
 
