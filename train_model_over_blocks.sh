@@ -5,19 +5,19 @@ monthly_std_dev_lower_bound=1
 monthly_std_dev_upper_bound=16
 
 num_epochs=30
-num_samples_per_batch=100
+num_samples_per_batch=90
 
-training_data_folder_name="/Users/juanromero/Documents/rct-SNR_O2_generated_data/randomized_TTP_pops_11-6-2019/training_data"
-testing_data_folder_name="/Users/juanromero/Documents/rct-SNR_O2_generated_data/randomized_TTP_pops_11-6-2019/testing_data"
+training_data_folder_name="/Users/juanromero/Documents/rct-SNR_O2_generated_data/randomized_theo_pops_all_endpoints_11-14-2019/training_data"
+testing_data_folder_name="/Users/juanromero/Documents/rct-SNR_O2_generated_data/randomized_theo_pops_all_endpoints_11-14-2019/testing_data"
 generic_stat_power_model_file_name="stat_power_model"
 generic_text_RMSEs_file_name="RMSE_per_block"
 model_errors_file_name="model_errors"
-endpoint_name="TTP"
+endpoint_name="RR50"
 
-num_train_compute_iters=100
+num_train_compute_iters=15
 num_train_blocks=25
 
-num_test_compute_iters=20
+num_test_compute_iters=5
 num_test_blocks=25
 
 
