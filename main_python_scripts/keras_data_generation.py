@@ -289,8 +289,8 @@ def generate_powers_and_histograms(monthly_mean_lower_bound,
     MPC_stat_powers  = np.mean(MPC_p_value_matrix,  1)
     TTP_stat_powers  = np.mean(TTP_p_value_matrix,  1)
 
-    num_monthly_std_devs = monthly_std_dev_max - monthly_std_dev_min + 1
-    num_monthly_means    = monthly_mean_max    - monthly_mean_min + 1
+    num_monthly_std_devs = monthly_std_dev_upper_bound - monthly_std_dev_lower_bound + 1
+    num_monthly_means    = monthly_mean_upper_bound    - monthly_mean_lower_bound    + 1
     theo_placebo_arm_patient_pop_hists = np.zeros((num_monthly_std_devs, num_monthly_means, num_trial_arm_sizes))
     theo_drug_arm_patient_pop_hists    = np.zeros((num_monthly_std_devs, num_monthly_means, num_trial_arm_sizes))
 
@@ -299,17 +299,17 @@ def generate_powers_and_histograms(monthly_mean_lower_bound,
         patient_num = patient_nums[patient_num_index]
 
         theo_placebo_arm_patient_pop_hists[:, :, patient_num_index] = \
-            convert_theo_pop_hist(monthly_mean_min,
-                                  monthly_mean_max,
-                                  monthly_std_dev_min,
-                                  monthly_std_dev_max,
+            convert_theo_pop_hist(monthly_mean_lower_bound,
+                                  monthly_mean_upper_bound,
+                                  monthly_std_dev_lower_bound,
+                                  monthly_std_dev_upper_bound,
                                   theo_placebo_arm_patient_pop_params[0:patient_num])
         
         theo_drug_arm_patient_pop_hists[:, :, patient_num_index] = \
-            convert_theo_pop_hist(monthly_mean_min,
-                                  monthly_mean_max,
-                                  monthly_std_dev_min,
-                                  monthly_std_dev_max,
+            convert_theo_pop_hist(monthly_mean_lower_bound,
+                                  monthly_mean_upper_bound,
+                                  monthly_std_dev_lower_bound,
+                                  monthly_std_dev_upper_bound,
                                   theo_drug_arm_patient_pop_params[0:patient_num])
     
     algorithm_stop_time_in_seconds = time.time()
