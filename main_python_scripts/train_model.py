@@ -60,7 +60,7 @@ def collect_data_from_folder(num_monthly_means,
         
         except FileNotFoundError as err:
 
-            print('\niter #' + str(compute_iter) + ' of block #' + str(compute_iter) + \
+            print('\niter #' + str(compute_iter) + ' of block #' + str(block_num) + \
                   ' in either the testing or training data did not complete before the model was either tested or trained.\n' \
                   + str(err))
     
