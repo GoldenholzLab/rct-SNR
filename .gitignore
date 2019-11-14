@@ -1,6 +1,7 @@
 # Apple Files
 *.DS_store
 
+# ignore python notebooks
 *.ipynb
 
 # comma de-limited files
@@ -14,6 +15,7 @@
 
 # pictures
 *.png
+*.tiff
 
 # Excel files
 *.xlsx
