@@ -204,6 +204,8 @@ def generate_powers_and_histograms(monthly_mean_lower_bound,
                                           monthly_std_dev_lower_bound,
                                           monthly_std_dev_upper_bound)
 
+    print('\n' + str([monthly_mean_min, monthly_mean_max, monthly_std_dev_min, monthly_std_dev_max]) + '\n')
+
     [theo_placebo_arm_patient_pop_params, 
      theo_drug_arm_patient_pop_params] = \
          generate_theo_patient_pop_params_per_trial_arm(monthly_mean_min,
