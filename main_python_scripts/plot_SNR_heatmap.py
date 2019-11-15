@@ -2,6 +2,7 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import string
 import sys
 from PIL import Image
 import io
@@ -26,7 +27,7 @@ if(__name__=='__main__'):
     monthly_std_dev_tick_spacing = 1
 
     min_power_law_slope     = 0.5
-    max_power_law_slope     = 1.9
+    max_power_law_slope     = 1.7
     power_law_slope_spacing = 0.1
 
     #--------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -48,7 +49,7 @@ if(__name__=='__main__'):
 
     power_law_slopes = np.arange(min_power_law_slope/power_law_slope_spacing, max_power_law_slope/power_law_slope_spacing + 1, 1)*power_law_slope_spacing
 
-    fig = plt.figure(figsize=(20, 6))
+    fig = plt.figure(figsize=(20, 5))
 
     for endpoint_name_index in range(len(endpoint_names)):
 
@@ -67,8 +68,8 @@ if(__name__=='__main__'):
         ax.set_xticklabels(monthly_mean_tick_labels, rotation='horizontal')
         ax.set_yticks(monthly_std_dev_ticks)
         ax.set_yticklabels(monthly_std_dev_tick_labels, rotation='horizontal')
-        ax.text(-0.3, 1, string.ascii_uppercase[endpoint_name_index] + ')', 
-                transform=current_ax.transAxes, size=15, weight='bold')
+        ax.text(-0.2, 1, string.ascii_uppercase[endpoint_name_index] + ')', 
+                transform=ax.transAxes, size=15, weight='bold')
 
         for power_law_slope_index in range(len(power_law_slopes)):
 
@@ -79,8 +80,8 @@ if(__name__=='__main__'):
             ax.plot( monthly_mean_axis_array*monthly_mean_axis_scale_ratio - 0.5, 
                 (monthly_std_dev_axis_stop - power_law_monthly_std_dev_axis_points)*monthly_std_dev_axis_scale_ratio)
     
-    plt.legend(np.round(power_law_slopes, 1), bbox_to_anchor=(1.1, 0.5, 0.5, 0.5))
-    plt.subplots_adjust(wspace = .15)
+    plt.legend(np.round(power_law_slopes, 1), title = 'Power Law Slopes', bbox_to_anchor=(1.2, 0.5, 0.5, 0.5))
+    plt.subplots_adjust(wspace = .25)
 
     #fig.savefig(endpoint_name + '_SNR_map.png', dpi=600, bbox_inches='tight')
     #import pandas as pd
@@ -88,7 +89,7 @@ if(__name__=='__main__'):
     #plt.show()
 
     png1 = io.BytesIO()
-    fig.savefig(png1, dpi = 600, bbox_inches = 'tight', format='png')
+    fig.savefig(png1, dpi = 600, bbox_inches = 'tight', format = 'png')
     png2 = Image.open(png1)
     png2.save('Romero-fig3.tiff')
     png1.close()
