@@ -3,6 +3,9 @@ import keras.models as models
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import seaborn as sns
+import string
+from PIL import Image
+import io
 import sys
 import os
 sys.path.insert(0, os.getcwd())
@@ -190,15 +193,20 @@ def plot_predicted_statistical_powers_and_NV_model_hists(expected_NV_model_one_R
                                                       expected_NV_model_two_MPC_nn_stat_power, 
                                                       expected_NV_model_two_TTP_nn_stat_power])
 
-    plt.figure(figsize=(20, 6))
+    fig = plt.figure(figsize=(20, 6))
 
     ax = plt.subplot(1,2,1)
 
-    ax = sns.heatmap(NV_model_one_and_two_patient_pop_hist)
+    ax = sns.heatmap(NV_model_one_and_two_patient_pop_hist, cmap='RdBu_r', cbar_kws={'label':'NUmber of patients'})
     ax.set_xticks(monthly_mean_ticks)
     ax.set_xticklabels(monthly_mean_tick_labels, rotation='horizontal')
     ax.set_yticks(monthly_std_dev_ticks)
     ax.set_yticklabels(monthly_std_dev_tick_labels, rotation='horizontal')
+    ax.set_xlabel('monthly seizure count mean')
+    ax.set_ylabel('monthly seizure count standard deviation')
+    ax.title.set_text('2D histograms of patients from NV model 1 and 2')
+    ax.text(-0.2, 1, string.ascii_uppercase[0] + ')', 
+                transform=ax.transAxes, size=15, weight='bold')
 
     plt.subplot(1,2,2)
 
@@ -221,8 +229,16 @@ def plot_predicted_statistical_powers_and_NV_model_hists(expected_NV_model_one_R
     ax.yaxis.set_major_formatter(ticker.PercentFormatter(xmax=100))
     ax.yaxis.grid(True)
     plt.legend()
+    ax.text(-0.2, 1, string.ascii_uppercase[1] + ')', 
+                transform=ax.transAxes, size=15, weight='bold')
 
-    plt.show()
+    plt.subplots_adjust(wspace = .25)
+
+    png1 = io.BytesIO()
+    fig.savefig(png1, dpi = 600, bbox_inches = 'tight', format = 'png')
+    png2 = Image.open(png1)
+    png2.save('Romero-fig4.tiff')
+    png1.close()
 
 
 if(__name__=='__main__'):
