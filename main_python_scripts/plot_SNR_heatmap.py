@@ -25,7 +25,7 @@ if(__name__=='__main__'):
     monthly_std_dev_axis_step    = 1
     monthly_std_dev_tick_spacing = 1
 
-    min_power_law_slope     = 0.3
+    min_power_law_slope     = 0.5
     max_power_law_slope     = 1.9
     power_law_slope_spacing = 0.1
 
@@ -58,7 +58,8 @@ if(__name__=='__main__'):
             SNR_map = np.array(json.load(json_file))
 
         plt.subplot(1, 3, endpoint_name_index + 1)
-        ax = sns.heatmap(SNR_map, vmin=min_SNR, vmax = max_SNR, cmap='RdBu_r', cbar_kws={'label':'SNR of location'})
+        ax = sns.heatmap(SNR_map, vmin=min_SNR, vmax = max_SNR, cmap='RdBu_r', cbar_kws={'label':'SNR of location'}, mask = SNR_map == 0)
+        ax.set_facecolor('k')
         ax.set_xlabel('monthly seizure count mean')
         ax.set_ylabel('monthly seizure count standard deviation')
         ax.title.set_text(endpoint_name + ' SNR map')
@@ -66,6 +67,8 @@ if(__name__=='__main__'):
         ax.set_xticklabels(monthly_mean_tick_labels, rotation='horizontal')
         ax.set_yticks(monthly_std_dev_ticks)
         ax.set_yticklabels(monthly_std_dev_tick_labels, rotation='horizontal')
+        ax.text(-0.3, 1, string.ascii_uppercase[endpoint_name_index] + ')', 
+                transform=current_ax.transAxes, size=15, weight='bold')
 
         for power_law_slope_index in range(len(power_law_slopes)):
 
