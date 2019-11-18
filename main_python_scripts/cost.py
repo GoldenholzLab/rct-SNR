@@ -169,8 +169,10 @@ def smart_algorithm(monthly_mean_min,
 
                     reached_target_stat_power = True
                 
+                '''
                 print('\n' + str(np.round(100*NN_stat_power, 3)) + ' %, ' + 
                              str(num_theo_patients)               + ' patients')
+                '''
 
     return num_theo_patients
 
@@ -246,9 +248,11 @@ def dumb_algorithm(monthly_mean_min,
             if(NN_stat_power >= target_stat_power):
 
                 reached_target_stat_power = True
-                
+
+            '''  
             print('\n' + str(np.round(100*NN_stat_power, 3)) + ' %, ' + 
-                         str(num_theo_patients)               + ' patients') 
+                         str(num_theo_patients)               + ' patients')
+            '''
 
     return num_theo_patients
 
@@ -260,29 +264,44 @@ if(__name__=='__main__'):
     monthly_std_dev_min = 1
     monthly_std_dev_max = 16
     num_baseline_months = 2
-    endpoint_name = 'RR50'
+
+    endpoint_name = 'MPC'
     generic_stat_power_model_file_name = 'stat_power_model'
     target_stat_power = 0.9
+    num_recruitments_processes_for_trials = 100
 
-    smart_num_theo_patients = \
-        smart_algorithm(monthly_mean_min,
-                        monthly_mean_max,
-                        monthly_std_dev_min,
-                        monthly_std_dev_max,
-                        num_baseline_months,
-                        endpoint_name,
-                        generic_stat_power_model_file_name,
-                        target_stat_power)
+    num_smart_theo_patients_array = np.zeros(num_recruitments_processes_for_trials)
+    num_dumb_theo_patients_array  = np.zeros(num_recruitments_processes_for_trials)
 
-    dumb_num_theo_patients = \
-        dumb_algorithm(monthly_mean_min,
-                       monthly_mean_max,
-                       monthly_std_dev_min,
-                       monthly_std_dev_max,
-                       num_baseline_months,
-                       endpoint_name,
-                       generic_stat_power_model_file_name,
-                       target_stat_power)
+    for recruitment_process_index in range(num_recruitments_processes_for_trials):
+
+        num_smart_theo_patients = \
+            smart_algorithm(monthly_mean_min,
+                            monthly_mean_max,
+                            monthly_std_dev_min,
+                            monthly_std_dev_max,
+                            num_baseline_months,
+                            endpoint_name,
+                            generic_stat_power_model_file_name,
+                            target_stat_power)
+
+        num_smart_theo_patients_array[recruitment_process_index] = num_smart_theo_patients
+
+        num_dumb_theo_patients = \
+            dumb_algorithm(monthly_mean_min,
+                           monthly_mean_max,
+                           monthly_std_dev_min,
+                           monthly_std_dev_max,
+                           num_baseline_months,
+                           endpoint_name,
+                           generic_stat_power_model_file_name,
+                           target_stat_power)
+        
+        num_dumb_theo_patients_array[recruitment_process_index] = num_dumb_theo_patients
+
+        print('recruitment process #' + str(recruitment_process_index))
     
-    print([smart_num_theo_patients, dumb_num_theo_patients])
+    expected_num_smart_theo_patients = np.round(np.mean(num_smart_theo_patients_array))
+    expected_num_dumb_theo_patients  = np.round(np.mean(num_dumb_theo_patients_array))
 
+    print([expected_num_smart_theo_patients, expected_num_dumb_theo_patients])
