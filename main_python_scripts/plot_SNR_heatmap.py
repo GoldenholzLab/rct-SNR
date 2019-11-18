@@ -13,8 +13,8 @@ if(__name__=='__main__'):
 
     endpoint_names = ['RR50', 'MPC', 'TTP']
     
-    max_SNR = 80
-    min_SNR = -5
+    max_SNR = 30
+    min_SNR = -20
 
     monthly_mean_axis_start   = 1
     monthly_mean_axis_stop    = 15
