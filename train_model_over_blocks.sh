@@ -84,7 +84,7 @@ do
 
     python main_python_scripts/initialize_model.py ${inputs[@]}
 
-    for ((block_num=1; train_block_num<=$num_blocks; block_num=block_num+1))
+    for ((block_num=1; block_num<=$num_blocks; block_num=block_num+1))
     do
         echo "training on block #$block_num"
         inputs_two[11]=$block_num
