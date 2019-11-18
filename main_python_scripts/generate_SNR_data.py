@@ -248,7 +248,7 @@ def generate_SNR_map(monthly_mean_min,
         for monthly_std_dev_index in range(15):
 
             monthly_std_dev =  monthly_std_dev_index + 1
-            monthly_mean = monthly_mean_index + 1
+            monthly_mean    = monthly_mean_index + 1
 
             if(monthly_std_dev > np.sqrt(monthly_mean)):
 
