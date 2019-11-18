@@ -60,7 +60,7 @@ def estimate_patient_loc(monthly_mean_min,
 
     '''
 
-    I suspect that standard deviation is conitually underestimated.
+    I suspect that standard deviation is continually underestimated.
 
     '''
 
