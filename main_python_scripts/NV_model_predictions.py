@@ -254,12 +254,12 @@ if(__name__=='__main__'):
     num_samples = 100
 
     monthly_mean_axis_start   = monthly_mean_min
-    monthly_mean_axis_stop    = monthly_mean_max
+    monthly_mean_axis_stop    = monthly_mean_max - 1
     monthly_mean_axis_step    = 1
     monthly_mean_tick_spacing = 1
 
     monthly_std_dev_axis_start   = monthly_std_dev_min
-    monthly_std_dev_axis_stop    = monthly_std_dev_max
+    monthly_std_dev_axis_stop    = monthly_std_dev_max - 1
     monthly_std_dev_axis_step    = 1
     monthly_std_dev_tick_spacing = 1
     

@@ -34,7 +34,7 @@ def load_iter_specific_files(endpoint_name, data_storage_folder_name, block_num,
 
 def collect_data_from_folder(num_monthly_means,
                              num_monthly_std_devs,
-                             num_compute_iters,
+                             num_compute_iters_per_block,
                              data_storage_folder_name,
                              block_num,
                              endpoint_name):
@@ -43,7 +43,7 @@ def collect_data_from_folder(num_monthly_means,
     theo_drug_arm_hists    = np.array(num_monthly_std_devs*[num_monthly_means*[num_monthly_means*[]]])
     emp_stat_powers   = np.array([])
 
-    for compute_iter_index in range(num_compute_iters):
+    for compute_iter_index in range(num_compute_iters_per_block):
 
         compute_iter = compute_iter_index + 1
 
@@ -134,10 +134,10 @@ def take_inputs_from_command_shell():
     training_data_folder_name          = sys.argv[7]
     generic_stat_power_model_file_name = sys.argv[8]
     generic_text_RMSEs_file_name       = sys.argv[9]
-    endpoint_name                      = sys.argv[10]
 
-    num_train_compute_iters = int(sys.argv[11])
-    train_block_num         = int(sys.argv[12])
+    num_train_compute_iters_per_block = int(sys.argv[10])
+    endpoint_name                     =     sys.argv[11]
+    block_num                         = int(sys.argv[12])
 
     return [monthly_mean_lower_bound,    
             monthly_mean_upper_bound, 
@@ -147,9 +147,9 @@ def take_inputs_from_command_shell():
             training_data_folder_name, 
             generic_stat_power_model_file_name, 
             generic_text_RMSEs_file_name,
+            num_train_compute_iters_per_block, 
             endpoint_name,
-            num_train_compute_iters, 
-            train_block_num]
+            block_num]
 
 
 if(__name__=='__main__'):
@@ -163,9 +163,9 @@ if(__name__=='__main__'):
      training_data_folder_name, 
      generic_stat_power_model_file_name, 
      generic_text_RMSEs_file_name,
+     num_train_compute_iters_per_block,
      endpoint_name,
-     num_train_compute_iters, 
-     train_block_num] = \
+     block_num] = \
          take_inputs_from_command_shell()
     
 
@@ -177,9 +177,9 @@ if(__name__=='__main__'):
      training_emp_stat_powers   ] = \
          collect_data_from_folder(num_monthly_means,
                                   num_monthly_std_devs,
-                                  num_train_compute_iters,
+                                  num_train_compute_iters_per_block,
                                   training_data_folder_name,
-                                  train_block_num,
+                                  block_num,
                                   endpoint_name)
 
     block_loss = \
@@ -192,5 +192,5 @@ if(__name__=='__main__'):
                              num_samples_per_batch)
 
     save_loss_data(generic_text_RMSEs_file_name,
-                   endpoint_name, train_block_num,
+                   endpoint_name, block_num,
                    block_loss)
