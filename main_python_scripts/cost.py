@@ -24,13 +24,11 @@ def get_patient_loc(monthly_mean_min,
 
     overdispersed = False
     non_zero_mean = False
-    realistic = False
 
-    while((not overdispersed) or (not non_zero_mean) or (not realistic)):
+    while((not overdispersed) or (not non_zero_mean)):
 
         overdispersed = False
         non_zero_mean = False
-        realistic = False
         
         monthly_mean    = np.random.randint(monthly_mean_min,    monthly_mean_max    + 1)
         monthly_std_dev = np.random.randint(monthly_std_dev_min, monthly_std_dev_max + 1)
@@ -42,10 +40,6 @@ def get_patient_loc(monthly_mean_min,
         if(monthly_std_dev > np.sqrt(monthly_mean)):
 
             overdispersed = True
-        
-        if(monthly_std_dev < np.power(monthly_mean, 1.3)):
-
-            realistic = True
     
     return [monthly_mean, monthly_std_dev]
 
@@ -96,8 +90,8 @@ def smart_algorithm(monthly_mean_min,
                     monthly_std_dev_min,
                     monthly_std_dev_max,
                     num_baseline_months,
-                    endpoint_name,
-                    generic_stat_power_model_file_name,
+                    SNR_map,
+                    stat_power_model,
                     target_stat_power):
 
     theo_placebo_arm_patient_pop_params_hat_list = []
@@ -107,10 +101,6 @@ def smart_algorithm(monthly_mean_min,
     placebo_arm_or_drug_arm = 'placebo'
     num_theo_patients = 0
 
-    SNR_map = retrieve_SNR_map(endpoint_name)
-
-    stat_power_model_file_path = endpoint_name + '_' + generic_stat_power_model_file_name + '.h5'
-    stat_power_model = models.load_model(stat_power_model_file_path)
     keras_formatted_theo_placebo_arm_patient_pop_params_hat_hist = np.zeros((1, 16, 16, 1))
     keras_formatted_theo_drug_arm_patient_pop_params_hat_hist    = np.zeros((1, 16, 16, 1))
 
@@ -144,35 +134,35 @@ def smart_algorithm(monthly_mean_min,
             trial_init_complete       = placebo_arm_init_complete and drug_arm_init_complete
             number_of_patients_is_multiple_of_ten = (num_theo_patients % 10) == 0
         
-            if( (trial_init_complete == True) and number_of_patients_is_multiple_of_ten ):
+            if( trial_init_complete and number_of_patients_is_multiple_of_ten ):
 
                 keras_formatted_theo_placebo_arm_patient_pop_params_hat_hist[0, :, :, 0] = \
                     convert_theo_pop_hist(monthly_mean_min,
-                                          monthly_mean_max,
+                                          monthly_mean_max + 1,
                                           monthly_std_dev_min,
-                                          monthly_std_dev_max,
+                                          monthly_std_dev_max + 1,
                                           np.array(theo_placebo_arm_patient_pop_params_hat_list))
                 
                 keras_formatted_theo_drug_arm_patient_pop_params_hat_hist[0, :, :, 0]  = \
                     convert_theo_pop_hist(monthly_mean_min,
-                                          monthly_mean_max,
+                                          monthly_mean_max + 1,
                                           monthly_std_dev_min,
-                                          monthly_std_dev_max,
+                                          monthly_std_dev_max + 1,
                                           np.array(theo_drug_arm_patient_pop_params_hat_list))
 
                 NN_stat_power = \
                     np.squeeze(stat_power_model.predict([keras_formatted_theo_placebo_arm_patient_pop_params_hat_hist, 
-                                              keras_formatted_theo_drug_arm_patient_pop_params_hat_hist    ]))
+                                                         keras_formatted_theo_drug_arm_patient_pop_params_hat_hist    ]))
 
 
                 if(NN_stat_power >= target_stat_power):
 
                     reached_target_stat_power = True
                 
-                '''
+                
                 print('\n' + str(np.round(100*NN_stat_power, 3)) + ' %, ' + 
-                             str(num_theo_patients)               + ' patients')
-                '''
+                             str(num_theo_patients)               + ' smart patients')
+                
 
     return num_theo_patients
 
@@ -182,8 +172,7 @@ def dumb_algorithm(monthly_mean_min,
                    monthly_std_dev_min,
                    monthly_std_dev_max,
                    num_baseline_months,
-                   endpoint_name,
-                   generic_stat_power_model_file_name,
+                   stat_power_model,
                    target_stat_power):
 
     theo_placebo_arm_patient_pop_params_hat_list = []
@@ -193,8 +182,6 @@ def dumb_algorithm(monthly_mean_min,
     placebo_arm_or_drug_arm = 'placebo'
     num_theo_patients = 0
 
-    stat_power_model_file_path = endpoint_name + '_' + generic_stat_power_model_file_name + '.h5'
-    stat_power_model = models.load_model(stat_power_model_file_path)
     keras_formatted_theo_placebo_arm_patient_pop_params_hat_hist = np.zeros((1, 16, 16, 1))
     keras_formatted_theo_drug_arm_patient_pop_params_hat_hist    = np.zeros((1, 16, 16, 1))
 
@@ -224,20 +211,20 @@ def dumb_algorithm(monthly_mean_min,
         trial_init_complete       = placebo_arm_init_complete and drug_arm_init_complete
         number_of_patients_is_multiple_of_ten = (num_theo_patients % 10) == 0
         
-        if( (trial_init_complete == True) and number_of_patients_is_multiple_of_ten ):
+        if( trial_init_complete and number_of_patients_is_multiple_of_ten ):
 
             keras_formatted_theo_placebo_arm_patient_pop_params_hat_hist[0, :, :, 0] = \
                 convert_theo_pop_hist(monthly_mean_min,
-                                      monthly_mean_max,
+                                      monthly_mean_max + 1,
                                       monthly_std_dev_min,
-                                      monthly_std_dev_max,
+                                      monthly_std_dev_max + 1,
                                       np.array(theo_placebo_arm_patient_pop_params_hat_list))
                 
             keras_formatted_theo_drug_arm_patient_pop_params_hat_hist[0, :, :, 0]  = \
                 convert_theo_pop_hist(monthly_mean_min,
-                                      monthly_mean_max,
+                                      monthly_mean_max + 1,
                                       monthly_std_dev_min,
-                                      monthly_std_dev_max,
+                                      monthly_std_dev_max + 1,
                                       np.array(theo_drug_arm_patient_pop_params_hat_list))
 
             NN_stat_power = \
@@ -249,10 +236,10 @@ def dumb_algorithm(monthly_mean_min,
 
                 reached_target_stat_power = True
 
-            '''  
+            
             print('\n' + str(np.round(100*NN_stat_power, 3)) + ' %, ' + 
-                         str(num_theo_patients)               + ' patients')
-            '''
+                         str(num_theo_patients)               + ' dumb patients')
+            
 
     return num_theo_patients
 
@@ -260,18 +247,22 @@ def dumb_algorithm(monthly_mean_min,
 if(__name__=='__main__'):
 
     monthly_mean_min = 1
-    monthly_mean_max = 16
+    monthly_mean_max = 15
     monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
+    monthly_std_dev_max = 15
     num_baseline_months = 2
 
-    endpoint_name = 'MPC'
+    endpoint_name = 'TTP'
     generic_stat_power_model_file_name = 'stat_power_model'
     target_stat_power = 0.9
-    num_recruitments_processes_for_trials = 100
+    num_recruitments_processes_for_trials = 1000
 
     num_smart_theo_patients_array = np.zeros(num_recruitments_processes_for_trials)
     num_dumb_theo_patients_array  = np.zeros(num_recruitments_processes_for_trials)
+
+    SNR_map = retrieve_SNR_map(endpoint_name)
+    stat_power_model_file_path = endpoint_name + '_' + generic_stat_power_model_file_name + '.h5'
+    stat_power_model = models.load_model(stat_power_model_file_path)
 
     for recruitment_process_index in range(num_recruitments_processes_for_trials):
 
@@ -281,8 +272,8 @@ if(__name__=='__main__'):
                             monthly_std_dev_min,
                             monthly_std_dev_max,
                             num_baseline_months,
-                            endpoint_name,
-                            generic_stat_power_model_file_name,
+                            SNR_map,
+                            stat_power_model,
                             target_stat_power)
 
         num_smart_theo_patients_array[recruitment_process_index] = num_smart_theo_patients
@@ -293,13 +284,12 @@ if(__name__=='__main__'):
                            monthly_std_dev_min,
                            monthly_std_dev_max,
                            num_baseline_months,
-                           endpoint_name,
-                           generic_stat_power_model_file_name,
+                           stat_power_model,
                            target_stat_power)
         
         num_dumb_theo_patients_array[recruitment_process_index] = num_dumb_theo_patients
 
-        print('recruitment process #' + str(recruitment_process_index))
+        print('\nrecruitment process #' + str(recruitment_process_index + 1) + '\n')
     
     expected_num_smart_theo_patients = np.round(np.mean(num_smart_theo_patients_array))
     expected_num_dumb_theo_patients  = np.round(np.mean(num_dumb_theo_patients_array))
