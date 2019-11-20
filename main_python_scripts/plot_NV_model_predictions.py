@@ -134,16 +134,6 @@ def plot_predicted_statistical_powers_and_NV_model_hists(expected_NV_model_one_R
 
 def take_inputs_from_command_shell():
 
-    '''
-    monthly_mean_min    = 1
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
-
-    expected_NV_model_responses_file_name = 'expected_NV_model_responses'
-    NV_model_hist_file_name = 'NV_model_histogram'
-    '''
-
     monthly_mean_min    = int(sys.argv[1])
     monthly_mean_max    = int(sys.argv[2])
     monthly_std_dev_min = int(sys.argv[3])
