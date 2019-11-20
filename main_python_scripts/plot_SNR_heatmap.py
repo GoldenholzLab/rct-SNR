@@ -59,7 +59,7 @@ if(__name__=='__main__'):
             SNR_map = np.array(json.load(json_file))
 
         plt.subplot(1, 3, endpoint_name_index + 1)
-        ax = sns.heatmap(SNR_map, vmin=min_SNR, vmax = max_SNR, cmap='RdBu_r', cbar_kws={'label':'SNR of location'}, mask = SNR_map == 0)
+        ax = sns.heatmap(SNR_map, vmin=min_SNR, vmax = max_SNR, cmap='RdBu_r', cbar_kws={'label':'SNR of location', 'format':'%.0f%%'}, mask = SNR_map == 0)
         ax.set_facecolor('k')
         ax.set_xlabel('monthly seizure count mean')
         ax.set_ylabel('monthly seizure count standard deviation')
@@ -80,7 +80,7 @@ if(__name__=='__main__'):
             ax.plot( monthly_mean_axis_array*monthly_mean_axis_scale_ratio - 0.5, 
                 (monthly_std_dev_axis_stop - power_law_monthly_std_dev_axis_points)*monthly_std_dev_axis_scale_ratio)
     
-    plt.legend(np.round(power_law_slopes, 1), title = 'Power Law Slopes', bbox_to_anchor=(1.2, 0.5, 0.5, 0.5))
+    plt.legend(np.round(power_law_slopes, 1), title = 'Power Law Constants', bbox_to_anchor=(1.3, 0.5, 0.5, 0.5))
     plt.subplots_adjust(wspace = .25)
 
     #fig.savefig(endpoint_name + '_SNR_map.png', dpi=600, bbox_inches='tight')
