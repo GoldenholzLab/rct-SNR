@@ -30,6 +30,11 @@ num_hists_per_trial_arm=500
 max_SNR=30
 min_SNR=-20
 
+num_theo_NV_model_patients_per_trial_arm=153
+num_NV_model_trials=100
+expected_NV_model_responses_file_name='expected_NV_model_responses'
+NV_model_hist_file_name='NV_model_histogram'
+
 endpoint_names[0]=$RR50_endpoint_name
 endpoint_names[1]=$MPC_endpoint_name
 endpoint_names[2]=$TTP_endpoint_name
@@ -72,6 +77,23 @@ inputs_five[1]=$error_histogram_bins
 inputs_six[0]=$max_SNR
 inputs_six[1]=$min_SNR
 
+inputs_seven[0]=$num_theo_NV_model_patients_per_trial_arm
+inputs_seven[1]=$generic_stat_power_model_file_name
+inputs_seven[2]=$monthly_mean_lower_bound
+inputs_seven[3]=$monthly_mean_upper_bound
+inputs_seven[4]=$monthly_std_dev_lower_bound
+inputs_seven[5]=$monthly_std_dev_upper_bound
+inputs_seven[6]=$num_NV_model_trials
+inputs_seven[7]=$expected_NV_model_responses_file_name
+inputs_seven[8]=$NV_model_hist_file_name
+
+inputs_eight[0]=$monthly_mean_lower_bound
+inputs_eight[1]=$monthly_mean_upper_bound
+inputs_eight[2]=$monthly_std_dev_lower_bound
+inputs_eight[3]=$monthly_std_dev_upper_bound
+inputs_eight[4]=$expected_NV_model_responses_file_name
+inputs_eight[5]=$NV_model_hist_file_name
+
 for ((endpoint_name_index=0; endpoint_name_index<=2; endpoint_name_index=endpoint_name_index+1))
 do
 
@@ -101,3 +123,7 @@ done
 python main_python_scripts/plot_histograms.py ${inputs_five[@]}
 
 python main_python_scripts/plot_SNR_heatmap.py ${inputs_six[@]}
+
+python main_python_scripts/NV_model_predictions.py ${inputs_seven[@]}
+
+python main_python_scripts/plot_NV_model_predictions.py ${inputs_eight[@]}
