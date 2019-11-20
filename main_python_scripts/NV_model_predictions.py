@@ -136,9 +136,9 @@ def predict_NV_model_endpoint_stat_powers(num_theo_patients_per_trial_arm,
 
     NV_model_one_and_two_patient_pop_hist = \
         convert_theo_pop_hist(monthly_mean_min,
-                              monthly_mean_max,
+                              monthly_mean_max - 1,
                               monthly_std_dev_min,
-                              monthly_std_dev_max,
+                              monthly_std_dev_max - 1,
                               NV_model_one_and_two_patient_pop_params)
 
     return [expected_NV_model_one_RR50_nn_stat_power, 
@@ -151,21 +151,6 @@ def predict_NV_model_endpoint_stat_powers(num_theo_patients_per_trial_arm,
 
 
 def take_inputs_from_command_shell():
-
-    '''
-    num_theo_patients_per_trial_arm = 153
-    generic_stat_power_model_file_name = 'stat_power_model'
-
-    monthly_mean_min    = 1
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
-
-    num_trials = 100
-
-    expected_NV_model_responses_file_name = 'expected_NV_model_responses'
-    NV_model_hist_file_name = 'NV_model_histogram'
-    '''
 
     num_theo_patients_per_trial_arm = int(sys.argv[1])
     generic_stat_power_model_file_name = sys.argv[2]
