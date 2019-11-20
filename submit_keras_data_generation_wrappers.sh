@@ -30,6 +30,7 @@ drug_sigma=0.05
 
 num_trials=2000
 
+starting_block=26
 num_blocks=25
 num_training_files_per_block=15
 num_testing_files_per_block=5
@@ -62,7 +63,7 @@ then
     mkdir $data_storage_folder_name
 fi
 
-for ((block_num=1; block_num<=$num_blocks; block_num=block_num+1))
+for ((block_num=$starting_block; block_num<=$starting_block+$num_blocks-1; block_num=block_num+1))
 do
 
     inputs[16]=$block_num
