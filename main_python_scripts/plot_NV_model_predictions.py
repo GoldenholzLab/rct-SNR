@@ -2,6 +2,7 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+from matplotlib.patches import Rectangle as rectangle
 import seaborn as sns
 import string
 from PIL import Image
@@ -98,6 +99,12 @@ def plot_predicted_statistical_powers_and_NV_model_hists(expected_NV_model_one_R
     ax.title.set_text('2D histograms of patients from NV model 1 and 2')
     ax.text(-0.2, 1, string.ascii_uppercase[0] + ')', 
                 transform=ax.transAxes, size=15, weight='bold')
+    
+    NV_model_1_rect = rectangle((0.5, 11.5), 5, 3, 0, edgecolor='xkcd:apple green', facecolor='none', linewidth=3)
+    NV_model_2_rect = rectangle((5.5,  9.5), 7, 4, 0, edgecolor='xkcd:vivid green', facecolor='none', linewidth=3)
+    ax.add_artist(NV_model_1_rect)
+    ax.add_artist(NV_model_2_rect)
+    ax.legend([NV_model_1_rect, NV_model_2_rect], ['NV Model 1', 'NV Model 2'], loc='upper left')
 
     plt.subplot(1,2,2)
 
