@@ -1,6 +1,9 @@
 # Apple Files
 *.DS_store
 
+# ignore pdfs
+*.pdf
+
 # ignore python notebooks
 *.ipynb
 

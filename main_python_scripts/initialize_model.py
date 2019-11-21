@@ -91,4 +91,10 @@ if(__name__=='__main__'):
     
     stat_power_model.save(stat_power_model_file_path)
 
-    #plot_model(stat_power_model, to_file='stat_power_model.png', show_shapes=True)
+    '''
+    from PIL import Image
+    plot_model(stat_power_model, to_file='stat_power_model.png', show_shapes=True)
+    img = Image.open('stat_power_model.png')
+    img.save('stat_power_model.tiff')
+    '''
+    

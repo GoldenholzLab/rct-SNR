@@ -48,7 +48,7 @@ if(__name__=='__main__'):
     png1 = io.BytesIO()
     fig.savefig(png1, dpi = 600, bbox_inches = 'tight', format='png')
     png2 = Image.open(png1)
-    png2.save('Romero-fig2.tiff')
+    png2.save('Romero-fig3.tiff')
     png1.close()
 
     #plt.savefig('statistical power prediction error histograms')

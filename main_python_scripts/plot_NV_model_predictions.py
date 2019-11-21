@@ -135,7 +135,7 @@ def plot_predicted_statistical_powers_and_NV_model_hists(expected_NV_model_one_R
     png1 = io.BytesIO()
     fig.savefig(png1, dpi = 600, bbox_inches = 'tight', format = 'png')
     png2 = Image.open(png1)
-    png2.save('Romero-fig4.tiff')
+    png2.save('Romero-fig5.tiff')
     png1.close()
 
 
