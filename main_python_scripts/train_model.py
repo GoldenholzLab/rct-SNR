@@ -4,8 +4,9 @@ import numpy as np
 import json
 import keras.models as models
 import matplotlib.pyplot as plt
+from data_collector import collect_keras_formatted_samples_and_labels
 
-
+''''
 def load_iter_specific_files(endpoint_name, data_storage_folder_name, block_num, compute_iter):
 
     data_storage_folder_file_path = data_storage_folder_name + '_' + str(int(block_num))
@@ -80,7 +81,7 @@ def collect_data_from_folder(num_monthly_means,
     return [theo_placebo_arm_hists, 
             theo_drug_arm_hists, 
             emp_stat_powers]
-
+'''
 
 def train_and_save_model(training_theo_placebo_arm_hists,
                          training_theo_drug_arm_hists,
@@ -131,23 +132,25 @@ def take_inputs_from_command_shell():
     num_epochs            = int(sys.argv[5])
     num_samples_per_batch = int(sys.argv[6])
 
-    training_data_folder_name          = sys.argv[7]
+    data_storage_folder_name           = sys.argv[7]
     generic_stat_power_model_file_name = sys.argv[8]
     generic_text_RMSEs_file_name       = sys.argv[9]
 
     num_train_compute_iters_per_block = int(sys.argv[10])
-    endpoint_name                     =     sys.argv[11]
-    block_num                         = int(sys.argv[12])
+    num_test_compute_iters_per_block  = int(sys.argv[11])
+    endpoint_name                     =     sys.argv[12]
+    block_num                         = int(sys.argv[13])
 
     return [monthly_mean_lower_bound,    
             monthly_mean_upper_bound, 
             monthly_std_dev_lower_bound, 
             monthly_std_dev_upper_bound,
             num_epochs, num_samples_per_batch,
-            training_data_folder_name, 
+            data_storage_folder_name, 
             generic_stat_power_model_file_name, 
             generic_text_RMSEs_file_name,
-            num_train_compute_iters_per_block, 
+            num_train_compute_iters_per_block,
+            num_test_compute_iters_per_block,
             endpoint_name,
             block_num]
 
@@ -160,10 +163,11 @@ if(__name__=='__main__'):
      monthly_std_dev_lower_bound, 
      monthly_std_dev_upper_bound,
      num_epochs, num_samples_per_batch,
-     training_data_folder_name, 
+     data_storage_folder_name, 
      generic_stat_power_model_file_name, 
      generic_text_RMSEs_file_name,
      num_train_compute_iters_per_block,
+     num_test_compute_iters_per_block,
      endpoint_name,
      block_num] = \
          take_inputs_from_command_shell()
@@ -172,6 +176,7 @@ if(__name__=='__main__'):
     num_monthly_means    = monthly_mean_upper_bound    - (monthly_mean_lower_bound - 1)
     num_monthly_std_devs = monthly_std_dev_upper_bound - (monthly_std_dev_lower_bound - 1)
 
+    '''
     [training_theo_placebo_arm_hists, 
      training_theo_drug_arm_hists, 
      training_emp_stat_powers   ] = \
@@ -181,6 +186,18 @@ if(__name__=='__main__'):
                                   training_data_folder_name,
                                   block_num,
                                   endpoint_name)
+    '''
+
+    [training_theo_placebo_arm_hists, 
+     training_theo_drug_arm_hists, 
+     training_emp_stat_powers] = \
+         collect_keras_formatted_samples_and_labels(data_storage_folder_name,
+                                                    endpoint_name,
+                                                    block_num,
+                                                    num_train_compute_iters_per_block,
+                                                    num_test_compute_iters_per_block,
+                                                    num_monthly_means,
+                                                    num_monthly_std_devs)
 
     block_loss = \
         train_and_save_model(training_theo_placebo_arm_hists,

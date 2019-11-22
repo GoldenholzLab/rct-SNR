@@ -4,11 +4,13 @@ import numpy as np
 import json
 import keras.models as models
 import matplotlib.pyplot as plt
+from data_collector import collect_keras_formatted_samples_and_labels
 
 # the nrxt two lines were put in to make sure this code works on mac laptops
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
+'''
 def load_iter_specific_files(endpoint_name, data_storage_folder_name, block_num, compute_iter):
 
     data_storage_folder_file_path = data_storage_folder_name + '_' + str(int(block_num))
@@ -80,7 +82,7 @@ def collect_data_from_folder(num_monthly_means,
     return [keras_formatted_theo_placebo_arm_hists, 
             keras_formatted_theo_drug_arm_hists,
             emp_stat_powers]
-
+'''
 
 def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
                                            monthly_mean_upper_bound,
@@ -88,9 +90,11 @@ def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
                                            monthly_std_dev_upper_bound,
                                            generic_stat_power_model_file_name,
                                            endpoint_name,
-                                           testing_data_folder_name,
+                                           data_storage_folder_name,
+                                           num_train_compute_iters_per_block,
                                            num_test_compute_iters_per_block,
-                                           num_blocks):
+                                           start_num_block,
+                                           stop_num_block):
 
     stat_power_model_file_path = endpoint_name + '_' + generic_stat_power_model_file_name + '.h5'
     num_monthly_means    = monthly_mean_upper_bound    - (monthly_mean_lower_bound    - 1)
@@ -101,8 +105,9 @@ def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
     testing_emp_stat_powers   = np.array([])
     predicted_emp_stat_powers = np.array([])
 
-    for block_num in range(1, num_blocks + 1):
+    for block_num in range(start_num_block, stop_num_block + 1):
 
+        '''
         [keras_formatted_testing_theo_placebo_arm_hists, 
          keras_formatted_testing_theo_drug_arm_hists,
          tmp_testing_emp_stat_powers] = \
@@ -112,6 +117,18 @@ def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
                                       testing_data_folder_name,
                                       block_num,
                                       endpoint_name)
+        '''
+
+        [keras_formatted_testing_theo_placebo_arm_hists, 
+         keras_formatted_testing_theo_drug_arm_hists,
+         tmp_testing_emp_stat_powers]  = \
+             collect_keras_formatted_samples_and_labels(data_storage_folder_name,
+                                                        endpoint_name,
+                                                        block_num,
+                                                        num_train_compute_iters_per_block,
+                                                        num_test_compute_iters_per_block,
+                                                        num_monthly_means,
+                                                        num_monthly_std_devs)
         
         tmp_predicted_emp_stat_powers = np.squeeze(stat_power_model.predict([keras_formatted_testing_theo_placebo_arm_hists, keras_formatted_testing_theo_drug_arm_hists]))
 
@@ -134,25 +151,29 @@ def take_inputs_from_command_shell():
     monthly_std_dev_lower_bound = int(sys.argv[3])
     monthly_std_dev_upper_bound = int(sys.argv[4])
 
-    testing_data_folder_name           = sys.argv[5]
+    data_storage_folder_name           = sys.argv[5]
     generic_stat_power_model_file_name = sys.argv[6]
     generic_text_RMSEs_file_name       = sys.argv[7]
     model_errors_file_name             = sys.argv[8]
 
     num_test_compute_iters_per_block = int(sys.argv[9])
-    num_blocks                       = int(sys.argv[10])
-    endpoint_name                    =     sys.argv[11]
+    num_test_compute_iters_per_block = int(sys.argv[10])
+    start_num_block                  = int(sys.argv[11])
+    stop_num_block                   = int(sys.argv[12])
+    endpoint_name                    =     sys.argv[13]
 
     return [monthly_mean_lower_bound,    
             monthly_mean_upper_bound,
             monthly_std_dev_lower_bound, 
             monthly_std_dev_upper_bound,
-            testing_data_folder_name, 
+            data_storage_folder_name, 
             generic_stat_power_model_file_name, 
             generic_text_RMSEs_file_name,
             model_errors_file_name,
+            num_train_compute_iters_per_block,
             num_test_compute_iters_per_block, 
-            num_blocks,
+            start_num_block,
+            stop_num_block,
             endpoint_name]
 
 
@@ -162,12 +183,14 @@ if(__name__=='__main__'):
      monthly_mean_upper_bound,
      monthly_std_dev_lower_bound, 
      monthly_std_dev_upper_bound,
-     testing_data_folder_name, 
+     data_storage_folder_name, 
      generic_stat_power_model_file_name, 
      generic_text_RMSEs_file_name,
      model_errors_file_name,
+     num_train_compute_iters_per_block,
      num_test_compute_iters_per_block, 
-     num_blocks,
+     start_num_block,
+     stop_num_block,
      endpoint_name] = \
          take_inputs_from_command_shell()
 
@@ -178,9 +201,11 @@ if(__name__=='__main__'):
                                                 monthly_std_dev_upper_bound,
                                                 generic_stat_power_model_file_name,
                                                 endpoint_name,
-                                                testing_data_folder_name,
+                                                data_storage_folder_name,
+                                                num_train_compute_iters_per_block,
                                                 num_test_compute_iters_per_block,
-                                                num_blocks)
+                                                start_num_block,
+                                                stop_num_block)
 
     text_RMSEs_file_path = endpoint_name + '_' + generic_text_RMSEs_file_name + ".txt"
     with open(text_RMSEs_file_path, 'a') as text_file:
