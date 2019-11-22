@@ -156,11 +156,11 @@ def take_inputs_from_command_shell():
     generic_text_RMSEs_file_name       = sys.argv[7]
     model_errors_file_name             = sys.argv[8]
 
-    num_test_compute_iters_per_block = int(sys.argv[9])
-    num_test_compute_iters_per_block = int(sys.argv[10])
-    start_num_block                  = int(sys.argv[11])
-    stop_num_block                   = int(sys.argv[12])
-    endpoint_name                    =     sys.argv[13]
+    num_train_compute_iters_per_block = int(sys.argv[9])
+    num_test_compute_iters_per_block  = int(sys.argv[10])
+    start_num_block                   = int(sys.argv[11])
+    stop_num_block                    = int(sys.argv[12])
+    endpoint_name                     =     sys.argv[13]
 
     return [monthly_mean_lower_bound,    
             monthly_mean_upper_bound,
