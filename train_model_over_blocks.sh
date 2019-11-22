@@ -17,7 +17,7 @@ RR50_endpoint_name="RR50"
 MPC_endpoint_name="MPC"
 TTP_endpoint_name="TTP"
 
-num_blocks=25
+num_blocks=50
 num_train_compute_iters_per_block=15
 num_test_compute_iters_per_block=5
 
