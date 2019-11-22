@@ -66,9 +66,10 @@ inputs_three[4]=$data_folder_name
 inputs_three[5]=$generic_stat_power_model_file_name
 inputs_three[6]=$generic_text_RMSEs_file_name
 inputs_three[7]=$model_errors_file_name
-inputs_three[8]=$num_test_compute_iters_per_block
-inputs_three[9]=$start_num_test_block
-inputs_three[10]=$stop_num_test_block
+inputs_three[8]=$num_train_compute_iters_per_block
+inputs_three[9]=$num_test_compute_iters_per_block
+inputs_three[10]=$start_num_test_block
+inputs_three[11]=$stop_num_test_block
 
 inputs_four[0]=$num_theo_patients_per_trial_arm_in_snr_map
 inputs_four[1]=$num_theo_patients_per_trial_arm_in_snr_map_loc
@@ -104,7 +105,7 @@ do
 
     inputs[5]=$endpoint_name
     inputs_two[11]=$endpoint_name
-    inputs_three[11]=$endpoint_name
+    inputs_three[12]=$endpoint_name
     inputs_four[3]=$endpoint_name
 
     python main_python_scripts/initialize_model.py ${inputs[@]}
