@@ -104,7 +104,15 @@ def plot_predicted_statistical_powers_and_NV_model_hists(expected_NV_model_one_R
     NV_model_2_rect = rectangle((5.5,  9.5), 7, 4, 0, edgecolor='xkcd:vivid green', facecolor='none', linewidth=3)
     ax.add_artist(NV_model_1_rect)
     ax.add_artist(NV_model_2_rect)
-    ax.legend([NV_model_1_rect, NV_model_2_rect], ['NV Model 1', 'NV Model 2'], loc='upper left')
+    ax.text(0.6, 11.2, 'NV Model 1', {'family': 'serif',
+                                      'color':  'white',
+                                      'weight': 'normal',
+                                      'size': 16}          )
+    ax.text(8.6, 9.2, 'NV Model 2', {'family': 'serif',
+                                      'color':  'white',
+                                      'weight': 'normal',
+                                      'size': 16}          )
+    #ax.legend([NV_model_1_rect, NV_model_2_rect], ['NV Model 1', 'NV Model 2'], loc='upper left')
 
     plt.subplot(1,2,2)
 
