@@ -93,8 +93,7 @@ def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
                                            data_storage_folder_name,
                                            num_train_compute_iters_per_block,
                                            num_test_compute_iters_per_block,
-                                           start_num_block,
-                                           stop_num_block):
+                                           leftout_testing_block_nums):
 
     stat_power_model_file_path = endpoint_name + '_' + generic_stat_power_model_file_name + '.h5'
     num_monthly_means    = monthly_mean_upper_bound    - (monthly_mean_lower_bound    - 1)
@@ -105,7 +104,7 @@ def generate_model_testing_loss_and_errors(monthly_mean_lower_bound,
     testing_emp_stat_powers   = np.array([])
     predicted_emp_stat_powers = np.array([])
 
-    for block_num in range(start_num_block, stop_num_block + 1):
+    for block_num in leftout_testing_block_nums:
 
         '''
         [keras_formatted_testing_theo_placebo_arm_hists, 
@@ -158,9 +157,18 @@ def take_inputs_from_command_shell():
 
     num_train_compute_iters_per_block = int(sys.argv[9])
     num_test_compute_iters_per_block  = int(sys.argv[10])
-    start_num_block                   = int(sys.argv[11])
-    stop_num_block                    = int(sys.argv[12])
-    endpoint_name                     =     sys.argv[13]
+    num_total_blocks                  = int(sys.argv[11])
+    endpoint_name                     =     sys.argv[12]
+
+    random_training_block_nums = list(map(int, list(filter( lambda a: a != '', sys.argv[13].split('\'') ))))#sys.argv[12]
+
+    leftout_testing_block_nums = []
+    for block_index in range(1, num_total_blocks + 1):
+        if(random_training_block_nums.count(block_index) == 0):
+            leftout_testing_block_nums.append(block_index)
+    
+    print(random_training_block_nums)
+    print(leftout_testing_block_nums)
 
     return [monthly_mean_lower_bound,    
             monthly_mean_upper_bound,
@@ -172,9 +180,8 @@ def take_inputs_from_command_shell():
             model_errors_file_name,
             num_train_compute_iters_per_block,
             num_test_compute_iters_per_block, 
-            start_num_block,
-            stop_num_block,
-            endpoint_name]
+            endpoint_name,
+            leftout_testing_block_nums]
 
 
 if(__name__=='__main__'):
@@ -189,9 +196,8 @@ if(__name__=='__main__'):
      model_errors_file_name,
      num_train_compute_iters_per_block,
      num_test_compute_iters_per_block, 
-     start_num_block,
-     stop_num_block,
-     endpoint_name] = \
+     endpoint_name,
+     leftout_testing_block_nums] = \
          take_inputs_from_command_shell()
 
     [model_errors, model_test_RMSE_str] = \
@@ -204,8 +210,7 @@ if(__name__=='__main__'):
                                                 data_storage_folder_name,
                                                 num_train_compute_iters_per_block,
                                                 num_test_compute_iters_per_block,
-                                                start_num_block,
-                                                stop_num_block)
+                                                leftout_testing_block_nums)
 
     text_RMSEs_file_path = endpoint_name + '_' + generic_text_RMSEs_file_name + ".txt"
     with open(text_RMSEs_file_path, 'a') as text_file:

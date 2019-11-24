@@ -16,9 +16,13 @@ RR50_endpoint_name="RR50"
 MPC_endpoint_name="MPC"
 TTP_endpoint_name="TTP"
 
+: '
 num_train_blocks=44
 start_num_test_block=45
 stop_num_test_block=46
+'
+num_total_blocks=50
+num_testing_blocks=6
 num_train_compute_iters_per_block=15
 num_test_compute_iters_per_block=5
 
@@ -68,8 +72,7 @@ inputs_three[6]=$generic_text_RMSEs_file_name
 inputs_three[7]=$model_errors_file_name
 inputs_three[8]=$num_train_compute_iters_per_block
 inputs_three[9]=$num_test_compute_iters_per_block
-inputs_three[10]=$start_num_test_block
-inputs_three[11]=$stop_num_test_block
+inputs_three[10]=$num_total_blocks
 
 inputs_four[0]=$num_theo_patients_per_trial_arm_in_snr_map
 inputs_four[1]=$num_theo_patients_per_trial_arm_in_snr_map_loc
@@ -96,7 +99,7 @@ inputs_eight[1]=$monthly_mean_upper_bound
 inputs_eight[2]=$monthly_std_dev_lower_bound
 inputs_eight[3]=$monthly_std_dev_upper_bound
 inputs_eight[4]=$expected_NV_model_responses_file_name
-inputs_eight[5]=$NV_model_hist_file_names
+inputs_eight[5]=$NV_model_hist_file_name
 
 for ((endpoint_name_index=0; endpoint_name_index<=2; endpoint_name_index=endpoint_name_index+1))
 do
@@ -105,12 +108,17 @@ do
 
     inputs[5]=$endpoint_name
     inputs_two[11]=$endpoint_name
-    inputs_three[12]=$endpoint_name
+    inputs_three[11]=$endpoint_name
     inputs_four[3]=$endpoint_name
 
     python main_python_scripts/initialize_model.py ${inputs[@]}
 
-    for ((train_block_num=1; train_block_num<=$num_train_blocks; train_block_num=train_block_num+1))
+    random_training_block_nums=`python main_python_scripts/random_blocks.py $num_total_blocks $num_testing_blocks`
+    inputs_three[12]=`printf "'%s'" ${random_training_block_nums[@]}`
+
+    echo $random_training_block_nums
+
+    for train_block_num in $random_training_block_nums
     do
         echo "training on block #$train_block_num"
         inputs_two[12]=$train_block_num
