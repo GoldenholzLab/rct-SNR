@@ -235,7 +235,7 @@ def generate_homogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
             drug_arm_testing_seizure_diaries  ]
 
 
-def generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
+def generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                   theo_placebo_arm_patient_pop_params,
                                                   num_baseline_months,
                                                   num_testing_months,
@@ -278,7 +278,7 @@ def generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_ar
             placebo_arm_testing_seizure_diaries  ]
 
 
-def generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
+def generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                theo_drug_arm_patient_pop_params,
                                                num_baseline_months,
                                                num_testing_months,
@@ -355,7 +355,7 @@ def generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
             drug_arm_testing_seizure_diaries  ]
 
 
-def generate_heterogeneuous_patient_pop_per_trial_arm(num_theo_patients_per_trial_arm,
+def generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_trial_arm,
                                                       theo_placebo_arm_patient_pop_params,
                                                       num_baseline_months,
                                                       num_testing_months,
