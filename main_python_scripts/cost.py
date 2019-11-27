@@ -315,7 +315,7 @@ def dumb_algorithm(monthly_mean_min,
 
 if(__name__=='__main__'):
 
-    monthly_mean_min    = 2
+    monthly_mean_min    = 1
     monthly_mean_max    = 16
     monthly_std_dev_min = 1
     monthly_std_dev_max = 16
