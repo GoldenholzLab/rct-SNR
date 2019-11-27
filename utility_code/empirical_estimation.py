@@ -209,8 +209,8 @@ def empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_para
 
     return TTP_emp_stat_power
 
-'''
 
+'''
 def empirically_estimate_imbalanced_RR50_statistical_power(theo_placebo_arm_patient_pop_params,
                                                            theo_drug_arm_patient_pop_params,
                                                            num_theo_patients_in_placebo_arm,
@@ -553,7 +553,6 @@ def estimate_expected_imbalanced_placebo_and_drug_arm_TTPs(theo_placebo_arm_pati
     expected_drug_arm_TTP    = np.mean(average_drug_arm_TTP_array)
 
     return [expected_placebo_arm_TTP, expected_drug_arm_TTP]
-
 '''
 
 '''
