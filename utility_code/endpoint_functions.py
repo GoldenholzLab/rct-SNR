@@ -98,3 +98,53 @@ def calculate_logrank_p_value(placebo_arm_TTP_times,
 
     return TTP_p_value
 
+
+def calculate_trial_p_values(num_testing_months,
+                             testing_time_scaling_const,
+                             num_theo_patients_per_trial_arm,
+                             placebo_arm_baseline_monthly_seizure_diaries,
+                             placebo_arm_testing_monthly_seizure_diaries,
+                             placebo_arm_testing_daily_seizure_diaries,
+                             drug_arm_baseline_monthly_seizure_diaries,
+                             drug_arm_testing_monthly_seizure_diaries,
+                             drug_arm_testing_daily_seizure_diaries):
+
+    num_testing_days = num_testing_months*testing_time_scaling_const
+
+    placebo_arm_percent_changes = \
+            calculate_percent_changes(placebo_arm_baseline_monthly_seizure_diaries,
+                                      placebo_arm_testing_monthly_seizure_diaries,
+                                      num_theo_patients_per_trial_arm)
+    
+    drug_arm_percent_changes = \
+            calculate_percent_changes(drug_arm_baseline_monthly_seizure_diaries,
+                                      drug_arm_testing_monthly_seizure_diaries,
+                                      num_theo_patients_per_trial_arm)
+
+    [placebo_arm_TTP_times, placebo_arm_observed_array] = \
+            calculate_time_to_prerandomizations(placebo_arm_baseline_monthly_seizure_diaries,
+                                                placebo_arm_testing_daily_seizure_diaries,
+                                                num_theo_patients_per_trial_arm,
+                                                num_testing_days)
+    
+    [drug_arm_TTP_times, drug_arm_observed_array] = \
+            calculate_time_to_prerandomizations(drug_arm_baseline_monthly_seizure_diaries,
+                                                drug_arm_testing_daily_seizure_diaries,
+                                                num_theo_patients_per_trial_arm,
+                                                num_testing_days)
+    
+    RR50_p_value = \
+            calculate_fisher_exact_p_value(placebo_arm_percent_changes,
+                                           drug_arm_percent_changes)
+
+    MPC_p_value = \
+            calculate_Mann_Whitney_U_p_value(placebo_arm_percent_changes,
+                                             drug_arm_percent_changes)
+    
+    TTP_p_value = \
+            calculate_logrank_p_value(placebo_arm_TTP_times, 
+                                      placebo_arm_observed_array, 
+                                      drug_arm_TTP_times, 
+                                      drug_arm_observed_array)
+    
+    return [RR50_p_value, MPC_p_value, TTP_p_value]
