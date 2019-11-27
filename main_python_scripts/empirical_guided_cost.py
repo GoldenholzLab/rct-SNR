@@ -120,11 +120,14 @@ if(__name__=='__main__'):
                                                                           num_baseline_months,
                                                                           minimum_required_baseline_seizure_count))
 
-    num_patients = 2
+    num_theo_patients_per_placebo_arm = 1
+    num_theo_patients_per_drug_arm = 1
     RR50_stat_power = 0
     MPC_stat_power  = 0
     TTP_stat_power  = 0
     current_trial_arm = 'placebo'
+
+    num_patients = num_theo_patients_per_placebo_arm + num_theo_patients_per_drug_arm
     
     underpowered_RR50 = RR50_stat_power < target_stat_power
     underpowered_MPC  = MPC_stat_power  < target_stat_power
@@ -149,15 +152,20 @@ if(__name__=='__main__'):
         if( current_trial_arm == 'placebo' ):
             theo_placebo_arm_patient_pop_params_hat_list.append([monthly_mean_hat, monthly_std_dev_hat])
             current_trial_arm == 'drug' 
+            num_theo_patients_per_placebo_arm = num_theo_patients_per_placebo_arm + 1
 
         elif( current_trial_arm == 'drug' ):
             theo_drug_arm_patient_pop_params_hat_list.append([monthly_mean_hat, monthly_std_dev_hat])
             current_trial_arm == 'placebo'
+            num_theo_patients_per_drug_arm = num_theo_patients_per_drug_arm + 1
+
+        num_patients = num_theo_patients_per_placebo_arm + num_theo_patients_per_drug_arm
 
         [RR50_stat_power, 
          MPC_stat_power, 
          TTP_stat_power] = \
-             empirically_estimate_all_endpoint_statistical_powers(num_patients,
+             empirically_estimate_all_endpoint_statistical_powers(num_theo_patients_per_placebo_arm,
+                                                                  num_theo_patients_per_drug_arm,
                                                                   np.array(theo_placebo_arm_patient_pop_params_hat_list),
                                                                   np.array(theo_drug_arm_patient_pop_params_hat_list),
                                                                   num_baseline_months,
@@ -173,7 +181,6 @@ if(__name__=='__main__'):
         underpowered_MPC  = MPC_stat_power  < target_stat_power
         underpowered_TTP  = TTP_stat_power  < target_stat_power
 
-        num_patients = num_patients + 1
         if(underpowered_RR50):
             num_RR50_patients = num_patients
         if(underpowered_MPC):

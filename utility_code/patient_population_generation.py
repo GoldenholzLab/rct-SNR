@@ -363,26 +363,28 @@ def generate_theo_patient_pop_params_per_trial_arm(monthly_mean_min,
                                                    monthly_mean_max,
                                                    monthly_std_dev_min,
                                                    monthly_std_dev_max,
-                                                   num_theo_patients_per_trial_arm):
+                                                   num_theo_patients_per_placebo_arm,
+                                                   num_theo_patients_per_drug_arm):
 
     theo_placebo_arm_patient_pop_params = \
         generate_theo_patient_pop_params(monthly_mean_min,
                                          monthly_mean_max,
                                          monthly_std_dev_min,
                                          monthly_std_dev_max,
-                                         num_theo_patients_per_trial_arm)
+                                         num_theo_patients_per_placebo_arm)
 
     theo_drug_arm_patient_pop_params = \
         generate_theo_patient_pop_params(monthly_mean_min,
                                          monthly_mean_max,
                                          monthly_std_dev_min,
                                          monthly_std_dev_max,
-                                         num_theo_patients_per_trial_arm)
+                                         num_theo_patients_per_drug_arm)
     
     return [theo_placebo_arm_patient_pop_params, theo_drug_arm_patient_pop_params]
 
 
-def generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_trial_arm,
+def generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_placebo_arm,
+                                                     num_theo_patients_per_drug_arm,
                                                      theo_placebo_arm_patient_pop_params,
                                                      theo_drug_arm_patient_pop_params,
                                                      num_baseline_months,
@@ -398,7 +400,7 @@ def generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_trial
 
     [placebo_arm_baseline_monthly_seizure_diaries, 
      placebo_arm_testing_daily_seizure_diaries  ] = \
-         generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
+         generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_per_placebo_arm,
                                                         theo_placebo_arm_patient_pop_params,
                                                         num_baseline_months,
                                                         num_testing_months,
@@ -410,7 +412,7 @@ def generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_trial
 
     [drug_arm_baseline_monthly_seizure_diaries, 
      drug_arm_testing_daily_seizure_diaries  ] = \
-         generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
+         generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_per_drug_arm,
                                                      theo_drug_arm_patient_pop_params,
                                                      num_baseline_months,
                                                      num_testing_months,
@@ -423,12 +425,12 @@ def generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_trial
                                                      drug_sigma)
     
     placebo_arm_testing_monthly_seizure_diaries = \
-        np.sum(placebo_arm_testing_daily_seizure_diaries.reshape((num_theo_patients_per_trial_arm,
+        np.sum(placebo_arm_testing_daily_seizure_diaries.reshape((num_theo_patients_per_placebo_arm,
                                                                   num_testing_months,
                                                                   testing_time_scaling_const)), 2)
     
     drug_arm_testing_monthly_seizure_diaries = \
-        np.sum(drug_arm_testing_daily_seizure_diaries.reshape((num_theo_patients_per_trial_arm,
+        np.sum(drug_arm_testing_daily_seizure_diaries.reshape((num_theo_patients_per_drug_arm,
                                                                num_testing_months, 
                                                                testing_time_scaling_const)), 2)
 

@@ -213,7 +213,8 @@ def empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_para
     return TTP_emp_stat_power
 
 
-def empirically_estimate_all_endpoint_statistical_powers(num_theo_patients_per_trial_arm,
+def empirically_estimate_all_endpoint_statistical_powers(num_theo_patients_per_placebo_arm,
+                                                         num_theo_patients_per_drug_arm,
                                                          theo_placebo_arm_patient_pop_params,
                                                          theo_drug_arm_patient_pop_params,
                                                          num_baseline_months,
@@ -239,7 +240,8 @@ def empirically_estimate_all_endpoint_statistical_powers(num_theo_patients_per_t
          drug_arm_baseline_monthly_seizure_diaries,
          drug_arm_testing_daily_seizure_diaries,
          drug_arm_testing_monthly_seizure_diaries] = \
-             generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_trial_arm,
+             generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_placebo_arm,
+                                                              num_theo_patients_per_drug_arm,
                                                               theo_placebo_arm_patient_pop_params,
                                                               theo_drug_arm_patient_pop_params,
                                                               num_baseline_months,
@@ -257,7 +259,8 @@ def empirically_estimate_all_endpoint_statistical_powers(num_theo_patients_per_t
          drug_arm_TTP_times, 
          drug_arm_observed_array] = \
              calculate_trial_endpoints(num_testing_months,
-                                       num_theo_patients_per_trial_arm,
+                                       num_theo_patients_per_placebo_arm,
+                                       num_theo_patients_per_drug_arm,
                                        placebo_arm_baseline_monthly_seizure_diaries,
                                        placebo_arm_testing_monthly_seizure_diaries,
                                        placebo_arm_testing_daily_seizure_diaries,

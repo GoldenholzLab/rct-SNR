@@ -100,7 +100,8 @@ def calculate_logrank_p_value(placebo_arm_TTP_times,
 
 
 def calculate_trial_endpoints(num_testing_months,
-                              num_theo_patients_per_trial_arm,
+                              num_theo_patients_per_placebo_arm,
+                              num_theo_patients_per_drug_arm,
                               placebo_arm_baseline_monthly_seizure_diaries,
                               placebo_arm_testing_monthly_seizure_diaries,
                               placebo_arm_testing_daily_seizure_diaries,
@@ -113,23 +114,23 @@ def calculate_trial_endpoints(num_testing_months,
     placebo_arm_percent_changes = \
             calculate_percent_changes(placebo_arm_baseline_monthly_seizure_diaries,
                                       placebo_arm_testing_monthly_seizure_diaries,
-                                      num_theo_patients_per_trial_arm)
+                                      num_theo_patients_per_placebo_arm)
     
     drug_arm_percent_changes = \
             calculate_percent_changes(drug_arm_baseline_monthly_seizure_diaries,
                                       drug_arm_testing_monthly_seizure_diaries,
-                                      num_theo_patients_per_trial_arm)
+                                      num_theo_patients_per_drug_arm)
 
     [placebo_arm_TTP_times, placebo_arm_observed_array] = \
             calculate_time_to_prerandomizations(placebo_arm_baseline_monthly_seizure_diaries,
                                                 placebo_arm_testing_daily_seizure_diaries,
-                                                num_theo_patients_per_trial_arm,
+                                                num_theo_patients_per_placebo_arm,
                                                 num_testing_days)
     
     [drug_arm_TTP_times, drug_arm_observed_array] = \
             calculate_time_to_prerandomizations(drug_arm_baseline_monthly_seizure_diaries,
                                                 drug_arm_testing_daily_seizure_diaries,
-                                                num_theo_patients_per_trial_arm,
+                                                num_theo_patients_per_drug_arm,
                                                 num_testing_days)
     
     return [placebo_arm_percent_changes,
