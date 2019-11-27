@@ -369,29 +369,29 @@ def generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_trial
 
     [placebo_arm_baseline_monthly_seizure_diaries, 
      placebo_arm_testing_daily_seizure_diaries  ] = \
-         generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
-                                                       theo_placebo_arm_patient_pop_params,
-                                                       num_baseline_months,
-                                                       num_testing_months,
-                                                       baseline_time_scaling_const,
-                                                       testing_time_scaling_const,
-                                                       minimum_required_baseline_seizure_count,
-                                                       placebo_mu,
-                                                       placebo_sigma)
+         generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
+                                                        theo_placebo_arm_patient_pop_params,
+                                                        num_baseline_months,
+                                                        num_testing_months,
+                                                        baseline_time_scaling_const,
+                                                        testing_time_scaling_const,
+                                                        minimum_required_baseline_seizure_count,
+                                                        placebo_mu,
+                                                        placebo_sigma)
 
     [drug_arm_baseline_monthly_seizure_diaries, 
      drug_arm_testing_daily_seizure_diaries  ] = \
-         generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
-                                                    theo_placebo_arm_patient_pop_params,
-                                                    num_baseline_months,
-                                                    num_testing_months,
-                                                    baseline_time_scaling_const,
-                                                    testing_time_scaling_const,
-                                                    minimum_required_baseline_seizure_count,
-                                                    placebo_mu,
-                                                    placebo_sigma,
-                                                    drug_mu,
-                                                    drug_sigma)
+         generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
+                                                     theo_placebo_arm_patient_pop_params,
+                                                     num_baseline_months,
+                                                     num_testing_months,
+                                                     baseline_time_scaling_const,
+                                                     testing_time_scaling_const,
+                                                     minimum_required_baseline_seizure_count,
+                                                     placebo_mu,
+                                                     placebo_sigma,
+                                                     drug_mu,
+                                                     drug_sigma)
     
     placebo_arm_testing_monthly_seizure_diaries = \
         np.sum(placebo_arm_testing_daily_seizure_diaries.reshape((num_theo_patients_per_trial_arm,
