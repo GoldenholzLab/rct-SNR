@@ -357,6 +357,7 @@ def generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
 
 def generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_trial_arm,
                                                       theo_placebo_arm_patient_pop_params,
+                                                      theo_drug_arm_patient_pop_params,
                                                       num_baseline_months,
                                                       num_testing_months,
                                                       baseline_time_scaling_const,
@@ -382,7 +383,7 @@ def generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_trial
     [drug_arm_baseline_monthly_seizure_diaries, 
      drug_arm_testing_daily_seizure_diaries  ] = \
          generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
-                                                     theo_placebo_arm_patient_pop_params,
+                                                     theo_drug_arm_patient_pop_params,
                                                      num_baseline_months,
                                                      num_testing_months,
                                                      baseline_time_scaling_const,
