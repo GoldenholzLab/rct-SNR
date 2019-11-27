@@ -323,8 +323,8 @@ if(__name__=='__main__'):
     num_baseline_months = 2
     minimum_required_baseline_seizure_count = 4
 
-    endpoint_name = 'RR50'
-    generic_stat_power_model_file_name = 'stat_power_model'
+    endpoint_name = sys.argv[1]
+    generic_stat_power_model_file_name = 'stat_power_model_copy'
     target_stat_power = 0.9
     num_SNR_iter = 100
     num_recruitments_processes_for_trials = 100
