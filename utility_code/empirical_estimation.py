@@ -1,5 +1,5 @@
 import numpy as np
-import time
+#import time
 from .patient_population_generation import randomly_select_theo_patient_pop
 from .patient_population_generation import generate_theo_patient_pop_params
 from .patient_population_generation import generate_heterogeneous_placebo_arm_patient_pop
@@ -232,7 +232,7 @@ def empirically_estimate_all_endpoint_statistical_powers(num_theo_patients_per_p
 
     for trial_index in range(num_trials):
 
-        trial_start_time_in_seconds = time.time()
+        #trial_start_time_in_seconds = time.time()
 
         [placebo_arm_baseline_monthly_seizure_diaries,
          placebo_arm_testing_daily_seizure_diaries,
@@ -286,10 +286,12 @@ def empirically_estimate_all_endpoint_statistical_powers(num_theo_patients_per_p
         MPC_p_value_array[trial_index]  = MPC_p_value
         TTP_p_value_array[trial_index]  = TTP_p_value
 
+        '''
         trial_stop_time_in_seconds = time.time()
         trial_runtime_in_seconds = trial_stop_time_in_seconds - trial_start_time_in_seconds
         trial_runtime_in_seconds_str = 'trial index #' + str(trial_index) + ': ' + str(np.round(trial_runtime_in_seconds, 3)) + ' seconds'
         print(trial_runtime_in_seconds_str)
+        '''
     
     RR50_stat_power = np.sum(RR50_p_value_array <= 0.05)/num_trials
     MPC_stat_power  = np.sum(MPC_p_value_array  <= 0.05)/num_trials
