@@ -5,7 +5,7 @@ import copy
 import sys
 import os
 sys.path.insert(0, os.getcwd())
-from utility_code.seizure_diary_generation import generate_seizure_diary
+from utility_code.seizure_diary_generation import generate_seizure_diary_with_minimum_count
 from utility_code.patient_population_generation import convert_theo_pop_hist
 
 
@@ -49,7 +49,8 @@ def estimate_patient_loc(monthly_mean_min,
                          monthly_mean_max,
                          monthly_std_dev_min,
                          monthly_std_dev_max,
-                         num_baseline_months):
+                         num_baseline_months,
+                         minimum_required_baseline_seizure_count):
 
     '''
 
@@ -68,10 +69,11 @@ def estimate_patient_loc(monthly_mean_min,
                             monthly_std_dev_max)
 
         baseline_monthly_seizure_diary = \
-            generate_seizure_diary(num_baseline_months, 
-                                   monthly_mean, 
-                                   monthly_std_dev, 
-                                   1)
+            generate_seizure_diary_with_minimum_count(num_baseline_months, 
+                                                      monthly_mean, 
+                                                      monthly_std_dev, 
+                                                      1,
+                                                      minimum_required_baseline_seizure_count)
     
         monthly_mean_hat    = np.int_(np.round(np.mean(baseline_monthly_seizure_diary)))
         monthly_std_dev_hat = np.int_(np.round(np.std(baseline_monthly_seizure_diary)))
@@ -164,6 +166,7 @@ def smart_algorithm(monthly_mean_min,
                     monthly_std_dev_min,
                     monthly_std_dev_max,
                     num_baseline_months,
+                    minimum_required_baseline_seizure_count,
                     target_stat_power,
                     num_SNR_iter,
                     stat_power_model):
@@ -177,13 +180,15 @@ def smart_algorithm(monthly_mean_min,
                                                                              monthly_mean_max - 1,
                                                                              monthly_std_dev_min,
                                                                              monthly_std_dev_max - 1,
-                                                                             num_baseline_months))
+                                                                             num_baseline_months,
+                                                                             minimum_required_baseline_seizure_count))
 
     theo_drug_arm_patient_pop_params_hat_list.append(estimate_patient_loc(monthly_mean_min,
                                                                           monthly_mean_max - 1,
                                                                           monthly_std_dev_min,
                                                                           monthly_std_dev_max - 1,
-                                                                          num_baseline_months))
+                                                                          num_baseline_months,
+                                                                          minimum_required_baseline_seizure_count))
 
     num_patients = 2
     current_NN_stat_power = 0
@@ -200,7 +205,8 @@ def smart_algorithm(monthly_mean_min,
                                       monthly_mean_max - 1,
                                       monthly_std_dev_min,
                                       monthly_std_dev_max - 1,
-                                      num_baseline_months)
+                                      num_baseline_months,
+                                      minimum_required_baseline_seizure_count)
 
             [SNR, current_NN_stat_power] = \
                 calculate_SNR(monthly_mean_min,
@@ -241,6 +247,7 @@ def dumb_algorithm(monthly_mean_min,
                    monthly_std_dev_min,
                    monthly_std_dev_max,
                    num_baseline_months,
+                   minimum_required_baseline_seizure_count,
                    target_stat_power,
                    num_SNR_iter,
                    stat_power_model):
@@ -254,13 +261,15 @@ def dumb_algorithm(monthly_mean_min,
                                                                              monthly_mean_max - 1,
                                                                              monthly_std_dev_min,
                                                                              monthly_std_dev_max - 1,
-                                                                             num_baseline_months))
+                                                                             num_baseline_months,
+                                                                             minimum_required_baseline_seizure_count))
 
     theo_drug_arm_patient_pop_params_hat_list.append(estimate_patient_loc(monthly_mean_min,
                                                                           monthly_mean_max - 1,
                                                                           monthly_std_dev_min,
                                                                           monthly_std_dev_max - 1,
-                                                                          num_baseline_months))
+                                                                          num_baseline_months,
+                                                                          minimum_required_baseline_seizure_count))
 
     num_patients = 2
     current_NN_stat_power = 0
@@ -273,7 +282,8 @@ def dumb_algorithm(monthly_mean_min,
                                   monthly_mean_max - 1,
                                   monthly_std_dev_min,
                                   monthly_std_dev_max - 1,
-                                  num_baseline_months)
+                                  num_baseline_months,
+                                  minimum_required_baseline_seizure_count)
 
         [_, current_NN_stat_power] = \
             calculate_SNR(monthly_mean_min,
@@ -305,11 +315,13 @@ def dumb_algorithm(monthly_mean_min,
 
 if(__name__=='__main__'):
 
-    monthly_mean_min = 1
-    monthly_mean_max = 16
+    monthly_mean_min    = 2
+    monthly_mean_max    = 16
     monthly_std_dev_min = 1
     monthly_std_dev_max = 16
+
     num_baseline_months = 2
+    minimum_required_baseline_seizure_count = 4
 
     endpoint_name = 'RR50'
     generic_stat_power_model_file_name = 'stat_power_model'
@@ -331,6 +343,7 @@ if(__name__=='__main__'):
                             monthly_std_dev_min,
                             monthly_std_dev_max,
                             num_baseline_months,
+                            minimum_required_baseline_seizure_count,
                             target_stat_power,
                             num_SNR_iter,
                             stat_power_model)
@@ -343,6 +356,7 @@ if(__name__=='__main__'):
                            monthly_std_dev_min,
                            monthly_std_dev_max,
                            num_baseline_months,
+                           minimum_required_baseline_seizure_count,
                            target_stat_power,
                            num_SNR_iter,
                            stat_power_model)
@@ -355,4 +369,3 @@ if(__name__=='__main__'):
     expected_num_dumb_algo_patients  = np.round(np.mean(num_dumb_algo_patients_array))
 
     print([expected_num_smart_algo_patients, expected_num_dumb_algo_patients])
-
