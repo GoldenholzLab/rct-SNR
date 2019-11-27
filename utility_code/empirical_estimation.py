@@ -1,8 +1,8 @@
 import numpy as np
 from .patient_population_generation import randomly_select_theo_patient_pop
 from .patient_population_generation import generate_theo_patient_pop_params
-from .patient_population_generation import generate_heterogenous_placebo_arm_patient_pop
-from .patient_population_generation import generate_heterogenous_drug_arm_patient_pop
+from .patient_population_generation import generate_heterogeneous_placebo_arm_patient_pop
+from .patient_population_generation import generate_heterogeneous_drug_arm_patient_pop
 from .endpoint_functions import calculate_percent_changes
 from .endpoint_functions import calculate_time_to_prerandomizations
 from .endpoint_functions import calculate_fisher_exact_p_value
@@ -30,7 +30,7 @@ def empirically_estimate_RR50_statistical_power(theo_placebo_arm_patient_pop_par
         
         [placebo_arm_baseline_seizure_diaries, 
          placebo_arm_testing_seizure_diaries  ] = \
-             generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
+             generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                            theo_placebo_arm_patient_pop_params,
                                                            num_baseline_months,
                                                            num_testing_months,
@@ -42,7 +42,7 @@ def empirically_estimate_RR50_statistical_power(theo_placebo_arm_patient_pop_par
     
         [drug_arm_baseline_seizure_diaries, 
          drug_arm_testing_seizure_diaries  ] = \
-             generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
+             generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                         theo_drug_arm_patient_pop_params,
                                                         num_baseline_months,
                                                         num_testing_months,
@@ -95,7 +95,7 @@ def empirically_estimate_MPC_statistical_power(theo_placebo_arm_patient_pop_para
         
         [placebo_arm_baseline_seizure_diaries, 
          placebo_arm_testing_seizure_diaries  ] = \
-             generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
+             generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                            theo_placebo_arm_patient_pop_params,
                                                            num_baseline_months,
                                                            num_testing_months,
@@ -107,7 +107,7 @@ def empirically_estimate_MPC_statistical_power(theo_placebo_arm_patient_pop_para
     
         [drug_arm_baseline_seizure_diaries, 
          drug_arm_testing_seizure_diaries  ] = \
-             generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
+             generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                         theo_drug_arm_patient_pop_params,
                                                         num_baseline_months,
                                                         num_testing_months,
@@ -161,7 +161,7 @@ def empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_para
 
         [placebo_arm_monthly_baseline_seizure_diaries, 
          placebo_arm_daily_testing_seizure_diaries    ] = \
-             generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
+             generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                            theo_placebo_arm_patient_pop_params,
                                                            num_baseline_months,
                                                            num_testing_months,
@@ -173,7 +173,7 @@ def empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_para
     
         [drug_arm_monthly_baseline_seizure_diaries, 
          drug_arm_daily_testing_seizure_diaries    ] = \
-             generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
+             generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                         theo_drug_arm_patient_pop_params,
                                                         num_baseline_months,
                                                         num_testing_months,
@@ -208,6 +208,9 @@ def empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_para
     TTP_emp_stat_power = np.sum(TTP_p_values < 0.05)/num_trials
 
     return TTP_emp_stat_power
+
+
+#def empirically_estimate_all_endpoint_statistical_powers():
 
 
 '''
