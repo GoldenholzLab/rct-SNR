@@ -133,27 +133,6 @@ def convert_theo_pop_hist(monthly_mean_min,
     return theo_trial_arm_pop_hist
 
 
-def convert_theo_pop_hist_with_empty_regions(monthly_mean_lower_bound,
-                                             monthly_mean_upper_bound,
-                                             monthly_std_dev_lower_bound,
-                                             monthly_std_dev_upper_bound,
-                                             theo_trial_arm_patient_pop_params):
-
-    trial_arm_monthly_means    = theo_trial_arm_patient_pop_params[:, 0]
-    trial_arm_monthly_std_devs = theo_trial_arm_patient_pop_params[:, 1]
-
-    num_monthly_mean_bins    = monthly_mean_upper_bound    - (monthly_mean_lower_bound    - 1)
-    num_monthly_std_dev_bins = monthly_std_dev_upper_bound - (monthly_std_dev_lower_bound - 1)
-
-    hist_bins = [num_monthly_std_dev_bins, num_monthly_mean_bins]
-    hist_range = [[monthly_std_dev_lower_bound, num_monthly_std_dev_bins + monthly_std_dev_lower_bound], [monthly_mean_lower_bound, num_monthly_mean_bins + monthly_mean_lower_bound]]
-
-    [theo_trial_arm_pop_hist,_,_] = np.histogram2d(trial_arm_monthly_std_devs, trial_arm_monthly_means, bins=hist_bins, range=hist_range)
-    theo_trial_arm_pop_hist = np.flipud(theo_trial_arm_pop_hist)
-
-    return theo_trial_arm_pop_hist
-
-
 def generate_homogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                 monthly_mean, 
                                                 monthly_std_dev,
@@ -375,3 +354,81 @@ def generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
     return [drug_arm_baseline_seizure_diaries, 
             drug_arm_testing_seizure_diaries  ]
 
+
+def generate_heterogeneuous_patient_pop_per_trial_arm(num_theo_patients_per_trial_arm,
+                                                      theo_placebo_arm_patient_pop_params,
+                                                      num_baseline_months,
+                                                      num_testing_months,
+                                                      baseline_time_scaling_const,
+                                                      testing_time_scaling_const,
+                                                      minimum_required_baseline_seizure_count,
+                                                      placebo_mu,
+                                                      placebo_sigma,
+                                                      drug_mu,
+                                                      drug_sigma):
+
+    [placebo_arm_baseline_monthly_seizure_diaries, 
+     placebo_arm_testing_daily_seizure_diaries  ] = \
+         generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
+                                                       theo_placebo_arm_patient_pop_params,
+                                                       num_baseline_months,
+                                                       num_testing_months,
+                                                       baseline_time_scaling_const,
+                                                       testing_time_scaling_const,
+                                                       minimum_required_baseline_seizure_count,
+                                                       placebo_mu,
+                                                       placebo_sigma)
+
+    [drug_arm_baseline_monthly_seizure_diaries, 
+     drug_arm_testing_daily_seizure_diaries  ] = \
+         generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
+                                                    theo_placebo_arm_patient_pop_params,
+                                                    num_baseline_months,
+                                                    num_testing_months,
+                                                    baseline_time_scaling_const,
+                                                    testing_time_scaling_const,
+                                                    minimum_required_baseline_seizure_count,
+                                                    placebo_mu,
+                                                    placebo_sigma,
+                                                    drug_mu,
+                                                    drug_sigma)
+    
+    placebo_arm_testing_monthly_seizure_diaries = \
+        np.sum(placebo_arm_testing_daily_seizure_diaries.reshape((num_theo_patients_per_trial_arm,
+                                                                  num_testing_months,
+                                                                  testing_time_scaling_const)), 2)
+    
+    drug_arm_testing_monthly_seizure_diaries = \
+        np.sum(drug_arm_testing_daily_seizure_diaries.reshape((num_theo_patients_per_trial_arm,
+                                                               num_testing_months, 
+                                                               testing_time_scaling_const)), 2)
+
+    return [placebo_arm_baseline_monthly_seizure_diaries,
+            placebo_arm_testing_daily_seizure_diaries,
+            placebo_arm_testing_monthly_seizure_diaries,
+            drug_arm_baseline_monthly_seizure_diaries,
+            drug_arm_testing_daily_seizure_diaries,
+            drug_arm_testing_monthly_seizure_diaries]
+
+
+'''
+def convert_theo_pop_hist_with_empty_regions(monthly_mean_lower_bound,
+                                             monthly_mean_upper_bound,
+                                             monthly_std_dev_lower_bound,
+                                             monthly_std_dev_upper_bound,
+                                             theo_trial_arm_patient_pop_params):
+
+    trial_arm_monthly_means    = theo_trial_arm_patient_pop_params[:, 0]
+    trial_arm_monthly_std_devs = theo_trial_arm_patient_pop_params[:, 1]
+
+    num_monthly_mean_bins    = monthly_mean_upper_bound    - (monthly_mean_lower_bound    - 1)
+    num_monthly_std_dev_bins = monthly_std_dev_upper_bound - (monthly_std_dev_lower_bound - 1)
+
+    hist_bins = [num_monthly_std_dev_bins, num_monthly_mean_bins]
+    hist_range = [[monthly_std_dev_lower_bound, num_monthly_std_dev_bins + monthly_std_dev_lower_bound], [monthly_mean_lower_bound, num_monthly_mean_bins + monthly_mean_lower_bound]]
+
+    [theo_trial_arm_pop_hist,_,_] = np.histogram2d(trial_arm_monthly_std_devs, trial_arm_monthly_means, bins=hist_bins, range=hist_range)
+    theo_trial_arm_pop_hist = np.flipud(theo_trial_arm_pop_hist)
+
+    return theo_trial_arm_pop_hist
+'''
