@@ -360,13 +360,14 @@ def generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_trial
                                                       theo_drug_arm_patient_pop_params,
                                                       num_baseline_months,
                                                       num_testing_months,
-                                                      baseline_time_scaling_const,
-                                                      testing_time_scaling_const,
                                                       minimum_required_baseline_seizure_count,
                                                       placebo_mu,
                                                       placebo_sigma,
                                                       drug_mu,
                                                       drug_sigma):
+    
+    baseline_time_scaling_const = 1
+    testing_time_scaling_const  = 28
 
     [placebo_arm_baseline_monthly_seizure_diaries, 
      placebo_arm_testing_daily_seizure_diaries  ] = \
