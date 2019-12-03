@@ -23,12 +23,12 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials_per_stat_power_estim=10
+num_trials_per_stat_power_estim=2000
 target_stat_power=0.5
 num_extra_patients=10
 
 generic_stat_power_model_file_name='stat_power_model_copy'
-num_iters=5
+num_iters=2
 
 smart_inputs[0]=$monthly_mean_min
 smart_inputs[1]=$monthly_mean_max
