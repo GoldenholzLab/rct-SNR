@@ -226,9 +226,11 @@ def empirically_estimate_all_endpoint_statistical_powers(num_theo_patients_per_p
                                                          drug_sigma,
                                                          num_trials):
 
-    RR50_p_value_array = np.zeros(num_trials)
-    MPC_p_value_array  = np.zeros(num_trials)
-    TTP_p_value_array  = np.zeros(num_trials)
+    RR50_p_value_array  = np.zeros(num_trials)
+    MPC_p_value_array   = np.zeros(num_trials)
+    TTP_p_value_array   = np.zeros(num_trials)
+    average_placebo_TTP_per_trial = np.zeros(num_trials)
+    average_drug_TTP_per_trial    = np.zeros(num_trials)
 
     for trial_index in range(num_trials):
 
@@ -282,9 +284,11 @@ def empirically_estimate_all_endpoint_statistical_powers(num_theo_patients_per_p
                                       drug_arm_TTP_times, 
                                       drug_arm_observed_array)
         
-        RR50_p_value_array[trial_index] = RR50_p_value
-        MPC_p_value_array[trial_index]  = MPC_p_value
-        TTP_p_value_array[trial_index]  = TTP_p_value
+        RR50_p_value_array[trial_index]  = RR50_p_value
+        MPC_p_value_array[trial_index]   = MPC_p_value
+        TTP_p_value_array[trial_index]   = TTP_p_value
+        average_placebo_TTP_per_trial[trial_index] = np.mean(placebo_arm_TTP_times)
+        average_drug_TTP_per_trial[trial_index]    = np.mean(drug_arm_TTP_times)
 
         '''
         trial_stop_time_in_seconds = time.time()
@@ -296,8 +300,14 @@ def empirically_estimate_all_endpoint_statistical_powers(num_theo_patients_per_p
     RR50_stat_power = np.sum(RR50_p_value_array <= 0.05)/num_trials
     MPC_stat_power  = np.sum(MPC_p_value_array  <= 0.05)/num_trials
     TTP_stat_power  = np.sum(TTP_p_value_array  <= 0.05)/num_trials
+    average_placebo_TTP = np.mean(average_placebo_TTP_per_trial)
+    average_drug_TTP    = np.mean(average_drug_TTP_per_trial)
 
-    return [RR50_stat_power, MPC_stat_power, TTP_stat_power]
+    return [RR50_stat_power, 
+            MPC_stat_power, 
+            TTP_stat_power, 
+            average_placebo_TTP, 
+            average_drug_TTP]
 
 
 '''

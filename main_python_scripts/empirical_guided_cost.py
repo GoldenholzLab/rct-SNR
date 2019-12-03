@@ -241,6 +241,8 @@ def dumb_algorithm(monthly_mean_min,
     num_RR50_patients = num_patients
     num_MPC_patients  = num_patients
     num_TTP_patients  = num_patients
+    final_average_placebo_TTP = 0
+    final_average_drug_TTP    = 0
 
     while(underpowered_endpoints):
 
@@ -267,7 +269,9 @@ def dumb_algorithm(monthly_mean_min,
 
         [RR50_stat_power, 
          MPC_stat_power, 
-         TTP_stat_power] = \
+         TTP_stat_power, 
+         average_placebo_TTP, 
+         average_drug_TTP] = \
              empirically_estimate_all_endpoint_statistical_powers(num_theo_patients_per_placebo_arm,
                                                                   num_theo_patients_per_drug_arm,
                                                                   np.array(theo_placebo_arm_patient_pop_params_hat_list),
@@ -298,11 +302,17 @@ def dumb_algorithm(monthly_mean_min,
                 num_TTP_patients = num_patients
             else:
                 update_TTP = False
+                final_average_placebo_TTP = average_placebo_TTP
+                final_average_drug_TTP    = average_drug_TTP
         
         print( '\n' + str( 100*np.array([RR50_stat_power,   MPC_stat_power,   TTP_stat_power]) ) + '\n' + \
                       str( [num_RR50_patients, num_MPC_patients, num_TTP_patients] )             + '\n' )
 
-    return [num_RR50_patients, num_MPC_patients, num_TTP_patients]
+    return [num_RR50_patients, 
+            num_MPC_patients, 
+            num_TTP_patients, 
+            final_average_placebo_TTP, 
+            final_average_drug_TTP]
 
 
 def smart_algorithm(monthly_mean_min,
@@ -359,6 +369,8 @@ def smart_algorithm(monthly_mean_min,
     num_RR50_patients = num_patients
     num_MPC_patients  = num_patients
     num_TTP_patients  = num_patients
+    final_average_placebo_TTP = 0
+    final_average_drug_TTP    = 0
 
     while(underpowered_endpoints):
 
@@ -409,7 +421,9 @@ def smart_algorithm(monthly_mean_min,
 
             [RR50_stat_power, 
              MPC_stat_power, 
-             TTP_stat_power] = \
+             TTP_stat_power, 
+             average_placebo_TTP, 
+             average_drug_TTP]  = \
                  empirically_estimate_all_endpoint_statistical_powers(num_theo_patients_per_placebo_arm,
                                                                       num_theo_patients_per_drug_arm,
                                                                       np.array(theo_placebo_arm_patient_pop_params_hat_list),
@@ -440,6 +454,9 @@ def smart_algorithm(monthly_mean_min,
                     num_TTP_patients = num_patients
                 else:
                     update_TTP = False
+                    final_average_placebo_TTP = average_placebo_TTP
+                    final_average_drug_TTP    = average_drug_TTP
+
         
             print('\n' + 'accepted: ' + str([monthly_mean_hat, monthly_std_dev_hat]) + \
                   '\n' +                str( 100*np.array([RR50_stat_power, MPC_stat_power, TTP_stat_power]) ) + '\n' + \
@@ -449,73 +466,167 @@ def smart_algorithm(monthly_mean_min,
 
             print('rejected: ' + str([monthly_mean_hat, monthly_std_dev_hat]))
 
-    return [num_RR50_patients, num_MPC_patients, num_TTP_patients]
+    return [num_RR50_patients, 
+            num_MPC_patients, 
+            num_TTP_patients, 
+            final_average_placebo_TTP, 
+            final_average_drug_TTP]
+
+
+def save_results(smart_or_dumb,
+                 iter_index,
+                 num_RR50_patients, 
+                 num_MPC_patients, 
+                 num_TTP_patients, 
+                 final_average_placebo_TTP, 
+                 final_average_drug_TTP):
+
+    folder_name = os.getcwd() + '/' + smart_or_dumb +'_data'
+
+    if( not os.path.isdir(folder_name) ):
+
+        os.makedirs(folder_name)
     
+    with open(folder_name + '/' + str(iter_index) + '.json', 'w+') as json_file:
+        
+        json.dump([num_RR50_patients, 
+                   num_MPC_patients, 
+                   num_TTP_patients, 
+                   final_average_placebo_TTP, 
+                   final_average_drug_TTP   ], json_file)
+
+
+def take_inputs_from_command_shell():
+
+    monthly_mean_min    = int(sys.argv[1])
+    monthly_mean_max    = int(sys.argv[2])
+    monthly_std_dev_min = int(sys.argv[3])
+    monthly_std_dev_max = int(sys.argv[4])
+
+    num_baseline_months = int(sys.argv[5])
+    num_testing_months =  int(sys.argv[6])
+    minimum_required_baseline_seizure_count = int(sys.argv[7])
+
+    placebo_mu    = float(sys.argv[8])
+    placebo_sigma = float(sys.argv[9])
+    drug_mu       = float(sys.argv[10])
+    drug_sigma    = float(sys.argv[11])
+
+    num_trials_per_stat_power_estim = int(sys.argv[12])
+    target_stat_power  = float(sys.argv[13])
+    num_extra_patients =   int(sys.argv[14])
+
+    generic_stat_power_model_file_name = sys.argv[15]
+    smart_or_dumb =     sys.argv[16]
+    iter_index    = int(sys.argv[17])
+
+    return [monthly_mean_min,
+            monthly_mean_max,
+            monthly_std_dev_min,
+            monthly_std_dev_max,
+            num_baseline_months,
+            num_testing_months,
+            minimum_required_baseline_seizure_count,
+            placebo_mu,
+            placebo_sigma,
+            drug_mu,
+            drug_sigma,
+            num_trials_per_stat_power_estim,
+            target_stat_power,
+            num_extra_patients,
+            generic_stat_power_model_file_name,
+            smart_or_dumb,
+            iter_index]
 
 
 if(__name__=='__main__'):
 
-    monthly_mean_min    = 1
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
-
-    num_baseline_months = 2
-    num_testing_months = 3
-    minimum_required_baseline_seizure_count = 4
-
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
-
-    num_trials_per_stat_power_estim = 10
-    target_stat_power  = 0.5
-    num_extra_patients = 10
-
-    generic_stat_power_model_file_name = 'stat_power_model_copy'
+    [monthly_mean_min,
+     monthly_mean_max,
+     monthly_std_dev_min,
+     monthly_std_dev_max,
+     num_baseline_months,
+     num_testing_months,
+     minimum_required_baseline_seizure_count,
+     placebo_mu,
+     placebo_sigma,
+     drug_mu,
+     drug_sigma,
+     num_trials_per_stat_power_estim,
+     target_stat_power,
+     num_extra_patients,
+     generic_stat_power_model_file_name,
+     smart_or_dumb,
+     iter_index] = \
+         take_inputs_from_command_shell()
 
     #-------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------#
 
-    '''
-    [dumb_num_RR50_patients, 
-     dumb_num_MPC_patients, 
-     dumb_num_TTP_patients] = \
-         dumb_algorithm(monthly_mean_min,
-                        monthly_mean_max,
-                        monthly_std_dev_min,
-                        monthly_std_dev_max,
-                        num_baseline_months,
-                        num_testing_months,
-                        minimum_required_baseline_seizure_count,
-                        placebo_mu,
-                        placebo_sigma,
-                        drug_mu,
-                        drug_sigma,
-                        num_trials_per_stat_power_estim,
-                        target_stat_power)
-    '''
+    print(smart_or_dumb + ', iter #' + str(iter_index))
 
-    [smart_num_RR50_patients, 
-     smart_num_MPC_patients, 
-     smart_num_TTP_patients] = \
-         smart_algorithm(monthly_mean_min,
-                         monthly_mean_max,
-                         monthly_std_dev_min,
-                         monthly_std_dev_max,
-                         num_baseline_months,
-                         num_testing_months,
-                         minimum_required_baseline_seizure_count,
-                         placebo_mu,
-                         placebo_sigma,
-                         drug_mu,
-                         drug_sigma,
-                         num_trials_per_stat_power_estim,
-                         target_stat_power,
-                         num_extra_patients,
-                         generic_stat_power_model_file_name)
+    if(smart_or_dumb == 'dumb'):
+    
+        [num_RR50_patients, 
+         num_MPC_patients, 
+         num_TTP_patients, 
+         final_average_placebo_TTP, 
+         final_average_drug_TTP] = \
+             dumb_algorithm(monthly_mean_min,
+                            monthly_mean_max,
+                            monthly_std_dev_min,
+                            monthly_std_dev_max,
+                            num_baseline_months,
+                            num_testing_months,
+                            minimum_required_baseline_seizure_count,
+                            placebo_mu,
+                            placebo_sigma,
+                            drug_mu,
+                            drug_sigma,
+                            num_trials_per_stat_power_estim,
+                            target_stat_power)  
+
+    elif(smart_or_dumb == 'smart'):
+
+        [num_RR50_patients, 
+         num_MPC_patients, 
+         num_TTP_patients, 
+         final_average_placebo_TTP, 
+         final_average_drug_TTP] = \
+             smart_algorithm(monthly_mean_min,
+                             monthly_mean_max,
+                             monthly_std_dev_min,
+                             monthly_std_dev_max,
+                             num_baseline_months,
+                             num_testing_months,
+                             minimum_required_baseline_seizure_count,
+                             placebo_mu,
+                             placebo_sigma,
+                             drug_mu,
+                             drug_sigma,
+                             num_trials_per_stat_power_estim,
+                             target_stat_power,
+                             num_extra_patients,
+                             generic_stat_power_model_file_name)
+
+    else:
+
+        raise ValueError('The smart_or_dumb parameter in \'empirical_guided_cost.py\' needs to either be \'smart\' or \'dumb\'')
+
+    print(smart_or_dumb + ' : ' + str([num_RR50_patients, 
+                                       num_MPC_patients, 
+                                       num_TTP_patients, 
+                                       final_average_placebo_TTP, 
+                                       final_average_drug_TTP]))
+
+    save_results(smart_or_dumb,
+                     iter_index,
+                     num_RR50_patients, 
+                     num_MPC_patients, 
+                     num_TTP_patients, 
+                     final_average_placebo_TTP, 
+                     final_average_drug_TTP)
 
     #-------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------#
