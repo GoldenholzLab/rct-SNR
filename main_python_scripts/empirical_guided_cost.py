@@ -240,7 +240,8 @@ def dumb_algorithm(monthly_mean_min,
 
     num_RR50_patients = num_patients
     num_MPC_patients  = num_patients
-    num_TTP_patients  = num_patients
+    num_placebo_TTP_patients  = num_theo_patients_per_placebo_arm
+    num_drug_TTP_patients     = num_theo_patients_per_drug_arm
     final_average_placebo_TTP = 0
     final_average_drug_TTP    = 0
 
@@ -299,18 +300,20 @@ def dumb_algorithm(monthly_mean_min,
                 update_MPC = False
         if( update_TTP ):
             if( TTP_stat_power  < target_stat_power ):
-                num_TTP_patients = num_patients
+                num_placebo_TTP_patients  = num_theo_patients_per_placebo_arm
+                num_drug_TTP_patients     = num_theo_patients_per_drug_arm
             else:
                 update_TTP = False
                 final_average_placebo_TTP = average_placebo_TTP
                 final_average_drug_TTP    = average_drug_TTP
         
         print( '\n' + str( 100*np.array([RR50_stat_power,   MPC_stat_power,   TTP_stat_power]) ) + '\n' + \
-                      str( [num_RR50_patients, num_MPC_patients, num_TTP_patients] )             + '\n' )
+                      str( [num_RR50_patients, num_MPC_patients, num_placebo_TTP_patients + num_drug_TTP_patients] ) + '\n' )
 
     return [num_RR50_patients, 
             num_MPC_patients, 
-            num_TTP_patients, 
+            num_placebo_TTP_patients,
+            num_drug_TTP_patients,
             final_average_placebo_TTP, 
             final_average_drug_TTP]
 
@@ -368,7 +371,8 @@ def smart_algorithm(monthly_mean_min,
 
     num_RR50_patients = num_patients
     num_MPC_patients  = num_patients
-    num_TTP_patients  = num_patients
+    num_placebo_TTP_patients  = num_theo_patients_per_placebo_arm
+    num_drug_TTP_patients     = num_theo_patients_per_drug_arm
     final_average_placebo_TTP = 0
     final_average_drug_TTP    = 0
 
@@ -451,7 +455,8 @@ def smart_algorithm(monthly_mean_min,
                     update_MPC = False
             if( update_TTP ):
                 if( TTP_stat_power  < target_stat_power ):
-                    num_TTP_patients = num_patients
+                    num_placebo_TTP_patients  = num_theo_patients_per_placebo_arm
+                    num_drug_TTP_patients     = num_theo_patients_per_drug_arm
                 else:
                     update_TTP = False
                     final_average_placebo_TTP = average_placebo_TTP
@@ -460,7 +465,7 @@ def smart_algorithm(monthly_mean_min,
         
             print('\n' + 'accepted: ' + str([monthly_mean_hat, monthly_std_dev_hat]) + \
                   '\n' +                str( 100*np.array([RR50_stat_power, MPC_stat_power, TTP_stat_power]) ) + '\n' + \
-                                        str( [num_RR50_patients, num_MPC_patients, num_TTP_patients] )             + '\n' )
+                                        str( [num_RR50_patients, num_MPC_patients, num_placebo_TTP_patients + num_drug_TTP_patients] )  + '\n' )
         
         else:
 
@@ -468,7 +473,8 @@ def smart_algorithm(monthly_mean_min,
 
     return [num_RR50_patients, 
             num_MPC_patients, 
-            num_TTP_patients, 
+            num_placebo_TTP_patients,
+            num_drug_TTP_patients,
             final_average_placebo_TTP, 
             final_average_drug_TTP]
 
@@ -477,7 +483,8 @@ def save_results(smart_or_dumb,
                  iter_index,
                  num_RR50_patients, 
                  num_MPC_patients, 
-                 num_TTP_patients, 
+                 num_placebo_TTP_patients,
+                 num_drug_TTP_patients, 
                  final_average_placebo_TTP, 
                  final_average_drug_TTP):
 
@@ -491,7 +498,8 @@ def save_results(smart_or_dumb,
         
         json.dump([num_RR50_patients, 
                    num_MPC_patients, 
-                   num_TTP_patients, 
+                   num_placebo_TTP_patients,
+                   num_drug_TTP_patients, 
                    final_average_placebo_TTP, 
                    final_average_drug_TTP   ], json_file)
 
@@ -570,7 +578,8 @@ if(__name__=='__main__'):
     
         [num_RR50_patients, 
          num_MPC_patients, 
-         num_TTP_patients, 
+         num_placebo_TTP_patients,
+         num_drug_TTP_patients,
          final_average_placebo_TTP, 
          final_average_drug_TTP] = \
              dumb_algorithm(monthly_mean_min,
@@ -591,7 +600,8 @@ if(__name__=='__main__'):
 
         [num_RR50_patients, 
          num_MPC_patients, 
-         num_TTP_patients, 
+         num_placebo_TTP_patients,
+         num_drug_TTP_patients,
          final_average_placebo_TTP, 
          final_average_drug_TTP] = \
              smart_algorithm(monthly_mean_min,
@@ -616,17 +626,19 @@ if(__name__=='__main__'):
 
     print(smart_or_dumb + ' : ' + str([num_RR50_patients, 
                                        num_MPC_patients, 
-                                       num_TTP_patients, 
+                                       num_placebo_TTP_patients,
+                                       num_drug_TTP_patients, 
                                        final_average_placebo_TTP, 
                                        final_average_drug_TTP]))
 
     save_results(smart_or_dumb,
-                     iter_index,
-                     num_RR50_patients, 
-                     num_MPC_patients, 
-                     num_TTP_patients, 
-                     final_average_placebo_TTP, 
-                     final_average_drug_TTP)
+                 iter_index,
+                 num_RR50_patients, 
+                 num_MPC_patients, 
+                 num_placebo_TTP_patients,
+                 num_drug_TTP_patients, 
+                 final_average_placebo_TTP, 
+                 final_average_drug_TTP)
 
     #-------------------------------------------------------------------------------------------------------------------#
     #-------------------------------------------------------------------------------------------------------------------#
