@@ -332,7 +332,7 @@ def empirically_estimate_imbalanced_RR50_statistical_power(theo_placebo_arm_pati
         
         [placebo_arm_baseline_seizure_diaries, 
          placebo_arm_testing_seizure_diaries  ] = \
-             generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_in_placebo_arm,
+             generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_in_placebo_arm,
                                                            theo_placebo_arm_patient_pop_params,
                                                            num_baseline_months,
                                                            num_testing_months,
@@ -344,7 +344,7 @@ def empirically_estimate_imbalanced_RR50_statistical_power(theo_placebo_arm_pati
     
         [drug_arm_baseline_seizure_diaries, 
          drug_arm_testing_seizure_diaries  ] = \
-             generate_heterogenous_drug_arm_patient_pop(num_theo_patients_in_drug_arm,
+             generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_in_drug_arm,
                                                         theo_drug_arm_patient_pop_params,
                                                         num_baseline_months,
                                                         num_testing_months,
@@ -398,7 +398,7 @@ def empirically_estimate_imbalanced_MPC_statistical_power(theo_placebo_arm_patie
         
         [placebo_arm_baseline_seizure_diaries, 
          placebo_arm_testing_seizure_diaries  ] = \
-             generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_in_placebo_arm,
+             generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_in_placebo_arm,
                                                            theo_placebo_arm_patient_pop_params,
                                                            num_baseline_months,
                                                            num_testing_months,
@@ -410,7 +410,7 @@ def empirically_estimate_imbalanced_MPC_statistical_power(theo_placebo_arm_patie
     
         [drug_arm_baseline_seizure_diaries, 
          drug_arm_testing_seizure_diaries  ] = \
-             generate_heterogenous_drug_arm_patient_pop(num_theo_patients_in_drug_arm,
+             generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_in_drug_arm,
                                                         theo_drug_arm_patient_pop_params,
                                                         num_baseline_months,
                                                         num_testing_months,
@@ -464,7 +464,7 @@ def empirically_estimate_RR50_and_MPC_statistical_power(theo_placebo_arm_patient
         
         [placebo_arm_baseline_seizure_diaries, 
          placebo_arm_testing_seizure_diaries  ] = \
-             generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
+             generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                            theo_placebo_arm_patient_pop_params,
                                                            num_baseline_months,
                                                            num_testing_months,
@@ -476,7 +476,7 @@ def empirically_estimate_RR50_and_MPC_statistical_power(theo_placebo_arm_patient
     
         [drug_arm_baseline_seizure_diaries, 
          drug_arm_testing_seizure_diaries  ] = \
-             generate_heterogenous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
+             generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
                                                         theo_drug_arm_patient_pop_params,
                                                         num_baseline_months,
                                                         num_testing_months,
@@ -537,7 +537,7 @@ def empirically_estimate_imbalanced_TTP_statistical_power(theo_placebo_arm_patie
 
         [placebo_arm_monthly_baseline_seizure_diaries, 
          placebo_arm_daily_testing_seizure_diaries    ] = \
-             generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_in_placebo_arm,
+             generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_in_placebo_arm,
                                                            theo_placebo_arm_patient_pop_params,
                                                            num_baseline_months,
                                                            num_testing_months,
@@ -549,7 +549,7 @@ def empirically_estimate_imbalanced_TTP_statistical_power(theo_placebo_arm_patie
     
         [drug_arm_monthly_baseline_seizure_diaries, 
          drug_arm_daily_testing_seizure_diaries    ] = \
-             generate_heterogenous_drug_arm_patient_pop(num_theo_patients_in_drug_arm,
+             generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_in_drug_arm,
                                                         theo_drug_arm_patient_pop_params,
                                                         num_baseline_months,
                                                         num_testing_months,
@@ -610,7 +610,7 @@ def estimate_expected_imbalanced_placebo_and_drug_arm_TTPs(theo_placebo_arm_pati
 
         [placebo_arm_monthly_baseline_seizure_diaries, 
          placebo_arm_daily_testing_seizure_diaries    ] = \
-             generate_heterogenous_placebo_arm_patient_pop(num_theo_patients_in_placebo_arm,
+             generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_in_placebo_arm,
                                                            theo_placebo_arm_patient_pop_params,
                                                            num_baseline_months,
                                                            num_testing_months,
@@ -622,7 +622,7 @@ def estimate_expected_imbalanced_placebo_and_drug_arm_TTPs(theo_placebo_arm_pati
     
         [drug_arm_monthly_baseline_seizure_diaries, 
          drug_arm_daily_testing_seizure_diaries    ] = \
-             generate_heterogenous_drug_arm_patient_pop(num_theo_patients_in_drug_arm,
+             generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_in_drug_arm,
                                                         theo_drug_arm_patient_pop_params,
                                                         num_baseline_months,
                                                         num_testing_months,
