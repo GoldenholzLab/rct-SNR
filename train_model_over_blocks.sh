@@ -21,14 +21,14 @@ num_train_blocks=44
 start_num_test_block=45
 stop_num_test_block=46
 '
-num_total_blocks=50
-num_testing_blocks=6
+num_total_blocks=75
+num_testing_blocks=6    
 num_train_compute_iters_per_block=15
 num_test_compute_iters_per_block=5
 
 error_histogram_bins=100
 
-num_theo_patients_per_trial_arm_in_snr_map=50
+num_theo_patients_per_trial_arm_in_snr_map=200
 num_theo_patients_per_trial_arm_in_snr_map_loc=20
 num_hists_per_trial_arm=500
 
