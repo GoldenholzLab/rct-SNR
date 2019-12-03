@@ -23,7 +23,7 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials_per_stat_power_estim=2000
+num_trials_per_stat_power_estim=1000
 target_stat_power=0.5
 num_extra_patients=10
 
