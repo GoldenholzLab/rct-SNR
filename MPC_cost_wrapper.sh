@@ -26,7 +26,8 @@ inputs[12]=${13}
 inputs[13]=${14}
 inputs[14]=${15}
 inputs[15]=${16}
-inputs[16]=${17}
+inputs[16]="MPC"
+inputs[17]=${17}
 
 module load gcc/6.2.0
 module load conda2/4.2.13
@@ -34,3 +35,4 @@ module load python/3.6.0
 source activate working_env
 
 srun -c 1 python -u main_python_scripts/empirical_guided_cost.py ${inputs[@]}
+

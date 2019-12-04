@@ -9,6 +9,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
+
 monthly_mean_min=1
 monthly_mean_max=16
 monthly_std_dev_min=1
@@ -24,11 +25,13 @@ drug_mu=0.2
 drug_sigma=0.05
 
 num_trials_per_stat_power_estim=1000
-target_stat_power=0.5
+target_stat_power=0.9
 num_extra_patients=10
 
 generic_stat_power_model_file_name='stat_power_model_copy'
-num_iters=2
+endpoint_names=("RR50" "MPC" "TTP")
+num_iters=3
+
 
 smart_inputs[0]=$monthly_mean_min
 smart_inputs[1]=$monthly_mean_max
@@ -45,7 +48,7 @@ smart_inputs[11]=$num_trials_per_stat_power_estim
 smart_inputs[12]=$target_stat_power
 smart_inputs[13]=$num_extra_patients
 smart_inputs[14]=$generic_stat_power_model_file_name
-smart_inputs[15]='smart'
+smart_inputs[15]="smart"
 
 dumb_inputs[0]=$monthly_mean_min
 dumb_inputs[1]=$monthly_mean_max
@@ -62,13 +65,16 @@ dumb_inputs[11]=$num_trials_per_stat_power_estim
 dumb_inputs[12]=$target_stat_power
 dumb_inputs[13]=$num_extra_patients
 dumb_inputs[14]=$generic_stat_power_model_file_name
-dumb_inputs[15]='dumb'
+dumb_inputs[15]="dumb"
+
 
 for ((iter_index=1; iter_index<=$num_iters; iter_index=iter_index+1))
 do
     smart_inputs[16]=$iter_index
     dumb_inputs[16]=$iter_index
 
-    sbatch cost_wrapper.sh ${dumb_inputs[@]}
-    sbatch cost_wrapper.sh ${smart_inputs[@]}
+    bash RR50_cost_wrapper.sh ${smart_inputs[@]}; bash RR50_cost_wrapper.sh ${dumb_inputs[@]}
+    bash MPC_cost_wrapper.sh  ${smart_inputs[@]}; bash MPC_cost_wrapper.sh  ${dumb_inputs[@]}
+    bash TTP_cost_wrapper.sh  ${smart_inputs[@]}; bash TTP_cost_wrapper.sh  ${dumb_inputs[@]}
 done
+

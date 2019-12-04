@@ -98,6 +98,8 @@ def calculate_logrank_p_value(placebo_arm_TTP_times,
 
     return TTP_p_value
 
+'''
+This is a function made specfically for generating data for training and evaluating SNR data and algorithms
 
 def calculate_trial_endpoints(num_testing_months,
                               num_theo_patients_per_placebo_arm,
@@ -139,3 +141,4 @@ def calculate_trial_endpoints(num_testing_months,
             placebo_arm_observed_array,
             drug_arm_TTP_times, 
             drug_arm_observed_array]
+'''

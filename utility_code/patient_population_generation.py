@@ -354,11 +354,12 @@ def generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_per_trial_arm,
     return [drug_arm_baseline_seizure_diaries, 
             drug_arm_testing_seizure_diaries  ]
 
+
 #-----------------------------------------------------------------------------------------------------------------------------#
 #s-----Below are functions made specfically for generating data for training and evaluating SNR data and algorithms-----------#
 #-----------------------------------------------------------------------------------------------------------------------------#
 
-
+'''
 def generate_theo_patient_pop_params_per_trial_arm(monthly_mean_min,
                                                    monthly_mean_max,
                                                    monthly_std_dev_min,
@@ -440,7 +441,7 @@ def generate_heterogeneous_patient_pop_per_trial_arm(num_theo_patients_per_place
             drug_arm_baseline_monthly_seizure_diaries,
             drug_arm_testing_daily_seizure_diaries,
             drug_arm_testing_monthly_seizure_diaries]
-
+'''
 
 '''
 def convert_theo_pop_hist_with_empty_regions(monthly_mean_lower_bound,
