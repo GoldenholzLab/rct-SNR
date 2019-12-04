@@ -74,7 +74,7 @@ do
     dumb_inputs[16]=$iter_index
 
     bash RR50_cost_wrapper.sh ${smart_inputs[@]}; bash RR50_cost_wrapper.sh ${dumb_inputs[@]}
-    bash MPC_cost_wrapper.sh  ${smart_inputs[@]}; bash MPC_cost_wrapper.sh  ${dumb_inputs[@]}
-    bash TTP_cost_wrapper.sh  ${smart_inputs[@]}; bash TTP_cost_wrapper.sh  ${dumb_inputs[@]}
+    #bash MPC_cost_wrapper.sh  ${smart_inputs[@]}; bash MPC_cost_wrapper.sh  ${dumb_inputs[@]}
+    #bash TTP_cost_wrapper.sh  ${smart_inputs[@]}; bash TTP_cost_wrapper.sh  ${dumb_inputs[@]}
 done
 
