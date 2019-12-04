@@ -73,8 +73,8 @@ do
     smart_inputs[16]=$iter_index
     dumb_inputs[16]=$iter_index
 
-    bash RR50_cost_wrapper.sh ${smart_inputs[@]}; bash RR50_cost_wrapper.sh ${dumb_inputs[@]}
-    #bash MPC_cost_wrapper.sh  ${smart_inputs[@]}; bash MPC_cost_wrapper.sh  ${dumb_inputs[@]}
-    #bash TTP_cost_wrapper.sh  ${smart_inputs[@]}; bash TTP_cost_wrapper.sh  ${dumb_inputs[@]}
+    sbatch RR50_cost_wrapper.sh ${smart_inputs[@]}; sbatch RR50_cost_wrapper.sh ${dumb_inputs[@]}
+    #sbatch MPC_cost_wrapper.sh  ${smart_inputs[@]}; sbatch MPC_cost_wrapper.sh  ${dumb_inputs[@]}
+    #sbatch TTP_cost_wrapper.sh  ${smart_inputs[@]}; sbatch TTP_cost_wrapper.sh  ${dumb_inputs[@]}
 done
 
