@@ -101,7 +101,7 @@ if(__name__=='__main__'):
     print(str(np.int_(np.round(smart_average_num_patients_RR50))) + ' ± ' + str(np.int_(np.round(smart_std_dev_num_patients_RR50))) + ', $ ' + str(np.int_(np.round(smart_RR50_cost))))
     '''
 
-    '''
+    
     [dumb_average_num_patients_MPC,
      dumb_std_dev_num_patients_MPC,
      dumb_MPC_cost] = \
@@ -118,8 +118,9 @@ if(__name__=='__main__'):
 
     print(str(np.int_(np.round(dumb_average_num_patients_MPC)))  + ' ± ' + str(np.int_(np.round(dumb_std_dev_num_patients_MPC)))  + ', $ ' + str(np.int_(np.round(dumb_MPC_cost))))
     print(str(np.int_(np.round(smart_average_num_patients_MPC))) + ' ± ' + str(np.int_(np.round(smart_std_dev_num_patients_MPC))) + ', $ ' + str(np.int_(np.round(smart_MPC_cost))))
-    '''
+    
 
+    '''
     [dumb_average_num_patients_TTP,
      dumb_std_dev_num_patients_TTP,
      dumb_TTP_cost] = \
@@ -136,4 +137,5 @@ if(__name__=='__main__'):
 
     print(str(np.int_(np.round(dumb_average_num_patients_TTP)))  + ' ± ' + str(np.int_(np.round(dumb_std_dev_num_patients_TTP)))  + ', $ ' + str(np.int_(np.round(dumb_TTP_cost))))
     print(str(np.int_(np.round(smart_average_num_patients_TTP))) + ' ± ' + str(np.int_(np.round(smart_std_dev_num_patients_TTP))) + ', $ ' + str(np.int_(np.round(smart_TTP_cost))))
+    '''
 
