@@ -29,8 +29,7 @@ target_stat_power=0.9
 num_extra_patients=10
 
 generic_stat_power_model_file_name='stat_power_model_copy'
-endpoint_names=("RR50" "MPC" "TTP")
-num_iters=3
+num_iters=100
 
 
 smart_inputs[0]=$monthly_mean_min
