@@ -210,55 +210,58 @@ def dumb_algorithm(monthly_mean_min,
             theo_drug_arm_patient_pop_params_hat_list.append([monthly_mean_hat, monthly_std_dev_hat])
             num_theo_patients_per_drug_arm = num_theo_patients_per_drug_arm + 1
             current_trial_arm = 'placebo'
-            
-        if(update_RR50 or update_MPC):
-
-            stat_power = \
-                empirically_estimate_endpoint_statistical_power(num_theo_patients_per_placebo_arm,
-                                                                num_theo_patients_per_drug_arm,
-                                                                np.array(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                np.array(theo_drug_arm_patient_pop_params_hat_list),
-                                                                num_baseline_months,
-                                                                num_testing_months,
-                                                                minimum_required_baseline_seizure_count,
-                                                                placebo_mu,
-                                                                placebo_sigma,
-                                                                drug_mu,
-                                                                drug_sigma,
-                                                                num_trials_per_stat_power_estim,
-                                                                update_RR50,
-                                                                update_MPC,
-                                                                update_TTP)
-            
-        elif(update_TTP):
-
-            [stat_power,
-             average_placebo_TTP,
-             average_drug_TTP] = \
-                 empirically_estimate_endpoint_statistical_power(num_theo_patients_per_placebo_arm,
-                                                                 num_theo_patients_per_drug_arm,
-                                                                 np.array(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                 np.array(theo_drug_arm_patient_pop_params_hat_list),
-                                                                 num_baseline_months,
-                                                                 num_testing_months,
-                                                                 minimum_required_baseline_seizure_count,
-                                                                 placebo_mu,
-                                                                 placebo_sigma,
-                                                                 drug_mu,
-                                                                 drug_sigma,
-                                                                 num_trials_per_stat_power_estim,
-                                                                 update_RR50,
-                                                                 update_MPC,
-                                                                 update_TTP)
-                
-        if( stat_power >= target_stat_power ):
-
-            underpowered_endpoint = False
         
-        print('accepted: '           + str([monthly_mean_hat, monthly_std_dev_hat])                            + '\n' + \
-              'number of patients: ' + str(num_theo_patients_per_placebo_arm + num_theo_patients_per_drug_arm) + '\n' + \
-               str(underpowered_endpoint) + '\n' + \
-              'statistical power: '  + str(np.round(100*stat_power, 3))                                        + ' %\n'  )
+        number_of_patients_is_multiple_of_ten = ((num_theo_patients_per_placebo_arm + num_theo_patients_per_drug_arm) % 10) == 0
+        
+        if(number_of_patients_is_multiple_of_ten):
+
+            if(update_RR50 or update_MPC):
+
+                stat_power = \
+                    empirically_estimate_endpoint_statistical_power(num_theo_patients_per_placebo_arm,
+                                                                    num_theo_patients_per_drug_arm,
+                                                                    np.array(theo_placebo_arm_patient_pop_params_hat_list),
+                                                                    np.array(theo_drug_arm_patient_pop_params_hat_list),
+                                                                    num_baseline_months,
+                                                                    num_testing_months,
+                                                                    minimum_required_baseline_seizure_count,
+                                                                    placebo_mu,
+                                                                    placebo_sigma,
+                                                                    drug_mu,
+                                                                    drug_sigma,
+                                                                    num_trials_per_stat_power_estim,
+                                                                    update_RR50,
+                                                                    update_MPC,
+                                                                    update_TTP)
+            
+            elif(update_TTP):
+
+                [stat_power,
+                 average_placebo_TTP,
+                 average_drug_TTP] = \
+                     empirically_estimate_endpoint_statistical_power(num_theo_patients_per_placebo_arm,
+                                                                     num_theo_patients_per_drug_arm,
+                                                                     np.array(theo_placebo_arm_patient_pop_params_hat_list),
+                                                                     np.array(theo_drug_arm_patient_pop_params_hat_list),
+                                                                     num_baseline_months,
+                                                                     num_testing_months,
+                                                                     minimum_required_baseline_seizure_count,
+                                                                     placebo_mu,
+                                                                     placebo_sigma,
+                                                                     drug_mu,
+                                                                     drug_sigma,
+                                                                     num_trials_per_stat_power_estim,
+                                                                     update_RR50,
+                                                                     update_MPC,
+                                                                     update_TTP)
+                
+            if( stat_power >= target_stat_power ):
+
+                underpowered_endpoint = False
+        
+            print('number of patients: ' + str(num_theo_patients_per_placebo_arm + num_theo_patients_per_drug_arm) + '\n' + \
+                   str(underpowered_endpoint) + '\n' + \
+                  'statistical power: '  + str(np.round(100*stat_power, 3))                                        + ' %\n'  )
 
     if(update_RR50 or update_MPC):
 
@@ -312,6 +315,7 @@ def smart_algorithm(monthly_mean_min,
 
     num_theo_patients_per_placebo_arm = 1
     num_theo_patients_per_drug_arm = 1
+    stat_power = 0
     current_trial_arm = 'placebo'
 
     underpowered_endpoint = True
@@ -351,60 +355,60 @@ def smart_algorithm(monthly_mean_min,
                 theo_drug_arm_patient_pop_params_hat_list.append([monthly_mean_hat, monthly_std_dev_hat])
                 num_theo_patients_per_drug_arm = num_theo_patients_per_drug_arm + 1
                 current_trial_arm = 'placebo'
-            
-            if(update_RR50 or update_MPC):
 
-                stat_power = \
-                    empirically_estimate_endpoint_statistical_power(num_theo_patients_per_placebo_arm,
-                                                                    num_theo_patients_per_drug_arm,
-                                                                    np.array(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                    np.array(theo_drug_arm_patient_pop_params_hat_list),
-                                                                    num_baseline_months,
-                                                                    num_testing_months,
-                                                                    minimum_required_baseline_seizure_count,
-                                                                    placebo_mu,
-                                                                    placebo_sigma,
-                                                                    drug_mu,
-                                                                    drug_sigma,
-                                                                    num_trials_per_stat_power_estim,
-                                                                    update_RR50,
-                                                                    update_MPC,
-                                                                    update_TTP)
-            
-            elif(update_TTP):
-
-                [stat_power,
-                 average_placebo_TTP,
-                 average_drug_TTP] = \
-                     empirically_estimate_endpoint_statistical_power(num_theo_patients_per_placebo_arm,
-                                                                     num_theo_patients_per_drug_arm,
-                                                                     np.array(theo_placebo_arm_patient_pop_params_hat_list),
-                                                                     np.array(theo_drug_arm_patient_pop_params_hat_list),
-                                                                     num_baseline_months,
-                                                                     num_testing_months,
-                                                                     minimum_required_baseline_seizure_count,
-                                                                     placebo_mu,
-                                                                     placebo_sigma,
-                                                                     drug_mu,
-                                                                     drug_sigma,
-                                                                     num_trials_per_stat_power_estim,
-                                                                     update_RR50,
-                                                                     update_MPC,
-                                                                     update_TTP)
-                
-            if( stat_power >= target_stat_power ):
-
-                underpowered_endpoint = False
-
-            print('accepted: '           + str([monthly_mean_hat, monthly_std_dev_hat])                            + '\n' + \
-                  'number of patients: ' + str(num_theo_patients_per_placebo_arm + num_theo_patients_per_drug_arm) + '\n' + \
-                   str(underpowered_endpoint)                                                                      + '\n' + \
-                   str(positive_SNR)                                                                               + '\n' + \
-                  'statistical power: '  + str(np.round(100*stat_power, 3))                                        + ' %\n'  )
+            number_of_patients_is_multiple_of_ten = ((num_theo_patients_per_placebo_arm + num_theo_patients_per_drug_arm) % 10) == 0
         
-        else:
+            if(number_of_patients_is_multiple_of_ten):
+            
+                if(update_RR50 or update_MPC):
 
-            print('\n-----------------------------------------------------------------------------------------------------------\nrejected: ' + str([monthly_mean_hat, monthly_std_dev_hat]))
+                    stat_power = \
+                        empirically_estimate_endpoint_statistical_power(num_theo_patients_per_placebo_arm,
+                                                                        num_theo_patients_per_drug_arm,
+                                                                        np.array(theo_placebo_arm_patient_pop_params_hat_list),
+                                                                        np.array(theo_drug_arm_patient_pop_params_hat_list),
+                                                                        num_baseline_months,
+                                                                        num_testing_months,
+                                                                        minimum_required_baseline_seizure_count,
+                                                                        placebo_mu,
+                                                                        placebo_sigma,
+                                                                        drug_mu,
+                                                                        drug_sigma,
+                                                                        num_trials_per_stat_power_estim,
+                                                                        update_RR50,
+                                                                        update_MPC,
+                                                                        update_TTP)
+
+                elif(update_TTP):
+
+                    [stat_power,
+                     average_placebo_TTP,
+                     average_drug_TTP] = \
+                         empirically_estimate_endpoint_statistical_power(num_theo_patients_per_placebo_arm,
+                                                                         num_theo_patients_per_drug_arm,
+                                                                         np.array(theo_placebo_arm_patient_pop_params_hat_list),
+                                                                         np.array(theo_drug_arm_patient_pop_params_hat_list),
+                                                                         num_baseline_months,
+                                                                         num_testing_months,
+                                                                         minimum_required_baseline_seizure_count,
+                                                                         placebo_mu,
+                                                                         placebo_sigma,
+                                                                         drug_mu,
+                                                                         drug_sigma,
+                                                                         num_trials_per_stat_power_estim,
+                                                                         update_RR50,
+                                                                         update_MPC,
+                                                                         update_TTP)
+                
+                if( stat_power >= target_stat_power ):
+
+                    underpowered_endpoint = False
+
+                print('number of patients: ' + str(num_theo_patients_per_placebo_arm + num_theo_patients_per_drug_arm) + '\n' + \
+                      str(underpowered_endpoint)                                                                      + '\n' + \
+                      str(positive_SNR)                                                                               + '\n' + \
+                      'statistical power: '  + str(np.round(100*stat_power, 3))                                        + ' %\n'  )
+
 
     if(update_RR50 or update_MPC):
 
