@@ -279,16 +279,16 @@ def generate_heterogeneous_placebo_arm_patient_pop(num_theo_patients_in_placebo_
 
 
 def generate_heterogeneous_drug_arm_patient_pop(num_theo_patients_in_drug_arm,
-                                               theo_drug_arm_patient_pop_params,
-                                               num_baseline_months,
-                                               num_testing_months,
-                                               baseline_time_scaling_const,
-                                               testing_time_scaling_const,
-                                               minimum_required_baseline_seizure_count,
-                                               placebo_mu,
-                                               placebo_sigma,
-                                               drug_mu,
-                                               drug_sigma):
+                                                theo_drug_arm_patient_pop_params,
+                                                num_baseline_months,
+                                                num_testing_months,
+                                                baseline_time_scaling_const,
+                                                testing_time_scaling_const,
+                                                minimum_required_baseline_seizure_count,
+                                                placebo_mu,
+                                                placebo_sigma,
+                                                drug_mu,
+                                                drug_sigma):
     '''
 
     Inputs:
