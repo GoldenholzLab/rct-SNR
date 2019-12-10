@@ -17,15 +17,15 @@ def calculate_percent_changes(baseline_seizure_diaries,
 
 def calculate_time_to_prerandomizations(monthly_baseline_seizure_diaries,
                                         daily_testing_seizure_diaries,
-                                        num_patients_per_trial_arm,
+                                        num_patients_in_trial_arm,
                                         num_testing_days):
 
-    TTP_times      = np.zeros(num_patients_per_trial_arm)
-    observed_array = np.zeros(num_patients_per_trial_arm)
+    TTP_times      = np.zeros(num_patients_in_trial_arm)
+    observed_array = np.zeros(num_patients_in_trial_arm)
 
     baseline_monthly_seizure_frequencies = np.mean(monthly_baseline_seizure_diaries, 1)
 
-    for patient_index in range(num_patients_per_trial_arm):
+    for patient_index in range(num_patients_in_trial_arm):
 
         baseline_monthly_seizure_frequency = baseline_monthly_seizure_frequencies[patient_index]
 
