@@ -57,13 +57,11 @@ def empirically_estimate_RR50_statistical_power(theo_placebo_arm_patient_pop_par
 
         placebo_arm_percent_changes = \
             calculate_percent_changes(placebo_arm_baseline_seizure_diaries,
-                                      placebo_arm_testing_seizure_diaries,
-                                      num_theo_patients_per_trial_arm)
+                                      placebo_arm_testing_seizure_diaries)
     
         drug_arm_percent_changes = \
             calculate_percent_changes(drug_arm_baseline_seizure_diaries,
-                                      drug_arm_testing_seizure_diaries,
-                                      num_theo_patients_per_trial_arm)
+                                      drug_arm_testing_seizure_diaries)
 
         RR50_p_value = \
             calculate_fisher_exact_p_value(placebo_arm_percent_changes,
@@ -122,13 +120,11 @@ def empirically_estimate_MPC_statistical_power(theo_placebo_arm_patient_pop_para
 
         placebo_arm_percent_changes = \
             calculate_percent_changes(placebo_arm_baseline_seizure_diaries,
-                                      placebo_arm_testing_seizure_diaries,
-                                      num_theo_patients_per_trial_arm)
+                                      placebo_arm_testing_seizure_diaries)
     
         drug_arm_percent_changes = \
             calculate_percent_changes(drug_arm_baseline_seizure_diaries,
-                                      drug_arm_testing_seizure_diaries,
-                                      num_theo_patients_per_trial_arm)
+                                      drug_arm_testing_seizure_diaries)
 
         MPC_p_value = \
             calculate_Mann_Whitney_U_p_value(placebo_arm_percent_changes,

@@ -110,13 +110,11 @@ def calculate_endpoints(num_testing_months,
 
     placebo_arm_percent_changes = \
             calculate_percent_changes(placebo_arm_baseline_monthly_seizure_diaries,
-                                      placebo_arm_testing_monthly_seizure_diaries,
-                                      num_theo_patients_per_trial_arm)
+                                      placebo_arm_testing_monthly_seizure_diaries)
     
     drug_arm_percent_changes = \
             calculate_percent_changes(drug_arm_baseline_monthly_seizure_diaries,
-                                      drug_arm_testing_monthly_seizure_diaries,
-                                      num_theo_patients_per_trial_arm)
+                                      drug_arm_testing_monthly_seizure_diaries)
 
     [placebo_arm_TTP_times, placebo_arm_observed_array] = \
             calculate_time_to_prerandomizations(placebo_arm_baseline_monthly_seizure_diaries,
