@@ -210,4 +210,3 @@ def empirically_estimate_TTP_statistical_power(theo_placebo_arm_patient_pop_para
 
     return TTP_emp_stat_power
 
-                            placebo_mu,
