@@ -1,5 +1,6 @@
 import numpy as np
 import copy
+import json
 import sys
 import os
 sys.path.insert(0, os.getcwd())
@@ -76,28 +77,6 @@ def estimate_patient_loc(monthly_mean_min,
         estims_within_SNR_map = monthly_mean_hat_within_SNR_map and monthly_std_dev_hat_within_SNR_map and overdispersed_hat
 
     return [monthly_mean_hat, monthly_std_dev_hat]
-
-
-def add_patient_to_placebo_theo_patient_pop(monthly_mean_min,
-                                            monthly_mean_max,
-                                            monthly_std_dev_min,
-                                            monthly_std_dev_max,
-                                            num_baseline_months,
-                                            minimum_required_baseline_seizure_count,
-                                            trial_arm_theo_patient_pop_list):
-
-    [monthly_mean_hat, 
-     monthly_std_dev_hat] = \
-         estimate_patient_loc(monthly_mean_min,
-                              monthly_mean_max,
-                              monthly_std_dev_min,
-                              monthly_std_dev_max,
-                              num_baseline_months,
-                              minimum_required_baseline_seizure_count)
-    
-    trial_arm_theo_patient_pop_list.append([monthly_mean_hat, monthly_std_dev_hat])
-
-    return trial_arm_theo_patient_pop_list
 
 
 def generate_percent_change_data(num_theo_patients_in_placebo_arm,
@@ -326,19 +305,76 @@ def estimate_statistical_power(placebo_arm_theo_patient_pop_list,
     return stat_power
 
 
-def dumb_algorithm(monthly_mean_min,
-                   monthly_mean_max,
-                   monthly_std_dev_min,
-                   monthly_std_dev_max,endpoint_name,
-                   num_baseline_months,
-                   num_testing_months,
-                   minimum_required_baseline_seizure_count,
-                   placebo_mu,
-                   placebo_sigma,
-                   drug_mu,
-                   drug_sigma,
-                   target_stat_power,
-                   num_trials):
+def calculate_SNR(monthly_mean_hat, 
+                  monthly_std_dev_hat,
+                  trial_arm,
+                  stat_power,
+                  placebo_arm_theo_patient_pop_list,
+                  drug_arm_theo_patient_pop_list,
+                  endpoint_name,
+                  num_baseline_months,
+                  num_testing_months,
+                  minimum_required_baseline_seizure_count,
+                  placebo_mu,
+                  placebo_sigma,
+                  drug_mu,
+                  drug_sigma,
+                  num_trials,
+                  SNR_num_extra_patients_per_trial_arm):
+
+    #if(trial_arm == 'placebo'):
+
+    tmp_placebo_arm_theo_patient_pop_list = \
+            copy.deepcopy(placebo_arm_theo_patient_pop_list)
+
+    for patient_index in range(SNR_num_extra_patients_per_trial_arm):
+        tmp_placebo_arm_theo_patient_pop_list.append([monthly_mean_hat, monthly_std_dev_hat])
+
+    placebo_enhanced_stat_power = \
+        estimate_statistical_power(tmp_placebo_arm_theo_patient_pop_list,
+                                   drug_arm_theo_patient_pop_list,
+                                   endpoint_name,
+                                   num_baseline_months,
+                                   num_testing_months,
+                                   minimum_required_baseline_seizure_count,
+                                   placebo_mu,
+                                   placebo_sigma,
+                                   drug_mu,
+                                   drug_sigma,
+                                   num_trials)
+    
+    #if(trial_arm == 'drug'):
+
+    tmp_drug_arm_theo_patient_pop_list = \
+        copy.deepcopy(drug_arm_theo_patient_pop_list)
+        
+    for patient_index in range(SNR_num_extra_patients_per_trial_arm):
+        tmp_drug_arm_theo_patient_pop_list.append([monthly_mean_hat, monthly_std_dev_hat])
+
+    drug_enhanced_stat_power = \
+        estimate_statistical_power(placebo_arm_theo_patient_pop_list,
+                                   tmp_drug_arm_theo_patient_pop_list,
+                                   endpoint_name,
+                                   num_baseline_months,
+                                   num_testing_months,
+                                   minimum_required_baseline_seizure_count,
+                                   placebo_mu,
+                                   placebo_sigma,
+                                   drug_mu,
+                                   drug_sigma,
+                                   num_trials)
+
+    SNR = (placebo_enhanced_stat_power + drug_enhanced_stat_power)/2 - stat_power
+
+    return SNR
+
+
+def initialize_algorithm(monthly_mean_min,
+                         monthly_mean_max,
+                         monthly_std_dev_min,
+                         monthly_std_dev_max,
+                         num_baseline_months,
+                         minimum_required_baseline_seizure_count):
 
     stat_power = 0
     trial_arm  = 'placebo'
@@ -346,184 +382,299 @@ def dumb_algorithm(monthly_mean_min,
     placebo_arm_theo_patient_pop_list = []
     drug_arm_theo_patient_pop_list    = []
 
-    placebo_arm_theo_patient_pop_list = \
-        add_patient_to_placebo_theo_patient_pop(monthly_mean_min,
-                                                monthly_mean_max,
-                                                monthly_std_dev_min,
-                                                monthly_std_dev_max,
-                                                num_baseline_months,
-                                                minimum_required_baseline_seizure_count,
-                                                placebo_arm_theo_patient_pop_list)
+    [monthly_mean_hat, 
+     monthly_std_dev_hat] = \
+         estimate_patient_loc(monthly_mean_min,
+                              monthly_mean_max,
+                              monthly_std_dev_min,
+                              monthly_std_dev_max,
+                              num_baseline_months,
+                              minimum_required_baseline_seizure_count)
 
-    drug_arm_theo_patient_pop_list = \
-        add_patient_to_placebo_theo_patient_pop(monthly_mean_min,
-                                                monthly_mean_max,
-                                                monthly_std_dev_min,
-                                                monthly_std_dev_max,
-                                                num_baseline_months,
-                                                minimum_required_baseline_seizure_count,
-                                                drug_arm_theo_patient_pop_list)
+    placebo_arm_theo_patient_pop_list.append([monthly_mean_hat, monthly_std_dev_hat])
+
+    [monthly_mean_hat, 
+     monthly_std_dev_hat] = \
+         estimate_patient_loc(monthly_mean_min,
+                              monthly_mean_max,
+                              monthly_std_dev_min,
+                              monthly_std_dev_max,
+                              num_baseline_months,
+                              minimum_required_baseline_seizure_count)
+
+    drug_arm_theo_patient_pop_list.append([monthly_mean_hat, monthly_std_dev_hat])
+
+    return [stat_power, 
+            trial_arm, 
+            placebo_arm_theo_patient_pop_list, 
+            drug_arm_theo_patient_pop_list]
+
+
+def dumb_algorithm(monthly_mean_min, 
+                   monthly_mean_max, 
+                   monthly_std_dev_min, 
+                   monthly_std_dev_max, 
+                   endpoint_name, 
+                   num_baseline_months, 
+                   num_testing_months, 
+                   minimum_required_baseline_seizure_count, 
+                   placebo_mu, 
+                   placebo_sigma, 
+                   drug_mu, 
+                   drug_sigma, 
+                   target_stat_power, 
+                   num_trials, 
+                   SNR_num_extra_patients_per_trial_arm):
+
+    num_patients = 0
+
+    [stat_power, 
+     trial_arm, 
+     placebo_arm_theo_patient_pop_list, 
+     drug_arm_theo_patient_pop_list] = \
+         initialize_algorithm(monthly_mean_min,
+                              monthly_mean_max,
+                              monthly_std_dev_min,
+                              monthly_std_dev_max,
+                              num_baseline_months,
+                              minimum_required_baseline_seizure_count)
     
     while(stat_power < target_stat_power):
+            
+        [monthly_mean_hat, 
+         monthly_std_dev_hat] = \
+             estimate_patient_loc(monthly_mean_min,
+                                  monthly_mean_max,
+                                  monthly_std_dev_min,
+                                  monthly_std_dev_max,
+                                  num_baseline_months,
+                                  minimum_required_baseline_seizure_count)
 
         if(trial_arm == 'placebo'):
-
-            placebo_arm_theo_patient_pop_list = \
-                add_patient_to_placebo_theo_patient_pop(monthly_mean_min,
-                                                        monthly_mean_max,
-                                                        monthly_std_dev_min,
-                                                        monthly_std_dev_max,
-                                                        num_baseline_months,
-                                                        minimum_required_baseline_seizure_count,
-                                                        placebo_arm_theo_patient_pop_list)
-            
+            placebo_arm_theo_patient_pop_list.append([monthly_mean_hat, monthly_std_dev_hat])
             trial_arm = 'drug'
-
         elif(trial_arm == 'drug'):
-
-            drug_arm_theo_patient_pop_list = \
-                add_patient_to_placebo_theo_patient_pop(monthly_mean_min,
-                                                        monthly_mean_max,
-                                                        monthly_std_dev_min,
-                                                        monthly_std_dev_max,
-                                                        num_baseline_months,
-                                                        minimum_required_baseline_seizure_count,
-                                                        drug_arm_theo_patient_pop_list)
-            
+            drug_arm_theo_patient_pop_list.append([monthly_mean_hat, monthly_std_dev_hat])
             trial_arm = 'placebo'
 
-        stat_power = \
-            estimate_statistical_power(placebo_arm_theo_patient_pop_list,
-                                       drug_arm_theo_patient_pop_list,
-                                       endpoint_name,
-                                       num_baseline_months,
-                                       num_testing_months,
-                                       minimum_required_baseline_seizure_count,
-                                       placebo_mu,
-                                       placebo_sigma,
-                                       drug_mu,
-                                       drug_sigma,
-                                       num_trials)
+        num_patients = len(placebo_arm_theo_patient_pop_list) + len(drug_arm_theo_patient_pop_list)
+        num_patients_is_multiple = (num_patients % 2) == 0
 
-        print('\nstatistical power: ' + str(np.round(100*stat_power, 3)) + ' %' + \
-              ', total number of patients: ' + str(len(placebo_arm_theo_patient_pop_list) + len(drug_arm_theo_patient_pop_list)) + \
-              '\nnumber of placebo arm patients: ' + str(len(placebo_arm_theo_patient_pop_list)) + \
-              '\nnumber of drug arm patients: ' + str(len(drug_arm_theo_patient_pop_list)))
+        if(num_patients_is_multiple):
+            stat_power = \
+                estimate_statistical_power(placebo_arm_theo_patient_pop_list,
+                                           drug_arm_theo_patient_pop_list,
+                                           endpoint_name,
+                                           num_baseline_months,
+                                           num_testing_months,
+                                           minimum_required_baseline_seizure_count,
+                                           placebo_mu,
+                                           placebo_sigma,
+                                           drug_mu,
+                                           drug_sigma,
+                                           num_trials)
+        
+            print('\nstatistical power: ' + str(np.round(100*stat_power, 3)) + ' %' + \
+                  ', total number of patients: ' + str(len(placebo_arm_theo_patient_pop_list) + len(drug_arm_theo_patient_pop_list)) + \
+                  '\nnumber of placebo arm patients: ' + str(len(placebo_arm_theo_patient_pop_list)) + \
+                  '\nnumber of drug arm patients: ' + str(len(drug_arm_theo_patient_pop_list)) + '\n')
+    
+    return num_patients
+
+
+def smart_algorithm(monthly_mean_min,
+                    monthly_mean_max,
+                    monthly_std_dev_min,
+                    monthly_std_dev_max,
+                    endpoint_name,
+                    num_baseline_months,
+                    num_testing_months,
+                    minimum_required_baseline_seizure_count,
+                    placebo_mu,
+                    placebo_sigma,
+                    drug_mu,
+                    drug_sigma,
+                    target_stat_power,
+                    num_trials,
+                    SNR_num_extra_patients_per_trial_arm):
+
+    num_patients = 0
+
+    [stat_power, 
+     trial_arm, 
+     placebo_arm_theo_patient_pop_list, 
+     drug_arm_theo_patient_pop_list] = \
+         initialize_algorithm(monthly_mean_min,
+                              monthly_mean_max,
+                              monthly_std_dev_min,
+                              monthly_std_dev_max,
+                              num_baseline_months,
+                              minimum_required_baseline_seizure_count)
+    
+    while(stat_power < target_stat_power):
+            
+        [monthly_mean_hat, 
+         monthly_std_dev_hat] = \
+             estimate_patient_loc(monthly_mean_min,
+                                  monthly_mean_max,
+                                  monthly_std_dev_min,
+                                  monthly_std_dev_max,
+                                  num_baseline_months,
+                                  minimum_required_baseline_seizure_count)
+        
+        SNR = \
+            calculate_SNR(monthly_mean_hat, 
+                          monthly_std_dev_hat,
+                          trial_arm,
+                          stat_power,
+                          placebo_arm_theo_patient_pop_list,
+                          drug_arm_theo_patient_pop_list,
+                          endpoint_name,
+                          num_baseline_months,
+                          num_testing_months,
+                          minimum_required_baseline_seizure_count,
+                          placebo_mu,
+                          placebo_sigma,
+                          drug_mu,
+                          drug_sigma,
+                          num_trials,
+                          SNR_num_extra_patients_per_trial_arm)
+
+        if(SNR > 0):
+
+            if(trial_arm == 'placebo'):
+                placebo_arm_theo_patient_pop_list.append([monthly_mean_hat, monthly_std_dev_hat])
+                trial_arm = 'drug'
+            elif(trial_arm == 'drug'):
+                drug_arm_theo_patient_pop_list.append([monthly_mean_hat, monthly_std_dev_hat])
+                trial_arm = 'placebo'
+
+            num_patients = len(placebo_arm_theo_patient_pop_list) + len(drug_arm_theo_patient_pop_list)
+            num_patients_is_multiple = (num_patients % 2) == 0
+
+            stat_power = \
+                estimate_statistical_power(placebo_arm_theo_patient_pop_list,
+                                           drug_arm_theo_patient_pop_list,
+                                           endpoint_name,
+                                           num_baseline_months,
+                                           num_testing_months,
+                                           minimum_required_baseline_seizure_count,
+                                           placebo_mu,
+                                           placebo_sigma,
+                                           drug_mu,
+                                           drug_sigma,
+                                           num_trials)
+
+            if(num_patients_is_multiple):
+
+                print('\nstatistical power: ' + str(np.round(100*stat_power, 3)) + ' %' + \
+                      ', total number of patients: ' + str(num_patients) + '\n')
+
+    return num_patients
+
+
+def save_results(endpoint_name, smart_or_dumb, iter_index, data_list):
+
+    folder_name = os.getcwd() + '/' + endpoint_name + '_' + smart_or_dumb +'_data'
+
+    if( not os.path.isdir(folder_name) ):
+
+        os.makedirs(folder_name)
+    
+    with open(folder_name + '/' + str(iter_index) + '.json', 'w+') as json_file:
+        
+        json.dump(data_list, json_file)
+
+
+def take_inputs_from_command_shell():
+
+    # SNR map parameters
+    monthly_mean_min    = int(sys.argv[1])
+    monthly_mean_max    = int(sys.argv[2])
+    monthly_std_dev_min = int(sys.argv[3])
+    monthly_std_dev_max = int(sys.argv[4])
+
+    # RCT design parameters
+    num_baseline_months = int(sys.argv[5])
+    num_testing_months  = int(sys.argv[6])
+    minimum_required_baseline_seizure_count = int(sys.argv[7])
+
+    # simulation parameters
+    placebo_mu        = float(sys.argv[8])
+    placebo_sigma     = float(sys.argv[9])
+    drug_mu           = float(sys.argv[10])
+    drug_sigma        = float(sys.argv[11])
+    target_stat_power = float(sys.argv[12])
+
+    # computational estimation parameters
+    num_trials = int(sys.argv[13])
+    SNR_num_extra_patients_per_trial_arm = int(sys.argv[14])
+
+    # parallel processing parameters
+    smart_or_dumb  = sys.argv[15]
+    iter_index = int(sys.argv[16])
+    endpoint_name  = sys.argv[17]
+
+
+    return [monthly_mean_min,    monthly_mean_max,
+            monthly_std_dev_min, monthly_std_dev_max,
+            endpoint_name, iter_index,
+            num_baseline_months, num_testing_months,
+            minimum_required_baseline_seizure_count,
+            placebo_mu, placebo_sigma, drug_mu, drug_sigma,
+            target_stat_power, smart_or_dumb, num_trials,
+            SNR_num_extra_patients_per_trial_arm]
 
 
 if(__name__=='__main__'):
 
-    # SNR map parameters
-    monthly_mean_min    = 1
-    monthly_mean_max    = 16
-    monthly_std_dev_min = 1
-    monthly_std_dev_max = 16
+    [monthly_mean_min,    monthly_mean_max,
+     monthly_std_dev_min, monthly_std_dev_max,
+     endpoint_name, iter_index,
+     num_baseline_months, num_testing_months,
+     minimum_required_baseline_seizure_count,
+     placebo_mu, placebo_sigma, drug_mu, drug_sigma,
+     target_stat_power, smart_or_dumb, num_trials,
+     SNR_num_extra_patients_per_trial_arm] = \
+         take_inputs_from_command_shell()
 
-    # RCT design parameters
-    endpoint_name = sys.argv[1]
-    num_baseline_months = 2
-    num_testing_months = 3
-    minimum_required_baseline_seizure_count = 4
+    if(smart_or_dumb == 'dumb'):
 
-    # simulation parameters
-    placebo_mu    = 0
-    placebo_sigma = 0.05
-    drug_mu       = 0.2
-    drug_sigma    = 0.05
-    target_stat_power = 0.9
+        num_patients = \
+            dumb_algorithm(monthly_mean_min, 
+                           monthly_mean_max, 
+                           monthly_std_dev_min, 
+                           monthly_std_dev_max, 
+                           endpoint_name, 
+                           num_baseline_months, 
+                           num_testing_months, 
+                           minimum_required_baseline_seizure_count, 
+                           placebo_mu, 
+                           placebo_sigma, 
+                           drug_mu, 
+                           drug_sigma, 
+                           target_stat_power, 
+                           num_trials, 
+                           SNR_num_extra_patients_per_trial_arm)
 
-    # computational estimation parameters
-    num_trials = 2000
+    elif(smart_or_dumb == 'smart'):
 
-    #------------------------------------------------------------------------------------#
-    #------------------------------------------------------------------------------------#
-    #------------------------------------------------------------------------------------#
+        num_patients = \
+            smart_algorithm(monthly_mean_min,
+                            monthly_mean_max,
+                            monthly_std_dev_min,
+                            monthly_std_dev_max,
+                            endpoint_name,
+                            num_baseline_months,
+                            num_testing_months,
+                            minimum_required_baseline_seizure_count,
+                            placebo_mu,
+                            placebo_sigma,
+                            drug_mu,
+                            drug_sigma,
+                            target_stat_power,
+                            num_trials,
+                            SNR_num_extra_patients_per_trial_arm)
 
-    stat_power = 0
-    trial_arm  = 'placebo'
-
-    placebo_arm_theo_patient_pop_list = []
-    drug_arm_theo_patient_pop_list    = []
-
-    placebo_arm_theo_patient_pop_list = \
-        add_patient_to_placebo_theo_patient_pop(monthly_mean_min,
-                                                monthly_mean_max,
-                                                monthly_std_dev_min,
-                                                monthly_std_dev_max,
-                                                num_baseline_months,
-                                                minimum_required_baseline_seizure_count,
-                                                placebo_arm_theo_patient_pop_list)
-
-    drug_arm_theo_patient_pop_list = \
-        add_patient_to_placebo_theo_patient_pop(monthly_mean_min,
-                                                monthly_mean_max,
-                                                monthly_std_dev_min,
-                                                monthly_std_dev_max,
-                                                num_baseline_months,
-                                                minimum_required_baseline_seizure_count,
-                                                drug_arm_theo_patient_pop_list)
-    
-    while(stat_power < target_stat_power):
-
-        tmp_placebo_arm_theo_patient_pop_list = \
-            copy.deepcopy(placebo_arm_theo_patient_pop_list)
-        tmp_drug_arm_theo_patient_pop_list = \
-            copy.deepcopy(drug_arm_theo_patient_pop_list)
-
-        if(trial_arm == 'placebo'):
-
-            tmp_placebo_arm_theo_patient_pop_list = \
-                add_patient_to_placebo_theo_patient_pop(monthly_mean_min,
-                                                        monthly_mean_max,
-                                                        monthly_std_dev_min,
-                                                        monthly_std_dev_max,
-                                                        num_baseline_months,
-                                                        minimum_required_baseline_seizure_count,
-                                                        tmp_placebo_arm_theo_patient_pop_list)
-            
-            trial_arm = 'drug'
-
-        elif(trial_arm == 'drug'):
-
-            tmp_drug_arm_theo_patient_pop_list = \
-                add_patient_to_placebo_theo_patient_pop(monthly_mean_min,
-                                                        monthly_mean_max,
-                                                        monthly_std_dev_min,
-                                                        monthly_std_dev_max,
-                                                        num_baseline_months,
-                                                        minimum_required_baseline_seizure_count,
-                                                        tmp_drug_arm_theo_patient_pop_list)
-            
-            trial_arm = 'placebo'
-
-        tmp_stat_power = \
-            estimate_statistical_power(tmp_placebo_arm_theo_patient_pop_list,
-                                       tmp_drug_arm_theo_patient_pop_list,
-                                       endpoint_name,
-                                       num_baseline_months,
-                                       num_testing_months,
-                                       minimum_required_baseline_seizure_count,
-                                       placebo_mu,
-                                       placebo_sigma,
-                                       drug_mu,
-                                       drug_sigma,
-                                       num_trials)
-
-        SNR = tmp_stat_power - stat_power
-
-        if(SNR >= 0):
-
-            placebo_arm_theo_patient_pop_list = tmp_placebo_arm_theo_patient_pop_list
-            drug_arm_theo_patient_pop_list    = tmp_drug_arm_theo_patient_pop_list
-            stat_power = tmp_stat_power
-
-        print('\nSNR: ' + str(np.round(100*SNR, 3)) + ', trial_arm: ' + trial_arm + \
-              '\nstatistical power: ' + str(np.round(100*stat_power, 3)) + ' %' + \
-              ', total number of patients: ' + str(len(placebo_arm_theo_patient_pop_list) + len(drug_arm_theo_patient_pop_list)) + \
-              '\nnumber of placebo arm patients: ' + str(len(placebo_arm_theo_patient_pop_list)) + \
-              '\nnumber of drug arm patients: ' + str(len(drug_arm_theo_patient_pop_list)) + '\n')
-
-    #------------------------------------------------------------------------------------#
-    #------------------------------------------------------------------------------------#
-    #------------------------------------------------------------------------------------#
+    save_results(endpoint_name, smart_or_dumb, iter_index, num_patients)
 
