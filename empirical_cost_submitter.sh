@@ -28,11 +28,11 @@ drug_sigma=0.05
 target_stat_power=0.05
 
 # computational estimation parameters
-num_trials=10
+num_trials=2000
 SNR_num_extra_patients_per_trial_arm=20
 
 # parallel processing parameters
-num_iters=2
+num_iters=200
 
 dumb_inputs[0]=$monthly_mean_min
 dumb_inputs[1]=$monthly_mean_max
