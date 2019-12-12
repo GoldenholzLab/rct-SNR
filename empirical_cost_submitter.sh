@@ -25,7 +25,7 @@ placebo_mu=0
 placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
-target_stat_power=0.05
+target_stat_power=0.9
 
 # computational estimation parameters
 num_trials=2000
