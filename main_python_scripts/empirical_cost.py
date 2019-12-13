@@ -458,7 +458,7 @@ def dumb_algorithm(monthly_mean_min,
             trial_arm = 'placebo'
 
         num_patients = len(placebo_arm_theo_patient_pop_list) + len(drug_arm_theo_patient_pop_list)
-        num_patients_is_multiple = (num_patients % 2) == 0
+        num_patients_is_multiple = (num_patients % 10) == 0
 
         if(num_patients_is_multiple):
             stat_power = \
@@ -550,7 +550,7 @@ def smart_algorithm(monthly_mean_min,
                 trial_arm = 'placebo'
 
             num_patients = len(placebo_arm_theo_patient_pop_list) + len(drug_arm_theo_patient_pop_list)
-            num_patients_is_multiple = (num_patients % 2) == 0
+            num_patients_is_multiple = (num_patients % 10) == 0
 
             stat_power = \
                 estimate_statistical_power(placebo_arm_theo_patient_pop_list,
