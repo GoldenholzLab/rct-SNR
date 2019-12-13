@@ -575,7 +575,7 @@ def smart_algorithm(monthly_mean_min,
 
 def save_results(endpoint_name, smart_or_dumb, iter_index, data_list):
 
-    folder_name = os.getcwd() + '/' + endpoint_name + '_' + smart_or_dumb +'_data'
+    folder_name = os.getcwd() + '/' + endpoint_name + '_' + smart_or_dumb +'_data_1'
 
     if( not os.path.isdir(folder_name) ):
 

@@ -7,7 +7,7 @@ def RR50_costs(smart_or_dumb,
                num_testing_months):
 
     num_patients_RR50_list        = []
-    RR50_folder_name = 'RR50_' + smart_or_dumb + '_data'
+    RR50_folder_name = 'RR50_' + smart_or_dumb + '_data_1'
     for file_name_str in glob.glob(RR50_folder_name + '/*.json'):
         with open(file_name_str, 'r') as json_file:
             iter_data = json.load(json_file)
