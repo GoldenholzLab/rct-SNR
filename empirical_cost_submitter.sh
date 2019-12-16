@@ -46,7 +46,7 @@ do
 
     inputs[15]=$iter_index
     inputs[15]=$iter_index
-
-    sbatch RR50_empirical_cost_wrapper.sh ${dumb_inputs[@]}
-    sbatch RR50_empirical_cost_wrapper.sh ${smart_inputs[@]}
+    
+    sbatch RR50_empirical_dumb_cost_wrapper.sh ${inputs[@]}
+    sbatch RR50_empirical_smart_cost_wrapper.sh ${inputs[@]}
 done
