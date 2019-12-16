@@ -573,9 +573,13 @@ def smart_algorithm(monthly_mean_min,
     return num_patients
 
 
-def save_results(endpoint_name, smart_or_dumb, iter_index, data_list):
+def save_results(endpoint_name, 
+                 smart_or_dumb, 
+                 O2_attempt_num, 
+                 iter_index, 
+                 data_list):
 
-    folder_name = os.getcwd() + '/' + endpoint_name + '_' + smart_or_dumb +'_data_1'
+    folder_name = os.getcwd() + '/' + endpoint_name + '_' + smart_or_dumb +'_data_'  + str(O2_attempt_num)
 
     if( not os.path.isdir(folder_name) ):
 
@@ -587,7 +591,7 @@ def save_results(endpoint_name, smart_or_dumb, iter_index, data_list):
 
 
 def take_inputs_from_command_shell():
-
+    
     # SNR map parameters
     monthly_mean_min    = int(sys.argv[1])
     monthly_mean_max    = int(sys.argv[2])
@@ -611,14 +615,15 @@ def take_inputs_from_command_shell():
     SNR_num_extra_patients_per_trial_arm = int(sys.argv[14])
 
     # parallel processing parameters
-    smart_or_dumb  = sys.argv[15]
-    iter_index = int(sys.argv[16])
-    endpoint_name  = sys.argv[17]
+    O2_attempt_num = int(sys.argv[15])
+    iter_index     = int(sys.argv[16])
+    smart_or_dumb  =     sys.argv[17]
+    endpoint_name  =     sys.argv[18]
 
 
     return [monthly_mean_min,    monthly_mean_max,
             monthly_std_dev_min, monthly_std_dev_max,
-            endpoint_name, iter_index,
+            endpoint_name, iter_index, O2_attempt_num,
             num_baseline_months, num_testing_months,
             minimum_required_baseline_seizure_count,
             placebo_mu, placebo_sigma, drug_mu, drug_sigma,
@@ -630,7 +635,7 @@ if(__name__=='__main__'):
 
     [monthly_mean_min,    monthly_mean_max,
      monthly_std_dev_min, monthly_std_dev_max,
-     endpoint_name, iter_index,
+     endpoint_name, iter_index, O2_attempt_num,
      num_baseline_months, num_testing_months,
      minimum_required_baseline_seizure_count,
      placebo_mu, placebo_sigma, drug_mu, drug_sigma,
@@ -676,5 +681,9 @@ if(__name__=='__main__'):
                             num_trials,
                             SNR_num_extra_patients_per_trial_arm)
 
-    save_results(endpoint_name, smart_or_dumb, iter_index, num_patients)
+    save_results(endpoint_name, 
+                 smart_or_dumb, 
+                 O2_attempt_num, 
+                 iter_index, 
+                 num_patients)
 

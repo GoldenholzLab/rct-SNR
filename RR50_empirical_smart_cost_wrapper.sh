@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
-#SBATCH -p short
+#SBATCH -p medium
 #SBATCH --mem-per-cpu=10G
-#SBATCH -t 0-07:30
+#SBATCH -t 4-00:00
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
@@ -26,7 +26,8 @@ inputs[12]=${13}
 inputs[13]=${14}
 inputs[14]=${15}
 inputs[15]=${16}
-inputs[16]="RR50"
+inputs[16]="smart"
+inputs[17]="RR50"
 
 module load gcc/6.2.0
 module load conda2/4.2.13
