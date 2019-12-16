@@ -23,7 +23,7 @@ SNR_num_extra_patients_per_trial_arm=100
 
 # parallel processing parameters
 num_iters=200
-O2_attempt_num=1
+O2_attempt_num=2
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
