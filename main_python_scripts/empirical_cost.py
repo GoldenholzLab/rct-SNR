@@ -363,7 +363,7 @@ def calculate_SNR(monthly_mean_hat,
                                    drug_mu,
                                    drug_sigma,
                                    num_trials)
-
+    
     SNR = (placebo_enhanced_stat_power + drug_enhanced_stat_power)/2 - stat_power
 
     return SNR
@@ -499,6 +499,7 @@ def smart_algorithm(monthly_mean_min,
                     SNR_num_extra_patients_per_trial_arm):
 
     num_patients = 0
+    num_rejected = 0
 
     [stat_power, 
      trial_arm, 
@@ -567,8 +568,15 @@ def smart_algorithm(monthly_mean_min,
 
             if(num_patients_is_multiple):
 
-                print('\nstatistical power: ' + str(np.round(100*stat_power, 3)) + ' %' + \
-                      ', total number of patients: ' + str(num_patients) + '\n')
+                print('\nstatistical power: '                  + str(np.round(100*stat_power, 3)) + ' %' + \
+                      ', total number of patients: '           + str(num_patients)                       + \
+                      '\nnumber of rejected patients so far: ' + str(num_rejected)                          )
+        
+        else:
+
+            num_rejected = num_rejected + 1
+            print('\nSNR: '                                + str(np.round(100*SNR, 3)) + \
+                  '\nnumber of rejected patients so far: ' + str(num_rejected)         + '\n')
 
     return num_patients
 
