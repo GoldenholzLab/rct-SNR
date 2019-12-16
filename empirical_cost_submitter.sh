@@ -19,11 +19,11 @@ target_stat_power=0.9
 
 # computational estimation parameters
 num_trials=2000
-SNR_num_extra_patients_per_trial_arm=20
+SNR_num_extra_patients_per_trial_arm=100
 
 # parallel processing parameters
 num_iters=200
-O2_attempt_num=2
+O2_attempt_num=1
 
 inputs[0]=$monthly_mean_min
 inputs[1]=$monthly_mean_max
@@ -46,7 +46,17 @@ do
 
     inputs[15]=$iter_index
     inputs[15]=$iter_index
+
     
     sbatch RR50_empirical_dumb_cost_wrapper.sh ${inputs[@]}
     sbatch RR50_empirical_smart_cost_wrapper.sh ${inputs[@]}
+    
+    : '
+    bash RR50_empirical_dumb_cost_wrapper.sh ${inputs[@]}
+    bash RR50_empirical_smart_cost_wrapper.sh ${inputs[@]}
+    '
+    : '
+    bash MPC_empirical_dumb_cost_wrapper.sh ${inputs[@]}
+    bash MPC_empirical_smart_cost_wrapper.sh ${inputs[@]}
+    '
 done
