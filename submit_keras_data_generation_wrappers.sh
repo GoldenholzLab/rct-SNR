@@ -30,12 +30,12 @@ drug_sigma=0.05
 
 num_trials=2000
 
-starting_block=51
-num_blocks=25
+starting_block=1
+num_blocks=50
 num_training_files_per_block=15
 num_testing_files_per_block=5
 
-data_storage_folder_name='/home/jmr95/rct-SNR/keras_data_and_labels_11-20-2019'
+data_storage_folder_name='/home/jmr95/rct-SNR/keras_data_and_labels_1-4-2020'
 
 inputs[0]=$monthly_mean_lower_bound
 inputs[1]=$monthly_mean_upper_bound
