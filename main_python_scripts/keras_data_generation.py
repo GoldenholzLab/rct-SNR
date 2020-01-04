@@ -42,6 +42,7 @@ def generate_theo_patient_pop_params_per_trial_arm(monthly_mean_min,
 
 def generate_seizure_diaries_per_trial_arm(num_theo_patients_per_trial_arm,
                                            theo_placebo_arm_patient_pop_params,
+                                           theo_drug_arm_patient_pop_params,
                                            num_baseline_months,
                                            num_testing_months,
                                            baseline_time_scaling_const,
