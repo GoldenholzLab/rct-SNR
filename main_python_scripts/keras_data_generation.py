@@ -232,6 +232,7 @@ def generate_powers_and_histograms(monthly_mean_lower_bound,
          drug_arm_testing_monthly_seizure_diaries] = \
              generate_seizure_diaries_per_trial_arm(max_theo_patients_per_trial_arm,
                                                     theo_placebo_arm_patient_pop_params,
+                                                    theo_drug_arm_patient_pop_params,
                                                     num_baseline_months,
                                                     num_testing_months,
                                                     baseline_time_scaling_const,
