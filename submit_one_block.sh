@@ -1,12 +1,14 @@
 #!/usr/bin/bash
 
 #SBATCH -p short
-#SBATCH -t 0-04:30
+#SBATCH -t 0-04:40
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
+
+start=$SECONDS
 
 inputs[0]=$1
 inputs[1]=$2
@@ -74,4 +76,15 @@ next_inputs[17]=$block_num
 next_inputs[18]=$num_training_files_per_block
 next_inputs[19]=$num_testing_files_per_block
 
-sbatch submit_one_block.sh ${next_inputs[@]}
+done=0
+while (( done == 0 ))
+do
+    sleep 5m
+    end=$SECONDS
+    time=$((end - start))
+    if ((time > 16200)); then
+        done=1
+        sbatch submit_one_block.sh ${next_inputs[@]}
+    fi
+done
+
