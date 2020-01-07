@@ -5,7 +5,7 @@ monthly_std_dev_lower_bound=1
 monthly_std_dev_upper_bound=16
 
 max_theo_patients_per_trial_arm=300
-theo_patients_per_trial_arm_step=100
+theo_patients_per_trial_arm_step=5
 
 num_baseline_months=2
 num_testing_months=3
@@ -18,10 +18,10 @@ placebo_sigma=0.05
 drug_mu=0.2
 drug_sigma=0.05
 
-num_trials=5
+num_trials=2000
 
-num_training_files_per_block=2
-num_testing_files_per_block=2
+num_training_files_per_block=15
+num_testing_files_per_block=5
 
 data_storage_folder_name='/home/jmr95/rct-SNR/keras_data_and_labels_1-7-2020'
 
@@ -56,5 +56,4 @@ inputs[17]=1
 inputs[18]=$num_training_files_per_block
 inputs[19]=$num_testing_files_per_block
 
-bash submit_one_block.sh ${inputs[@]}
-
+sbatch submit_one_block.sh ${inputs[@]}
