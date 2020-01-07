@@ -43,18 +43,24 @@ def collect_samples_and_labels_from_folder(data_storage_folder_name,
 
     for compute_iter in np.arange(1, num_iters + 1, 1):
 
-        [tmp_theo_placebo_arm_hists, 
-         tmp_theo_drug_arm_hists, 
-         tmp_emp_stat_powers] = \
-             collect_samples_and_labels(data_storage_folder_name,
-                                        endpoint_name,
-                                        training_or_testing,
-                                        block_num,
-                                        compute_iter)
+        try:
+
+            [tmp_theo_placebo_arm_hists, 
+             tmp_theo_drug_arm_hists, 
+             tmp_emp_stat_powers] = \
+                 collect_samples_and_labels(data_storage_folder_name,
+                                            endpoint_name,
+                                            training_or_testing,
+                                            block_num,
+                                            compute_iter)
     
-        theo_placebo_arm_hists = np.concatenate((theo_placebo_arm_hists, tmp_theo_placebo_arm_hists), 2)
-        theo_drug_arm_hists    = np.concatenate((theo_drug_arm_hists,    tmp_theo_drug_arm_hists),    2)
-        emp_stat_powers        = np.concatenate((emp_stat_powers,        tmp_emp_stat_powers),        0)
+            theo_placebo_arm_hists = np.concatenate((theo_placebo_arm_hists, tmp_theo_placebo_arm_hists), 2)
+            theo_drug_arm_hists    = np.concatenate((theo_drug_arm_hists,    tmp_theo_drug_arm_hists),    2)
+            emp_stat_powers        = np.concatenate((emp_stat_powers,        tmp_emp_stat_powers),        0)
+        
+        except FileNotFoundError:
+
+            print('Missing data in block #'  + str(block_num))
     
     return [theo_placebo_arm_hists,
             theo_drug_arm_hists,
