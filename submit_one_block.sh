@@ -80,7 +80,7 @@ next_inputs[19]=$num_testing_files_per_block
 done=0
 while (( done == 0 ))
 do
-    sleep 5m
+    sleep 1m
     end=$SECONDS
     time=$((end - start))
     if ((time > 16200)); then
