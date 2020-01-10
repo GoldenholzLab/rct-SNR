@@ -51,7 +51,7 @@ inputs[14]=$drug_sigma
 
 inputs[15]=$num_trials
 inputs[16]=$data_storage_folder_name
-inputs[17]=11
+inputs[17]=14
 
 inputs[18]=$num_training_files_per_block
 inputs[19]=$num_testing_files_per_block
