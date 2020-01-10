@@ -33,28 +33,36 @@ num_testing_files_per_block=${20}
 data_storage_folder_name=${17}
 block_num=${18}
 
-inputs[16]=$block_num
-inputs[17]="${data_storage_folder_name}/training_data"
-
-for ((file_index=1; file_index<=$num_training_files_per_block; file_index=file_index+1))
+count=0
+while ((count < 20))
 do
-    inputs[18]=$file_index
 
-    sbatch keras_data_generation_wrapper.sh ${inputs[@]}
+    inputs[16]=$block_num
+
+    inputs[17]="${data_storage_folder_name}/training_data"
+
+    for ((file_index=1; file_index<=$num_training_files_per_block; file_index=file_index+1))
+    do
+        inputs[18]=$file_index
+
+        sbatch keras_data_generation_wrapper.sh ${inputs[@]}
+
+    done
+
+    inputs[17]="${data_storage_folder_name}/testing_data"
+
+    for ((file_index=1; file_index<=$num_testing_files_per_block; file_index=file_index+1))
+    do
+        inputs[18]=$file_index
+
+        sbatch keras_data_generation_wrapper.sh ${inputs[@]}
+
+    done
+
+    block_num=$((block_num + 1))
+    count=$((count + 1))
 
 done
-
-inputs[17]="${data_storage_folder_name}/testing_data"
-
-for ((file_index=1; file_index<=$num_testing_files_per_block; file_index=file_index+1))
-do
-    inputs[18]=$file_index
-
-    sbatch keras_data_generation_wrapper.sh ${inputs[@]}
-
-done
-
-block_num=$((block_num + 1))
 
 next_inputs[0]=$1
 next_inputs[1]=$2
