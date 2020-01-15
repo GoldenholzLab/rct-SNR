@@ -7,7 +7,7 @@
 #SBATCH -N 1
 #SBATCH -e jmr95_%j.err
 #SBATCH -o jmr95_%j.out
-#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=ALL
 #SBATCH --mail-user=jromero5@bidmc.harvard.edu
 
 inputs[0]=$1
