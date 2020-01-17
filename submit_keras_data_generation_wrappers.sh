@@ -30,8 +30,8 @@ drug_sigma=0.05
 
 num_trials=2000
 
-starting_block=80
-num_blocks=50
+starting_block=130
+num_blocks=51
 num_training_files_per_block=15
 num_testing_files_per_block=5
 
