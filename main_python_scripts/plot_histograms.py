@@ -38,7 +38,7 @@ if(__name__=='__main__'):
         current_ax.set_ylabel('fraction of prediction errors')
         current_ax.title.set_text(formatted_title)
         current_ax.set_xlim([-40, 40])
-        current_ax.set_ylim([0, 0.2])
+        current_ax.set_ylim([0, 0.12])
         current_ax.text(-0.3, 1, string.ascii_uppercase[endpoint_name_index] + ')', 
                         transform=current_ax.transAxes, size=15, weight='bold')
     
