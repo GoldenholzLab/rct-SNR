@@ -26,9 +26,7 @@ if(__name__=='__main__'):
     monthly_std_dev_axis_step    = 1
     monthly_std_dev_tick_spacing = 1
 
-    min_power_law_slope     = 0.5
-    max_power_law_slope     = 1.7
-    power_law_slope_spacing = 0.1
+    power_law_slope     = 0.7
 
     #--------------------------------------------------------------------------------------------------------------------------------------------------------------#
     #--------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -46,8 +44,6 @@ if(__name__=='__main__'):
     monthly_std_dev_axis_scale_ratio = (1/monthly_std_dev_axis_step) + (1/(monthly_std_dev_axis_stop - monthly_std_dev_axis_start))
 
     monthly_mean_axis_array = np.arange(monthly_mean_axis_start, monthly_mean_axis_stop + monthly_mean_axis_step, monthly_mean_axis_step)
-
-    power_law_slopes = np.arange(min_power_law_slope/power_law_slope_spacing, max_power_law_slope/power_law_slope_spacing + 1, 1)*power_law_slope_spacing
 
     fig = plt.figure(figsize=(20, 5))
 
@@ -70,17 +66,13 @@ if(__name__=='__main__'):
         ax.set_yticklabels(monthly_std_dev_tick_labels, rotation='horizontal')
         ax.text(-0.2, 1, string.ascii_uppercase[endpoint_name_index] + ')', 
                 transform=ax.transAxes, size=15, weight='bold')
+        
+        power_law_monthly_std_dev_axis_points = np.power(monthly_mean_axis_array, power_law_slope) + 0.5
 
-        for power_law_slope_index in range(len(power_law_slopes)):
-
-            power_law_slope = power_law_slopes[power_law_slope_index]
-
-            power_law_monthly_std_dev_axis_points = np.power(monthly_mean_axis_array, power_law_slope) + 0.5
-
-            ax.plot( monthly_mean_axis_array*monthly_mean_axis_scale_ratio - 0.5, 
-                (monthly_std_dev_axis_stop - power_law_monthly_std_dev_axis_points)*monthly_std_dev_axis_scale_ratio)
+        ax.plot( monthly_mean_axis_array*monthly_mean_axis_scale_ratio - 0.5, 
+                 (monthly_std_dev_axis_stop - power_law_monthly_std_dev_axis_points)*monthly_std_dev_axis_scale_ratio,
+                 color='green')
     
-    plt.legend(np.round(power_law_slopes, 1), title = 'Power Law Constants', bbox_to_anchor=(1.3, 0.5, 0.5, 0.5))
     plt.subplots_adjust(wspace = .25)
 
     #fig.savefig(endpoint_name + '_SNR_map.png', dpi=600, bbox_inches='tight')
