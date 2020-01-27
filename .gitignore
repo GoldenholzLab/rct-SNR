@@ -1,7 +1,7 @@
 # Apple Files
 *.DS_store
 
-/280_blocks/*
+/280 blocks/*
 
 # ignore pdfs
 *.pdf
