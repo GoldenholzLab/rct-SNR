@@ -94,8 +94,8 @@ def plot_predicted_statistical_powers_and_NV_model_hists(expected_NV_model_one_R
     ax.set_xticklabels(monthly_mean_tick_labels, rotation='horizontal')
     ax.set_yticks(monthly_std_dev_ticks)
     ax.set_yticklabels(monthly_std_dev_tick_labels, rotation='horizontal')
-    ax.set_xlabel('monthly seizure count mean')
-    ax.set_ylabel('monthly seizure count standard deviation')
+    ax.set_xlabel(r'monthly seizure count mean, $\mu$')
+    ax.set_ylabel(r'monthly seizure count standard deviation, $\sigma$')
     ax.title.set_text('2D histograms of patients from NV model 1 and 2')
     ax.text(-0.2, 1, string.ascii_uppercase[0] + ')', 
                 transform=ax.transAxes, size=15, weight='bold')
