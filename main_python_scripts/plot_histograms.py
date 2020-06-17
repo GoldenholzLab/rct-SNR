@@ -52,7 +52,7 @@ if(__name__=='__main__'):
     plt.subplots_adjust(wspace = .55)
 
     png1 = io.BytesIO()
-    fig.savefig(png1, dpi = 300, bbox_inches = 'tight', format='png')
+    fig.savefig(png1, dpi = 600, bbox_inches = 'tight', format='png')
     png2 = Image.open(png1)
     png2.save('Romero-fig2.tiff')
     png1.close()
