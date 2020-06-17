@@ -20,7 +20,6 @@ if(__name__=='__main__'):
     reg_prop  = fm.FontProperties(fname='/Users/juanromero/Documents/GitHub/rct-SNR/Calibri Regular.ttf')
     bold_prop = fm.FontProperties(fname='/Users/juanromero/Documents/GitHub/rct-SNR/Calibri Bold.ttf')
 
-    #fig, ax = plt.subplots(1, 3, figsize=(10,6))
     fig, ax = plt.subplots(1, 3, figsize=(20,6))
 
     for endpoint_name_index in range(len(endpoint_names)):
